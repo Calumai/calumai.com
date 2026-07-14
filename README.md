@@ -1,5 +1,5 @@
-# calumai.com redirect
+# calumai.com site
 
-This GitHub Pages site redirects `calumai.com` to:
+This GitHub Pages site serves the `codex-chrome-prompts` static site at:
 
-https://calumai.github.io/name/codex-chrome-prompts/
+https://calumai.com/
