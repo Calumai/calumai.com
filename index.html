@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="CALUMAI 是一座把族語教學需求做成實用工具的 AI 實驗基地。">
-  <meta name="theme-color" content="#120c0c">
-  <meta property="og:title" content="CALUMAI｜族語教學 AI 工具基地">
-  <meta property="og:description" content="把教材、錄音、詞卡與課務流程，做成老師真正用得到的工具。">
-  <meta property="og:image" content="https://calumai.com/assets/calumai-hero-v2.webp">
-  <title>CALUMAI｜族語教學 AI 工具基地</title>
-  <link rel="preload" href="assets/calumai-hero-v2.webp" as="image" type="image/webp">
+  <meta name="description" content="CALUMAI 把族語教學現場的需求，做成老師今天就能使用的網頁工具。">
+  <meta name="theme-color" content="#10243f">
+  <meta property="og:title" content="CALUMAI｜族語工具製作所">
+  <meta property="og:description" content="備課、錄音、字幕與課務，選擇一個任務，直接開始。">
+  <meta property="og:image" content="https://calumai.com/assets/pixel-hero.webp">
+  <title>CALUMAI｜族語工具製作所</title>
+  <link rel="preload" href="assets/pixel-hero.webp" as="image" type="image/webp">
   <link rel="stylesheet" href="styles.css">
   <script src="assets/lucide.min.js" defer></script>
   <script src="app.js" defer></script>
@@ -19,7 +19,8 @@
 
   <header class="site-header" data-header>
     <a class="brand" href="./" aria-label="CALUMAI 首頁">
-      <span class="brand-main">CALUM</span><span class="brand-slash">/</span><span class="brand-ai">AI</span>
+      <span class="brand-gem" aria-hidden="true"></span>
+      <span>CALUMAI</span>
     </a>
 
     <button class="menu-toggle icon-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle>
@@ -28,244 +29,185 @@
 
     <nav class="primary-nav" id="primary-nav" aria-label="主要導覽" data-nav>
       <a href="#tools">工具</a>
-      <a href="#log">製作紀錄</a>
-      <a href="#method">方法</a>
-      <a href="lab/">實驗室</a>
+      <a href="#log">關卡紀錄</a>
+      <a href="#method">製作規則</a>
+      <a href="lab/">工具選單</a>
       <a class="nav-cta" href="blog/">
         文章
-        <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+        <i data-lucide="book-open" aria-hidden="true"></i>
       </a>
     </nav>
   </header>
 
   <main id="main">
     <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-media" aria-hidden="true"></div>
-      <div class="hero-grid" aria-hidden="true"></div>
+      <img class="hero-media" src="assets/pixel-hero.webp" alt="山城裡的像素工具工坊，包含詞卡、錄音、投影與課務工作空間" width="1920" height="1080">
+      <div class="hero-shade" aria-hidden="true"></div>
       <div class="hero-content shell">
-        <p class="hero-kicker reveal">INDIGENOUS LANGUAGE / AI TOOLS</p>
-        <h1 id="hero-title" class="hero-title reveal">族語教學，<br>做成真的工具。</h1>
-        <p class="hero-copy reveal">把教材、錄音、詞卡與課務流程，做成老師今天就能打開使用的網頁工具。</p>
+        <p class="hero-kicker reveal">族語教學工具製作所</p>
+        <h1 id="hero-title" class="hero-title reveal">CALUMAI</h1>
+        <p class="hero-copy reveal">把備課、錄音、字幕與課務裡的麻煩，做成老師能直接使用的工具。</p>
         <div class="hero-actions reveal">
           <a class="button button-primary" href="#tools">
-            查看工具
-            <i data-lucide="arrow-down" aria-hidden="true"></i>
+            選擇工具
+            <i data-lucide="gamepad-2" aria-hidden="true"></i>
           </a>
-          <a class="text-link" href="lab/">
-            進入練習基地
-            <i data-lucide="arrow-right" aria-hidden="true"></i>
+          <a class="button button-ghost" href="blog/">
+            讀取製作筆記
+            <i data-lucide="book-open" aria-hidden="true"></i>
           </a>
         </div>
       </div>
-
-      <div class="hero-index" aria-hidden="true">
-        <span>CALUMAI.COM</span>
-        <span>TAIWAN / 2026</span>
-      </div>
     </section>
 
-    <section class="signal-bar" aria-label="網站摘要">
-      <div class="signal-item">
-        <span class="signal-value">05</span>
-        <span class="signal-label">可用工具</span>
-      </div>
-      <div class="signal-item">
-        <span class="signal-value">06</span>
-        <span class="signal-label">製作紀錄</span>
-      </div>
-      <div class="signal-item signal-message">
-        <span class="live-mark" aria-hidden="true"></span>
-        <span>持續把教學現場的麻煩事，轉成可重複使用的工具。</span>
-      </div>
+    <section class="start-strip" aria-label="網站狀態">
+      <div><strong>04</strong><span>可用工具</span></div>
+      <div><strong>06</strong><span>完成關卡</span></div>
+      <p><span class="status-light" aria-hidden="true"></span>工具工坊持續運作中</p>
     </section>
 
-    <section class="tools-section section shell" id="tools" aria-labelledby="tools-title">
+    <section class="works-section section shell" id="tools" aria-labelledby="tools-title">
       <div class="section-heading reveal">
-        <p class="section-code">TOOLS / NOW AVAILABLE</p>
-        <h2 id="tools-title">不是展示品。<br>每一個都能直接用。</h2>
-        <p>從南勢阿美語詞卡、錄音逐字稿到課務報表，工具會跟著真實需求生長。</p>
+        <p class="section-kicker">TOOL SELECT</p>
+        <h2 id="tools-title">選擇一個任務</h2>
+        <p>每一關都來自真實教學現場。直接進入工具，不用先讀一大篇使用說明。</p>
       </div>
 
-      <div class="tool-grid">
-        <article class="tool-card tool-card-featured reveal">
-          <a class="tool-image" href="tools/amis-word-cards/" aria-label="開啟南勢阿美語詞卡產生器">
-            <img src="assets/cover-word-cards.webp" alt="詞卡經由機械分類系統整理的南勢阿美語詞卡產生器封面" width="1600" height="900" loading="lazy">
+      <div class="work-grid">
+        <article class="work-card work-card-main reveal">
+          <a class="work-media" href="tools/amis-word-cards/" aria-label="開啟南勢阿美語詞卡產生器">
+            <img src="assets/cover-word-cards.webp" alt="像素風格的詞卡印製與分類工坊" width="1280" height="720" loading="lazy">
           </a>
-          <div class="tool-info">
-            <div class="tool-meta">
-              <span>01 / WORD CARDS</span>
-              <span>READY</span>
-            </div>
+          <div class="work-copy">
+            <span class="work-slot">SLOT 01 / 備課</span>
             <h3><a href="tools/amis-word-cards/">南勢阿美語詞卡產生器</a></h3>
-            <p>匯入學習詞表，篩選主題與級別，輸出適合課堂使用的可列印詞卡。</p>
-            <a class="icon-link" href="tools/amis-word-cards/" aria-label="開啟南勢阿美語詞卡產生器">
-              <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+            <p>從學習詞表挑出今天要教的內容，排成可編輯、可列印的課堂詞卡。</p>
+            <a class="pixel-link" href="tools/amis-word-cards/">
+              進入工具
+              <i data-lucide="arrow-right" aria-hidden="true"></i>
             </a>
           </div>
         </article>
 
-        <article class="tool-card reveal">
-          <a class="tool-image" href="tools/recording-script-switcher/" aria-label="開啟錄音逐字稿切換器">
-            <img src="assets/cover-recording.webp" alt="麥克風與聲波路徑組成的錄音逐字稿切換器封面" width="1600" height="900" loading="lazy">
+        <article class="work-card reveal">
+          <a class="work-media" href="tools/recording-script-switcher/" aria-label="開啟錄音逐字稿切換器">
+            <img src="assets/cover-recording.webp" alt="像素風格的麥克風、聲波螢幕與逐字稿錄音室" width="1280" height="720" loading="lazy">
           </a>
-          <div class="tool-info">
-            <div class="tool-meta">
-              <span>02 / RECORDING</span>
-              <span>READY</span>
-            </div>
+          <div class="work-copy">
+            <span class="work-slot">SLOT 02 / 錄音</span>
             <h3><a href="tools/recording-script-switcher/">錄音逐字稿切換器</a></h3>
-            <p>把 Podcast 腳本切成講者、段落與音效提示，錄音現場更容易跟稿。</p>
-            <a class="icon-link" href="tools/recording-script-switcher/" aria-label="開啟錄音逐字稿切換器">
-              <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+            <p>分講者、切段落、標記重錄，讓錄音現場不再跟丟下一句。</p>
+            <a class="pixel-link" href="tools/recording-script-switcher/">
+              進入工具
+              <i data-lucide="arrow-right" aria-hidden="true"></i>
             </a>
           </div>
         </article>
 
-        <article class="tool-card reveal">
-          <a class="tool-image" href="tools/subtitle-slides-plus/" aria-label="開啟字幕投影片 Plus">
-            <img src="assets/cover-subtitle.webp" alt="投影畫面沿著時間軸排列的字幕投影片 Plus 封面" width="1600" height="900" loading="lazy">
+        <article class="work-card reveal">
+          <a class="work-media" href="tools/subtitle-slides-plus/" aria-label="開啟字幕投影片 Plus">
+            <img src="assets/cover-subtitle.webp" alt="像素風格的投影機、字幕畫面與時間軸工作室" width="1280" height="720" loading="lazy">
           </a>
-          <div class="tool-info">
-            <div class="tool-meta">
-              <span>03 / SUBTITLE</span>
-              <span>READY</span>
-            </div>
+          <div class="work-copy">
+            <span class="work-slot">SLOT 03 / 上課</span>
             <h3><a href="tools/subtitle-slides-plus/">字幕投影片 Plus</a></h3>
-            <p>把逐字稿快速排成 16:9 大字幕投影片，支援主題色、批次設定與列印。</p>
-            <a class="icon-link" href="tools/subtitle-slides-plus/" aria-label="開啟字幕投影片 Plus">
-              <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+            <p>把例句、翻譯與語法標記，排成老師和學生都看得清楚的大畫面。</p>
+            <a class="pixel-link" href="tools/subtitle-slides-plus/">
+              進入工具
+              <i data-lucide="arrow-right" aria-hidden="true"></i>
             </a>
           </div>
         </article>
 
-        <article class="tool-card tool-card-wide reveal">
-          <a class="tool-image" href="tools/teacher-manager/" aria-label="開啟族語家教老師管理系統">
-            <img src="assets/cover-teacher-manager.webp" alt="課程日期與文件透過發光路徑整理的族語家教老師管理系統封面" width="1600" height="900" loading="lazy">
+        <article class="work-card work-card-wide reveal">
+          <a class="work-media" href="tools/teacher-manager/" aria-label="開啟族語家教老師管理系統">
+            <img src="assets/cover-teacher-manager.webp" alt="像素風格的課程日曆、文件與檔案管理室" width="1280" height="720" loading="lazy">
           </a>
-          <div class="tool-info">
-            <div class="tool-meta">
-              <span>04 / OPERATIONS</span>
-              <span>READY</span>
-            </div>
+          <div class="work-copy">
+            <span class="work-slot">SLOT 04 / 行政</span>
             <h3><a href="tools/teacher-manager/">族語家教老師管理系統</a></h3>
-            <p>整理課程截圖、老師、日期與鐘點費，讓重複的行政工作有一個清楚入口。</p>
-            <a class="icon-link" href="tools/teacher-manager/" aria-label="開啟族語家教老師管理系統">
-              <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+            <p>整理老師、日期、課程截圖與鐘點費，讓重複的行政工作有清楚出口。</p>
+            <a class="pixel-link" href="tools/teacher-manager/">
+              進入工具
+              <i data-lucide="arrow-right" aria-hidden="true"></i>
             </a>
           </div>
         </article>
       </div>
 
-      <div class="tools-footer reveal">
-        <p>還有字幕投影片與下一批教學實驗正在整理。</p>
+      <div class="works-more reveal">
+        <p>還有字幕播放版與其他實驗工具收藏在完整工具選單。</p>
         <a class="button button-secondary" href="lab/">
-          查看完整實驗室
-          <i data-lucide="grid-2x2" aria-hidden="true"></i>
+          打開完整工具選單
+          <i data-lucide="layout-grid" aria-hidden="true"></i>
         </a>
       </div>
     </section>
 
-    <section class="log-section section" id="log" aria-labelledby="log-title">
+    <section class="level-section section" id="log" aria-labelledby="level-title">
       <div class="shell">
-        <div class="section-heading section-heading-compact reveal">
-          <h2 id="log-title">每次只解決一件事，<br>成果就會留下來。</h2>
+        <div class="section-heading section-heading-light reveal">
+          <h2 id="level-title">目前抵達的關卡</h2>
+          <p>不是一次蓋完大平台，而是每次解決一個老師真的會遇到的問題。</p>
         </div>
 
-        <div class="log-list">
-          <article class="log-row reveal">
-            <span class="log-number">01</span>
-            <div>
-              <h3>建立練習基地</h3>
-              <p>把每天的需求、工具與學習紀錄集中到一個可持續更新的位置。</p>
-            </div>
-            <span class="log-kind">SYSTEM</span>
-          </article>
-          <article class="log-row reveal">
-            <span class="log-number">03</span>
-            <div>
-              <h3>字幕投影片</h3>
-              <p>讓逐字稿不必一頁一頁重排，直接變成錄音與教學可用的大字幕。</p>
-            </div>
-            <span class="log-kind">MEDIA</span>
-          </article>
-          <article class="log-row reveal">
-            <span class="log-number">05</span>
-            <div>
-              <h3>南勢阿美語詞卡</h3>
-              <p>從既有學習詞表出發，保留語料來源，再把資料變成可列印教材。</p>
-            </div>
-            <span class="log-kind">TEACHING</span>
-          </article>
-          <article class="log-row reveal">
-            <span class="log-number">06</span>
-            <div>
-              <h3>錄音逐字稿切換器</h3>
-              <p>處理講者切換、音效標記與重錄提示，降低錄音現場的認知負擔。</p>
-            </div>
-            <span class="log-kind">AUDIO</span>
-          </article>
+        <div class="level-map" aria-label="製作關卡紀錄">
+          <article class="level level-1 reveal"><span>01</span><h3>建立工具基地</h3><p>整理需求與入口</p></article>
+          <article class="level level-2 reveal"><span>02</span><h3>課務管理</h3><p>截圖、日期與鐘點</p></article>
+          <article class="level level-3 reveal"><span>03</span><h3>字幕投影片</h3><p>大字與合理斷句</p></article>
+          <article class="level level-4 reveal"><span>04</span><h3>語法投影片</h3><p>例句與詞語拆解</p></article>
+          <article class="level level-5 reveal"><span>05</span><h3>族語詞卡</h3><p>詞表變成教材</p></article>
+          <article class="level level-6 reveal"><span>06</span><h3>錄音提詞</h3><p>切段、提示與重錄</p></article>
         </div>
       </div>
     </section>
 
-    <section class="method-section section shell" id="method" aria-labelledby="method-title">
-      <div class="method-intro reveal">
-        <h2 id="method-title">人類掌舵，<br>AI 負責把路鋪好。</h2>
-        <p>族語內容不由 AI 猜。老師決定需求與語料，AI 協助整理、實作、測試，再回到真實課堂驗證。</p>
+    <section class="rules-section section shell" id="method" aria-labelledby="rules-title">
+      <div class="rules-intro reveal">
+        <h2 id="rules-title">這個工坊的<br>四條規則</h2>
+        <p>畫面可以好玩，族語內容不能亂猜。老師負責方向與可信資料，AI 負責把重複工作做成工具。</p>
       </div>
 
-      <ol class="method-steps">
-        <li class="reveal">
-          <span>01</span>
-          <h3>說出麻煩</h3>
-          <p>先描述哪一個教學或行政流程最浪費時間。</p>
-        </li>
-        <li class="reveal">
-          <span>02</span>
-          <h3>留下資料</h3>
-          <p>提供真實語料、表格或操作範例，不讓 AI 自己補內容。</p>
-        </li>
-        <li class="reveal">
-          <span>03</span>
-          <h3>做成工具</h3>
-          <p>把需求變成可操作、可列印、可重複使用的網頁。</p>
-        </li>
-        <li class="reveal">
-          <span>04</span>
-          <h3>帶回現場</h3>
-          <p>實際使用，再記下不順的地方，成為下一輪修改依據。</p>
-        </li>
+      <ol class="rules-list">
+        <li class="reveal"><span>01</span><div><h3>從現場問題開始</h3><p>先挑明天真的會遇到的備課、上課、錄音或行政工作。</p></div></li>
+        <li class="reveal"><span>02</span><div><h3>只用可信語料</h3><p>族語、翻譯與例句由老師確認，不讓 AI 自行補寫內容。</p></div></li>
+        <li class="reveal"><span>03</span><div><h3>先做成能用的版本</h3><p>按鈕清楚、手機可操作、需要列印的內容能直接印。</p></div></li>
+        <li class="reveal"><span>04</span><div><h3>帶回現場再升級</h3><p>真實使用後，把卡住的地方變成下一次修改任務。</p></div></li>
       </ol>
     </section>
 
     <section class="journal-section section" aria-labelledby="journal-title">
-      <div class="journal-grid shell">
-        <div class="journal-heading reveal">
-          <h2 id="journal-title">除了工具，<br>也把過程寫下來。</h2>
+      <div class="journal-layout shell">
+        <div class="journal-copy reveal">
+          <span class="save-icon" aria-hidden="true"></span>
+          <h2 id="journal-title">工具做完，<br>方法也要存檔。</h2>
+          <p>製作筆記記下需求怎麼拆、資料怎麼整理，以及一個小工具為什麼比大平台更快產生價值。</p>
+          <a class="button button-primary" href="blog/">
+            讀取文章
+            <i data-lucide="book-open" aria-hidden="true"></i>
+          </a>
         </div>
 
-        <article class="journal-feature reveal">
-          <a class="journal-image" href="blog/why-small-tools.html" aria-label="閱讀文章：為什麼從一個小工具開始">
-            <img src="assets/calumai-hero-v2.webp" alt="錄音麥克風、詞卡與聲波組成的 AI 教學工作台" width="1536" height="1024" loading="lazy">
+        <article class="journal-card reveal">
+          <a href="blog/why-small-tools.html" class="journal-media" aria-label="閱讀文章：為什麼先從一個小工具開始">
+            <img src="assets/cover-word-cards.webp" alt="像素詞卡工坊" width="1280" height="720" loading="lazy">
           </a>
-          <div class="journal-meta">
-            <span>2026.07.16</span>
-            <span>製作筆記</span>
+          <div>
+            <time datetime="2026-07-16">2026.07.16</time>
+            <h3><a href="blog/why-small-tools.html">為什麼先從一個小工具開始，而不是做一套大平台？</a></h3>
           </div>
-          <h3><a href="blog/why-small-tools.html">為什麼先從一個小工具開始，而不是做一套大平台？</a></h3>
-          <p>真正有用的 AI 專案，常常不是功能最多，而是先把每天重複一次的麻煩拿掉。</p>
         </article>
       </div>
     </section>
 
-    <section class="feedback-section section shell" aria-labelledby="feedback-title">
-      <div class="feedback-copy reveal">
-        <h2 id="feedback-title">你在教學現場，<br>卡在哪一件事？</h2>
-        <p>留下需求、使用感受或下一個值得製作的工具。每一則回饋都會成為後續版本的依據。</p>
+    <section class="final-cta shell" aria-labelledby="feedback-title">
+      <div>
+        <h2 id="feedback-title">哪一件教學工作，<br>最值得做成下一關？</h2>
+        <p>留下匿名回饋，讓下一個工具從真實需求開始。</p>
       </div>
-      <a class="feedback-action reveal" href="https://docs.google.com/forms/d/e/1FAIpQLSfCCfNh2NiaA90aneGBDRAvDS9iLrPVY4D7FcaS10kZb9ofvw/viewform?usp=sf_link" target="_blank" rel="noopener">
-        <span>留下匿名回饋</span>
-        <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+      <a class="button button-secondary" href="https://docs.google.com/forms/d/e/1FAIpQLSfCCfNh2NiaA90aneGBDRAvDS9iLrPVY4D7FcaS10kZb9ofvw/viewform?usp=sf_link" target="_blank" rel="noopener">
+        提供回饋
+        <i data-lucide="message-square" aria-hidden="true"></i>
       </a>
     </section>
   </main>
@@ -273,13 +215,13 @@
   <footer class="site-footer">
     <div class="footer-brand" aria-hidden="true">CALUMAI</div>
     <div class="footer-bottom shell">
-      <p>族語教學 AI 工具練習基地</p>
+      <p>族語工具製作所</p>
       <nav aria-label="頁尾導覽">
         <a href="#tools">工具</a>
-        <a href="lab/">實驗室</a>
+        <a href="lab/">工具選單</a>
         <a href="blog/">文章</a>
       </nav>
-      <p>© <span data-year></span> CALUMAI</p>
+      <p>&copy; <span data-year></span> CALUMAI</p>
     </div>
   </footer>
 </body>

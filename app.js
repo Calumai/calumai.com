@@ -57,7 +57,7 @@
     if (event.matches) closeMenu();
   });
 
-  const topSection = document.querySelector(".hero, .page-hero, .article-hero");
+  const topSection = document.querySelector(".hero, .lab-hero, .page-hero, .article-hero, .error-screen");
   if (header && topSection && "IntersectionObserver" in window) {
     const headerObserver = new IntersectionObserver(
       ([entry]) => {
