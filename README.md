@@ -1,5 +1,24 @@
-# calumai.com site
+# CALUMAI
 
-This GitHub Pages site serves the `codex-chrome-prompts` static site at:
+CALUMAI 是一個以原生 HTML、CSS 與 JavaScript 製作的族語教學 AI 工具基地，部署於 GitHub Pages。
 
-https://calumai.com/
+## 頁面
+
+- `/`：品牌首頁與工具入口
+- `/lab/`：原有練習儀表板、作業紀錄與回饋功能
+- `/blog/`：製作筆記與文章列表
+- `/tools/`：可直接使用的教學與課務工具
+
+## 本機預覽
+
+```powershell
+python -m http.server 4173 --bind 127.0.0.1
+```
+
+開啟 `http://127.0.0.1:4173/`。
+
+## 設計原則
+
+- 族語內容由人提供與確認，不由 AI 自行翻譯或補寫。
+- 工具優先解決真實教學與行政流程。
+- 首頁、文章與工具頁都需支援桌面和手機操作。
