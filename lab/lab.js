@@ -14,14 +14,12 @@ const ideas = [
 ];
 
 const ideaUrlKey = "indigenousToolIdeaUrls";
-const homeworkKey = "indigenousToolHomework";
 const feedbackSheetUrl = "https://docs.google.com/spreadsheets/d/1dECVvGtsBp9obg8Ll8b_SrhZnwe7Gqadeoqj3X7pkZc/gviz/tq?tqx=out:json&gid=944769991";
 
 const cards = document.querySelector("#cards");
 const empty = document.querySelector("#empty");
 const search = document.querySelector("#search");
 const tabs = [...document.querySelectorAll(".tab")];
-const homeworkForm = document.querySelector("#homeworkForm");
 const ideaUrls = readObject(ideaUrlKey);
 let active = "all";
 let feedbackLoadTimer;
@@ -33,19 +31,6 @@ function readObject(key) {
   } catch {
     return {};
   }
-}
-
-function readItems(key) {
-  try {
-    const value = JSON.parse(localStorage.getItem(key) || "[]");
-    return Array.isArray(value) ? value : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveItems(key, items) {
-  localStorage.setItem(key, JSON.stringify(items));
 }
 
 function escapeHtml(value) {
@@ -95,34 +80,6 @@ function saveIdeaUrl(title, url) {
   }
   localStorage.setItem(ideaUrlKey, JSON.stringify(ideaUrls));
   renderIdeas();
-}
-
-function renderHomework() {
-  const list = document.querySelector("#homeworkList");
-  const emptyNote = document.querySelector("#homeworkEmpty");
-  const items = readItems(homeworkKey).sort((a, b) => String(b.date).localeCompare(String(a.date)));
-
-  emptyNote.style.display = items.length ? "none" : "block";
-  list.innerHTML = items.map(item => `
-    <article class="record-card">
-      <span class="status done">${escapeHtml(item.date)}</span>
-      <h3>${escapeHtml(item.title)}</h3>
-      <p>${escapeHtml(item.note || "未填備註")}</p>
-      <div class="record-actions">
-        <a class="pill" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">開啟成果</a>
-        <button class="pill" type="button" data-delete-homework="${escapeHtml(item.id)}">刪除</button>
-      </div>
-    </article>
-  `).join("");
-
-  list.querySelectorAll("[data-delete-homework]").forEach(button => {
-    button.addEventListener("click", () => {
-      if (!window.confirm("確定要刪除這筆練習紀錄嗎？")) return;
-      const remaining = readItems(homeworkKey).filter(item => item.id !== button.dataset.deleteHomework);
-      saveItems(homeworkKey, remaining);
-      renderHomework();
-    });
-  });
 }
 
 window.renderPublicFeedback = response => {
@@ -192,27 +149,8 @@ tabs.forEach(tab => {
   });
 });
 
-homeworkForm.addEventListener("submit", event => {
-  event.preventDefault();
-  const item = {
-    id: crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    date: document.querySelector("#homeworkDate").value,
-    title: document.querySelector("#homeworkTitle").value.trim() || "未命名族語作業",
-    url: document.querySelector("#homeworkUrl").value.trim(),
-    note: document.querySelector("#homeworkNote").value.trim()
-  };
-
-  if (!item.url) return;
-  saveItems(homeworkKey, [item, ...readItems(homeworkKey)]);
-  homeworkForm.reset();
-  document.querySelector("#homeworkDate").value = new Date().toISOString().slice(0, 10);
-  renderHomework();
-});
-
 search.addEventListener("input", renderIdeas);
 document.querySelector("#refreshFeedback").addEventListener("click", loadPublicFeedback);
-document.querySelector("#homeworkDate").value = new Date().toISOString().slice(0, 10);
 
 renderIdeas();
-renderHomework();
 loadPublicFeedback();

@@ -202,6 +202,14 @@
   border-bottom: 1px solid var(--line);
 }
 
+.build-section {
+  padding-bottom: 84px;
+}
+
+.build-section + .method-section {
+  padding-top: 84px;
+}
+
 .task-lanes {
   border-top: 1px solid var(--line-strong);
 }
@@ -273,8 +281,7 @@
   filter: saturate(1.08) contrast(1.06);
 }
 
-.idea-section,
-.practice-section {
+.idea-section {
   border-bottom: 1px solid var(--line);
   background: var(--ink-soft);
 }
@@ -401,7 +408,6 @@
 }
 
 .idea-card h3,
-.record-card h3,
 .feedback-item h3 {
   margin: 24px 0 0;
   font-size: 22px;
@@ -410,7 +416,6 @@
 }
 
 .idea-card p,
-.record-card p,
 .feedback-item p {
   margin: 14px 0 0;
   color: var(--fog);
@@ -509,94 +514,17 @@
   position: static;
 }
 
-.work-grid {
-  display: grid;
-  grid-template-columns: minmax(320px, 0.75fr) minmax(0, 1.25fr);
-  gap: 1px;
-  border: 1px solid var(--line);
-  background: var(--line);
-}
-
-.lab-panel {
-  min-width: 0;
-  background: var(--ink);
-  padding: 32px;
-}
-
-.panel-heading {
-  margin-bottom: 28px;
-}
-
-.panel-heading span {
-  color: var(--accent);
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.panel-heading h3 {
-  margin: 10px 0 0;
-  font-size: 27px;
-  letter-spacing: 0;
-}
-
-.lab-form {
-  display: grid;
-  align-content: start;
-  gap: 9px;
-}
-
-.lab-form label {
-  margin-top: 9px;
-  color: var(--fog);
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.lab-form .copy {
-  width: fit-content;
-  margin-top: 16px;
-}
-
-.homework-list,
 .feedback-list {
   display: grid;
   gap: 1px;
   background: var(--line);
 }
 
-.record-card,
 .feedback-item {
   position: relative;
   min-width: 0;
   background: var(--ink-soft);
   padding: 22px;
-}
-
-.record-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px 20px;
-}
-
-.record-card .status,
-.record-card h3,
-.record-card p {
-  grid-column: 1;
-}
-
-.record-card .record-actions {
-  grid-column: 2;
-  grid-row: 1 / span 3;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8px;
-}
-
-.record-card h3 {
-  margin-top: 8px;
 }
 
 .empty-note {
@@ -760,7 +688,6 @@
   }
 
   .prompt-top,
-  .work-grid,
   .feedback-section,
   .method-section {
     grid-template-columns: 1fr;
@@ -922,22 +849,6 @@
   .build-row .icon-link {
     width: 42px;
     height: 42px;
-  }
-
-  .lab-panel {
-    padding: 22px;
-  }
-
-  .record-card {
-    grid-template-columns: 1fr;
-  }
-
-  .record-card .record-actions {
-    grid-column: 1;
-    grid-row: auto;
-    flex-direction: row;
-    justify-content: flex-start;
-    flex-wrap: wrap;
   }
 
   .feedback-wall {
