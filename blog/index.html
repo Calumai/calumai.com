@@ -1,79 +1,13 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-  <script>
-    if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
-      location.replace("https://" + location.host + location.pathname + location.search + location.hash);
-    }
-  </script>
-  <meta name="description" content="CALUMAI 製作心得，以部落格方式記錄遊戲、網站與教學工具的設計過程。">
-  <meta name="theme-color" content="#f6f7f4">
-  <title>製作心得｜CALUMAI</title>
-  <link rel="stylesheet" href="../styles.css?v=20260717-9">
-  <script src="../assets/lucide.min.js" defer></script>
-  <script src="../app.js" defer></script>
+  <title>CalumAi Blog</title>
+  <meta name="description" content="CalumAi 的 Build in Public 開發紀錄。">
+  <link rel="canonical" href="https://calumai.com/blog/">
+  <link rel="stylesheet" href="/blog/blog.css">
+  
 </head>
-<body class="mission-site">
-  <a class="skip-link" href="#main">跳到主要內容</a>
-
-  <header class="site-header mission-header" data-header>
-    <a class="brand mission-brand" href="../" aria-label="CALUMAI 首頁">
-      <img class="mission-brand-logo" src="../assets/calumai-logo-mark.png" alt="" width="96" height="96">
-      <span>CALUMAI</span>
-    </a>
-    <button class="menu-toggle icon-button mission-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle>
-      <i data-lucide="menu" aria-hidden="true"></i>
-    </button>
-    <nav class="primary-nav mission-nav" id="primary-nav" aria-label="主要導覽" data-nav>
-      <a href="../games/">遊戲介紹</a>
-      <a href="./" aria-current="page">製作心得</a>
-      <a href="../ai-helper/">備課小幫手</a>
-      <a class="nav-cta" href="../tools/">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
-    </nav>
-  </header>
-
-  <main id="main" class="mission-simple-page">
-    <section class="shell mission-blog">
-      <div class="mission-section-heading">
-        <p class="mission-kicker">MODULE 02 / BLOG</p>
-        <h1>遊戲製作心得</h1>
-        <p>之後這裡會用部落格方式記錄遊戲設計、網站改版、工具製作與教學現場的想法。先放一篇測試文章，確認版面與路線。</p>
-      </div>
-
-      <div class="mission-post-list">
-        <article class="mission-post">
-          <time datetime="2026-07-17">2026.07.17</time>
-          <h2><a href="game-note-test.html">測試文章：一個族語教學遊戲要先說清楚什麼？</a></h2>
-          <p>用來測試未來遊戲製作心得的文章格式，先確認文章列表、標題、摘要與閱讀入口。</p>
-          <div class="mission-post-question">
-            <i data-lucide="message-circle" aria-hidden="true"></i>
-            <span>想留言的話，可以回我：族語教學遊戲最該先做哪一種玩法？</span>
-          </div>
-          <a class="mission-link" href="game-note-test.html">閱讀測試文章<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
-        </article>
-
-      </div>
-
-      <section class="mission-comment-box reveal" aria-labelledby="blog-comment-title">
-        <p class="mission-kicker">REPLY PROMPT</p>
-        <h2 id="blog-comment-title">想看我寫哪一種製作過程？</h2>
-        <p>這個部落格會慢慢記錄族語教學遊戲、AI 備課、小工具和網站改版。你可以先用下面的留言格式回饋，之後我會把常被問的問題整理成文章。</p>
-        <div class="mission-comment-prompts" aria-label="留言題目">
-          <span>族語老師最需要哪種小工具？</span>
-          <span>教學遊戲要先做單字、聽力，還是句型？</span>
-          <span>AI 備課文章要從哪一步開始寫？</span>
-        </div>
-        <button class="mission-copy-button" type="button" data-copy-template="我想看 CALUMAI 寫這個主題：&#10;&#10;我遇到的教學情境是：&#10;&#10;我希望文章可以回答：">
-          複製留言格式
-          <i data-lucide="copy" aria-hidden="true"></i>
-        </button>
-        <pre class="mission-copy-template" hidden data-copy-output></pre>
-        <p class="mission-copy-feedback" aria-live="polite" data-copy-feedback></p>
-      </section>
-    </section>
-  </main>
-</body>
+<body><nav class="site-nav"><div class="site-nav__inner"><a class="brand" href="/">CalumAi</a><a href="/blog/">Blog</a></div></nav><header class="hero"><div class="eyebrow">CalumAi Blog</div><h1>我把正在做的事，誠實寫下來。</h1><p class="deck">這裡不是新聞稿。我記錄設計推翻、開發踩坑，以及下一步準備怎麼走。</p></header><main class="post-grid"><a class="post-card" href="/blog/origin-rebirth-ui-to-gameplay-build-in-public/"><img src="/blog/origin-rebirth-ui-to-gameplay-build-in-public/assets/gameplay-build-in-public.png" alt=""><div class="post-card__body"><div class="eyebrow">Build in Public</div><h2>原地重生桌遊，真的重生了!!!!!!</h2><p>我把原地重生桌遊，變成網頁版本啦!!!!</p><div class="meta">CalumAi Studio</div></div></a></main></body>
 </html>
