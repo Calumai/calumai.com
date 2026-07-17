@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="CALUMAI 是族語教學作品集兼教學網站，整理教學遊戲、製作心得、AI 備課規劃與實用小工具。">
+  <meta name="description" content="CALUMAI 是給族語老師、教學工作者與喜歡原住民族文化的人看的作品集兼教學網站，整理教學遊戲、製作心得、AI 備課規劃與實用小工具。">
   <meta name="theme-color" content="#f6f7f4">
   <meta property="og:title" content="CALUMAI｜族語教學作品集">
-  <meta property="og:description" content="族語教學工具、遊戲入口、製作心得與 AI 備課規劃。">
+  <meta property="og:description" content="給族語老師與喜歡原住民族文化的人看的教學工具、遊戲入口、製作心得與 AI 備課規劃。">
   <meta property="og:image" content="https://calumai.com/assets/pixel-hero.webp">
   <title>CALUMAI｜族語教學作品集</title>
-  <link rel="stylesheet" href="styles.css?v=20260717-7">
+  <link rel="stylesheet" href="styles.css?v=20260717-8">
   <script src="assets/lucide.min.js" defer></script>
   <script src="app.js" defer></script>
 </head>
@@ -44,7 +44,7 @@
         <div class="mission-copy reveal">
           <p class="mission-kicker">CALUMAI / FIELD LAB</p>
           <h1 id="hero-title">CalumAi Studio</h1>
-          <p>有些可以直接拿去用，有些是製作過程的紀錄，也有一些是給老師慢慢學 AI 備課的內容。</p>
+          <p>給族語老師、教學工作者，還有喜歡原住民族文化的人。這裡整理可以直接拿去用的工具、遊戲製作紀錄，以及慢慢學 AI 備課的內容。</p>
           <dl class="mission-telemetry" aria-label="CALUMAI 目前內容狀態">
             <div><dt>MODULES</dt><dd>4</dd></div>
             <div><dt>TOOLS</dt><dd>5</dd></div>
@@ -69,6 +69,33 @@
       </div>
     </section>
 
+    <section class="mission-audience section shell" aria-labelledby="audience-title">
+      <div class="mission-section-heading reveal">
+        <p class="mission-kicker">FOR WHO</p>
+        <h2 id="audience-title">這裡主要給誰看</h2>
+      </div>
+
+      <div class="mission-audience-grid">
+        <article class="mission-audience-card reveal">
+          <i data-lucide="school" aria-hidden="true"></i>
+          <strong>族語老師</strong>
+          <p>快速找到可以放進課堂的工具、遊戲入口與備課流程，不用從零整理。</p>
+        </article>
+
+        <article class="mission-audience-card reveal">
+          <i data-lucide="users-round" aria-hidden="true"></i>
+          <strong>文化推廣與教學夥伴</strong>
+          <p>看懂 CALUMAI 正在累積哪些作品，也方便評估合作、課程或活動使用情境。</p>
+        </article>
+
+        <article class="mission-audience-card reveal">
+          <i data-lucide="heart-handshake" aria-hidden="true"></i>
+          <strong>喜歡原住民族文化的人</strong>
+          <p>從遊戲、文章和小工具開始，慢慢理解族語教學可以怎麼和 AI、網頁互相配合。</p>
+        </article>
+      </div>
+    </section>
+
     <section class="mission-index section shell" id="home-entries" aria-labelledby="home-entries-title">
       <div class="mission-section-heading reveal">
         <p class="mission-kicker">MISSION INDEX</p>
@@ -80,28 +107,36 @@
           <span>01</span>
           <i data-lucide="gamepad-2" aria-hidden="true"></i>
           <strong>遊戲介紹</strong>
-          <small>預計放置教學遊戲入口、玩法說明與使用情境。</small>
+          <em class="mission-card-audience">給老師與想玩著學的人</em>
+          <small>教學遊戲入口、玩法說明與課堂使用情境。</small>
+          <b class="mission-card-action">看遊戲怎麼用</b>
         </a>
 
         <a class="mission-card reveal" href="blog/">
           <span>02</span>
           <i data-lucide="notebook-pen" aria-hidden="true"></i>
           <strong>遊戲製作心得</strong>
-          <small>以部落格方式記錄遊戲、網站與教學工具的製作過程。</small>
+          <em class="mission-card-audience">給想看製作過程的人</em>
+          <small>用部落格記錄遊戲、網站與教學工具從想法到完成的過程。</small>
+          <b class="mission-card-action">讀製作紀錄</b>
         </a>
 
         <a class="mission-card reveal" href="ai-helper/">
           <span>03</span>
           <i data-lucide="sparkles" aria-hidden="true"></i>
           <strong>族語教學備課小幫手</strong>
-          <small>AI 備課課程正在規劃中，之後會獨立整理完整內容。</small>
+          <em class="mission-card-audience">給想慢慢學 AI 的族語老師</em>
+          <small>AI 備課課程正在規劃中，之後會整理成可以照著做的內容。</small>
+          <b class="mission-card-action">看備課規劃</b>
         </a>
 
         <a class="mission-card reveal" href="tools/">
           <span>04</span>
           <i data-lucide="layout-grid" aria-hidden="true"></i>
           <strong>各類小工具</strong>
+          <em class="mission-card-audience">給今天就要備課或上課的人</em>
           <small>已完成工具列表，包含詞卡、字幕、錄音提詞與課務行政。</small>
+          <b class="mission-card-action">打開小工具</b>
         </a>
       </nav>
     </section>
