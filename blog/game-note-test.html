@@ -8,10 +8,11 @@
     if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
       location.replace("https://" + location.host + location.pathname + location.search + location.hash);
     }
-  </script>  <meta name="description" content="CALUMAI 遊戲製作心得測試文章。">
+  </script>
+  <meta name="description" content="CALUMAI 遊戲製作心得測試文章。">
   <meta name="theme-color" content="#f6f7f4">
   <title>遊戲製作心得測試文章｜CALUMAI</title>
-  <link rel="stylesheet" href="../styles.css?v=20260717-4">
+  <link rel="stylesheet" href="../styles.css?v=20260717-9">
   <script src="../assets/lucide.min.js" defer></script>
   <script src="../app.js" defer></script>
 </head>
@@ -36,6 +37,29 @@
       <p>遊戲不是只是讓畫面變熱鬧，而是要幫老師完成一個清楚的教學目標，例如複習單字、練習聽辨、或讓學生願意開口。</p>
       <h2>再決定玩法</h2>
       <p>玩法要配合老師現場可以操作的時間、設備和學生程度。越容易說明，越有機會真的被帶進課堂。</p>
+
+      <section class="mission-comment-box" aria-labelledby="article-comment-title">
+        <p class="mission-kicker">留言互動</p>
+        <h2 id="article-comment-title">你會想先看到哪一種族語教學遊戲？</h2>
+        <p>如果你是族語老師、助教，或只是喜歡原住民族文化的人，可以先用這個格式回我。現在網站是靜態頁，留言不會直接存在頁面上，但我會把回饋整理成後續文章與工具規劃。</p>
+        <div class="mission-comment-prompts" aria-label="留言題目">
+          <span>我想要學生練習單字</span>
+          <span>我想要學生練習聽辨</span>
+          <span>我想要一個可以全班一起玩的玩法</span>
+        </div>
+        <div class="mission-comment-actions">
+          <button class="mission-copy-button" type="button" data-copy-template="我看完這篇文章，想回饋：&#10;&#10;我最想先看到的族語教學遊戲是：&#10;&#10;我希望它可以幫老師解決：">
+            複製留言格式
+            <i data-lucide="copy" aria-hidden="true"></i>
+          </button>
+          <a class="mission-link" href="https://github.com/Calumai/calumai.com/issues/new?title=CALUMAI%20%E9%83%A8%E8%90%BD%E6%A0%BC%E7%95%99%E8%A8%80%EF%BC%9A%E6%95%99%E5%AD%B8%E9%81%8A%E6%88%B2%E5%BB%BA%E8%AD%B0&body=%E6%88%91%E7%9C%8B%E5%AE%8C%E9%80%99%E7%AF%87%E6%96%87%E7%AB%A0%EF%BC%8C%E6%83%B3%E5%9B%9E%E9%A5%8B%EF%BC%9A%0A%0A%E6%88%91%E6%98%AF%EF%BC%9A%0A%0A%E6%88%91%E6%9C%80%E6%83%B3%E5%85%88%E7%9C%8B%E5%88%B0%E7%9A%84%E6%97%8F%E8%AA%9E%E6%95%99%E5%AD%B8%E9%81%8A%E6%88%B2%E6%98%AF%EF%BC%9A%0A%0A%E6%88%91%E5%B8%8C%E6%9C%9B%E5%AE%83%E5%8F%AF%E4%BB%A5%E5%B9%AB%E8%80%81%E5%B8%AB%E8%A7%A3%E6%B1%BA%EF%BC%9A" target="_blank" rel="noopener">
+            開公開留言單
+            <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+          </a>
+        </div>
+        <pre class="mission-copy-template" hidden data-copy-output></pre>
+        <p class="mission-copy-feedback" aria-live="polite" data-copy-feedback></p>
+      </section>
     </article>
   </main>
 </body>

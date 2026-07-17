@@ -3622,6 +3622,122 @@ a {
   box-shadow: 0 18px 54px rgba(16, 23, 25, 0.055);
 }
 
+.mission-post-question {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 18px;
+  border-top: 1px solid var(--mission-line);
+  padding-top: 16px;
+  color: var(--mission-green);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.65;
+}
+
+.mission-post-question svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--mission-accent);
+}
+
+.mission-comment-box {
+  margin-top: 40px;
+  border: 1px solid var(--mission-line);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.88);
+  padding: 28px;
+  box-shadow: 0 18px 54px rgba(16, 23, 25, 0.045);
+}
+
+.mission-comment-box h2 {
+  margin: 12px 0 0;
+  color: var(--mission-ink);
+  font-size: 28px;
+  line-height: 1.3;
+}
+
+.mission-comment-box p {
+  max-width: 760px;
+  color: var(--mission-muted);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.mission-comment-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0 0;
+}
+
+.mission-comment-prompts span {
+  border: 1px solid rgba(31, 138, 147, 0.2);
+  border-radius: 999px;
+  background: rgba(31, 138, 147, 0.06);
+  padding: 8px 12px;
+  color: var(--mission-accent);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.45;
+}
+
+.mission-comment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: center;
+}
+
+.mission-copy-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: 22px;
+  border: 1px solid rgba(31, 138, 147, 0.28);
+  border-radius: 999px;
+  background: rgba(31, 138, 147, 0.08);
+  padding: 0 18px;
+  color: var(--mission-accent);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.mission-copy-button:hover {
+  background: rgba(31, 138, 147, 0.12);
+}
+
+.mission-copy-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mission-copy-feedback {
+  min-height: 24px;
+  margin: 14px 0 0;
+  color: var(--mission-green);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.mission-copy-template {
+  margin: 18px 0 0;
+  border: 1px solid var(--mission-line);
+  border-radius: 6px;
+  background: rgba(246, 250, 250, 0.8);
+  padding: 14px;
+  color: var(--mission-ink);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
 .mission-logo-panel::before,
 .mission-card::before,
 .mission-tool-item::before,

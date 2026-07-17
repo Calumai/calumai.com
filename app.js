@@ -88,5 +88,26 @@
     revealItems.forEach((item) => item.classList.add("is-visible"));
   }
 
+  const copyButtons = document.querySelectorAll("[data-copy-template]");
+  copyButtons.forEach((button) => {
+    button.addEventListener("click", async () => {
+      const text = button.getAttribute("data-copy-template") || "";
+      const scope = button.closest(".mission-comment-box") || document;
+      const feedback = scope.querySelector("[data-copy-feedback]");
+      const output = scope.querySelector("[data-copy-output]");
+
+      try {
+        await navigator.clipboard.writeText(text);
+        if (feedback) feedback.textContent = "留言格式已複製，可以貼到你習慣的 LINE、訊息或公開留言單。";
+      } catch (error) {
+        if (output) {
+          output.hidden = false;
+          output.textContent = text;
+        }
+        if (feedback) feedback.textContent = "瀏覽器沒有開放自動複製，我已把留言格式顯示在下方，可以手動選取。";
+      }
+    });
+  });
+
   renderIcons();
 })();

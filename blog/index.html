@@ -8,10 +8,11 @@
     if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
       location.replace("https://" + location.host + location.pathname + location.search + location.hash);
     }
-  </script>  <meta name="description" content="CALUMAI 製作心得，以部落格方式記錄遊戲、網站與教學工具的設計過程。">
+  </script>
+  <meta name="description" content="CALUMAI 製作心得，以部落格方式記錄遊戲、網站與教學工具的設計過程。">
   <meta name="theme-color" content="#f6f7f4">
   <title>製作心得｜CALUMAI</title>
-  <link rel="stylesheet" href="../styles.css?v=20260717-4">
+  <link rel="stylesheet" href="../styles.css?v=20260717-9">
   <script src="../assets/lucide.min.js" defer></script>
   <script src="../app.js" defer></script>
 </head>
@@ -47,10 +48,31 @@
           <time datetime="2026-07-17">2026.07.17</time>
           <h2><a href="game-note-test.html">測試文章：一個族語教學遊戲要先說清楚什麼？</a></h2>
           <p>用來測試未來遊戲製作心得的文章格式，先確認文章列表、標題、摘要與閱讀入口。</p>
+          <div class="mission-post-question">
+            <i data-lucide="message-circle" aria-hidden="true"></i>
+            <span>想留言的話，可以回我：族語教學遊戲最該先做哪一種玩法？</span>
+          </div>
           <a class="mission-link" href="game-note-test.html">閱讀測試文章<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
         </article>
 
       </div>
+
+      <section class="mission-comment-box reveal" aria-labelledby="blog-comment-title">
+        <p class="mission-kicker">REPLY PROMPT</p>
+        <h2 id="blog-comment-title">想看我寫哪一種製作過程？</h2>
+        <p>這個部落格會慢慢記錄族語教學遊戲、AI 備課、小工具和網站改版。你可以先用下面的留言格式回饋，之後我會把常被問的問題整理成文章。</p>
+        <div class="mission-comment-prompts" aria-label="留言題目">
+          <span>族語老師最需要哪種小工具？</span>
+          <span>教學遊戲要先做單字、聽力，還是句型？</span>
+          <span>AI 備課文章要從哪一步開始寫？</span>
+        </div>
+        <button class="mission-copy-button" type="button" data-copy-template="我想看 CALUMAI 寫這個主題：&#10;&#10;我遇到的教學情境是：&#10;&#10;我希望文章可以回答：">
+          複製留言格式
+          <i data-lucide="copy" aria-hidden="true"></i>
+        </button>
+        <pre class="mission-copy-template" hidden data-copy-output></pre>
+        <p class="mission-copy-feedback" aria-live="polite" data-copy-feedback></p>
+      </section>
     </section>
   </main>
 </body>
