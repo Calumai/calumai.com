@@ -8,10 +8,11 @@
     if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
       location.replace("https://" + location.host + location.pathname + location.search + location.hash);
     }
-  </script>  <meta name="description" content="CALUMAI 教學遊戲入口與說明。">
+  </script>
+  <meta name="description" content="CALUMAI 教學遊戲入口與說明，包含原地重生・返璞歸真文化策略桌遊數位版。">
   <meta name="theme-color" content="#f6f7f4">
   <title>遊戲介紹｜CALUMAI</title>
-  <link rel="stylesheet" href="../styles.css?v=20260717-4">
+  <link rel="stylesheet" href="../styles.css?v=20260717-10">
   <script src="../assets/lucide.min.js" defer></script>
   <script src="../app.js" defer></script>
 </head>
@@ -34,11 +35,43 @@
   </header>
 
   <main id="main" class="mission-simple-page">
-    <section class="shell mission-status">
+    <section class="shell mission-status mission-game-hero">
       <p class="mission-kicker">MODULE 01 / GAME HUB</p>
-      <h1>遊戲入口與玩法說明預備區。</h1>
-      <p>這裡之後會放目前完成或正在整理的教學遊戲入口，包含適合對象、課堂使用方式、操作說明與遊戲目標。現在先建立乾淨的入口頁，讓首頁結構先站穩。</p>
-      <a class="mission-link" href="../blog/">先看製作心得<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+      <h1>遊戲入口與玩法說明</h1>
+      <p>這裡先放已經可以打開體驗的教學遊戲。每個遊戲會整理玩法、適合對象、課堂使用方式，以及可以怎麼延伸成教案。</p>
+    </section>
+
+    <section class="shell mission-game-list" aria-label="CALUMAI 教學遊戲列表">
+      <article class="mission-game-card reveal">
+        <div>
+          <p class="mission-kicker">CULTURE STRATEGY GAME</p>
+          <h2>原地重生・返璞歸真</h2>
+          <p>文化策略桌遊數位版。玩家透過蒐集素材、完成工藝、建造家屋，讓聚落一步一步接近完成。</p>
+        </div>
+
+        <dl class="mission-game-facts" aria-label="遊戲基本資訊">
+          <div><dt>玩家</dt><dd>2-4 人</dd></div>
+          <div><dt>時間</dt><dd>約 15-20 分鐘</dd></div>
+          <div><dt>目標</dt><dd>完成 4 間家屋</dd></div>
+          <div><dt>教學延伸</dt><dd>可產生 STEAM 教案</dd></div>
+        </dl>
+
+        <div class="mission-game-note">
+          <i data-lucide="info" aria-hidden="true"></i>
+          <p>目前遊戲頁已寫入邵族、噶瑪蘭族、拉阿魯哇族、賽德克族等資源差異作為規則原型。正式商用前，族名、服飾、故事、聲音與授權仍須由各族文化顧問逐項審校。</p>
+        </div>
+
+        <div class="mission-game-actions">
+          <a class="mission-game-primary" href="https://04-game2-two.vercel.app/" target="_blank" rel="noopener">
+            開始旅程
+            <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+          </a>
+          <a class="mission-link" href="../blog/">
+            看製作心得
+            <i data-lucide="notebook-pen" aria-hidden="true"></i>
+          </a>
+        </div>
+      </article>
     </section>
   </main>
 </body>

@@ -3753,6 +3753,127 @@ a {
   transform: translateY(-2px);
 }
 
+.mission-post:hover,
+.mission-tool-item:hover {
+  border-color: rgba(31, 138, 147, 0.18);
+  background-color: rgba(31, 138, 147, 0.035);
+  background-image: none;
+  box-shadow: 0 18px 50px rgba(16, 23, 25, 0.04);
+  transform: translateY(-2px);
+}
+
+.mission-game-hero {
+  padding-bottom: 34px;
+}
+
+.mission-game-list {
+  padding-bottom: 96px;
+}
+
+.mission-game-card {
+  display: grid;
+  gap: 28px;
+  border: 1px solid var(--mission-line);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  box-shadow: 0 18px 54px rgba(16, 23, 25, 0.045);
+}
+
+.mission-game-card h2 {
+  margin: 12px 0 0;
+  color: var(--mission-ink);
+  font-size: 36px;
+  line-height: 1.25;
+}
+
+.mission-game-card p {
+  max-width: 780px;
+  color: var(--mission-muted);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.mission-game-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--mission-line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.mission-game-facts div {
+  padding: 16px;
+  border-right: 1px solid var(--mission-line);
+}
+
+.mission-game-facts div:last-child {
+  border-right: 0;
+}
+
+.mission-game-facts dt {
+  color: var(--mission-muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.mission-game-facts dd {
+  margin: 8px 0 0;
+  color: var(--mission-accent);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.mission-game-note {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 12px;
+  border-left: 3px solid rgba(31, 138, 147, 0.3);
+  background: rgba(31, 138, 147, 0.045);
+  padding: 16px;
+}
+
+.mission-game-note svg {
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  color: var(--mission-accent);
+}
+
+.mission-game-note p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.mission-game-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: center;
+}
+
+.mission-game-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  border: 1px solid rgba(31, 138, 147, 0.26);
+  border-radius: 999px;
+  background: rgba(31, 138, 147, 0.09);
+  padding: 0 20px;
+  color: var(--mission-accent);
+  font-weight: 900;
+}
+
+.mission-game-primary:hover {
+  background: rgba(31, 138, 147, 0.13);
+}
+
+.mission-game-primary svg {
+  width: 17px;
+  height: 17px;
+}
+
 .mission-logo-asset,
 .mission-brand-logo {
   filter: none;
@@ -3778,6 +3899,18 @@ a {
 
   .mission-audience-grid {
     grid-template-columns: 1fr;
+  }
+
+  .mission-game-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mission-game-facts div:nth-child(2) {
+    border-right: 0;
+  }
+
+  .mission-game-facts div:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--mission-line);
   }
 
   .mission-latest-panel {
