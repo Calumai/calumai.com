@@ -3,18 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="CALUMAI 工具選單，依照備課、上課、錄音與行政情境，直接進入族語教學工具。">
+  <meta name="description" content="CALUMAI 新手流程：從準備資料到完成輸出，四步驟帶你使用族語詞卡、字幕、錄音與課務工具。">
   <meta name="theme-color" content="#10243f">
-  <meta property="og:title" content="工具選單｜CALUMAI">
-  <meta property="og:description" content="選擇一個教學任務，直接進入可用工具。">
+  <meta property="og:title" content="新手流程｜CALUMAI">
+  <meta property="og:description" content="先看懂準備資料與操作順序，再開啟工具。">
   <meta property="og:image" content="https://calumai.com/assets/pixel-hero.webp">
-  <title>工具選單｜CALUMAI</title>
+  <title>新手流程｜CALUMAI</title>
   <link rel="preload" href="../assets/pixel-hero.webp" as="image" type="image/webp">
-  <link rel="stylesheet" href="../styles.css">
-  <link rel="stylesheet" href="lab.css">
+  <link rel="stylesheet" href="../styles.css?v=20260717-2">
+  <link rel="stylesheet" href="lab.css?v=20260717-6">
   <script src="../assets/lucide.min.js" defer></script>
   <script src="../app.js" defer></script>
-  <script src="lab.js" defer></script>
 </head>
 <body class="lab-page">
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -29,11 +28,12 @@
       <i data-lucide="menu" aria-hidden="true"></i>
     </button>
 
-    <nav class="primary-nav" id="primary-nav" aria-label="主要導覽" data-nav>
-      <a href="#tools">可用工具</a>
-      <a href="#ideas">任務看板</a>
-      <a href="#log">關卡紀錄</a>
-      <a href="#routine">製作規則</a>
+    <nav class="primary-nav" id="primary-nav" aria-label="流程導覽" data-nav>
+      <a href="#guide-menu">流程總覽</a>
+      <a href="#word-cards">詞卡</a>
+      <a href="#subtitles">字幕</a>
+      <a href="#recording">錄音</a>
+      <a href="#course-admin">行政</a>
       <a class="nav-cta" href="../">
         回首頁
         <i data-lucide="home" aria-hidden="true"></i>
@@ -42,166 +42,193 @@
   </header>
 
   <main id="main">
-    <section class="lab-hero" aria-labelledby="lab-title">
-      <img class="lab-hero-media" src="../assets/pixel-hero.webp" alt="山城中的像素工具工坊" width="1920" height="1080">
-      <div class="lab-hero-shade" aria-hidden="true"></div>
-      <div class="lab-hero-layout shell">
-        <div class="lab-hero-copy">
-          <p class="hero-kicker reveal">CALUMAI / TOOL SELECT</p>
-          <h1 id="lab-title" class="reveal">選擇你的工具</h1>
-          <p class="lab-lead reveal">從今天要完成的教學工作開始，不用先理解 AI，也不用先逛完整座網站。</p>
+    <section class="guide-hero lab-hero" aria-labelledby="guide-title">
+      <img class="guide-hero-media" src="../assets/pixel-hero.webp" alt="山城中的像素工具工坊" width="1920" height="1080">
+      <div class="guide-hero-shade" aria-hidden="true"></div>
+      <div class="guide-hero-layout shell">
+        <div class="guide-hero-copy reveal">
+          <p class="hero-kicker">CALUMAI / BEGINNER MODE</p>
+          <h1 id="guide-title">第一次使用，<br>照著四步做。</h1>
+          <p>選一件想完成的工作，準備資料，照順序操作，再確認結果。</p>
         </div>
 
-        <nav class="quick-menu reveal" aria-label="快速選擇工具">
-          <a href="../tools/amis-word-cards/"><span>01</span><strong>備課</strong><small>詞卡產生器</small></a>
-          <a href="../tools/subtitle-slides-plus/"><span>02</span><strong>上課</strong><small>字幕投影片</small></a>
-          <a href="../tools/recording-script-switcher/"><span>03</span><strong>錄音</strong><small>逐字稿切換器</small></a>
-          <a href="../tools/teacher-manager/"><span>04</span><strong>行政</strong><small>老師管理系統</small></a>
-        </nav>
-      </div>
-    </section>
-
-    <section class="lab-status" aria-label="工具選單狀態">
-      <div><strong>04</strong><span>主要工具</span></div>
-      <div><strong>11</strong><span>候選任務</span></div>
-      <p><span class="status-light" aria-hidden="true"></span>族語內容由老師確認，AI 不自行翻譯</p>
-    </section>
-
-    <section class="lab-tools section shell" id="tools" aria-labelledby="tools-title">
-      <div class="section-heading reveal">
-        <p class="section-kicker">STAGE SELECT</p>
-        <h2 id="tools-title">從哪一關開始？</h2>
-        <p>四個工具各自處理一種常見情境。選擇圖片或按鈕就能直接進入。</p>
-      </div>
-
-      <div class="stage-grid">
-        <article class="stage-card stage-card-red reveal">
-          <a class="stage-media" href="../tools/amis-word-cards/" aria-label="開啟南勢阿美語詞卡產生器">
-            <img src="../assets/cover-word-cards.webp" alt="像素詞卡印製與分類工坊" width="1280" height="720" loading="lazy">
-          </a>
-          <div class="stage-copy">
-            <span>STAGE 01 / 備課</span>
-            <h3>南勢阿美語詞卡產生器</h3>
-            <p>從學習詞表挑出內容，排成可編輯、可列印的課堂詞卡。</p>
-            <a class="pixel-link" href="../tools/amis-word-cards/">開始<i data-lucide="play" aria-hidden="true"></i></a>
-          </div>
-        </article>
-
-        <article class="stage-card stage-card-yellow reveal">
-          <a class="stage-media" href="../tools/subtitle-slides-plus/" aria-label="開啟字幕投影片 Plus">
-            <img src="../assets/cover-subtitle.webp" alt="像素投影機、字幕畫面與時間軸工作室" width="1280" height="720" loading="lazy">
-          </a>
-          <div class="stage-copy">
-            <span>STAGE 02 / 上課</span>
-            <h3>字幕投影片 Plus</h3>
-            <p>把例句、翻譯與語法標記排成全班都看得清楚的大畫面。</p>
-            <a class="pixel-link" href="../tools/subtitle-slides-plus/">開始<i data-lucide="play" aria-hidden="true"></i></a>
-          </div>
-        </article>
-
-        <article class="stage-card stage-card-cyan reveal">
-          <a class="stage-media" href="../tools/recording-script-switcher/" aria-label="開啟錄音逐字稿切換器">
-            <img src="../assets/cover-recording.webp" alt="像素麥克風、聲波螢幕與逐字稿錄音室" width="1280" height="720" loading="lazy">
-          </a>
-          <div class="stage-copy">
-            <span>STAGE 03 / 錄音</span>
-            <h3>錄音逐字稿切換器</h3>
-            <p>分講者、切段落、標記重錄，錄音現場不再跟丟下一句。</p>
-            <a class="pixel-link" href="../tools/recording-script-switcher/">開始<i data-lucide="play" aria-hidden="true"></i></a>
-          </div>
-        </article>
-
-        <article class="stage-card stage-card-green reveal">
-          <a class="stage-media" href="../tools/teacher-manager/" aria-label="開啟族語家教老師管理系統">
-            <img src="../assets/cover-teacher-manager.webp" alt="像素課程日曆、文件與檔案管理室" width="1280" height="720" loading="lazy">
-          </a>
-          <div class="stage-copy">
-            <span>STAGE 04 / 行政</span>
-            <h3>族語家教老師管理系統</h3>
-            <p>整理老師、日期、截圖與鐘點費，讓行政工作有清楚出口。</p>
-            <a class="pixel-link" href="../tools/teacher-manager/">開始<i data-lucide="play" aria-hidden="true"></i></a>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="quest-section section" id="ideas" aria-labelledby="ideas-title">
-      <div class="shell">
-        <div class="section-heading reveal">
-          <h2 id="ideas-title">下一關任務看板</h2>
-          <p>這裡保存值得做成工具的教材、遊戲、管理與安全需求。</p>
-        </div>
-
-        <div class="quest-controls reveal">
-          <div class="tabs" aria-label="工具分類">
-            <button class="tab" type="button" data-filter="all" aria-pressed="true">全部</button>
-            <button class="tab" type="button" data-filter="教材">教材</button>
-            <button class="tab" type="button" data-filter="遊戲">遊戲</button>
-            <button class="tab" type="button" data-filter="管理">管理</button>
-            <button class="tab" type="button" data-filter="報表">報表</button>
-            <button class="tab" type="button" data-filter="測試">測試</button>
-            <button class="tab" type="button" data-filter="安全">安全</button>
-          </div>
-          <label class="search-wrap" for="search">
-            <i data-lucide="search" aria-hidden="true"></i>
-            <input id="search" class="search" type="search" placeholder="搜尋詞卡、聽力、報表..." aria-label="搜尋候選任務">
-          </label>
-        </div>
-
-        <div id="cards" class="idea-grid" aria-live="polite"></div>
-        <div id="empty" class="empty">沒有符合的任務，換個關鍵字再試。</div>
-      </div>
-    </section>
-
-    <section class="lab-log section shell" id="log" aria-labelledby="log-title">
-      <div class="section-heading reveal">
-        <h2 id="log-title">已完成關卡</h2>
-        <p>每次只處理一件真實問題，完成後就留下下一次可以重用的方法。</p>
-      </div>
-
-      <div class="save-grid">
-        <article class="save-card reveal"><span>01</span><div><small>SYSTEM</small><h3>建立工具基地</h3><p>把教材、遊戲與課務工具集中起來。</p></div></article>
-        <article class="save-card reveal"><span>02</span><div><small>OPERATIONS</small><h3>課務管理</h3><p>整理課程截圖、日期與鐘點資料。</p></div></article>
-        <article class="save-card reveal"><span>03</span><div><small>TEACHING</small><h3>字幕投影片</h3><p>少字、大字、合理斷句。</p></div></article>
-        <article class="save-card reveal"><span>04</span><div><small>GRAMMAR</small><h3>語法投影片</h3><p>例句、翻譯與詞語拆解同時看見。</p></div></article>
-        <article class="save-card reveal"><span>05</span><div><small>VOCABULARY</small><h3>南勢阿美語詞卡</h3><p>官方詞表直接變成課堂教材。</p></div></article>
-        <article class="save-card reveal"><span>06</span><div><small>RECORDING</small><h3>錄音逐字稿</h3><p>講者、段落與重錄句一眼看懂。</p></div></article>
-      </div>
-    </section>
-
-    <section class="lab-rules section" id="routine" aria-labelledby="routine-title">
-      <div class="shell lab-rules-layout">
-        <div class="rules-intro reveal">
-          <h2 id="routine-title">遊戲可以復古，<br>資料不能含糊。</h2>
-          <p>老師決定族語怎麼說，AI 只協助整理流程、製作介面與反覆測試。</p>
-        </div>
-        <ol class="rules-list">
-          <li class="reveal"><span>01</span><div><h3>挑現場問題</h3><p>從明天真的會遇到的工作開始。</p></div></li>
-          <li class="reveal"><span>02</span><div><h3>帶入可信資料</h3><p>使用老師確認過的語料與表格。</p></div></li>
-          <li class="reveal"><span>03</span><div><h3>做成可用版本</h3><p>檢查手機、列印與真實操作。</p></div></li>
-          <li class="reveal"><span>04</span><div><h3>回到現場修正</h3><p>把卡住的地方變成下一張工作單。</p></div></li>
+        <ol class="guide-overview reveal" aria-label="通用使用流程">
+          <li><span>01</span><strong>選一個流程</strong><small>先決定今天要完成什麼</small></li>
+          <li><span>02</span><strong>準備資料</strong><small>詞表、講稿、逐字稿或截圖</small></li>
+          <li><span>03</span><strong>照步驟操作</strong><small>一次只看目前這一步</small></li>
+          <li><span>04</span><strong>確認輸出</strong><small>看懂結果後再進工具</small></li>
         </ol>
       </div>
     </section>
 
-    <section class="feedback-section section shell" id="feedback" aria-labelledby="feedback-title">
-      <div class="feedback-copy reveal">
-        <h2 id="feedback-title">玩家回報</h2>
-        <p>真正用過的人最知道哪裡還不順。匿名留言會成為後續修改依據，請不要填入個人資料。</p>
-        <a class="button button-primary" href="https://docs.google.com/forms/d/e/1FAIpQLSfCCfNh2NiaA90aneGBDRAvDS9iLrPVY4D7FcaS10kZb9ofvw/viewform?usp=sf_link" target="_blank" rel="noopener">
-          留下回饋
-          <i data-lucide="message-square" aria-hidden="true"></i>
-        </a>
+    <section class="guide-menu section shell" id="guide-menu" aria-labelledby="guide-menu-title">
+      <div class="section-heading">
+        <p class="section-kicker">CHOOSE A GUIDE</p>
+        <h2 id="guide-menu-title">選一份新手流程</h2>
+        <p>以下都是已完成、現在就能使用的工具。</p>
       </div>
 
-      <div class="feedback-console reveal">
-        <div class="feedback-summary">
-          <div><strong id="feedbackAverage">-</strong><span>平均星等</span></div>
-          <div><strong id="feedbackCount">0</strong><span>公開回覆</span></div>
-          <button class="refresh-button" type="button" id="refreshFeedback" aria-label="重新整理回饋" title="重新整理回饋"><i data-lucide="refresh-cw" aria-hidden="true"></i></button>
+      <nav class="guide-jumps" aria-label="新手流程選單">
+        <a class="guide-jump guide-jump-yellow reveal" href="#word-cards"><i data-lucide="copy" aria-hidden="true"></i><strong>詞卡</strong><small>篩選與列印</small></a>
+        <a class="guide-jump guide-jump-cyan reveal" href="#subtitles"><i data-lucide="captions" aria-hidden="true"></i><strong>字幕</strong><small>大字與播放</small></a>
+        <a class="guide-jump guide-jump-green reveal" href="#grammar-slides"><i data-lucide="brackets" aria-hidden="true"></i><strong>例句</strong><small>拆解與標記</small></a>
+        <a class="guide-jump guide-jump-red reveal" href="#recording"><i data-lucide="mic-2" aria-hidden="true"></i><strong>錄音</strong><small>提詞與重錄</small></a>
+        <a class="guide-jump guide-jump-paper reveal" href="#course-admin"><i data-lucide="calculator" aria-hidden="true"></i><strong>行政</strong><small>截圖與鐘點</small></a>
+      </nav>
+    </section>
+
+    <section class="workflow-section workflow-paper" id="word-cards" aria-labelledby="word-cards-title">
+      <div class="shell workflow-shell">
+        <div class="workflow-heading reveal">
+          <img src="../assets/cover-word-cards.webp" alt="像素風格的詞卡印製與分類工坊" width="1280" height="720" loading="lazy">
+          <div>
+            <p class="workflow-code">GUIDE 01 / 備課</p>
+            <h2 id="word-cards-title">做一組可以列印的族語詞卡</h2>
+            <p>適合第一次整理詞表、想快速做出課堂詞卡的老師。</p>
+            <div class="workflow-tags"><span>約 5 分鐘</span><span>可先用示範資料</span></div>
+          </div>
         </div>
-        <div id="feedbackList" class="feedback-list"></div>
-        <p id="feedbackEmpty" class="empty-note">正在讀取公開留言...</p>
+
+        <aside class="workflow-prep reveal">
+          <i data-lucide="package-open" aria-hidden="true"></i>
+          <div><strong>開始前準備</strong><p>有 Excel 或 CSV 詞表就準備好；沒有也沒關係，第一次直接按「先載入示範資料」。</p></div>
+        </aside>
+
+        <ol class="workflow-steps">
+          <li class="reveal"><span>01</span><h3>先載入資料</h3><p>上傳詞表，或用示範資料熟悉畫面。看到詞卡清單就成功了。</p></li>
+          <li class="reveal"><span>02</span><h3>縮小範圍</h3><p>用搜尋、主題分類與級別，留下這堂課真正要教的詞。</p></li>
+          <li class="reveal"><span>03</span><h3>檢查一張卡</h3><p>點「編輯」確認族語、中文、分類與備註，再套用修改。</p></li>
+          <li class="reveal"><span>04</span><h3>預覽再列印</h3><p>選擇版面與張數，打開列印預覽，確認 A4 紙張沒有被裁切。</p></li>
+        </ol>
+
+        <div class="workflow-finish reveal">
+          <div><span>完成畫面</span><strong>你會看到一組可編輯、可直接列印的詞卡。</strong></div>
+          <a class="button button-primary" href="../tools/amis-word-cards/">流程看完，開啟詞卡工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="workflow-section workflow-dark" id="subtitles" aria-labelledby="subtitles-title">
+      <div class="shell workflow-shell">
+        <div class="workflow-heading workflow-heading-reverse reveal">
+          <img src="../assets/cover-subtitle.webp" alt="像素風格的投影機、字幕畫面與時間軸工作室" width="1280" height="720" loading="lazy">
+          <div>
+            <p class="workflow-code">GUIDE 02 / 上課</p>
+            <h2 id="subtitles-title">把講稿變成全班看得清楚的大字字幕</h2>
+            <p>適合上課投影、活動主持，或需要逐頁播放講稿的人。</p>
+            <div class="workflow-tags"><span>約 3 分鐘</span><span>純文字即可</span></div>
+          </div>
+        </div>
+
+        <aside class="workflow-prep reveal">
+          <i data-lucide="file-text" aria-hidden="true"></i>
+          <div><strong>開始前準備</strong><p>準備一段有標點或分段的講稿。第一次可以先貼兩三句短文字測試。</p></div>
+        </aside>
+
+        <ol class="workflow-steps">
+          <li class="reveal"><span>01</span><h3>貼上原稿</h3><p>把講稿貼進「貼上原稿」，保留原本標點與段落。</p></li>
+          <li class="reveal"><span>02</span><h3>生成投影片</h3><p>按「生成投影片」，確認文字已經自動切成多頁。</p></li>
+          <li class="reveal"><span>03</span><h3>調整可讀性</h3><p>先調每頁字數，再調字體、行距與字幕位置。</p></li>
+          <li class="reveal"><span>04</span><h3>全螢幕播放</h3><p>按全螢幕，使用上一頁與下一頁，站遠一點確認仍看得清楚。</p></li>
+        </ol>
+
+        <div class="workflow-finish reveal">
+          <div><span>完成畫面</span><strong>講稿會變成可以逐頁切換的大字字幕。</strong></div>
+          <a class="button button-secondary" href="../tools/subtitle-slides/">流程看完，開啟字幕工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="workflow-section workflow-paper" id="grammar-slides" aria-labelledby="grammar-slides-title">
+      <div class="shell workflow-shell">
+        <div class="workflow-heading reveal">
+          <img src="../assets/cover-subtitle.webp" alt="像素風格的字幕投影工作室" width="1280" height="720" loading="lazy">
+          <div>
+            <p class="workflow-code">GUIDE 03 / 教材</p>
+            <h2 id="grammar-slides-title">把例句、翻譯與詞語拆解放在同一頁</h2>
+            <p>適合需要逐句講解、標記語法或帶學生看例句結構的老師。</p>
+            <div class="workflow-tags"><span>約 5 分鐘</span><span>可複製範本</span></div>
+          </div>
+        </div>
+
+        <aside class="workflow-prep reveal">
+          <i data-lucide="notebook-pen" aria-hidden="true"></i>
+          <div><strong>開始前準備</strong><p>準備已由老師確認的族語例句、中文翻譯與要標記的詞語。工具不會替你翻譯族語。</p></div>
+        </aside>
+
+        <ol class="workflow-steps">
+          <li class="reveal"><span>01</span><h3>先複製範本</h3><p>用工具裡的「複製範本」，先看一頁資料需要哪些欄位。</p></li>
+          <li class="reveal"><span>02</span><h3>換成你的內容</h3><p>依範本放入例句、翻譯與詞語拆解，不要刪掉分隔格式。</p></li>
+          <li class="reveal"><span>03</span><h3>生成 Plus 投影片</h3><p>確認每一頁都出現例句與拆解內容，再檢查有沒有漏字。</p></li>
+          <li class="reveal"><span>04</span><h3>調整後播放</h3><p>選標籤顏色與整體大小，最後用全螢幕檢查投影效果。</p></li>
+        </ol>
+
+        <div class="workflow-finish reveal">
+          <div><span>完成畫面</span><strong>每頁會同時呈現例句、翻譯與清楚的詞語標記。</strong></div>
+          <a class="button button-primary" href="../tools/subtitle-slides-plus/">流程看完，開啟 Plus 工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="workflow-section workflow-dark" id="recording" aria-labelledby="recording-title">
+      <div class="shell workflow-shell">
+        <div class="workflow-heading workflow-heading-reverse reveal">
+          <img src="../assets/cover-recording.webp" alt="像素風格的麥克風、聲波螢幕與逐字稿錄音室" width="1280" height="720" loading="lazy">
+          <div>
+            <p class="workflow-code">GUIDE 04 / 錄音</p>
+            <h2 id="recording-title">錄音時逐句提詞，順手標記需要重錄的地方</h2>
+            <p>適合 Podcast、訪談或多人錄音，不想一直在長篇逐字稿裡找下一句。</p>
+            <div class="workflow-tags"><span>約 4 分鐘</span><span>可載入範例</span></div>
+          </div>
+        </div>
+
+        <aside class="workflow-prep reveal">
+          <i data-lucide="scroll-text" aria-hidden="true"></i>
+          <div><strong>開始前準備</strong><p>準備錄音逐字稿。第一次先用「載入範例」，確認切句方式符合需求。</p></div>
+        </aside>
+
+        <ol class="workflow-steps">
+          <li class="reveal"><span>01</span><h3>解析逐字稿</h3><p>貼上內容後按「解析逐字稿」，確認句子列表已經出現。</p></li>
+          <li class="reveal"><span>02</span><h3>先試切換</h3><p>按上一句、下一句，或選段落跳轉，熟悉錄音時要用的控制。</p></li>
+          <li class="reveal"><span>03</span><h3>開始錄音</h3><p>開啟計時與錄音模式，讓目前句子保持清楚、其他內容退到旁邊。</p></li>
+          <li class="reveal"><span>04</span><h3>留下重錄清單</h3><p>遇到錯誤就按「標記重錄」，結束後複製重錄清單與現場備註。</p></li>
+        </ol>
+
+        <div class="workflow-finish reveal">
+          <div><span>完成畫面</span><strong>你會有逐句錄音紀錄、現場備註與可複製的重錄清單。</strong></div>
+          <a class="button button-secondary" href="../tools/recording-script-switcher/">流程看完，開啟錄音工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="workflow-section workflow-paper" id="course-admin" aria-labelledby="course-admin-title">
+      <div class="shell workflow-shell">
+        <div class="workflow-heading reveal">
+          <img src="../assets/cover-teacher-manager.webp" alt="像素風格的課程日曆、文件與檔案管理室" width="1280" height="720" loading="lazy">
+          <div>
+            <p class="workflow-code">GUIDE 05 / 行政</p>
+            <h2 id="course-admin-title">把課程截圖整理成老師報表與鐘點費明細</h2>
+            <p>適合每月要整理線上課程截圖、上課日期與費用的課務人員。</p>
+            <div class="workflow-tags"><span>約 8 分鐘</span><span>支援多張圖片</span></div>
+          </div>
+        </div>
+
+        <aside class="workflow-prep reveal">
+          <i data-lucide="folder-check" aria-hidden="true"></i>
+          <div><strong>開始前準備</strong><p>先把圖片命名為「語別-老師-日期-編號」，例如「南排灣語-楊寶珠-0425-1」。</p></div>
+        </aside>
+
+        <ol class="workflow-steps">
+          <li class="reveal"><span>01</span><h3>設定月份與單價</h3><p>先填報表月份、老師鐘點費與助教費，避免最後重算。</p></li>
+          <li class="reveal"><span>02</span><h3>放入課程截圖</h3><p>拖放或選取多張圖片，工具會依檔名的老師與日期分組。</p></li>
+          <li class="reveal"><span>03</span><h3>核對分組資料</h3><p>確認語別、老師、助教與日期；需要時直接修改顯示名稱。</p></li>
+          <li class="reveal"><span>04</span><h3>切到明細並列印</h3><p>查看鐘點費明細，確認堂數與總額，再列印完整或單一老師報表。</p></li>
+        </ol>
+
+        <div class="workflow-finish reveal">
+          <div><span>完成畫面</span><strong>截圖會依老師整理，並同步產生可列印的費用明細。</strong></div>
+          <a class="button button-primary" href="../tools/teacher-manager/">流程看完，開啟行政工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+        </div>
       </div>
     </section>
   </main>
@@ -209,8 +236,12 @@
   <footer class="site-footer">
     <div class="footer-brand" aria-hidden="true">CALUMAI</div>
     <div class="footer-bottom shell">
-      <p>族語工具製作所</p>
-      <nav aria-label="頁尾導覽"><a href="#tools">工具</a><a href="../blog/">文章</a><a href="../">首頁</a></nav>
+      <p>初學者新手流程</p>
+      <nav aria-label="頁尾導覽">
+        <a href="#guide-menu">流程總覽</a>
+        <a href="../#features">功能</a>
+        <a href="../blog/">文章</a>
+      </nav>
       <p>&copy; <span data-year></span> CALUMAI</p>
     </div>
   </footer>
