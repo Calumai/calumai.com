@@ -3,216 +3,118 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="CALUMAI 把族語教學需要的教材、字幕、錄音與課務功能，整理成初學者也能照著使用的網頁工具。">
-  <meta name="theme-color" content="#10243f">
-  <meta property="og:title" content="CALUMAI｜族語教學工具入口">
-  <meta property="og:description" content="先選擇你的需求，再看四步驟新手流程。">
+  <meta name="description" content="CALUMAI 是族語教學作品集兼教學網站，整理教學遊戲、製作心得、AI 備課規劃與實用小工具。">
+  <meta name="theme-color" content="#f6f7f4">
+  <meta property="og:title" content="CALUMAI｜族語教學作品集">
+  <meta property="og:description" content="族語教學工具、遊戲入口、製作心得與 AI 備課規劃。">
   <meta property="og:image" content="https://calumai.com/assets/pixel-hero.webp">
-  <title>CALUMAI｜族語教學工具入口</title>
-  <link rel="preload" href="assets/pixel-hero.webp" as="image" type="image/webp">
-  <link rel="stylesheet" href="styles.css?v=20260717-2">
+  <title>CALUMAI｜族語教學作品集</title>
+  <link rel="stylesheet" href="styles.css?v=20260717-7">
   <script src="assets/lucide.min.js" defer></script>
   <script src="app.js" defer></script>
 </head>
-<body>
+<body class="mission-site">
   <a class="skip-link" href="#main">跳到主要內容</a>
 
-  <header class="site-header" data-header>
-    <a class="brand" href="./" aria-label="CALUMAI 首頁">
-      <span class="brand-gem" aria-hidden="true"></span>
+  <header class="site-header mission-header" data-header>
+    <a class="brand mission-brand" href="./" aria-label="CALUMAI 首頁">
+      <img class="mission-brand-logo" src="assets/calumai-logo-mark.png" alt="" width="96" height="96">
       <span>CALUMAI</span>
     </a>
 
-    <button class="menu-toggle icon-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle>
+    <button class="menu-toggle icon-button mission-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle>
       <i data-lucide="menu" aria-hidden="true"></i>
     </button>
 
-    <nav class="primary-nav" id="primary-nav" aria-label="主要導覽" data-nav>
-      <a href="#audience">適合誰</a>
-      <a href="#features">功能</a>
-      <a href="lab/">新手流程</a>
-      <a class="nav-cta" href="blog/">
-        文章
-        <i data-lucide="book-open" aria-hidden="true"></i>
+    <nav class="primary-nav mission-nav" id="primary-nav" aria-label="主要導覽" data-nav>
+      <a href="games/">遊戲介紹</a>
+      <a href="blog/">製作心得</a>
+      <a href="ai-helper/">備課小幫手</a>
+      <a class="nav-cta" href="tools/">
+        小工具
+        <i data-lucide="arrow-up-right" aria-hidden="true"></i>
       </a>
     </nav>
   </header>
 
   <main id="main">
-    <section class="hero welcome-hero" aria-labelledby="hero-title">
-      <img class="hero-media" src="assets/pixel-hero.webp" alt="山城裡的像素工具工坊，包含詞卡、錄音、投影與課務工作空間" width="1920" height="1080">
-      <div class="hero-shade" aria-hidden="true"></div>
-      <div class="hero-content shell">
-        <p class="hero-kicker reveal">族語教學工具入口</p>
-        <h1 id="hero-title" class="hero-title reveal">CALUMAI</h1>
-        <p class="hero-copy reveal">選一件今天想完成的工作，我會先用簡單流程帶你看懂，再讓你打開工具。</p>
-        <div class="hero-actions reveal">
-          <a class="button button-primary" href="#audience">
-            看看適合誰
-            <i data-lucide="users" aria-hidden="true"></i>
-          </a>
-          <a class="button button-ghost" href="#features">
-            選擇功能
-            <i data-lucide="layout-grid" aria-hidden="true"></i>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <section class="audience-section section shell" id="audience" aria-labelledby="audience-title">
-      <div class="section-heading reveal">
-        <p class="section-kicker">RECOMMENDED FOR YOU</p>
-        <h2 id="audience-title">你是哪一種使用者？</h2>
-        <p>不用先理解所有功能，先從最像你現在情況的入口開始。</p>
-      </div>
-
-      <div class="audience-grid">
-        <article class="audience-card audience-first reveal">
-          <i data-lucide="sparkles" aria-hidden="true"></i>
-          <span>第一次使用</span>
-          <h3>想先做出一份教材</h3>
-          <p>從示範資料開始，最容易看懂詞卡與字幕怎麼產生。</p>
-          <a href="lab/#word-cards">先看詞卡流程<i data-lucide="arrow-right" aria-hidden="true"></i></a>
-        </article>
-
-        <article class="audience-card audience-teacher reveal">
-          <i data-lucide="school" aria-hidden="true"></i>
-          <span>族語老師</span>
-          <h3>正在備課或準備上課</h3>
-          <p>整理詞表、拆解例句，再把內容放成全班看得清楚的畫面。</p>
-          <a href="lab/#grammar-slides">先看教材流程<i data-lucide="arrow-right" aria-hidden="true"></i></a>
-        </article>
-
-        <article class="audience-card audience-audio reveal">
-          <i data-lucide="mic-2" aria-hidden="true"></i>
-          <span>錄音工作</span>
-          <h3>需要逐句提詞與重錄</h3>
-          <p>把逐字稿切成一句一句，現場切換、計時並留下重錄清單。</p>
-          <a href="lab/#recording">先看錄音流程<i data-lucide="arrow-right" aria-hidden="true"></i></a>
-        </article>
-
-        <article class="audience-card audience-admin reveal">
-          <i data-lucide="clipboard-check" aria-hidden="true"></i>
-          <span>課務行政</span>
-          <h3>要整理截圖與鐘點費</h3>
-          <p>批次放入課程截圖，確認老師與日期，再產生報表。</p>
-          <a href="lab/#course-admin">先看行政流程<i data-lucide="arrow-right" aria-hidden="true"></i></a>
-        </article>
-      </div>
-    </section>
-
-    <section class="feature-section section" id="features" aria-labelledby="features-title">
-      <div class="shell">
-        <div class="section-heading section-heading-light reveal">
-          <p class="section-kicker">CHOOSE A FUNCTION</p>
-          <h2 id="features-title">今天想完成什麼？</h2>
-          <p>點小方塊後會先看到新手流程，不會直接把你丟進複雜介面。</p>
+    <section class="mission-hero" aria-labelledby="hero-title">
+      <div class="mission-grid-bg" aria-hidden="true"></div>
+      <div class="shell mission-hero-layout">
+        <div class="mission-copy reveal">
+          <p class="mission-kicker">CALUMAI / FIELD LAB</p>
+          <h1 id="hero-title">CalumAi Studio</h1>
+          <p>有些可以直接拿去用，有些是製作過程的紀錄，也有一些是給老師慢慢學 AI 備課的內容。</p>
+          <dl class="mission-telemetry" aria-label="CALUMAI 目前內容狀態">
+            <div><dt>MODULES</dt><dd>4</dd></div>
+            <div><dt>TOOLS</dt><dd>5</dd></div>
+            <div><dt>BLOG</dt><dd>1</dd></div>
+            <div><dt>STATUS</dt><dd>ONLINE</dd></div>
+          </dl>
         </div>
 
-        <p class="completed-note reveal"><i data-lucide="badge-check" aria-hidden="true"></i>這裡只列出已完成、可以直接使用的功能。</p>
-
-        <nav class="feature-grid" aria-label="已完成功能">
-          <a class="feature-button feature-yellow reveal" href="lab/#word-cards">
-            <span class="feature-index">01</span>
-            <i data-lucide="list-filter" aria-hidden="true"></i>
-            <strong>詞表篩選</strong>
-            <small>備課</small>
+        <aside class="mission-latest-panel reveal" aria-labelledby="latest-title">
+          <p class="mission-kicker">LATEST LOG</p>
+          <h2 id="latest-title">最新文章</h2>
+          <a class="mission-latest-item" href="blog/game-note-test.html">
+            <time datetime="2026-07-17">2026.07.17</time>
+            <strong>遊戲製作心得測試文章</strong>
+            <span>先放一篇測試用文章，之後會整理遊戲製作過程與踩坑紀錄。</span>
           </a>
-          <a class="feature-button feature-red reveal" href="lab/#word-cards">
-            <span class="feature-index">02</span>
-            <i data-lucide="copy" aria-hidden="true"></i>
-            <strong>可列印詞卡</strong>
-            <small>備課</small>
+          <a class="mission-latest-link" href="blog/">
+            查看全部文章
+            <i data-lucide="arrow-up-right" aria-hidden="true"></i>
           </a>
-          <a class="feature-button feature-cyan reveal" href="lab/#subtitles">
-            <span class="feature-index">03</span>
-            <i data-lucide="captions" aria-hidden="true"></i>
-            <strong>大字字幕</strong>
-            <small>上課</small>
-          </a>
-          <a class="feature-button feature-paper reveal" href="lab/#subtitles">
-            <span class="feature-index">04</span>
-            <i data-lucide="presentation" aria-hidden="true"></i>
-            <strong>全螢幕播放</strong>
-            <small>上課</small>
-          </a>
-          <a class="feature-button feature-green reveal" href="lab/#grammar-slides">
-            <span class="feature-index">05</span>
-            <i data-lucide="brackets" aria-hidden="true"></i>
-            <strong>例句拆解</strong>
-            <small>教材</small>
-          </a>
-          <a class="feature-button feature-red reveal" href="lab/#recording">
-            <span class="feature-index">06</span>
-            <i data-lucide="mic-2" aria-hidden="true"></i>
-            <strong>錄音提詞</strong>
-            <small>錄音</small>
-          </a>
-          <a class="feature-button feature-yellow reveal" href="lab/#recording">
-            <span class="feature-index">07</span>
-            <i data-lucide="flag" aria-hidden="true"></i>
-            <strong>標記重錄</strong>
-            <small>錄音</small>
-          </a>
-          <a class="feature-button feature-cyan reveal" href="lab/#course-admin">
-            <span class="feature-index">08</span>
-            <i data-lucide="images" aria-hidden="true"></i>
-            <strong>截圖報表</strong>
-            <small>行政</small>
-          </a>
-          <a class="feature-button feature-green reveal" href="lab/#course-admin">
-            <span class="feature-index">09</span>
-            <i data-lucide="calculator" aria-hidden="true"></i>
-            <strong>鐘點費試算</strong>
-            <small>行政</small>
-          </a>
-        </nav>
+        </aside>
       </div>
     </section>
 
-    <section class="beginner-section section shell" aria-labelledby="beginner-title">
-      <div class="beginner-copy reveal">
-        <p class="section-kicker">BEGINNER MODE</p>
-        <h2 id="beginner-title">每個功能都先講人話</h2>
-        <p>流程頁會先告訴你要準備什麼、照什麼順序操作，以及最後應該看到什麼結果。看懂後，再按按鈕進入真正工具。</p>
-        <a class="button button-primary" href="lab/">
-          查看全部新手流程
-          <i data-lucide="footprints" aria-hidden="true"></i>
+    <section class="mission-index section shell" id="home-entries" aria-labelledby="home-entries-title">
+      <div class="mission-section-heading reveal">
+        <p class="mission-kicker">MISSION INDEX</p>
+        <h2 id="home-entries-title">作品、文章與工具總覽</h2>
+      </div>
+
+      <nav class="mission-card-grid" aria-label="CALUMAI 四個作品分類">
+        <a class="mission-card reveal" href="games/">
+          <span>01</span>
+          <i data-lucide="gamepad-2" aria-hidden="true"></i>
+          <strong>遊戲介紹</strong>
+          <small>預計放置教學遊戲入口、玩法說明與使用情境。</small>
         </a>
-      </div>
 
-      <ol class="beginner-steps reveal">
-        <li><span>1</span><div><strong>準備資料</strong><p>先確認需要的詞表、逐字稿或截圖。</p></div></li>
-        <li><span>2</span><div><strong>跟著操作</strong><p>一次只做一步，不用同時看懂全部按鈕。</p></div></li>
-        <li><span>3</span><div><strong>確認結果</strong><p>知道完成後畫面應該長什麼樣子。</p></div></li>
-      </ol>
-    </section>
+        <a class="mission-card reveal" href="blog/">
+          <span>02</span>
+          <i data-lucide="notebook-pen" aria-hidden="true"></i>
+          <strong>遊戲製作心得</strong>
+          <small>以部落格方式記錄遊戲、網站與教學工具的製作過程。</small>
+        </a>
 
-    <section class="published-section section" aria-labelledby="published-title">
-      <div class="published-layout shell">
-        <div class="published-copy reveal">
-          <p class="section-kicker">PUBLISHED NOTE</p>
-          <h2 id="published-title">想知道這些工具為什麼這樣做？</h2>
-          <p>目前公開的製作筆記，記錄為什麼先解決一件真實小麻煩，比一次做大平台更有用。</p>
-          <a class="button button-secondary" href="blog/why-small-tools.html">
-            閱讀製作筆記
-            <i data-lucide="book-open" aria-hidden="true"></i>
-          </a>
-        </div>
-        <img class="published-media reveal" src="assets/cover-word-cards.webp" alt="像素風格的詞卡印製與分類工坊" width="1280" height="720" loading="lazy">
-      </div>
+        <a class="mission-card reveal" href="ai-helper/">
+          <span>03</span>
+          <i data-lucide="sparkles" aria-hidden="true"></i>
+          <strong>族語教學備課小幫手</strong>
+          <small>AI 備課課程正在規劃中，之後會獨立整理完整內容。</small>
+        </a>
+
+        <a class="mission-card reveal" href="tools/">
+          <span>04</span>
+          <i data-lucide="layout-grid" aria-hidden="true"></i>
+          <strong>各類小工具</strong>
+          <small>已完成工具列表，包含詞卡、字幕、錄音提詞與課務行政。</small>
+        </a>
+      </nav>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-brand" aria-hidden="true">CALUMAI</div>
+  <footer class="site-footer mission-footer">
     <div class="footer-bottom shell">
-      <p>族語教學工具入口</p>
+      <p>CALUMAI</p>
       <nav aria-label="頁尾導覽">
-        <a href="#audience">適合誰</a>
-        <a href="#features">功能</a>
-        <a href="lab/">新手流程</a>
-        <a href="blog/">文章</a>
+        <a href="games/">遊戲介紹</a>
+        <a href="blog/">製作心得</a>
+        <a href="ai-helper/">備課小幫手</a>
+        <a href="tools/">小工具</a>
       </nav>
       <p>&copy; <span data-year></span> CALUMAI</p>
     </div>
