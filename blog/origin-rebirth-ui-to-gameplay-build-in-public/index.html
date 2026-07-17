@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <script>
+    if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
+      location.replace("https://" + location.host + location.pathname + location.search + location.hash);
+    }
+  </script>
+  <title>我原本只想改 UI，最後卻重做了遊戲互動邏輯</title>
+  <meta name="description" content="我如何從一次 UI 改版，走到重整新手引導、互助玩法、擲骰回饋與 STEAM 教學任務，還撤掉一條已完成的探索支線。">
+  <link rel="canonical" href="https://calumai.com/blog/origin-rebirth-ui-to-gameplay-build-in-public/">
+  <link rel="stylesheet" href="/blog/blog.css">
+  <meta property="og:image" content="https://calumai.com/blog/origin-rebirth-ui-to-gameplay-build-in-public/assets/gameplay-build-in-public.png">
+</head>
+<body><nav class="site-nav"><div class="site-nav__inner"><a class="brand" href="/">CalumAi</a><a href="/blog/">Blog</a></div></nav>
+<header class="article-header"><div class="eyebrow">Build in Public</div><h1>原地重生桌遊，真的重生了!!!!!!</h1><p class="deck">我把原地重生桌遊，變成網頁版本啦!!!!</p><div class="meta"><span>CalumAi Studio</span><span>2026年7月17日</span></div></header>
+<div class="feature"><img src="/blog/origin-rebirth-ui-to-gameplay-build-in-public/assets/gameplay-build-in-public.png" alt="《原地重生・返璞歸真》的實際對局畫面，左上角的新手引導正在提示玩家先看下一步。"></div><main class="article-body"><h1>原地重生桌遊，真的重生了!!!!!!</h1>
+<p>我一開始把《原地重生・返璞歸真》當成一次 UI 改版。</p>
+<p>我當時把目標寫成「像主機大作」：首頁要有氣勢、牌桌要更像真正的遊戲，顏色和動態也要有一致的完成度。整理設計規則後，我把這句話重新定義成操作回饋、資訊層級與商品可信度，而不是多一點金框、光效或電影感。玩家每按一次按鈕，都應該知道自己為什麼按、接下來會發生什麼。</p>
+<p>真正的問題，不是配色。</p>
+<p>是玩家進到牌桌後，功能明明很多，卻不知道此刻最重要的選擇是什麼。</p>
+<figure><img src="/blog/origin-rebirth-ui-to-gameplay-build-in-public/assets/gameplay-build-in-public.png" alt="《原地重生・返璞歸真》的實際對局畫面，左上角的新手引導正在提示玩家先看下一步。" loading="lazy"></figure>
+<p><em>我最後選擇用真正的遊戲畫面，而不是只放一張漂亮的概念圖。左上角的「先看下一步」，正好就是這次改版最核心的答案。</em></p>
+<h2>我曾經把一條做完的支線整個撤掉</h2>
+<p>這次最大的轉折，其實不是新增功能，而是刪掉已經做完的 Adventure Mode。</p>
+<p>那條探索支線已經有畫面，也能走完整個流程。但我重新檢查後發現，它沒有比原本的資源、卡牌、交易、事件和競爭多出更好的決策。它看起來像新內容，玩起來卻沒有讓核心變得更強。</p>
+<p>所以我把它從首頁和正式入口撤下，讓原本的策略卡牌玩法重新成為唯一主線。</p>
+<p>這件事讓我學到一個很實用的判斷：完成度不是看我加了多少東西，而是看玩家能不能感受到每個東西存在的理由。已經做完，不代表值得留下。</p>
+<h2>我把「下一步」做成畫面的一部分</h2>
+<p>確定主線之後，我不再急著加模式，而是回頭處理第一次玩的玩家會卡住的地方。</p>
+<p>我把首頁改成先選族群、再開始，避免點一下卡片就突然跳頁；把玩法介紹縮成 30 秒能看懂的三步循環；在牌桌上放進常駐的「本回合建議」，素材足夠時直接提醒可以蓋家屋；低頻的工藝、服飾和已出牌資訊則收進可展開區域，不再全部搶注意力。</p>
+<p>我也把新手教學從每局六步縮成首次三步。不是因為六步寫得不夠完整，而是教學如果一直擋著玩家，最後只會變成另一個需要關掉的障礙。</p>
+<p>連骰子也不只是換動畫。我把它拆成準備、出手、翻滾、落定幾個狀態，並加上快速連點鎖，避免一次操作被判定兩次。這些改動看起來很小，卻直接關係到玩家是否相信畫面上的回饋。</p>
+<h2>我原本在修介面，最後修到了玩家關係</h2>
+<p>試玩回饋把範圍又往前推了一步。當我只整理資訊層級時，玩家確實比較知道怎麼操作了，但整局仍然偏向各自蒐集資源、各自蓋家屋。</p>
+<p>我保留原本的競爭主軸，新增的不是強迫合作，而是兩個可以選擇的互惠行動：分享素材，以及共學交流。公共事件也從 6 種增加到 14 種，讓交流市集、互助工班、共學之夜和材料試驗真正改變當輪決策。互助分有上限，勝負仍以家屋數優先，合作只是多一條策略，不是新的標準答案。</p>
+<p>我讓 AI 幫我把可能的互動方案拆開，也讓 Codex 與 Claude Code 分別處理實作、檢查和交接；但我沒有把 AI 產生的選項直接當成完成。14 張事件、分享、共學、互助分上限和快速連點都要進測試，遊戲引擎也重新跑過 100 場模擬。最後 100 場都能完成，沒有出現死循環。</p>
+<h2>STEAM 任務讓我更清楚「不能亂說」</h2>
+<p>我後來又加入 STEAM 教學任務台，讓教師可以從五個學習階段與五個主題產生教案草案。這一塊最難的不是產生文字，而是守住證據邊界。</p>
+<p>遊戲卡牌可以拿來觀察、比較和做模型，但不能因為屋頂長得像某個樣子，就推論某個族群一定因為某種氣候使用某種材料。我把內容分成卡面看見的事、學生準備驗證的假設、官方資料支持的背景，以及仍待文化審校的內容。五個學段、五個主題和二十組 seeds，共 500 份固定組合都通過測試，但測試通過不等於文化內容已經被批准。</p>
+<p>這也是我目前不能寫成完成的地方。各族文化顧問審校、素材權利與商用授權、雙真機連線、弱網和正式發布前的跨瀏覽器 QA，都還在下一步清單裡。</p>
+<h2>今天我完成了什麼</h2>
+<p>今天我把這次工作重新整理成一條比較誠實的開發線：我不是「把畫面變漂亮」而已，而是先撤掉沒有足夠決策深度的支線，再讓玩家知道下一步，最後才把互助與教學功能接回核心玩法。</p>
+<p>我現在最大的問題，也從「怎麼讓它看起來更像大作」變成「怎麼讓每一項文化內容都能說清楚來源、審校者與使用權」。這個答案不能靠 AI 自動補完，只能繼續把證據和人類審查補齊。</p>
+<p>下一步，我會先做文化與素材權利清冊，再補雙裝置連線、弱網和多瀏覽器測試。畫面我還會繼續修，但我已經知道：真正讓玩家留下來的，不是第一眼多華麗，而是他在每一回合都知道自己正在做什麼，而且願意再做一次選擇。</p>
+<p>如果你願意，也可以<a href="https://04-game2-two.vercel.app/" target="_blank" rel="noopener noreferrer">打開網頁版試玩</a>，然後直接告訴我：你第一次不知道下一步，是發生在哪一個畫面？</p>
+<h2>Hashtag</h2>
+<p>#BuildInPublic #遊戲開發 #UIUX #STEAM教育 #原住民族文化</p>
+<h2>留言互動問題</h2>
+<p>你玩策略遊戲時，最容易在哪個瞬間不知道下一步？是規則太多、按鈕太多，還是畫面沒有告訴你什麼最重要？</p></main></body>
+</html>
