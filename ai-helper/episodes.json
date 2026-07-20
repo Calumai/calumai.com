@@ -8,5 +8,15 @@
     "handoutFile": "EP001.md",
     "coverFile": "EP001.png",
     "publishedAt": "2026-07-20T08:33:19.082Z"
+  },
+  {
+    "id": "EP002",
+    "title": "建立第一個 ChatGPT 帳號",
+    "summary": "本集帶老師完成第一個 ChatGPT 帳號建立與登入。\n\n重點不是介紹 ChatGPT 的所有功能，而是陪老師完成「我可以進入 ChatGPT」這一件小任務。",
+    "embedUrl": "https://www.youtube.com/embed/X0p04S8F5Rc",
+    "srtFile": "EP002.srt",
+    "handoutFile": "EP002.md",
+    "coverFile": "EP002.png",
+    "publishedAt": "2026-07-20T08:33:33.484Z"
   }
 ]
