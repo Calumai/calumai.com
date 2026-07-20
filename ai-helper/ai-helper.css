@@ -916,16 +916,17 @@
 
 .lesson-resource-list {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin-top: 13px;
 }
 
 .lesson-resource-list a {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  min-height: 44px;
   color: var(--course-green);
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 900;
 }
 
@@ -934,8 +935,9 @@
 }
 
 .lesson-resource-list svg {
-  width: 16px;
-  height: 16px;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
 }
 
 .lesson-body {
