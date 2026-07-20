@@ -18,5 +18,15 @@
     "handoutFile": "EP002.md",
     "coverFile": "EP002.png",
     "publishedAt": "2026-07-20T08:33:33.484Z"
+  },
+  {
+    "id": "EP003",
+    "title": "問 ChatGPT 第一個備課問題",
+    "summary": "本集帶老師在 ChatGPT 輸入第一個簡單的備課問題。\n\n重點不是教 Prompt 技巧，而是讓老師完成「我敢開口問 AI」這一件小任務。",
+    "embedUrl": "https://www.youtube.com/embed/QVoxS8KLAxg",
+    "srtFile": "EP003.srt",
+    "handoutFile": "EP003.md",
+    "coverFile": "EP003.png",
+    "publishedAt": "2026-07-20T16:12:11.282Z"
   }
 ]
