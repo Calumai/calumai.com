@@ -6,7 +6,8 @@
 
   const toc = document.querySelector("[data-lesson-toc]");
   const progress = document.querySelector("[data-reading-progress]");
-  const printButton = document.querySelector("[data-print-lesson]");
+  const completeButton = document.querySelector("[data-complete-lesson]");
+  const episodeId = document.body.dataset.episode || document.title;
 
   const slugify = (value, index) => {
     const slug = value
@@ -90,7 +91,32 @@
     headings.forEach((heading) => observer.observe(heading));
   }
 
-  printButton?.addEventListener("click", () => window.print());
+  if (completeButton) {
+    const storageKey = `calumai-course-complete:${episodeId}`;
+    const setCompleteState = (isComplete) => {
+      completeButton.classList.toggle("is-complete", isComplete);
+      completeButton.setAttribute("aria-pressed", String(isComplete));
+      completeButton.textContent = isComplete ? "✓ 本集已完成" : "標記本集已完成";
+    };
+
+    let isComplete = false;
+    try {
+      isComplete = localStorage.getItem(storageKey) === "true";
+    } catch (error) {
+      console.warn("Course progress storage unavailable", error);
+    }
+    setCompleteState(isComplete);
+
+    completeButton.addEventListener("click", () => {
+      isComplete = !isComplete;
+      try {
+        localStorage.setItem(storageKey, String(isComplete));
+      } catch (error) {
+        console.warn("Course progress storage unavailable", error);
+      }
+      setCompleteState(isComplete);
+    });
+  }
 
   window.lucide?.createIcons();
 })();

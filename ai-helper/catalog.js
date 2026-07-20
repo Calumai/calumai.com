@@ -117,7 +117,7 @@
     const episode = episodes.find((item) => item.id === episodeId);
     if (!episode || !dialog || !dialogFrame) return;
 
-    if (dialogTitle) dialogTitle.textContent = `${episode.id}｜${episode.title}`;
+    dialogTitle.textContent = `${episode.id}｜${episode.title}`;
     const separator = episode.embedUrl.includes("?") ? "&" : "?";
     dialogFrame.src = `${episode.embedUrl}${separator}autoplay=1&rel=0`;
     dialogFrame.title = episode.title;
