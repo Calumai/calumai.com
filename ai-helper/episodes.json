@@ -28,5 +28,15 @@
     "handoutFile": "EP003.md",
     "coverFile": "EP003.png",
     "publishedAt": "2026-07-20T16:12:11.282Z"
+  },
+  {
+    "id": "EP004",
+    "title": "請 ChatGPT 幫忙整理一段教材",
+    "summary": "本集帶老師把一小段教材文字貼到 ChatGPT，請 AI 整理成清楚的重點。\n\n重點不是大量產生教材，而是完成「把文字整理成比較好讀的重點」。",
+    "embedUrl": "https://www.youtube.com/embed/uaBLi5gONTM",
+    "srtFile": "EP004.srt",
+    "handoutFile": "EP004.md",
+    "coverFile": null,
+    "publishedAt": "2026-07-21T03:47:54.131Z"
   }
 ]
