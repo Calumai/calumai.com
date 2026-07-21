@@ -3302,6 +3302,17 @@ a {
   font-size: 15px;
 }
 
+.mission-telemetry-cta {
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mission-telemetry-cta:hover dd,
+.mission-telemetry-cta:focus-visible dd {
+  text-decoration: underline;
+}
+
 .mission-logo-panel,
 .mission-card,
 .mission-tool-item,
