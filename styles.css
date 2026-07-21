@@ -3487,7 +3487,7 @@ a {
 }
 
 .mission-hero-layout {
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.42fr);
+  grid-template-columns: minmax(0, 1fr) minmax(460px, 0.52fr);
 }
 
 .mission-copy {
@@ -3542,11 +3542,14 @@ a {
   padding-left: 34px;
 }
 
-.mission-latest-panel h2 {
-  margin: 12px 0 20px;
-  color: var(--mission-ink);
-  font-size: 28px;
-  line-height: 1.25;
+.mission-latest-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.mission-latest-col .mission-kicker {
+  margin: 0 0 12px;
 }
 
 .mission-latest-item {
@@ -3946,5 +3949,12 @@ a {
     border-left: 0;
     padding-top: 28px;
     padding-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .mission-latest-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
 }
