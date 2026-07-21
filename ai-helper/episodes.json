@@ -38,5 +38,15 @@
     "handoutFile": "EP004.md",
     "coverFile": "EP004.png",
     "publishedAt": "2026-07-21T03:47:54.131Z"
+  },
+  {
+    "id": "EP005",
+    "title": "請 ChatGPT 幫忙設計 5 分鐘暖身活動",
+    "summary": "本集帶老師把上一集整理好的教材重點，請 ChatGPT 轉成一個 5 分鐘課堂暖身活動。\n\n重點不是產生完整教案，而是完成一個明天可以帶進教室的小活動。",
+    "embedUrl": "https://www.youtube.com/embed/4eo80rnGeF0",
+    "srtFile": "EP005.srt",
+    "handoutFile": "EP005.md",
+    "coverFile": null,
+    "publishedAt": "2026-07-21T11:39:48.221Z"
   }
 ]
