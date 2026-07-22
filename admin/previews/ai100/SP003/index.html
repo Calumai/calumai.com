@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <script>
+    if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
+      location.replace("https://" + location.host + location.pathname + location.search + location.hash);
+    }
+  </script>
+  <meta name="description" content="【NotebookLM / Gemini Book 教學01】把教材變成可查詢的備課筆記 教學講義：這篇帶老師理解 NotebookLM / Gemini Book 的用途：把教材、講義、逐字稿或參考資料放在同一個地方，…">
+  <meta name="theme-color" content="#f7f3ec">
+  <title>[預覽] SP003 【NotebookLM / Gemini Book 教學01】把教材變成可查詢的備課筆記｜講義｜CALUMAI</title>
+  <link rel="stylesheet" href="/styles.css?v=20260717-4">
+  <link rel="stylesheet" href="/ai-helper/ai-helper.css?v=20260722-3">
+  <script src="/assets/lucide.min.js" defer></script>
+  <script src="/app.js" defer></script>
+  <script src="/ai-helper/handout.js?v=20260722-3" defer></script>
+</head>
+<body class="course-site course-handout" data-episode="SP003">
+  <a class="skip-link" href="#lesson-content">跳到講義內容</a>
+
+  <header class="site-header course-header" data-header>
+    <a class="brand course-brand" href="/" aria-label="CALUMAI 首頁">
+      <img src="/assets/calumai-logo-mark.png" alt="" width="96" height="96">
+      <span>CALUMAI</span>
+    </a>
+    <button class="menu-toggle icon-button course-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle><i data-lucide="menu" aria-hidden="true"></i></button>
+    <nav class="primary-nav course-nav" id="primary-nav" aria-label="主要導覽" data-nav>
+      <a href="/games/">遊戲介紹</a>
+      <a href="/blog/">製作心得</a>
+      <a href="/ai-helper/" aria-current="page">備課小幫手</a>
+      <a class="nav-cta" href="/tools/">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+    </nav>
+  </header>
+
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+
+  <main class="lesson-main">
+    <section class="course-shell" style="padding-top:18px;">
+      <p class="course-eyebrow">PREVIEW ONLY</p>
+      <p class="lesson-lead" style="margin-top:6px;">這是發布前預覽頁，不會被搜尋引擎收錄。請確認標題、段落、表格與圖片都正常，再改成 published。</p>
+    </section>
+    <section class="lesson-hero">
+      <div class="course-shell">
+        <nav class="lesson-breadcrumb" aria-label="麵包屑">
+          <a href="/">CALUMAI</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <a href="/ai-helper/">備課小幫手</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <span>SP003 講義</span>
+        </nav>
+
+        <div class="lesson-hero-grid">
+          <div>
+            <p class="course-eyebrow">SP003 · NotebookLM / Gemini Book</p>
+            <h1>【NotebookLM / Gemini Book 教學01】把教材變成可查詢的備課筆記</h1>
+            <p class="lesson-lead">這篇帶老師理解 NotebookLM / Gemini Book 的用途：把教材、講義、逐字稿或參考資料放在同一個地方，讓 AI 根據你的資料回答問題。</p>
+            <div class="lesson-meta-row">
+              <span><i data-lucide="file-text" aria-hidden="true"></i>圖文講義</span>
+              <span><i data-lucide="signal-low" aria-hidden="true"></i>零基礎</span>
+              <span><i data-lucide="target" aria-hidden="true"></i>一次一招</span>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-content-section" id="lesson-content">
+      <div class="course-shell lesson-layout">
+        <aside class="lesson-sidebar" aria-label="講義工具">
+          <div class="lesson-side-card lesson-toc-card"><strong>本集導覽</strong><nav class="lesson-toc" data-lesson-toc></nav></div>
+          <div class="lesson-side-card">
+            <strong>學習進度</strong>
+            <button class="lesson-complete" type="button" aria-pressed="false" data-complete-lesson>標記本集已完成</button>
+            <div class="lesson-resource-list">
+              
+              
+              <a href="javascript:window.print()"><i data-lucide="printer" aria-hidden="true"></i>列印講義</a>
+            </div>
+          </div>
+        </aside>
+
+        <div>
+          <article class="lesson-body" data-lesson-body><h1>【NotebookLM / Gemini Book 教學01】把教材變成可查詢的備課筆記</h1>
+<p>如果 ChatGPT 和 Gemini 比較像「幫你一起想」的助理，那 NotebookLM / Gemini Book 比較像「幫你整理手邊資料」的助理。</p>
+<p>它特別適合用在一種情境：你已經有資料了，只是資料很多、很散、很難快速找到重點。</p>
+<p>例如：</p>
+<ul><li>教材講義</li><li>課程逐字稿</li><li>族語文本</li><li>文化補充資料</li><li>之前整理過的教案</li><li>學生作業紀錄的整理版</li></ul>
+<p>你把資料放進去，再請 AI 根據這些資料回答問題。</p>
+<h2>它跟一般聊天 AI 最大的差別</h2>
+<p>一般聊天 AI 很容易直接根據自己的理解回答。</p>
+<p>NotebookLM / Gemini Book 的重點是：先看你給的資料，再根據資料整理答案。</p>
+<p>所以它比較適合拿來做：</p>
+<ul><li>幫你整理某份教材的重點。</li><li>幫你找出資料中反覆出現的概念。</li><li>幫你把長篇內容變成備課摘要。</li><li>幫你從資料中整理學生可能會卡住的地方。</li><li>幫你產生課前複習問題。</li></ul>
+<p>但它不適合拿來做「完全沒有資料來源」的猜測。</p>
+<h2>第一步：先整理你要放進去的資料</h2>
+<p>新手最容易卡住的地方是：一開始就想放很多東西。</p>
+<p>建議第一次先放少一點。</p>
+<p>可以先選一份：</p>
+<ul><li>一份教材文字</li><li>一份 PDF 講義</li><li>一份課程筆記</li><li>一段你已經整理好的文本</li></ul>
+<p>如果資料裡有學生姓名、電話、住址、私人對話，請先刪掉再上傳。</p>
+<h2>第二步：先問它「這份資料在說什麼」</h2>
+<p>上傳資料後，可以先問：</p>
+<blockquote>請根據我上傳的資料，幫我整理這份教材的主要重點。  <br>請不要加入資料裡沒有的內容。  <br>請用適合族語課老師備課的方式整理。  <br>最後請列出 3 個學生最需要理解的概念。</blockquote>
+<p>這一步是在確認：它有沒有看懂你的資料。</p>
+<p>如果第一步就整理得怪怪的，後面就不要急著用它產生活動。</p>
+<h2>第三步：請它幫你做備課摘要</h2>
+<p>確認它理解資料後，可以接著問：</p>
+<blockquote>請根據這份資料，幫我做一份備課摘要。  <br>請包含：  <br>1. 本課重點  <br>2. 可以問學生的引導問題  <br>3. 學生可能不懂的地方  <br>4. 老師上課前要提醒自己的注意事項  <br> <br>請答案簡潔，不要寫成長篇論文。</blockquote>
+<p>這樣你會得到一份比較像老師備課時真的會看的摘要，而不是一大篇看了更累的文字。</p>
+<h2>第四步：請它幫你出複習題</h2>
+<p>你可以再問：</p>
+<blockquote>請根據這份資料，幫我出 5 題課堂複習問題。  <br>題目要簡單，可以用在下課前 5 分鐘。  <br>請每題附上參考答案，並標註答案是根據資料中的哪個重點整理出來的。</blockquote>
+<p>這句的關鍵是「根據資料」。</p>
+<p>這會提醒 AI 不要自由發揮太多。</p>
+<h2>老師檢查清單</h2>
+<p>使用 NotebookLM / Gemini Book 時，請記得：</p>
+<ul><li>先放少量資料，不要第一次就塞一大堆。</li><li>私人資料要先刪掉。</li><li>問題裡要加上「根據我上傳的資料」。</li><li>如果答案超出資料範圍，要請它標明哪些是推測。</li><li>重要的族語、文化與歷史內容，仍然要由老師或可信來源確認。</li></ul>
+<h2>可直接複製的提問模板</h2>
+<blockquote>請根據我上傳的資料回答，不要加入資料裡沒有的內容。  <br>我是一位族語課老師，想把這份資料整理成備課筆記。  <br>請幫我整理：  <br>1. 主要重點  <br>2. 可以帶學生討論的問題  <br>3. 學生可能會不懂的地方  <br>4. 下課前可以使用的 5 題複習問題  <br> <br>如果資料不足，請直接告訴我需要補什麼。</blockquote>
+<h2>口播腳本：開場</h2>
+<p>各位老師好，這一篇我們來認識 NotebookLM / Gemini Book 可以怎麼幫忙整理教材。</p>
+<p>它跟一般聊天 AI 不太一樣。一般聊天 AI 很像你問它什麼，它就直接回答；NotebookLM / Gemini Book 比較像你先把資料交給它，然後請它根據資料幫你整理。</p>
+<p>所以它很適合用在備課資料很多、但你想快速抓重點的時候。</p>
+<h2>口播腳本：操作示範</h2>
+<p>第一步，先準備一份資料。新手不要一開始就放十份，先放一份教材或一份講義就好。</p>
+<p>第二步，上傳後先問它：請根據我上傳的資料，幫我整理主要重點，不要加入資料裡沒有的內容。</p>
+<p>這一步很重要，因為我們要先確認它有沒有看懂資料。</p>
+<p>第三步，再請它把資料整理成備課摘要。你可以請它列出本課重點、引導問題、學生可能卡住的地方，以及老師要提醒自己的注意事項。</p>
+<p>第四步，如果你想要課堂小測驗，也可以請它根據資料出 5 題下課前可以用的複習問題。</p>
+<h2>口播腳本：收尾</h2>
+<p>NotebookLM / Gemini Book 最適合做的事，不是憑空幫你想答案，而是幫你整理你已經有的資料。</p>
+<p>所以我們使用它時，要記得一直提醒它：根據我上傳的資料回答。</p>
+<p>老師仍然是最後把關的人。AI 可以幫我們把資料整理得更好讀，但重要內容還是要回到教材和可信來源確認。</p></article>
+
+          <div class="lesson-next">
+            <div><small>完成 SP003</small><strong>回到課程首頁，繼續下一個小任務。</strong></div>
+          <a href="/ai-helper/">回課程首頁<i data-lucide="arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer course-footer">
+    <div class="shell footer-bottom"><p>© CALUMAI · AI 族語備課小妙招</p><nav><a href="/ai-helper/">所有課程</a><a href="/">CALUMAI 首頁</a></nav><p>SP003</p></div>
+  </footer>
+</body>
+</html>

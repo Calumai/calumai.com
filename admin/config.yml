@@ -213,6 +213,16 @@ collections:
           - { label: 影片課程（有 YouTube）, value: video_lesson }
           - { label: 圖文講義（沒有影片，只用 Markdown）, value: handout }
         default: video_lesson
+      - name: track
+        label: AI100 路線分類
+        hint: 這是讀者看到的分類。四條路線是平行的，不用把 Gemini 接在 ChatGPT 後面。
+        widget: select
+        options:
+          - { label: 導論, value: intro }
+          - { label: ChatGPT, value: chatgpt }
+          - { label: Gemini, value: gemini }
+          - { label: NotebookLM / Gemini Book, value: notebooklm }
+        default: intro
       - { name: title, label: 標題, widget: string, hint: 會顯示在 AI-100 卡片與講義頁。 }
       - { name: summary, label: 內容摘要, widget: text, required: false, hint: 寫 1–2 句，讓讀者知道這篇在教什麼。 }
       - { name: learning_goal, label: 學習目標（僅內部參考）, widget: text, required: false }

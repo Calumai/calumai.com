@@ -401,6 +401,88 @@
   box-shadow: 0 0 0 4px rgba(36, 86, 66, 0.1);
 }
 
+.course-track-nav {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 34px;
+}
+
+.course-track-nav a {
+  display: grid;
+  gap: 8px;
+  min-height: 112px;
+  border: 1px solid var(--course-line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 18px;
+  color: var(--course-ink);
+  text-decoration: none;
+  box-shadow: 0 10px 28px rgba(31, 41, 36, 0.04);
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.course-track-nav a:hover {
+  border-color: rgba(36, 86, 66, 0.35);
+  transform: translateY(-3px);
+  box-shadow: var(--course-shadow-soft);
+}
+
+.course-track-nav span {
+  color: var(--course-green);
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.course-track-nav small {
+  color: var(--course-muted);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.55;
+}
+
+.episode-library {
+  display: grid;
+  gap: 42px;
+}
+
+.episode-track-section {
+  display: grid;
+  gap: 18px;
+  scroll-margin-top: calc(var(--header-height) + 24px);
+}
+
+.episode-track-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.episode-track-head h3 {
+  margin: 10px 0 0;
+  color: var(--course-ink);
+  font-size: clamp(28px, 3.6vw, 40px);
+  line-height: 1.15;
+}
+
+.episode-track-head p:last-child {
+  max-width: 640px;
+  margin: 10px 0 0;
+  color: var(--course-muted);
+  line-height: 1.75;
+}
+
+.episode-track-count {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--course-orange-soft);
+  padding: 8px 12px;
+  color: var(--course-orange);
+  font-size: 13px;
+  font-weight: 900;
+}
+
 .episode-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1242,6 +1324,15 @@
     width: 100%;
   }
 
+  .course-track-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .episode-track-head {
+    align-items: start;
+    flex-direction: column;
+  }
+
   .episode-grid {
     grid-template-columns: 1fr;
   }
@@ -1291,6 +1382,10 @@
   .course-catalog-section,
   .course-about {
     padding-block: 62px;
+  }
+
+  .course-track-nav {
+    grid-template-columns: 1fr;
   }
 
   .course-principles {

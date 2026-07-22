@@ -13,10 +13,10 @@
   <meta name="theme-color" content="#f7f3ec">
   <title>AI 族語備課小妙招 100 招｜CALUMAI</title>
   <link rel="stylesheet" href="../styles.css?v=20260717-4">
-  <link rel="stylesheet" href="./ai-helper.css?v=20260722-2">
+  <link rel="stylesheet" href="./ai-helper.css?v=20260722-3">
   <script src="../assets/lucide.min.js" defer></script>
   <script src="../app.js" defer></script>
-  <script src="./catalog.js?v=20260722-2" defer></script>
+  <script src="./catalog.js?v=20260722-3" defer></script>
 </head>
 <body class="course-site course-catalog">
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -90,7 +90,14 @@
           </label>
         </div>
 
-        <div class="episode-grid" data-episode-grid aria-live="polite">
+        <div class="course-track-nav" aria-label="AI100 路線分類">
+          <a href="#track-intro"><span>導論</span><small>先懂 AI 可以怎麼幫忙</small></a>
+          <a href="#track-chatgpt"><span>ChatGPT</span><small>備課、活動、學習單</small></a>
+          <a href="#track-gemini"><span>Gemini</span><small>Google 生態系的備課助手</small></a>
+          <a href="#track-notebooklm"><span>NotebookLM / Gemini Book</span><small>把資料變成可查詢筆記</small></a>
+        </div>
+
+        <div class="episode-library" data-episode-grid aria-live="polite">
           <div class="course-loading">正在載入課程清單…</div>
         </div>
         <noscript><p class="course-empty">請開啟 JavaScript 以查看課程清單。</p></noscript>

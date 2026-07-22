@@ -16,6 +16,13 @@
 
   let episodes = [];
   const fallbackCover = "../assets/calumai-logo-mark.png";
+  const tracks = [
+    { id: "intro", label: "導論", description: "先建立 AI 備課的基本觀念與安全感。" },
+    { id: "chatgpt", label: "ChatGPT", description: "練習把備課、活動、學習單交給 ChatGPT 協助。" },
+    { id: "gemini", label: "Gemini", description: "用 Gemini 做教材整理、活動發想與 Google 生態系備課。" },
+    { id: "notebooklm", label: "NotebookLM / Gemini Book", description: "把講義、文本與資料整理成可查詢的備課筆記。" },
+    { id: "other", label: "其他", description: "尚未歸到固定路線的 AI100 內容。" }
+  ];
 
   const escapeHtml = (value = "") => String(value)
     .replaceAll("&", "&amp;")
@@ -24,12 +31,28 @@
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 
-  const getToolTag = (title = "") => {
-    const text = title.toLowerCase();
+  const getTrack = (episode = {}) => {
+    const raw = String(episode.track || "").trim().toLowerCase();
+    const found = tracks.find((track) => track.id === raw);
+    if (found) return found;
+
+    const text = `${episode.title || ""} ${episode.summary || ""}`.toLowerCase();
+    if (text.includes("notebook") || text.includes("gemini book")) return tracks.find((track) => track.id === "notebooklm");
+    if (text.includes("gemini")) return tracks.find((track) => track.id === "gemini");
+    if (text.includes("chatgpt") || text.includes("chat gpt")) return tracks.find((track) => track.id === "chatgpt");
+    return tracks.find((track) => track.id === "intro");
+  };
+
+  const getToolTag = (episodeOrTitle = "") => {
+    if (typeof episodeOrTitle === "object" && episodeOrTitle) {
+      return episodeOrTitle.trackLabel || getTrack(episodeOrTitle).label;
+    }
+
+    const text = String(episodeOrTitle).toLowerCase();
     if (text.includes("notebook")) return "NotebookLM";
     if (text.includes("gemini")) return "Gemini";
     if (text.includes("chatgpt")) return "ChatGPT";
-    return "AI 入門";
+    return "導論";
   };
 
   const hasVideo = (episode) => Boolean(episode?.embedUrl) && episode?.contentType !== "handout";
@@ -57,7 +80,7 @@
 
   const renderCard = (episode, index) => {
     const isLatest = index === episodes.length - 1;
-    const tag = getToolTag(episode.title);
+    const tag = getToolTag(episode);
     const videoLesson = hasVideo(episode);
     const contentKind = episode.contentLabel || (videoLesson ? "影片課程" : "圖文講義");
     const searchText = `${episode.id} ${episode.title} ${episode.summary} ${tag} ${contentKind}`.toLowerCase();
@@ -84,7 +107,7 @@
         <div class="episode-card-body">
           <div class="episode-meta">
             <span class="episode-number">${escapeHtml(episode.id)}${isLatest ? " · 最新" : ""}</span>
-            <span class="episode-tag">${escapeHtml(contentKind)}</span>
+            <span class="episode-tag">${escapeHtml(tag)}</span>
           </div>
           <h3>${escapeHtml(episode.title)}</h3>
           <p class="episode-summary">${escapeHtml(cleanSummary(episode.summary))}</p>
@@ -105,7 +128,27 @@
       return;
     }
 
-    episodeGrid.innerHTML = items.map((episode) => renderCard(episode, episodes.indexOf(episode))).join("");
+    const sections = tracks.map((track) => {
+      const trackItems = items.filter((episode) => getTrack(episode).id === track.id);
+      if (!trackItems.length) return "";
+
+      return `
+        <section class="episode-track-section" id="track-${escapeHtml(track.id)}">
+          <div class="episode-track-head">
+            <div>
+              <p class="course-eyebrow">${escapeHtml(track.label)}</p>
+              <h3>${escapeHtml(track.label)} 路線</h3>
+              <p>${escapeHtml(track.description)}</p>
+            </div>
+            <span class="episode-track-count">${trackItems.length} 篇</span>
+          </div>
+          <div class="episode-grid">
+            ${trackItems.map((episode) => renderCard(episode, episodes.indexOf(episode))).join("")}
+          </div>
+        </section>`;
+    }).join("");
+
+    episodeGrid.innerHTML = sections;
     episodeGrid.querySelectorAll("img").forEach(fallbackImage);
     window.lucide?.createIcons();
   };
@@ -180,7 +223,7 @@
   searchInput?.addEventListener("input", () => {
     const keyword = searchInput.value.trim().toLowerCase();
     const filtered = keyword
-      ? episodes.filter((episode) => `${episode.id} ${episode.title} ${episode.summary} ${getToolTag(episode.title)} ${episode.contentLabel || ""}`.toLowerCase().includes(keyword))
+      ? episodes.filter((episode) => `${episode.id} ${episode.title} ${episode.summary} ${getToolTag(episode)} ${episode.track || ""} ${episode.contentLabel || ""}`.toLowerCase().includes(keyword))
       : episodes;
     renderEpisodes(filtered);
   });

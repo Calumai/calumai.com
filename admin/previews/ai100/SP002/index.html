@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <script>
+    if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
+      location.replace("https://" + location.host + location.pathname + location.search + location.hash);
+    }
+  </script>
+  <meta name="description" content="【Gemini 教學01】用 Gemini 快速整理教材與產生活動點子 教學講義：這篇帶老師用 Gemini 做兩件很實用的小事：整理一段教材重點，並延伸成 3 個可以帶進課堂的活動點子。適合想先試試 …">
+  <meta name="theme-color" content="#f7f3ec">
+  <title>[預覽] SP002 【Gemini 教學01】用 Gemini 快速整理教材與產生活動點子｜講義｜CALUMAI</title>
+  <link rel="stylesheet" href="/styles.css?v=20260717-4">
+  <link rel="stylesheet" href="/ai-helper/ai-helper.css?v=20260722-3">
+  <script src="/assets/lucide.min.js" defer></script>
+  <script src="/app.js" defer></script>
+  <script src="/ai-helper/handout.js?v=20260722-3" defer></script>
+</head>
+<body class="course-site course-handout" data-episode="SP002">
+  <a class="skip-link" href="#lesson-content">跳到講義內容</a>
+
+  <header class="site-header course-header" data-header>
+    <a class="brand course-brand" href="/" aria-label="CALUMAI 首頁">
+      <img src="/assets/calumai-logo-mark.png" alt="" width="96" height="96">
+      <span>CALUMAI</span>
+    </a>
+    <button class="menu-toggle icon-button course-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle><i data-lucide="menu" aria-hidden="true"></i></button>
+    <nav class="primary-nav course-nav" id="primary-nav" aria-label="主要導覽" data-nav>
+      <a href="/games/">遊戲介紹</a>
+      <a href="/blog/">製作心得</a>
+      <a href="/ai-helper/" aria-current="page">備課小幫手</a>
+      <a class="nav-cta" href="/tools/">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+    </nav>
+  </header>
+
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+
+  <main class="lesson-main">
+    <section class="course-shell" style="padding-top:18px;">
+      <p class="course-eyebrow">PREVIEW ONLY</p>
+      <p class="lesson-lead" style="margin-top:6px;">這是發布前預覽頁，不會被搜尋引擎收錄。請確認標題、段落、表格與圖片都正常，再改成 published。</p>
+    </section>
+    <section class="lesson-hero">
+      <div class="course-shell">
+        <nav class="lesson-breadcrumb" aria-label="麵包屑">
+          <a href="/">CALUMAI</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <a href="/ai-helper/">備課小幫手</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <span>SP002 講義</span>
+        </nav>
+
+        <div class="lesson-hero-grid">
+          <div>
+            <p class="course-eyebrow">SP002 · Gemini</p>
+            <h1>【Gemini 教學01】用 Gemini 快速整理教材與產生活動點子</h1>
+            <p class="lesson-lead">這篇帶老師用 Gemini 做兩件很實用的小事：整理一段教材重點，並延伸成 3 個可以帶進課堂的活動點子。適合想先試試 Google AI 工具的老師。</p>
+            <div class="lesson-meta-row">
+              <span><i data-lucide="file-text" aria-hidden="true"></i>圖文講義</span>
+              <span><i data-lucide="signal-low" aria-hidden="true"></i>零基礎</span>
+              <span><i data-lucide="target" aria-hidden="true"></i>一次一招</span>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-content-section" id="lesson-content">
+      <div class="course-shell lesson-layout">
+        <aside class="lesson-sidebar" aria-label="講義工具">
+          <div class="lesson-side-card lesson-toc-card"><strong>本集導覽</strong><nav class="lesson-toc" data-lesson-toc></nav></div>
+          <div class="lesson-side-card">
+            <strong>學習進度</strong>
+            <button class="lesson-complete" type="button" aria-pressed="false" data-complete-lesson>標記本集已完成</button>
+            <div class="lesson-resource-list">
+              
+              
+              <a href="javascript:window.print()"><i data-lucide="printer" aria-hidden="true"></i>列印講義</a>
+            </div>
+          </div>
+        </aside>
+
+        <div>
+          <article class="lesson-body" data-lesson-body><h1>【Gemini 教學01】用 Gemini 快速整理教材與產生活動點子</h1>
+<p>這一篇不是要你一次學會 Gemini 的全部功能。</p>
+<p>我們先做一件很小、但很常用的事：把一段教材貼給 Gemini，請它幫忙整理重點，再請它想幾個可以放進課堂的小活動。</p>
+<p>你可以把 Gemini 想成一位會幫你先「打草稿」的備課助理。它不會取代老師，但可以幫你把空白的頁面先填出一版，讓你比較好修改。</p>
+<h2>這篇適合誰？</h2>
+<ul><li>想試試 Gemini，但不知道第一步要做什麼的老師。</li><li>手邊有教材文字，想先整理成簡單重點的老師。</li><li>想要活動靈感，但不想從零開始想的老師。</li><li>已經會一點 ChatGPT，想比較看看 Gemini 可以怎麼用的老師。</li></ul>
+<h2>先準備一小段教材</h2>
+<p>請先準備一段你正在教、或接下來想教的教材。</p>
+<p>不用很長，3 到 8 句就可以。</p>
+<p>如果你還沒有材料，可以先用這種格式：</p>
+<blockquote>我想教學生認識某個族語詞彙、生活情境或文化概念。  <br>這段內容大約適合國小或國中學生。  <br>我希望學生最後可以說出重點，並用一句話練習表達。</blockquote>
+<p>重點是：先給 Gemini 一點材料，不要只丟一句「幫我備課」。</p>
+<h2>第一步：請 Gemini 整理教材重點</h2>
+<p>你可以把下面這段直接貼給 Gemini：</p>
+<blockquote>請幫我整理這段教材的重點。  <br>對象是族語課老師，學生程度是初學者。  <br>請用條列式整理，不要寫得太難。  <br>最後請幫我列出 3 個學生最需要懂的關鍵概念。  <br> <br>教材內容：  <br>（把你的教材貼在這裡）</blockquote>
+<p>Gemini 回答後，你先不用急著照單全收。</p>
+<p>請先看三件事：</p>
+<ol><li>它有沒有抓到你真正想教的重點？</li><li>它有沒有把內容講得太難？</li><li>它有沒有多加一些你沒有確認過的資料？</li></ol>
+<p>如果有不適合的地方，就直接請它修改。</p>
+<h2>第二步：請 Gemini 產生活動點子</h2>
+<p>當你覺得重點整理差不多後，可以接著問：</p>
+<blockquote>請根據剛剛整理的教材重點，幫我設計 3 個課堂活動點子。  <br>每個活動請包含：  <br>1. 活動名稱  <br>2. 適合時間  <br>3. 老師要怎麼帶  <br>4. 學生要做什麼  <br>5. 需要注意的地方  <br> <br>請活動簡單一點，不要需要太多道具。</blockquote>
+<p>這一步的目標不是拿到完美活動，而是先得到幾個可以修改的方向。</p>
+<p>Gemini 通常會很快給你很多想法，但老師要做最後把關。</p>
+<h2>第三步：把活動改成你的班級能用</h2>
+<p>你可以再補一句：</p>
+<blockquote>我班上大約有 15 位學生，程度差異比較大，上課時間只剩 10 分鐘。  <br>請把第 2 個活動改成比較簡單、比較容易執行的版本。</blockquote>
+<p>這樣 Gemini 就會從「通用版本」變成「比較像你的課堂版本」。</p>
+<p>AI 最好用的地方，通常不是第一次回答，而是你繼續補充情境後的第二版、第三版。</p>
+<h2>老師檢查清單</h2>
+<p>在把 Gemini 的內容帶進教室前，請快速檢查：</p>
+<ul><li>內容有沒有符合你的教材？</li><li>用語會不會太難？</li><li>活動時間會不會太長？</li><li>學生真的做得到嗎？</li><li>有沒有出現你不確定正確性的文化或語言說法？</li></ul>
+<p>如果不確定，請先保守處理，不要把 AI 的回答當成標準答案。</p>
+<h2>可直接複製的 Gemini 提問模板</h2>
+<blockquote>請你扮演一位溫和、實務取向的族語課備課助理。  <br>我會提供一段教材，請你先幫我整理重點，再幫我設計可以在課堂使用的小活動。  <br>對象是初學者，請不要寫得太艱深。  <br>如果資料不足，請先提醒我還需要補充什麼，不要自己亂補。  <br> <br>教材內容：  <br>（貼上教材）</blockquote>
+<h2>口播腳本：開場</h2>
+<p>各位老師好，這一篇我們先來認識 Gemini 可以怎麼幫忙備課。</p>
+<p>我們不會一次學很多功能，今天只做一個很小的任務：把教材貼進 Gemini，請它幫我們整理重點，再產生幾個課堂活動點子。</p>
+<p>你可以把 Gemini 想成一個會先幫你打草稿的助理。它不一定每次都完全正確，可是它可以讓我們不用從空白頁開始。</p>
+<h2>口播腳本：操作示範</h2>
+<p>第一步，我們把教材貼給 Gemini，並清楚說明學生程度、課堂情境，以及我們希望它用條列方式整理。</p>
+<p>Gemini 回答後，先不要急著複製。老師要先看：它有沒有抓對重點？有沒有講太難？有沒有補進一些我們沒有確認過的內容？</p>
+<p>第二步，我們請 Gemini 根據這些重點產生 3 個活動點子。這時候要記得請它寫出活動名稱、時間、老師怎麼帶、學生做什麼，還有注意事項。</p>
+<p>第三步，我們再把自己的班級狀況補進去，請它調整成更適合自己班級的版本。</p>
+<h2>口播腳本：收尾</h2>
+<p>今天的重點不是要相信 Gemini 的每一句話，而是學會把 Gemini 當作備課起點。</p>
+<p>老師仍然是最後判斷的人。AI 可以幫我們整理、發想、改寫，但哪些內容能不能進教室，還是要靠老師的專業。</p>
+<p>如果你今天只記得一句話，就是：先給材料，再給情境，最後請 AI 幫你改成能用的版本。</p></article>
+
+          <div class="lesson-next">
+            <div><small>完成 SP002</small><strong>回到課程首頁，繼續下一個小任務。</strong></div>
+          <a href="/ai-helper/">回課程首頁<i data-lucide="arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer course-footer">
+    <div class="shell footer-bottom"><p>© CALUMAI · AI 族語備課小妙招</p><nav><a href="/ai-helper/">所有課程</a><a href="/">CALUMAI 首頁</a></nav><p>SP002</p></div>
+  </footer>
+</body>
+</html>
