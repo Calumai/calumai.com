@@ -221,7 +221,10 @@
 
   function authHelp(error) {
     const status = error?.status ? `（GitHub 回應 ${error.status}）` : "";
-    return `<div class="help-box"><strong>後台目前沒有拿到 GitHub 登入權限 ${escapeHtml(status)}</strong><p>請先回到後台登入頁，以同一個 GitHub 帳號登入一次；登入完成後再按「同步收件匣」。不需要另外開命令視窗、貼指令或建立第二把 token。</p><p class="hint">若你已登入卻仍出現這個訊息，代表舊版後台登入資料沒有被保存；重新登入一次即可。下一階段會改成正式 GitHub OAuth，連第一次手動 token 登入也會移除。</p></div>`;
+    const permissionNote = error?.status === 404
+      ? "你其實已登入，但目前這次登入只被授權讀取 blog-content；GitHub 會把沒有權限的私人收件匣故意回傳成 404。"
+      : "後台目前無法使用這次 GitHub 登入讀取收件匣。";
+    return `<div class="help-box"><strong>收件匣權限還沒接上 ${escapeHtml(status)}</strong><p>${permissionNote}</p><p>請先登出後台，再按「使用 GitHub 登入」重新登入一次；新的登入會同時取得網站內容與私人收件匣的權限。</p><p class="hint">這個後台不需要另外開命令視窗、貼指令或建立第二把 token。</p></div>`;
   }
 
   function renderRows(rows) {

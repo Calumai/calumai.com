@@ -2,7 +2,9 @@ backend:
   name: github
   repo: Calumai/blog-content
   branch: main
-  auth_methods: [token]
+  # 使用 CalumAI 自己的 OAuth 登入服務。管理者只需按一次 GitHub 登入，
+  # 後台與私人收件匣會共用同一份 GitHub 授權。
+  base_url: https://sveltia-cms-auth.islanduni.workers.dev
 
 app_title: CalumAi 網站後台
 
