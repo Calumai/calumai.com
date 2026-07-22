@@ -66,6 +66,23 @@ collections:
                   - { name: text, label: 說明, widget: text }
                   - { name: action, label: 按鈕文字, widget: string }
                   - { name: url, label: 連結, widget: string }
+              - name: learning_request
+                label: 首頁想學清單區
+                widget: object
+                fields:
+                  - { name: kicker, label: 小標, widget: string }
+                  - { name: title, label: 標題, widget: string }
+                  - { name: intro, label: 說明文字, widget: text }
+                  - name: prompts
+                    label: 引導卡片
+                    widget: list
+                    fields:
+                      - { name: icon, label: 圖示名稱（Lucide，例如 sparkles）, widget: string }
+                      - { name: title, label: 卡片標題, widget: string }
+                      - { name: text, label: 卡片文字, widget: text }
+                  - { name: cta_label, label: 按鈕文字, widget: string }
+                  - { name: cta_url, label: 按鈕連結, widget: string }
+                  - { name: note, label: 補充提示, widget: text, required: false }
           - name: games_page
             label: 遊戲頁
             widget: object
