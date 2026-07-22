@@ -292,7 +292,7 @@
   }
 
   function sidebar() {
-    const inboxCount = state.inbox.filter((row) => !row.imported).length;
+    const inboxCount = state.inbox.filter((row) => row.canImport).length;
     return `<aside class="studio-sidebar">
       <div class="brand"><span class="brand-mark" aria-hidden="true">CA</span><span class="brand-copy">CalumAi<small>網站發文台</small></span></div>
       <nav class="studio-nav" aria-label="管理台功能">
@@ -558,6 +558,8 @@
         : `<p class="inbox-ready">文章、圖片與來源說明都已備齊。</p>`;
       const action = row.imported
         ? statusBadge("published", "已在文章清單")
+        : row.inboxDispositionLabel
+          ? statusBadge("draft", row.inboxDispositionLabel)
         : row.canImport
           ? `<button class="button button--small" type="button" data-action="import-inbox" data-id="${escape(row.id)}">帶入文章清單</button>`
           : statusBadge("awaiting_human_review", "資料不完整");

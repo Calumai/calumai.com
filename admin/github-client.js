@@ -72,6 +72,8 @@
     const imageSourcesFile = findInboxFile(id, files, "IMAGE_SOURCES.md");
     const problems = [];
     let article = null;
+    let inboxDisposition = "";
+    let inboxDispositionLabel = "";
 
     if (!articleFile) {
       problems.push({ code: "missing_article", message: "缺少 article.md" });
@@ -79,6 +81,18 @@
       article = core.parseArticle(raw, id);
       if (!String(article.title || "").trim()) {
         problems.push({ code: "empty_title", message: "article.md 沒有文章標題" });
+      }
+      const sourceStatus = String(article.status || "").trim().toLowerCase();
+      if (sourceStatus === "withdrawn" || sourceStatus === "rejected" || sourceStatus === "cancelled") {
+        inboxDisposition = "withdrawn";
+        inboxDispositionLabel = "已撤回";
+        problems.push({ code: "withdrawn", message: "這篇投稿已撤回，不會再次帶入文章清單" });
+      } else if (sourceStatus === "split" || sourceStatus === "index") {
+        inboxDisposition = "index";
+        inboxDispositionLabel = "交件索引";
+        problems.push({ code: "submission_index", message: "這是交件索引，不是要發布的單篇文章" });
+      } else if (!new Set(["submitted", "awaiting_human_review", "draft"]).has(sourceStatus)) {
+        problems.push({ code: "invalid_submission_status", message: `投稿狀態「${sourceStatus || "空白"}」不是可匯入狀態` });
       }
       const assetInventory = files
         .map((file) => inboxRelativePath(id, file.path))
@@ -123,6 +137,8 @@
       excerpt,
       problems,
       missingReasons: problems.map((problem) => problem.message),
+      inboxDisposition,
+      inboxDispositionLabel,
       canImport: !imported && problems.length === 0,
     };
   }
