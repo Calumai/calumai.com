@@ -226,11 +226,11 @@
   }
 
   function importCommand(id) {
-    return `cd C:\\Users\\asd81\\Documents\\CalumAi\\blog-content && node scripts\\import-blog-inbox.js ..\\calumai-blog-inbox ${id}`;
+    return `node "C:\\Users\\asd81\\Documents\\CalumAi\\blog-content\\scripts\\import-blog-inbox.js" "C:\\Users\\asd81\\Documents\\CalumAi\\calumai-blog-inbox" ${id}`;
   }
 
   function pullCommand() {
-    return "cd C:\\Users\\asd81\\Documents\\CalumAi\\calumai-blog-inbox && git pull";
+    return 'git -C "C:\\Users\\asd81\\Documents\\CalumAi\\calumai-blog-inbox" pull';
   }
 
   async function copyText(text, label) {
@@ -343,4 +343,3 @@
     document.body.appendChild(button);
   });
 })();
-
