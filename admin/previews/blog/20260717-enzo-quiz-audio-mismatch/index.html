@@ -60,7 +60,7 @@ window.Audio = function (url) { console.log(&quot;play:&quot;, url); return new 
 <ol><li><strong>脫鉤要成對地改。</strong> 當你把 A 和 B 解除綁定（例如題目不再綁卡片），用搜尋把「所有還在讀舊關聯的地方」全部找出來，一次改乾淨。漏掉的那一端就是下一個 bug。</li><li><strong>警惕 `a ?? 舊路徑` 這種 fallback。</strong> 它常常是重構沒清乾淨的殘骸——不會報錯，只會在你沒注意時，悄悄走回那條你以為已經廢掉的舊路。</li><li><strong>驗證要看「實際輸出」，不是「程式碼意圖」。</strong> 攔截真正被執行的那一步（播放、請求、寫入），拿它跟預期對照。綠燈不是通過，對得上才是。</li></ol>
 <h2>Hashtag</h2>
 <p>#BuildInPublic #CalumAi #AI協作</p>
-<p>---</p>
+<hr>
 <h2>圖片需求</h2>
 <p>（若需要另生封面圖時的指引；本交件已附真實截圖，優先用真實截圖。）</p>
 <p>封面圖想呈現：一個安靜卻放錯的訊號——例如一張卡牌旁邊有個發音／喇叭圖示，指向的卻是「另一個詞」，帶點「看起來沒問題、其實不對」的違和感。或直接用附件的單機答題畫面。 色系：深色森林夜色底 + 霓虹青／琥珀點綴（沿用遊戲既有視覺）。 不能出現：真實人臉、族群織紋／圖騰／紋面、蛇、任何未授權素材、任何 token/密碼/個資。 可使用的真實截圖：<code>assets/01-play-card-detail.jpg</code>（單機盤面＋卡片詳情，畫面頂端副標即描述「揭曉後自動播發音」機制）、<code>assets/03-card-art-firelight-badger.jpg</code>、<code>assets/04-card-art-spoonbill.jpg</code>（遊戲實際卡面）。 備註：更貼切的「答題四選一／揭曉正解」畫面因自動化操作到該畫面不穩定，本次未附；如需，可依 <code>IMAGE_SOURCES.md</code> 的步驟手動於 <code>/play</code> 出一張牌即可截到。</p></article></main></body>

@@ -1050,6 +1050,12 @@
   content: "“";
 }
 
+.lesson-body hr {
+  border: 0;
+  border-top: 1px solid rgba(36, 86, 66, 0.18);
+  margin: 34px 0;
+}
+
 .lesson-body code {
   border-radius: 6px;
   background: #eef3ef;
