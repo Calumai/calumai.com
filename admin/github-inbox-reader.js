@@ -10,6 +10,8 @@
   const BLOG_REPO = "blog-content";
   const BRANCH = "main";
   const TOKEN_HELP_URL = "https://github.com/settings/personal-access-tokens/new?name=CalumAi%20Blog%20Inbox%20Reader&description=Read%20Calumai%2Fcalumai-blog-inbox%20submissions&target_name=Calumai&expires_in=90&contents=read";
+  const HELPER_URL = "http://127.0.0.1:8787";
+  const HELPER_HEADER = "blog-inbox-helper";
   const BUTTON_BOTTOM = 132;
   const PANEL_BOTTOM = 188;
   const NOTICE_BOTTOM = 92;
@@ -124,6 +126,20 @@
     #${PANEL_ID} .help-box ol { margin: 8px 0 0 20px; padding: 0; }
     #${PANEL_ID} .help-box li { margin: 4px 0; }
     #${PANEL_ID} .help-box a { color: #245642; font-weight: 900; }
+    #${PANEL_ID} .helper-result {
+      border: 1px solid #d8e6dd;
+      border-radius: 14px;
+      background: #f5fbf7;
+      padding: 12px;
+      margin: 10px 0;
+    }
+    #${PANEL_ID} .helper-result pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 8px 0 0;
+      color: #52615a;
+      font-size: 12px;
+    }
     #${NOTICE_ID} {
       position: fixed;
       left: 50%;
@@ -270,6 +286,56 @@
     `;
   }
 
+  function helperHelpHtml(error) {
+    const message = error?.message ? `<p style="color:#b42318;">${escapeHtml(error.message)}</p>` : "";
+    return `
+      <div class="help-box">
+        <strong>還不能一鍵匯入</strong>
+        ${message}
+        <p>請先在這台電腦啟動一次「收件匣小助手」。最簡單方式：</p>
+        <ol>
+          <li>打開 <code>C:\\Users\\asd81\\Documents\\CalumAi\\blog-content\\start-inbox-helper.cmd</code>。</li>
+          <li>黑色視窗出現「收件匣小助手已啟動」後，不要關掉。</li>
+          <li>回到這個後台，再按一次「讀取並匯入可處理文章」。</li>
+        </ol>
+        <p class="hint">這是因為瀏覽器不能直接改你電腦裡的文章檔案，需要本機小助手代辦。</p>
+      </div>
+    `;
+  }
+
+  async function helperRequest(path, body = {}) {
+    const response = await fetch(`${HELPER_URL}${path}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CalumAi-Admin": HELPER_HEADER,
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok && response.status !== 207) {
+      const error = new Error(data.message || "本機收件匣小助手回應失敗。");
+      error.data = data;
+      throw error;
+    }
+    return data;
+  }
+
+  function helperResultHtml(data) {
+    const imports = data.imports || [];
+    const lines = imports.map((item) => {
+      const text = [item.stdout, item.stderr].filter(Boolean).join("\n").trim();
+      return `${item.ok ? "✅" : "⚠️"} ${item.id}\n${text || (item.ok ? "已處理" : "處理失敗")}`;
+    });
+    return `
+      <div class="helper-result">
+        <strong>${data.ok ? "匯入完成" : "匯入完成，但有文章需要檢查"}</strong>
+        <p class="hint">已先更新本機收件匣，再匯入到 <code>posts/</code>。接著請到部落格文章列表預覽內容。</p>
+        ${lines.length ? `<pre>${escapeHtml(lines.join("\n\n"))}</pre>` : ""}
+      </div>
+    `;
+  }
+
   async function copyText(text, label) {
     await navigator.clipboard.writeText(text);
     showNotice(`已複製：${label}`);
@@ -301,7 +367,8 @@
           <div class="actions">
             <a class="button secondary" href="${row.htmlUrl}" target="_blank" rel="noopener noreferrer">GitHub 打開</a>
             <button class="secondary" type="button" data-copy-id="${escapeHtml(row.id)}">複製交件 ID</button>
-            <button type="button" data-copy-command="${escapeHtml(row.id)}">複製匯入指令</button>
+            ${missing.length ? "" : `<button type="button" data-import-id="${escapeHtml(row.id)}">一鍵匯入到後台</button>`}
+            <button class="secondary" type="button" data-copy-command="${escapeHtml(row.id)}">複製匯入指令</button>
           </div>
         </div>
       `;
@@ -320,6 +387,7 @@
     <input id="calumai-inbox-token" type="password" autocomplete="off" placeholder="貼上可讀 Calumai/calumai-blog-inbox 的 GitHub token">
     <div class="actions">
       <button type="button" data-action="load">讀取收件匣</button>
+      <button type="button" data-action="load-import">讀取並匯入可處理文章</button>
       <button class="secondary" type="button" data-action="copy-pull">複製更新本機收件匣指令</button>
       <button class="danger" type="button" data-action="clear-token">清除 token</button>
       <a class="button secondary" href="${TOKEN_HELP_URL}" target="_blank" rel="noopener noreferrer">建立收件匣 token</a>
@@ -333,7 +401,19 @@
   button.type = "button";
   button.textContent = "📥 GitHub 收件匣";
 
-  async function handleLoad() {
+  async function importIds(ids) {
+    const result = panel.querySelector("#calumai-inbox-result");
+    result.innerHTML = `<p>正在更新本機收件匣並匯入 ${ids.length} 篇文章...</p>`;
+    try {
+      const data = await helperRequest("/import", { ids });
+      result.innerHTML = helperResultHtml(data);
+    } catch (error) {
+      result.innerHTML = helperHelpHtml(error);
+    }
+  }
+
+  async function handleLoad(options = {}) {
+    const autoImport = Boolean(options.autoImport);
     const tokenInput = panel.querySelector("#calumai-inbox-token");
     const result = panel.querySelector("#calumai-inbox-result");
     const token = tokenInput.value.trim() || getStoredToken();
@@ -347,6 +427,16 @@
     try {
       const rows = await loadSubmissions(token);
       result.innerHTML = renderRows(rows);
+      if (autoImport) {
+        const readyIds = rows
+          .filter((row) => row.article && row.imageSources)
+          .map((row) => row.id);
+        if (!readyIds.length) {
+          result.innerHTML = `${renderRows(rows)}<p class="hint">目前沒有檔案齊全、可匯入的文章。</p>`;
+          return;
+        }
+        await importIds(readyIds);
+      }
     } catch (error) {
       result.innerHTML = `<span style="color:#b42318;">${escapeHtml(error.message || error)}</span>${tokenHelpHtml(error)}`;
     }
@@ -358,6 +448,7 @@
     const action = target.dataset.action;
     const id = target.dataset.copyId || target.dataset.copyCommand;
     if (action === "load") await handleLoad();
+    if (action === "load-import") await handleLoad({ autoImport: true });
     if (action === "copy-pull") await copyText(pullCommand(), "更新本機收件匣指令");
     if (action === "clear-token") {
       localStorage.removeItem(TOKEN_KEY);
@@ -366,6 +457,7 @@
     }
     if (target.dataset.copyId) await copyText(id, "交件 ID");
     if (target.dataset.copyCommand) await copyText(importCommand(id), "匯入指令");
+    if (target.dataset.importId) await importIds([target.dataset.importId]);
   });
 
   button.addEventListener("click", () => {
