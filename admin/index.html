@@ -2,16 +2,19 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex">
-  <title>CalumAi 文章編輯後台</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#edf1ef">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://api.github.com https://calumai.com; img-src 'self' blob: data: https://calumai.com; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>CalumAi 管理台</title>
+  <link rel="stylesheet" href="./studio.css">
 </head>
 <body>
-  <script src="./calumai-home.js" defer></script>
-  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
-  <script src="./admin-friendly-guide.js" defer></script>
-  <script src="./blog-preview-helper.js" defer></script>
-  <script src="./ai100-md-import.js" defer></script>
-  <script src="./github-inbox-reader.js" defer></script>
+  <noscript>CalumAi 管理台需要開啟 JavaScript。</noscript>
+  <div id="studio-live-region" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div id="studio-app"></div>
+  <script src="./studio-core.js"></script>
+  <script src="./github-client.js"></script>
+  <script src="./studio.js"></script>
 </body>
 </html>
