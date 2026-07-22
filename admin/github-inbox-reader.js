@@ -53,35 +53,50 @@
     setTimeout(() => notice.remove(), 4800);
   }
 
-  // Sveltia stores its GitHub login in this site's browser storage. We only look
-  // for GitHub-shaped values, never send storage values anywhere else.
-  function getCmsGithubToken() {
-    const tokenPattern = /(?:github_pat|gh[opusr])_[A-Za-z0-9_]+/;
+  // Sveltia stores its GitHub login in this site's browser storage. We collect
+  // GitHub-shaped values, then test which one can actually read the inbox.
+  function collectCmsGithubTokens() {
+    const tokenPattern = /(?:github_pat_[A-Za-z0-9_]+|gh[opusr]_[A-Za-z0-9_]+)/g;
+    const tokens = new Set();
     for (const store of [localStorage, sessionStorage]) {
       for (let i = 0; i < store.length; i += 1) {
         const raw = store.getItem(store.key(i)) || "";
-        const direct = raw.match(tokenPattern)?.[0];
-        if (direct) return direct;
-        try {
-          const stack = [JSON.parse(raw)];
-          while (stack.length) {
-            const item = stack.pop();
-            if (!item || typeof item !== "object") continue;
-            for (const value of Object.values(item)) {
-              if (typeof value === "string") {
-                const match = value.match(tokenPattern)?.[0];
-                if (match) return match;
-              } else if (value && typeof value === "object") {
-                stack.push(value);
-              }
-            }
-          }
-        } catch {
-          // This storage entry is not JSON, which is normal.
-        }
+        for (const match of raw.matchAll(tokenPattern)) tokens.add(match[0]);
       }
     }
-    return "";
+    return [...tokens];
+  }
+
+  function clearStoredGithubLogin() {
+    const looksLikeCmsAuth = /(github_pat_|gh[opusr]_|github|sveltia|netlify-cms|decap|Calumai\/blog-content)/i;
+    for (const store of [localStorage, sessionStorage]) {
+      const keys = [];
+      for (let i = 0; i < store.length; i += 1) {
+        const key = store.key(i);
+        const raw = store.getItem(key) || "";
+        if (looksLikeCmsAuth.test(`${key}\n${raw}`)) keys.push(key);
+      }
+      keys.forEach((key) => store.removeItem(key));
+    }
+  }
+
+  async function getInboxToken() {
+    const tokens = collectCmsGithubTokens();
+    if (!tokens.length) throw new Error("沒有找到 GitHub 登入權限");
+
+    const failures = [];
+    for (const token of tokens) {
+      try {
+        await github(`/repos/${OWNER}/${INBOX_REPO}`, token);
+        return token;
+      } catch (error) {
+        failures.push(error);
+      }
+    }
+
+    const error = failures.find((item) => item.status === 404) || failures[0] || new Error("GitHub 登入權限不足");
+    error.message = "目前瀏覽器裡有 GitHub 登入，但沒有一個能讀私人收件匣。";
+    throw error;
   }
 
   async function github(path, token, options = {}) {
@@ -224,7 +239,7 @@
     const permissionNote = error?.status === 404
       ? "你其實已登入，但目前這次登入只被授權讀取 blog-content；GitHub 會把沒有權限的私人收件匣故意回傳成 404。"
       : "後台目前無法使用這次 GitHub 登入讀取收件匣。";
-    return `<div class="help-box"><strong>收件匣權限還沒接上 ${escapeHtml(status)}</strong><p>${permissionNote}</p><p>請先登出後台，再按「使用 GitHub 登入」重新登入一次；新的登入會同時取得網站內容與私人收件匣的權限。</p><p class="hint">這個後台不需要另外開命令視窗、貼指令或建立第二把 token。</p></div>`;
+    return `<div class="help-box"><strong>收件匣權限還沒接上 ${escapeHtml(status)}</strong><p>${permissionNote}</p><p>按下面這顆按鈕，後台會清掉舊登入並重新載入；接著請按「使用 GitHub 登入」，授權後再同步收件匣。</p><div class="actions"><button type="button" data-action="reset-auth">清掉舊登入並重新登入</button></div><p class="hint">這個後台不需要另外開命令視窗、貼指令或建立第二把 token。</p></div>`;
   }
 
   function renderRows(rows) {
@@ -245,17 +260,11 @@
   button.type = "button";
   button.textContent = "📥 GitHub 收件匣";
 
-  async function getTokenOrShowHelp() {
-    const token = getCmsGithubToken();
-    if (!token) throw new Error("沒有找到 GitHub 登入權限");
-    return token;
-  }
-
   async function loadIntoPanel() {
     const result = panel.querySelector("#calumai-inbox-result");
-    result.textContent = "正在同步收件匣…";
+    result.textContent = "正在同步收件匣…如果瀏覽器裡有舊登入，後台會自動跳過不能讀收件匣的那個。";
     try {
-      const rows = await loadSubmissions(await getTokenOrShowHelp());
+      const rows = await loadSubmissions(await getInboxToken());
       panel.dataset.rows = JSON.stringify(rows);
       result.innerHTML = renderRows(rows);
     } catch (error) {
@@ -267,7 +276,7 @@
     const result = panel.querySelector("#calumai-inbox-result");
     result.innerHTML = `<div class="result-box">正在把 ${ids.length} 篇文章帶入後台草稿…</div>`;
     try {
-      const token = await getTokenOrShowHelp();
+      const token = await getInboxToken();
       const results = [];
       for (const id of ids) results.push(await importSubmission(id, token));
       result.innerHTML = `<div class="result-box"><strong>收件匣處理完成</strong><p>${results.map((item) => `${escapeHtml(item.id)}：${escapeHtml(item.message)}`).join("<br>")}</p><p class="hint">稍等一下重新整理後台，文章會出現在「部落格文章」裡。網站仍不會自動公開。</p></div>`;
@@ -280,6 +289,12 @@
     const target = event.target.closest("button");
     if (!target) return;
     if (target.dataset.action === "load") await loadIntoPanel();
+    if (target.dataset.action === "reset-auth") {
+      clearStoredGithubLogin();
+      showNotice("舊登入已清除，正在重新載入後台。");
+      window.location.href = `/admin/?v=${Date.now()}`;
+      return;
+    }
     if (target.dataset.action === "import-all") {
       const rows = JSON.parse(panel.dataset.rows || "[]");
       if (!rows.length) return loadIntoPanel();
