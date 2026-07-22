@@ -139,7 +139,7 @@
   ai100Button.addEventListener("click", () => {
     const contentId = findAi100Id();
     if (!contentId) {
-      showNotice("我找不到這筆 AI-100 內容的「內容編號」。請先填 EP001 或 SP002 這種格式，再儲存。");
+      showNotice("我找不到這筆 AI-100 內容的「內容編號」。請先填 EP001、SP001 或 GM001 這種格式，再儲存。");
       return;
     }
 
