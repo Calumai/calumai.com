@@ -129,9 +129,9 @@ collections:
                   - { name: url, label: 工具連結, widget: string }
 
   - name: posts
-    label: 部落格文章
+    label: 部落格文章（製作心得）
     label_singular: 文章
-    description: 儲存後可先開預覽網址確認排版；只有 status 改成 published 才會進正式部落格。
+    description: 寫製作心得或工作紀錄。先儲存看預覽，確認沒問題後才改成公開發布。
     folder: posts
     create: true
     format: yaml-frontmatter
@@ -145,20 +145,25 @@ collections:
     summary: '{{title}}（{{fields.status}}）'
     sortable_fields: [title, status]
     fields:
-      - { name: title, label: 標題, widget: string }
+      - { name: title, label: 文章標題, widget: string, hint: 會顯示在文章頁最上方。 }
       - name: folder_id
-        label: 資料夾編號（建立後不可改，格式 YYYYMMDD-英文短名）
+        label: 資料夾編號（建立後不要改）
+        hint: 用日期加英文短名，例如 20260722-my-post。這是後台存檔用的名字，不是讀者看到的標題。
         widget: string
         pattern: ['^\d{8}-[a-z0-9-]+$', '必須是 YYYYMMDD-英文短名，例如 20260720-my-post']
-      - { name: slug, label: 網址 slug（小寫英文與連字號）, widget: string }
-      - { name: excerpt, label: 摘要, widget: text }
+      - { name: slug, label: 文章網址名稱, widget: string, hint: 用小寫英文與連字號，例如 my-first-post。之後網址會像 /blog/my-first-post/。 }
+      - { name: excerpt, label: 文章摘要, widget: text, hint: 顯示在文章列表與預覽卡片，寫 1–2 句就好。 }
       - name: status
-        label: 狀態（改成 published 並儲存 = 核准發布）
+        label: 發布狀態
+        hint: 新文章先用 draft 或 awaiting_human_review。只有選 published 並儲存後，才會進正式部落格。
         widget: select
-        options: [draft, awaiting_human_review, published]
+        options:
+          - { label: 草稿：還在寫，不公開, value: draft }
+          - { label: 等我檢查：可看預覽，不公開, value: awaiting_human_review }
+          - { label: 正式公開：會出現在網站, value: published }
         default: draft
-      - { name: approval_required, label: 需要人工核准, widget: boolean, default: true }
-      - { name: featured, label: 精選文章, widget: boolean, default: false, required: false }
+      - { name: approval_required, label: 發布保險：需要人工核准, widget: boolean, default: true, hint: 建議保持開啟，避免文章還沒看過就公開。 }
+      - { name: featured, label: 設成精選文章, widget: boolean, default: false, required: false, hint: 通常先不要開；首頁或列表要特別主打時再開。 }
       - { name: author, label: 作者, widget: string, default: CalumAi Studio, required: false }
       - { name: category, label: 分類, widget: string, required: false }
       - { name: series, label: 系列, widget: string, required: false }
@@ -166,14 +171,18 @@ collections:
       - { name: feature_image, label: 主圖, widget: image, required: false }
       - { name: feature_image_alt, label: 主圖說明, widget: string, required: false }
       - name: image_source_type
-        label: 圖片來源類型（發布前必須是真實截圖或編輯圖解）
+        label: 主圖來源類型
+        hint: 正式發布前要選真實來源；如果還沒準備好，先維持 pending。
         widget: select
-        options: [project_screenshot, editorial_diagram, pending]
+        options:
+          - { label: 還沒確認圖片來源, value: pending }
+          - { label: 專案實際截圖, value: project_screenshot }
+          - { label: 自製編輯圖解, value: editorial_diagram }
         default: pending
-      - { name: image_source_path, label: 圖片來源紀錄, widget: string, required: false }
+      - { name: image_source_path, label: 主圖來源紀錄, widget: string, required: false, hint: 寫這張圖從哪裡來，例如截圖路徑、設計檔或生成紀錄。 }
       - { name: seo_title, label: SEO 標題, widget: string, required: false }
       - { name: seo_description, label: SEO 描述, widget: text, required: false }
-      - { name: body, label: 內文, widget: markdown }
+      - { name: body, label: 文章內文, widget: markdown, hint: 這裡寫正式文章。儲存後按「打開部落格預覽」檢查排版。 }
 
   - name: episodes
     label: AI-100 內容（備課小幫手）
@@ -193,48 +202,57 @@ collections:
     fields:
       - name: id
         label: 內容編號（建立後不可改）
+        hint: 影片課程用 EP001；圖文講義或延伸教學用 SP001。後台可能顯示小寫，但預覽網址會用大寫。
         widget: string
         pattern: ['^([Ee][Pp]|[Ss][Pp])\d{3}$', '影片課程用 EP001；圖文講義／延伸教學可用 SP001（大小寫都可以）']
       - name: content_type
         label: 內容類型
+        hint: 有 YouTube 影片就選影片課程；沒有影片、只有 Markdown 講義就選圖文講義。
         widget: select
         options:
           - { label: 影片課程（有 YouTube）, value: video_lesson }
           - { label: 圖文講義（沒有影片，只用 Markdown）, value: handout }
         default: video_lesson
-      - { name: title, label: 標題, widget: string }
-      - { name: summary, label: 內容摘要, widget: text, required: false }
+      - { name: title, label: 標題, widget: string, hint: 會顯示在 AI-100 卡片與講義頁。 }
+      - { name: summary, label: 內容摘要, widget: text, required: false, hint: 寫 1–2 句，讓讀者知道這篇在教什麼。 }
       - { name: learning_goal, label: 學習目標（僅內部參考）, widget: text, required: false }
       - { name: teaching_result, label: 教學成果（僅內部參考）, widget: text, required: false }
       - name: cover_image
         label: 封面圖（PNG 或 JPEG，會存進這筆內容自己的資料夾）
+        hint: 上傳這篇自己的封面圖。沒有封面也能先預覽，但正式發布建議補上。
         widget: image
         required: false
         media_folder: ''
         public_folder: ''
       - name: youtube_url
-        label: YouTube 網址（影片請先手動上傳 YouTube）
+        label: YouTube 網址（只有影片課程要填）
+        hint: 圖文講義可以空白。影片課程請貼 youtube.com/watch?v=... 或 youtu.be/...。
         widget: string
         required: false
         pattern: ['^$|^https://(www\.)?(youtube\.com/watch\?v=|youtu\.be/).+', '必須是 youtube.com/watch?v=... 或 youtu.be/... 網址']
       - name: source_markdown
         label: 上傳 Markdown 講義（.md，可選，會自動帶入講義內文）
+        hint: 上傳後會嘗試自動帶入下面的「講義內文」。如果沒有帶入，按右下角「匯入 .md 到講義內文」。
         widget: file
         required: false
         accept: .md,.markdown,text/markdown,text/plain
         media_folder: ''
         public_folder: ''
       - name: status
-        label: 狀態（改成 published 並儲存 = 核准發布）
+        label: 發布狀態
+        hint: 先維持 draft，儲存後看 AI-100 預覽。確認沒問題再改成 published。
         widget: select
-        options: [draft, published]
+        options:
+          - { label: 草稿：可產生預覽，不公開, value: draft }
+          - { label: 正式公開：會出現在 AI-100, value: published }
         default: draft
-      - { name: content_approved, label: 人工確認：教學內容與字幕正確, widget: boolean, default: false }
-      - { name: privacy_approved, label: 人工確認：畫面隱私沒問題, widget: boolean, default: false }
-      - { name: youtube_approved, label: 影片才需要：YouTube 已確認可公開, widget: boolean, default: false }
+      - { name: content_approved, label: 發布前確認：內容看過了，沒有明顯錯字或排版問題, widget: boolean, default: false }
+      - { name: privacy_approved, label: 發布前確認：圖片/畫面沒有私人資料, widget: boolean, default: false }
+      - { name: youtube_approved, label: 影片才需要：YouTube 已確認可公開, widget: boolean, default: false, hint: 圖文講義不用管這個；影片課程要確認 YouTube 可公開播放。 }
       - { name: published_at, label: 發布時間（自動保留，勿改）, widget: string, required: false }
       - { name: notes, label: 備註, widget: text, required: false }
       - name: body
         label: 講義內文（發布以這裡為主；上傳 .md 後會自動帶入）
         widget: markdown
         required: false
+        hint: 正式發布會以這裡為主。儲存後按「打開 AI-100 預覽」看真正排版。
