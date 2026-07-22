@@ -9,6 +9,7 @@
   const INBOX_REPO = "calumai-blog-inbox";
   const BLOG_REPO = "blog-content";
   const BRANCH = "main";
+  const TOKEN_HELP_URL = "https://github.com/settings/personal-access-tokens/new?name=CalumAi%20Blog%20Inbox%20Reader&description=Read%20Calumai%2Fcalumai-blog-inbox%20submissions&target_name=Calumai&expires_in=90&contents=read";
   const BUTTON_BOTTOM = 132;
   const PANEL_BOTTOM = 188;
   const NOTICE_BOTTOM = 92;
@@ -111,6 +112,18 @@
       font-size: 12px;
     }
     #${PANEL_ID} .hint { color: #6b746f; font-size: 12px; }
+    #${PANEL_ID} .help-box {
+      border: 1px solid #f2c9bc;
+      border-radius: 14px;
+      background: #fff4ed;
+      color: #3c2a22;
+      padding: 12px;
+      margin: 10px 0;
+    }
+    #${PANEL_ID} .help-box strong { display: block; color: #b42318; margin-bottom: 6px; }
+    #${PANEL_ID} .help-box ol { margin: 8px 0 0 20px; padding: 0; }
+    #${PANEL_ID} .help-box li { margin: 4px 0; }
+    #${PANEL_ID} .help-box a { color: #245642; font-weight: 900; }
     #${NOTICE_ID} {
       position: fixed;
       left: 50%;
@@ -188,11 +201,14 @@
     const response = await fetch(url, {
       headers: {
         Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
     if (response.status === 401 || response.status === 403 || response.status === 404) {
-      throw new Error("讀不到私人 GitHub 收件匣。請確認 token 有 repo 權限，並且你能讀 Calumai/calumai-blog-inbox。");
+      const error = new Error("讀不到私人 GitHub 收件匣。這通常是 token 沒有被授權讀 Calumai/calumai-blog-inbox，或你的 GitHub 帳號還不能讀這個私人 repo。");
+      error.status = response.status;
+      throw error;
     }
     if (!response.ok) throw new Error(`GitHub 回應 ${response.status}`);
     return response.json();
@@ -234,6 +250,24 @@
 
   function pullCommand() {
     return 'git -C "C:\\Users\\asd81\\Documents\\CalumAi\\calumai-blog-inbox" pull';
+  }
+
+  function tokenHelpHtml(error) {
+    const statusText = error?.status ? `GitHub API 回傳 ${error.status}。` : "";
+    return `
+      <div class="help-box">
+        <strong>讀不到私人收件匣：${escapeHtml(statusText)}</strong>
+        <p>這不是文章壞掉，是 GitHub token 權限不夠。請建立一個只讀收件匣的 token：</p>
+        <ol>
+          <li>打開 <a href="${TOKEN_HELP_URL}" target="_blank" rel="noopener noreferrer">GitHub token 建立頁</a>。</li>
+          <li>Resource owner 選 <code>${OWNER}</code>。</li>
+          <li>Repository access 選 <code>Only select repositories</code>，再選 <code>${INBOX_REPO}</code>。</li>
+          <li>Repository permissions 裡把 <code>Contents</code> 設成 <code>Read-only</code>。</li>
+          <li>Generate token 後，把 token 貼回這個面板，再按「讀取收件匣」。</li>
+        </ol>
+        <p class="hint">如果 GitHub 說需要組織核准，請先核准 token，或確認你的帳號能開啟 <code>${OWNER}/${INBOX_REPO}</code>。</p>
+      </div>
+    `;
   }
 
   async function copyText(text, label) {
@@ -281,12 +315,14 @@
     <h2>GitHub 收件匣</h2>
     <p>讀取 <code>${OWNER}/${INBOX_REPO}</code> 的 <code>submissions/</code>，幫你看有沒有新的部落格交件。</p>
     <p class="hint">注意：這個面板先做「讀取與複製匯入指令」。真正匯入仍要在本機執行，避免瀏覽器直接亂改文章庫。</p>
+    <p class="hint">如果 blog 後台原本的登入 token 讀不到，通常是因為它只能讀 <code>${BLOG_REPO}</code>，不能讀私人收件匣。</p>
     <label for="calumai-inbox-token">GitHub token（只存在這台瀏覽器）</label>
-    <input id="calumai-inbox-token" type="password" autocomplete="off" placeholder="如果 Sveltia token 讀不到，再貼有 repo 權限的 GitHub token">
+    <input id="calumai-inbox-token" type="password" autocomplete="off" placeholder="貼上可讀 Calumai/calumai-blog-inbox 的 GitHub token">
     <div class="actions">
       <button type="button" data-action="load">讀取收件匣</button>
       <button class="secondary" type="button" data-action="copy-pull">複製更新本機收件匣指令</button>
       <button class="danger" type="button" data-action="clear-token">清除 token</button>
+      <a class="button secondary" href="${TOKEN_HELP_URL}" target="_blank" rel="noopener noreferrer">建立收件匣 token</a>
       <a class="button secondary" href="https://github.com/${OWNER}/${INBOX_REPO}/tree/${BRANCH}/submissions" target="_blank" rel="noopener noreferrer">直接打開 GitHub</a>
     </div>
     <div id="calumai-inbox-result" class="hint">按「讀取收件匣」開始。</div>
@@ -302,7 +338,7 @@
     const result = panel.querySelector("#calumai-inbox-result");
     const token = tokenInput.value.trim() || getStoredToken();
     if (!token) {
-      result.innerHTML = "需要 GitHub token 才能讀私人收件匣。請貼 token 後再按一次。";
+      result.innerHTML = tokenHelpHtml();
       return;
     }
     localStorage.setItem(TOKEN_KEY, token);
@@ -312,7 +348,7 @@
       const rows = await loadSubmissions(token);
       result.innerHTML = renderRows(rows);
     } catch (error) {
-      result.innerHTML = `<span style="color:#b42318;">${escapeHtml(error.message || error)}</span>`;
+      result.innerHTML = `<span style="color:#b42318;">${escapeHtml(error.message || error)}</span>${tokenHelpHtml(error)}`;
     }
   }
 
