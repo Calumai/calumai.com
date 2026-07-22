@@ -83,6 +83,15 @@ collections:
                   - { name: cta_label, label: 按鈕文字, widget: string }
                   - { name: cta_url, label: 按鈕連結, widget: string }
                   - { name: note, label: 補充提示, widget: text, required: false }
+                  - { name: line_title, label: LINE 入口標題, widget: string }
+                  - { name: line_text, label: LINE 入口說明, widget: text }
+                  - { name: direct_title, label: 頁面留言標題, widget: string }
+                  - { name: direct_text, label: 頁面留言說明, widget: text }
+                  - { name: direct_placeholder, label: 頁面留言預設格式, widget: text }
+                  - { name: direct_submit_label, label: 頁面留言送出按鈕, widget: string }
+                  - { name: direct_url, label: 頁面留言送出連結, widget: string }
+                  - { name: direct_issue_title, label: 公開留言單預設標題, widget: string }
+                  - { name: direct_privacy_note, label: 頁面留言提醒, widget: text, required: false }
           - name: games_page
             label: 遊戲頁
             widget: object
