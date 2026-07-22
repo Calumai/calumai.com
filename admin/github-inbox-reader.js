@@ -9,13 +9,16 @@
   const INBOX_REPO = "calumai-blog-inbox";
   const BLOG_REPO = "blog-content";
   const BRANCH = "main";
+  const BUTTON_BOTTOM = 132;
+  const PANEL_BOTTOM = 188;
+  const NOTICE_BOTTOM = 92;
 
   const style = document.createElement("style");
   style.textContent = `
     #${BUTTON_ID} {
       position: fixed;
       right: 18px;
-      bottom: 76px;
+      bottom: ${BUTTON_BOTTOM}px;
       z-index: 99999;
       border: 0;
       border-radius: 999px;
@@ -30,7 +33,7 @@
     #${PANEL_ID} {
       position: fixed;
       right: 18px;
-      bottom: 132px;
+      bottom: ${PANEL_BOTTOM}px;
       z-index: 100000;
       width: min(560px, calc(100vw - 36px));
       max-height: min(720px, calc(100vh - 160px));
@@ -111,7 +114,7 @@
     #${NOTICE_ID} {
       position: fixed;
       left: 50%;
-      bottom: 18px;
+      bottom: ${NOTICE_BOTTOM}px;
       z-index: 100001;
       transform: translateX(-50%);
       max-width: min(560px, calc(100vw - 36px));
@@ -123,8 +126,8 @@
       padding: 12px 14px;
     }
     @media (max-width: 720px) {
-      #${BUTTON_ID} { right: 10px; bottom: 76px; }
-      #${PANEL_ID} { left: 10px; right: 10px; bottom: 132px; width: auto; }
+      #${BUTTON_ID} { right: 10px; bottom: ${BUTTON_BOTTOM}px; }
+      #${PANEL_ID} { left: 10px; right: 10px; bottom: ${PANEL_BOTTOM}px; width: auto; }
     }
   `;
   document.head.appendChild(style);
