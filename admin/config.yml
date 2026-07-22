@@ -194,9 +194,10 @@ collections:
         required: false
         pattern: ['^$|^https://(www\.)?(youtube\.com/watch\?v=|youtu\.be/).+', '必須是 youtube.com/watch?v=... 或 youtu.be/... 網址']
       - name: source_markdown
-        label: 上傳 Markdown 講義（.md，可選）
+        label: 上傳 Markdown 講義（.md，可選，會自動帶入講義內文）
         widget: file
         required: false
+        accept: .md,.markdown,text/markdown,text/plain
         media_folder: ''
         public_folder: ''
       - name: status
@@ -210,6 +211,6 @@ collections:
       - { name: published_at, label: 發布時間（自動保留，勿改）, widget: string, required: false }
       - { name: notes, label: 備註, widget: text, required: false }
       - name: body
-        label: 講義內文（圖片放本集 assets/，引用路徑寫 assets/EPxxx/檔名）
+        label: 講義內文（發布以這裡為主；上傳 .md 後會自動帶入）
         widget: markdown
         required: false
