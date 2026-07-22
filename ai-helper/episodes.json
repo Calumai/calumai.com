@@ -58,5 +58,17 @@
     "handoutFile": "EP005.md",
     "coverFile": "EP005.png",
     "publishedAt": "2026-07-21T11:39:48.221Z"
+  },
+  {
+    "id": "SP001",
+    "contentType": "handout",
+    "contentLabel": "圖文講義",
+    "title": "【特別篇01】不會寫提示詞沒關係：先把你想做的事情告訴 AI",
+    "summary": "",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "SP001.md",
+    "coverFile": "SP001.png",
+    "publishedAt": "2026-07-22T10:00:52.948Z"
   }
 ]
