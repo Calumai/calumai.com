@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>[預覽] 【族語射手 02】題目不是塞進去就好：我怎麼把族語 E 樂園資料接成遊戲關卡</title>
+  <meta name="description" content="這篇拆解族語射手的題目設計：資料怎麼來、圖片和發音怎麼接、五種玩法怎麼共用同一批詞彙，以及新手做題庫遊戲前一定要先想清楚的幾件事。">
+  
+  <link rel="stylesheet" href="/styles.css?v=20260717-8">
+  <link rel="stylesheet" href="/blog/blog.css?v=20260718-readable-article">
+  <script src="/assets/lucide.min.js" defer></script>
+  <script src="/app.js" defer></script>
+  <meta name="robots" content="noindex, nofollow">
+</head>
+<body class="mission-site blog-site"><header class="site-header mission-header" data-header><a class="brand mission-brand" href="/" aria-label="CALUMAI 首頁"><img class="mission-brand-logo" src="/assets/calumai-logo-mark.png" alt="" width="96" height="96"><span>CALUMAI</span></a><button class="menu-toggle icon-button mission-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle><i data-lucide="menu" aria-hidden="true"></i></button><nav class="primary-nav mission-nav" id="primary-nav" aria-label="主要導覽" data-nav><a href="/games/">遊戲介紹</a><a href="/blog/" aria-current="page">製作心得</a><a href="/ai-helper/">備課小幫手</a><a class="nav-cta" href="/tools/">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a></nav></header>
+<main class="blog-main"><section class="blog-hero article-header"><div class="mission-grid-bg" aria-hidden="true"></div><div class="shell"><p class="mission-kicker">CALUMAI / 發布前預覽</p><h1>【族語射手 02】題目不是塞進去就好：我怎麼把族語 E 樂園資料接成遊戲關卡</h1><p class="deck">這篇拆解族語射手的題目設計：資料怎麼來、圖片和發音怎麼接、五種玩法怎麼共用同一批詞彙，以及新手做題庫遊戲前一定要先想清楚的幾件事。</p><div class="meta"><span>CalumAi Studio</span><span>預覽版本</span><span>awaiting_human_review</span></div></div></section>
+<div class="feature"><img src="/admin/previews/blog/20260717-tribe-shooter-question-design/assets/tribe-shooter-02-blog-01.svg" alt="族語射手 02 圖解：題目不是塞進去就好——從詞彙資料到遊戲關卡"></div><article class="article-body"><h1>【族語射手 02】題目不是塞進去就好：我怎麼把族語 E 樂園資料接成遊戲關卡</h1>
+<p><strong>摘要</strong> 我一開始以為，題庫只要匯進遊戲就好了。 後來才發現，題目進遊戲前要先被整理成「玩家能理解、系統能出題、老師能放心使用」的格式。</p>
+<figure><img src="/admin/previews/blog/20260717-tribe-shooter-question-design/assets/tribe-shooter-mobile-live-ui.png" alt="族語射手手機版畫面" loading="lazy"></figure>
+<p><em>手機版用字母磚拼答案，題庫資料進來後，玩法才真的有地方可以落地。</em></p>
+<h2>第一個卡點：資料不是題目</h2>
+<figure><img src="/admin/previews/blog/20260717-tribe-shooter-question-design/assets/tribe-shooter-02-blog-01.svg" alt="族語射手 02 圖解一：題目不是塞進去就好——從詞彙資料到遊戲關卡" loading="lazy"></figure>
+<p>資料表裡有族語詞、中文、圖片、發音。 看起來很完整。</p>
+<p>可是資料不是題目。</p>
+<p>如果我直接把一筆詞彙丟給玩家，玩家會看到什麼？ 要聽聲音？看圖？選中文？打族語？ 錯的選項從哪裡來？ 沒有圖片或沒有音檔時，這題還能不能出？</p>
+<p>這些問題一出現，我就知道不能只做「匯入題庫」。</p>
+<p>我要做的是一條題目產線。</p>
+<h2>我把題目拆成四個欄位</h2>
+<figure><img src="/admin/previews/blog/20260717-tribe-shooter-question-design/assets/tribe-shooter-02-blog-02.svg" alt="族語射手 02 圖解二：流程拆解——先把問題放到玩家眼前" loading="lazy"></figure>
+<p>族語射手目前的題目，基本上圍繞四個核心欄位：</p>
+<p><strong>族語詞</strong> 這是玩家要學的答案，會出現在填空、聽打和盲打。</p>
+<p><strong>中文意思</strong> 它讓玩家先理解語意，也會出現在選項、提示和回顧裡。</p>
+<p><strong>圖片</strong> 圖片負責把詞和物件連起來，最適合用在看圖選詞。</p>
+<p><strong>發音</strong> 發音讓玩家先用耳朵進入，音選詞和聽打都靠它。</p>
+<p>這張表很簡單，但它幫我避開很多混亂。</p>
+<p>每當我想新增一種玩法，我就先問： 這個玩法到底需要哪幾個欄位？</p>
+<p>音選詞需要發音和選項。 看圖選詞需要圖片和族語選項。 填空需要族語詞和中文提示，還要能把字母拆成磚。 盲打只需要族語詞本身——因為那一關什麼提示都不給。</p>
+<p>如果某筆資料缺音檔，就不要拿去出聽力題。 如果某筆資料缺圖片，就不要拿去出看圖題。</p>
+<p>這聽起來很基本，但教學遊戲最怕的就是把不完整資料硬塞進玩法裡。 玩家看到壞題目一次，信任感就掉一截。</p>
+<h2>題庫來源怎麼接</h2>
+<figure><img src="/admin/previews/blog/20260717-tribe-shooter-question-design/assets/tribe-shooter-02-blog-03.svg" alt="族語射手 02 圖解三：關鍵判斷——每一步只處理一件事" loading="lazy"></figure>
+<p>這次詞彙、圖片與發音的來源，是族語 E 樂園 klokah 的公開資料端點。</p>
+<p>我沒有自己亂編單字，也沒有用 AI 生族語答案。</p>
+<p>大致流程是這樣：</p>
+<pre><code class="language-text">klokah XML
+→ fetch_vocab.py 解析
+→ 產生每個語別的 seed 檔
+→ 灌進 vocabulary 表
+→ 前端依語別與關卡載入題目</code></pre>
+<p>資料裡最重要的眉角，是圖片和音檔不一樣。</p>
+<p><strong>圖片</strong> 多語別共用同一套圖卡，所以 URL 不帶語別代號。</p>
+<p><strong>發音</strong> 每個語別的發音都不同，所以 URL 必須帶正確的 <code>dialectId</code>。</p>
+<p>哇，這裡如果搞錯，遊戲表面上可能還能跑。 可是玩家會聽到錯的語別發音，這就不是小 bug 了。</p>
+<p>所以我會把題庫流程寫成可重跑的腳本，而不是手動複製貼上。</p>
+<p>手動貼一次很快。 手動貼四十二個語別，大概會讓人開始懷疑人生。</p>
+<h2>五種玩法共用同一批詞</h2>
+<figure><img src="/admin/previews/blog/20260717-tribe-shooter-question-design/assets/tribe-shooter-02-blog-04.svg" alt="族語射手 02 圖解四：實作檢查——錯誤路線也要留下" loading="lazy"></figure>
+<p>題庫接進來後，我沒有把每一關做成完全不同的資料。</p>
+<p>同一批詞彙，可以被不同玩法拿去使用。</p>
+<p><strong>音選詞</strong> 播放發音，再產生四個族語選項。玩家練的是聽辨。</p>
+<p><strong>填空</strong> 顯示中文提示卡和打散的字母磚。玩家練的是拼字。</p>
+<p><strong>聽打</strong> 只播放發音，不顯示中文也不顯示答案。玩家練的是聽力和拼字。</p>
+<p><strong>看圖選詞</strong> 顯示圖卡，藏起中文答案。玩家練的是圖像和族語的連結。</p>
+<p><strong>盲打</strong> 沒有中文、沒有圖、沒有發音。玩家練的是記憶提取。</p>
+<p>這樣做有一個好處： 遊戲不是換一關就換一批完全陌生的題目。</p>
+<p>玩家會在不同情境反覆遇到同一個詞。 第一次只是聽得出來。 第二次開始拼。 第三次看圖認。 最後才試著憑記憶打出來。</p>
+<p>這比單純把題目隨機出完，更像真的在練習。</p>
+<h2>新手可以照這樣做</h2>
+<figure><img src="/admin/previews/blog/20260717-tribe-shooter-question-design/assets/tribe-shooter-02-blog-05.svg" alt="族語射手 02 圖解五：回到可玩狀態——用真實畫面回頭驗證" loading="lazy"></figure>
+<p>如果你也想做一款題庫遊戲，我會建議先不要開資料庫。</p>
+<p>先拿 10 題做一張小表。</p>
+<p>例如先做兩筆就好：</p>
+<pre><code class="language-text">001｜樹｜qhuni｜有圖片｜有發音｜初級
+002｜河流｜yayung｜有圖片｜有發音｜初級</code></pre>
+<p>接著問自己五個問題：</p>
+<ol><li>這題可以出選擇題嗎？</li><li>這題可以出聽力題嗎？</li><li>這題可以出看圖題嗎？</li><li>答錯時要不要重複出現？</li><li>這題的素材來源能不能公開使用？</li></ol>
+<p>如果這五題都答得出來，再去寫程式會穩很多。</p>
+<p>很多人做題庫遊戲會急著問「我要用什麼框架」。 我反而會先問：你知道什麼情況下不能出這題嗎？</p>
+<p>能回答這個問題，題庫才開始像系統。</p>
+<h2>我這次學到的事</h2>
+<p>題目不是內容倉庫。</p>
+<p>題目是遊戲節奏的一部分。</p>
+<p>同一個族語詞，放在音選詞裡，是聽力練習。 放在填空裡，是拼字練習。 放在看圖選詞裡，是意義連結。 放在盲打裡，才比較像真正記住。</p>
+<p>所以我後來不再問「題庫匯入了嗎」。 我會問：</p>
+<p>這題適合在哪一關出？ 缺素材時要不要跳過？ 錯過的題目會不會回來？ 玩家玩完後能不能知道自己練了哪些字？</p>
+<p>題庫接進遊戲，真正要做的是這些判斷。</p>
+<p>#族語射手 #題庫設計 #族語E樂園 #教育遊戲 #AI協作</p></article></main></body>
+</html>

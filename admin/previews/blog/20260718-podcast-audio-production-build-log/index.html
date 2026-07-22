@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>[預覽] 【母語巢 Radio】AI 口白只是素材：我怎麼把聲音整理成一集能上架的節目</title>
+  <meta name="description" content="這篇記錄我做 Podcast 音訊時補上的完整流程：腳本、口白、背景音、音量檢查、檔案命名、QA、摘要與社群貼文。">
+  
+  <link rel="stylesheet" href="/styles.css?v=20260717-8">
+  <link rel="stylesheet" href="/blog/blog.css?v=20260718-readable-article">
+  <script src="/assets/lucide.min.js" defer></script>
+  <script src="/app.js" defer></script>
+  <meta name="robots" content="noindex, nofollow">
+</head>
+<body class="mission-site blog-site"><header class="site-header mission-header" data-header><a class="brand mission-brand" href="/" aria-label="CALUMAI 首頁"><img class="mission-brand-logo" src="/assets/calumai-logo-mark.png" alt="" width="96" height="96"><span>CALUMAI</span></a><button class="menu-toggle icon-button mission-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle><i data-lucide="menu" aria-hidden="true"></i></button><nav class="primary-nav mission-nav" id="primary-nav" aria-label="主要導覽" data-nav><a href="/games/">遊戲介紹</a><a href="/blog/" aria-current="page">製作心得</a><a href="/ai-helper/">備課小幫手</a><a class="nav-cta" href="/tools/">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a></nav></header>
+<main class="blog-main"><section class="blog-hero article-header"><div class="mission-grid-bg" aria-hidden="true"></div><div class="shell"><p class="mission-kicker">CALUMAI / 發布前預覽</p><h1>【母語巢 Radio】AI 口白只是素材：我怎麼把聲音整理成一集能上架的節目</h1><p class="deck">這篇記錄我做 Podcast 音訊時補上的完整流程：腳本、口白、背景音、音量檢查、檔案命名、QA、摘要與社群貼文。</p><div class="meta"><span>CalumAi Studio</span><span>預覽版本</span><span>awaiting_human_review</span></div></div></section>
+<div class="feature"><img src="/admin/previews/blog/20260718-podcast-audio-production-build-log/assets/podcast-01-cover.svg" alt="Podcast 音訊製作流程圖解"></div><article class="article-body"><h1>【母語巢 Radio】AI 口白只是素材：我怎麼把聲音整理成一集能上架的節目</h1>
+<h2>摘要</h2>
+<p>我原本以為 Podcast 音訊製作最難的是把 AI 口白生出來。</p>
+<p>後來發現，口白只是素材。要變成一集能上架的節目，還要補腳本節奏、背景音、音量檢查、檔案命名、摘要、封面需求和社群貼文。</p>
+<h2>先判斷：這是音檔，還是節目？</h2>
+<figure><img src="/admin/previews/blog/20260718-podcast-audio-production-build-log/assets/podcast-01-cover.svg" alt="Podcast 製作總覽" loading="lazy"></figure>
+<p>AI 生成一段聲音很快。</p>
+<p>可是聲音出現，不代表節目完成。</p>
+<p>我會先問自己一個問題：</p>
+<p>這段聲音如果直接丟出去，聽眾知道自己在聽什麼嗎？</p>
+<p>如果答案是不確定，那它就還只是音檔。</p>
+<p>節目至少要有幾個東西：</p>
+<ul><li>開場：讓聽眾知道這集要聊什麼</li><li>主段落：每段只解一個問題</li><li>轉場：讓聽眾知道話題換了</li><li>收尾：留下這集的重點</li><li>音量：人聲清楚，背景音不搶</li><li>上架文字：標題、摘要、Hashtag、封面需求</li></ul>
+<p>這些補起來，音檔才會變成節目。</p>
+<h2>我的音訊製作順序</h2>
+<p>我現在不會一開始就生聲音。</p>
+<p>順序會是：</p>
+<ol><li>決定這集只回答一個核心問題。</li><li>寫 300 到 800 字的短腳本。</li><li>把腳本拆成開場、三個段落、收尾。</li><li>產生 AI 口白或錄製口白。</li><li>先聽純人聲，不加背景音。</li><li>修掉太像朗讀、太快、太硬的句子。</li><li>加背景音，但只讓它服務情緒和轉場。</li><li>用耳機聽一次，用喇叭聽一次。</li><li>做 QA 紀錄。</li><li>補標題、摘要、社群貼文、封面需求。</li></ol>
+<p>這個順序很慢。</p>
+<p>但它可以避免一件事：聲音都已經生完了，才發現腳本根本不好聽。</p>
+<h2>腳本提示詞：先讓 AI 寫得像節目，不像文章</h2>
+<figure><img src="/admin/previews/blog/20260718-podcast-audio-production-build-log/assets/podcast-02-script.svg" alt="Podcast 腳本設計" loading="lazy"></figure>
+<p>如果我要請 AI 幫我寫 Podcast 腳本，我會這樣下：</p>
+<pre><code class="language-text">你要幫我寫一集 3 到 5 分鐘 Podcast 腳本。
+
+節目名稱：母語巢 Radio
+這集主題：&lt;填入主題&gt;
+聽眾：對族語、教育科技、AI 協作有興趣，但不一定懂技術的人
+語氣：台灣口語、自然、像主持人整理自己的經驗，不要像新聞稿
+
+請輸出：
+1. 開場 20 秒：用一個具體場景開始
+2. 第一段：我一開始怎麼想
+3. 第二段：實作後發現哪裡不對
+4. 第三段：我怎麼調整流程
+5. 收尾：留下一個可以帶走的想法
+
+限制：
+- 不要寫「本文將」
+- 不要寫成產品介紹
+- 每段口白要適合被唸出來
+- 句子不要太長
+- 每 2 到 3 句安排一次自然停頓</code></pre>
+<p>我會特別要求「適合被唸出來」。</p>
+<p>因為很多文章看起來沒問題，一念出來就很卡。</p>
+<p>Podcast 腳本不是 blog 文章。</p>
+<p>它要先過耳朵。</p>
+<h2>口白提示詞：不要只叫 AI 生聲音</h2>
+<figure><img src="/admin/previews/blog/20260718-podcast-audio-production-build-log/assets/podcast-03-voice.svg" alt="AI 口白生成前的設定" loading="lazy"></figure>
+<p>如果要生成口白，我不會只貼腳本。</p>
+<p>我會加上聲音指令：</p>
+<pre><code class="language-text">請依照以下方向生成 Podcast 口白：
+
+角色：一位正在分享製作紀錄的主持人
+語氣：自然、真實、不要播報腔
+速度：中等偏慢，讓聽眾可以跟上
+停頓：
+- 每個段落結束停 0.8 到 1 秒
+- 重要句子前後稍微停頓
+情緒：
+- 不誇張
+- 有一點回頭整理經驗的感覺
+- 不要像廣告
+
+請避免：
+- 每一句都同樣音調
+- 過度熱血
+- 把專有名詞唸得太快
+- 結尾突然變成宣傳口吻</code></pre>
+<p>這段提示詞的重點，是把 AI 當成配音員，而不是自動朗讀機。</p>
+<p>我不是要它「念完」。</p>
+<p>我是要它「說給人聽」。</p>
+<h2>背景音的規則：人聲永遠在前面</h2>
+<figure><img src="/admin/previews/blog/20260718-podcast-audio-production-build-log/assets/podcast-04-mixing.svg" alt="Podcast 混音檢查" loading="lazy"></figure>
+<p>背景音很容易讓作品瞬間變得像節目。</p>
+<p>也很容易讓節目變難聽。</p>
+<p>我的規則很簡單：</p>
+<p>人聲永遠在前面。</p>
+<p>背景音只做三件事：</p>
+<ul><li>開場建立氣氛</li><li>段落之間幫忙換氣</li><li>收尾讓情緒落地</li></ul>
+<p>背景音不應該證明我很會製作。</p>
+<p>它應該讓聽眾更容易聽完。</p>
+<p>所以我會做兩版：</p>
+<ul><li><code>voice_only.wav</code>：純人聲</li><li><code>mix_with_bgm.wav</code>：加背景音版本</li></ul>
+<p>如果加了背景音以後，我反而聽不清楚某些字，那就不是混音。</p>
+<p>那是在干擾。</p>
+<h2>混音檢查提示詞</h2>
+<p>如果我要請 AI 幫我檢查混音流程，我會這樣問：</p>
+<pre><code class="language-text">請幫我建立一份 Podcast 混音 QA 清單。
+
+節目類型：口語敘事 / 教育內容
+目標：人聲清楚，背景音輔助，不搶內容
+
+請用表格列出：
+1. 檢查項目
+2. 怎麼聽
+3. 常見問題
+4. 修正方式
+
+至少包含：
+- 人聲音量
+- 背景音音量
+- 開場是否太突然
+- 段落轉場是否清楚
+- 是否有爆音
+- 是否有太長空白
+- 小音量播放時是否仍聽得懂
+- 耳機與喇叭播放差異</code></pre>
+<p>這種提示詞不是叫 AI 幫我「聽」音檔。</p>
+<p>而是叫它幫我建立檢查表。</p>
+<p>最後還是要人耳聽。</p>
+<h2>檔案命名不要等到最後才救</h2>
+<figure><img src="/admin/previews/blog/20260718-podcast-audio-production-build-log/assets/podcast-05-files.svg" alt="Podcast 檔案命名結構" loading="lazy"></figure>
+<p>Podcast 做到後面，很容易冒出一堆檔案：</p>
+<pre><code class="language-text">final.mp3
+final-new.mp3
+final-new-2.mp3
+really-final.mp3
+test-bgm.mp3</code></pre>
+<p>看到這種命名，我就知道未來的自己會恨我。</p>
+<p>所以我會一開始就規定：</p>
+<pre><code class="language-text">YYYY-MM-DD_episode-topic_script.md
+YYYY-MM-DD_episode-topic_voice-only.wav
+YYYY-MM-DD_episode-topic_mix-v1.wav
+YYYY-MM-DD_episode-topic_mix-v2.wav
+YYYY-MM-DD_episode-topic_final.mp3
+YYYY-MM-DD_episode-topic_notes.md</code></pre>
+<p>這不是潔癖。</p>
+<p>這是之後要修改、重剪、補摘要時，找得到東西。</p>
+<h2>上架素材也要一起生</h2>
+<figure><img src="/admin/previews/blog/20260718-podcast-audio-production-build-log/assets/podcast-06-publish-kit.svg" alt="Podcast 上架素材清單" loading="lazy"></figure>
+<p>一集 Podcast 如果只有音檔，發布時還是會卡住。</p>
+<p>所以我會同時準備：</p>
+<ul><li>節目標題</li><li>80 到 120 字摘要</li><li>三個重點條列</li><li>Blog 補充文章方向</li><li>Threads 貼文</li><li>封面圖需求</li></ul>
+<p>我會用這段提示詞：</p>
+<pre><code class="language-text">請根據這集 Podcast 腳本，產生上架素材。
+
+請輸出：
+1. 節目標題 5 個版本
+2. 80 到 120 字摘要
+3. 三個聽眾可以帶走的重點
+4. Threads 貼文 1 則，150 到 250 字
+5. Blog 補充文章標題 3 個
+6. 封面圖需求：主視覺、色系、不要出現的元素
+
+限制：
+- 不要誇大
+- 不要寫成課程廣告
+- 不要使用「打造、賦能、完整解決方案」
+- 語氣要像製作紀錄，不像行銷文</code></pre>
+<p>這樣做的好處是，聲音完成時，文字素材也差不多有方向。</p>
+<p>不會到最後才卡在「這集到底要怎麼介紹」。</p>
+<h2>最小可行版本：先做 3 分鐘</h2>
+<p>如果新手要做，我不建議一開始做 30 分鐘。</p>
+<p>先做 3 分鐘。</p>
+<p>一集只回答一個問題。</p>
+<p>例如：</p>
+<ul><li>我為什麼開始做母語巢 Radio？</li><li>AI 聲音最容易出問題的地方是什麼？</li><li>背景音什麼時候會變成干擾？</li></ul>
+<p>3 分鐘很短。</p>
+<p>但它會逼你把流程跑完。</p>
+<p>腳本、口白、混音、QA、摘要、封面需求，一個都不能少。</p>
+<p>做完一集短的，比想像一整季更有用。</p>
+<h2>Hashtag</h2>
+<p>#BuildInPublic #CalumAi #Podcast #AI聲音 #音訊製作</p></article></main></body>
+</html>

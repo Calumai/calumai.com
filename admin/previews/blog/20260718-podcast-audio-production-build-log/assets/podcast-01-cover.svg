@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<rect width="1600" height="900" fill="#f7f4ec"/>
+<path d="M0 0H1600V900H0Z" fill="none" stroke="#111827" stroke-width="20"/>
+<rect x="44" y="44" width="680" height="96" fill="#2563eb" stroke="#111827" stroke-width="8"/>
+<rect x="724" y="44" width="832" height="96" fill="#ffffff" stroke="#111827" stroke-width="8"/>
+<text x="80" y="105" font-size="34" font-weight="950" fill="#111827" letter-spacing="2">母語巢 Radio 01</text>
+<path d="M1450 92H1510M1482 62L1514 92L1482 122" stroke="#111827" stroke-width="12" fill="none" stroke-linecap="square"/>
+<rect x="44" y="172" width="610" height="584" fill="#ffffff" stroke="#111827" stroke-width="8"/>
+<text x="84" y="288" font-size="58" font-weight="950" fill="#0f172a">先做節目，</text>
+<text x="84" y="356" font-size="58" font-weight="950" fill="#0f172a">不只做音檔</text>
+<text x="86" y="445" font-size="27" font-weight="850" fill="#334155">腳本、</text>
+<text x="86" y="481" font-size="27" font-weight="850" fill="#334155">口白、</text>
+<rect x="84" y="590" width="504" height="96" fill="#111827"/>
+<text x="118" y="630" font-size="25" font-weight="900" fill="#ffffff"># 音檔只是其中一站</text>
+<text x="118" y="664" font-size="25" font-weight="900" fill="#ffffff"># 節目要能被理解與重剪</text>
+<rect x="690" y="172" width="866" height="584" fill="#ffffff" stroke="#111827" stroke-width="8"/>
+<path d="M760 263V629" stroke="#111827" stroke-width="7" stroke-linecap="square"/>
+<circle cx="760" cy="271" r="22" fill="#2563eb" stroke="#111827" stroke-width="6"/>
+<text x="760" y="279" text-anchor="middle" font-size="22" font-weight="950" fill="#ffffff">01</text>
+<path d="M760 303l-10-10M760 303l10-10" stroke="#111827" stroke-width="5" fill="none"/>
+<rect x="820" y="245" width="660" height="52" fill="#2563eb" stroke="#111827" stroke-width="6"/>
+<text x="846" y="280" font-size="24" font-weight="950" fill="#ffffff">想法</text>
+<text x="970" y="275" font-size="17" font-weight="800" fill="#eef2ff">音檔只是其中一站</text>
+<circle cx="760" cy="341" r="22" fill="#ffffff" stroke="#111827" stroke-width="6"/>
+<text x="760" y="349" text-anchor="middle" font-size="22" font-weight="950" fill="#111827">02</text>
+<path d="M760 373l-10-10M760 373l10-10" stroke="#111827" stroke-width="5" fill="none"/>
+<rect x="820" y="315" width="660" height="52" fill="#ffffff" stroke="#111827" stroke-width="6"/>
+<text x="846" y="350" font-size="24" font-weight="950" fill="#111827">流程</text>
+<text x="970" y="345" font-size="17" font-weight="800" fill="#334155">節目要能被理解與重剪</text>
+<circle cx="760" cy="411" r="22" fill="#ffffff" stroke="#111827" stroke-width="6"/>
+<text x="760" y="419" text-anchor="middle" font-size="22" font-weight="950" fill="#111827">03</text>
+<path d="M760 443l-10-10M760 443l10-10" stroke="#111827" stroke-width="5" fill="none"/>
+<rect x="820" y="385" width="660" height="52" fill="#ffffff" stroke="#111827" stroke-width="6"/>
+<text x="846" y="420" font-size="24" font-weight="950" fill="#111827">原型</text>
+<text x="970" y="415" font-size="17" font-weight="800" fill="#334155">上架前文字素材要一起準備</text>
+<circle cx="760" cy="481" r="22" fill="#ffffff" stroke="#111827" stroke-width="6"/>
+<text x="760" y="489" text-anchor="middle" font-size="22" font-weight="950" fill="#111827">04</text>
+<path d="M760 513l-10-10M760 513l10-10" stroke="#111827" stroke-width="5" fill="none"/>
+<rect x="820" y="455" width="660" height="52" fill="#ffffff" stroke="#111827" stroke-width="6"/>
+<text x="846" y="490" font-size="24" font-weight="950" fill="#111827">測試</text>
+<text x="970" y="485" font-size="17" font-weight="800" fill="#334155">音檔只是其中一站</text>
+<circle cx="760" cy="551" r="22" fill="#ffffff" stroke="#111827" stroke-width="6"/>
+<text x="760" y="559" text-anchor="middle" font-size="22" font-weight="950" fill="#111827">05</text>
+<path d="M760 583l-10-10M760 583l10-10" stroke="#111827" stroke-width="5" fill="none"/>
+<rect x="820" y="525" width="660" height="52" fill="#ffffff" stroke="#111827" stroke-width="6"/>
+<text x="846" y="560" font-size="24" font-weight="950" fill="#111827">修正</text>
+<text x="970" y="555" font-size="17" font-weight="800" fill="#334155">節目要能被理解與重剪</text>
+<circle cx="760" cy="621" r="22" fill="#2563eb" stroke="#111827" stroke-width="6"/>
+<text x="760" y="629" text-anchor="middle" font-size="22" font-weight="950" fill="#ffffff">06</text>
+
+<rect x="820" y="595" width="660" height="52" fill="#2563eb" stroke="#111827" stroke-width="6"/>
+<text x="846" y="630" font-size="24" font-weight="950" fill="#ffffff">交付</text>
+<text x="970" y="625" font-size="17" font-weight="800" fill="#eef2ff">上架前文字素材要一起準備</text>
+<rect x="44" y="784" width="716" height="72" fill="#ffffff" stroke="#111827" stroke-width="8"/>
+<text x="82" y="831" font-size="28" font-weight="950" fill="#111827">CALUMAI / BUILD IN PUBLIC</text>
+<rect x="760" y="784" width="796" height="72" fill="#2563eb" stroke="#111827" stroke-width="8"/>
+<text x="804" y="831" font-size="26" font-weight="950" fill="#111827">BLOG 16:9 FLOW DIAGRAM</text>
+<rect x="1360" y="802" width="150" height="36" fill="#f7f4ec" stroke="#111827" stroke-width="5"/>
+<text x="1435" y="828" text-anchor="middle" font-size="23" font-weight="950" fill="#111827">NO.007</text>
+</svg>

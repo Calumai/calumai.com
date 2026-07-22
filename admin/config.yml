@@ -110,11 +110,13 @@ collections:
   - name: posts
     label: 部落格文章
     label_singular: 文章
+    description: 儲存後可先開預覽網址確認排版；只有 status 改成 published 才會進正式部落格。
     folder: posts
     create: true
     format: yaml-frontmatter
     extension: md
     path: '{{slug}}/article'
+    preview_path: '/admin/previews/blog/{{slug}}/'
     media_folder: ''
     public_folder: ''
     slug: '{{fields.folder_id}}'

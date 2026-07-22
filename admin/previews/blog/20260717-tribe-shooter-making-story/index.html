@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>[預覽] 【族語射手 01】老師提到山豬獵人後，我試著把族語練習做成一個單詞網頁</title>
+  <meta name="description" content="這篇先講族語射手為什麼開始、我怎麼把懷念的 Flash 小遊戲拆成可玩的瀏覽器原型，以及新手如果想做一款學習遊戲，可以怎麼從一張流程表開始。">
+  
+  <link rel="stylesheet" href="/styles.css?v=20260717-8">
+  <link rel="stylesheet" href="/blog/blog.css?v=20260718-readable-article">
+  <script src="/assets/lucide.min.js" defer></script>
+  <script src="/app.js" defer></script>
+  <meta name="robots" content="noindex, nofollow">
+</head>
+<body class="mission-site blog-site"><header class="site-header mission-header" data-header><a class="brand mission-brand" href="/" aria-label="CALUMAI 首頁"><img class="mission-brand-logo" src="/assets/calumai-logo-mark.png" alt="" width="96" height="96"><span>CALUMAI</span></a><button class="menu-toggle icon-button mission-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle><i data-lucide="menu" aria-hidden="true"></i></button><nav class="primary-nav mission-nav" id="primary-nav" aria-label="主要導覽" data-nav><a href="/games/">遊戲介紹</a><a href="/blog/" aria-current="page">製作心得</a><a href="/ai-helper/">備課小幫手</a><a class="nav-cta" href="/tools/">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a></nav></header>
+<main class="blog-main"><section class="blog-hero article-header"><div class="mission-grid-bg" aria-hidden="true"></div><div class="shell"><p class="mission-kicker">CALUMAI / 發布前預覽</p><h1>【族語射手 01】老師提到山豬獵人後，我試著把族語練習做成一個單詞網頁</h1><p class="deck">這篇先講族語射手為什麼開始、我怎麼把懷念的 Flash 小遊戲拆成可玩的瀏覽器原型，以及新手如果想做一款學習遊戲，可以怎麼從一張流程表開始。</p><div class="meta"><span>CalumAi Studio</span><span>預覽版本</span><span>awaiting_human_review</span></div></div></section>
+<div class="feature"><img src="/admin/previews/blog/20260717-tribe-shooter-making-story/assets/tribe-shooter-01-blog-01.svg" alt="族語射手 01 圖解：從回憶開始——老師的一句話，變成瀏覽器裡的單字練習"></div><article class="article-body"><h1>【族語射手 01】老師提到山豬獵人後，我試著把族語練習做成一個單詞網頁</h1>
+<p><strong>摘要</strong> 這篇不是要介紹一款已經完美的遊戲。 我想記錄的是：一位老師提起以前族語 E 樂園的「山豬獵人」後，我怎麼被那句話卡住，然後用 AI 先刻出一個可以試玩的族語單詞練習網頁。</p>
+<figure><img src="/admin/previews/blog/20260717-tribe-shooter-making-story/assets/tribe-shooter-live-ui.png" alt="族語射手桌機版遊戲畫面" loading="lazy"></figure>
+<p><em>這張是真實遊戲畫面。不是概念圖，也不是重新生成的示意圖。</em></p>
+<h2>那句話讓我停了一下</h2>
+<figure><img src="/admin/previews/blog/20260717-tribe-shooter-making-story/assets/tribe-shooter-01-blog-01.svg" alt="族語射手 01 圖解一：從回憶開始——老師的一句話，變成瀏覽器裡的單字練習" loading="lazy"></figure>
+<p>前陣子我到外面推廣的時候，有位老師跟我說，他很懷念以前族語 E 樂園裡的「山豬獵人」小遊戲。</p>
+<p>他講得很自然。</p>
+<p>可是我聽到的不是「喔，有一款老遊戲」。 我聽到的是：以前有一種讓學生願意玩族語的方法，後來因為 Flash 沒了，就慢慢消失了。</p>
+<p>那個瞬間我其實有點被問住。</p>
+<p>因為老師不是在問我能不能做一個華麗的新產品。 他是在說：以前那個簡單、直接、會讓學生想再玩一次的東西，現在還能不能回來？</p>
+<p>差不多同一段時間，北市府也剛好有意做族語相關的遊戲。 所以我先用 Claude 試試看：如果我不先開大型專案，不先找一堆人開會，只用現有資料和 AI 協作，我能不能把第一版刻出來？</p>
+<p>結果真的做出一個可以上線試玩的版本。</p>
+<p>但做完後我更確定，這件事真正難的不是「做一個有山林視覺的網頁」。 難的是把學習、題目、節奏、畫面和文化界線放在同一張桌上，一個一個對齊。</p>
+<h2>我原本以為問題是遊戲感</h2>
+<figure><img src="/admin/previews/blog/20260717-tribe-shooter-making-story/assets/tribe-shooter-01-blog-02.svg" alt="族語射手 01 圖解二：流程拆解——先把問題放到玩家眼前" loading="lazy"></figure>
+<p>一開始我很直覺地以為，重點是把畫面做得好玩。</p>
+<p>獵人、山林、弓箭這些視覺包裝都很吸引人。 可是玩家真正做的事，仍然是聽音、看字、選答案、打字。 答錯就扣血。</p>
+<p>聽起來很順吧。</p>
+<p>但很快我就發現，如果只是把選擇題套上一層冒險包裝，它其實還是選擇題。 學生只是換一個比較漂亮的地方被考試。</p>
+<p>所以我開始問另一個問題： 玩家每一次按下答案時，腦袋裡到底在做什麼？</p>
+<p>後來我把玩法拆成五種練習：</p>
+<p><strong>Level 1：音選詞</strong> 先讓玩家聽得出來。新手不用一開始就打字，只要從選項中辨認答案。</p>
+<p><strong>Level 2：填空</strong> 看提示拼字。這一關像練習用的鷹架，讓玩家知道答案長什麼樣，但還是要自己補上。</p>
+<p><strong>Level 3：聽打</strong> 只給發音，中文和答案都收起來。玩家開始靠記憶和耳朵。</p>
+<p><strong>Level 4：看圖選詞</strong> 把圖像和族語連起來。這一關不一直依賴中文，而是讓玩家看圖找語詞。</p>
+<p><strong>Level 5：盲打</strong> 沒有中文、沒有圖、沒有發音，什麼提示都不給。這是最接近「真的記住」的挑戰。</p>
+<p>這個順序很重要。</p>
+<p>不是「第一關簡單、第五關很難」而已。 它比較像把學習慢慢拆開：先聽，然後看提示，再來自己打，最後才把提示拿掉。</p>
+<p>我做完才發現，遊戲感不是加在學習外面的糖衣。 遊戲感其實是讓玩家願意多練一次的節奏。</p>
+<h2>完整流程，我是這樣拆的</h2>
+<figure><img src="/admin/previews/blog/20260717-tribe-shooter-making-story/assets/tribe-shooter-01-blog-03.svg" alt="族語射手 01 圖解三：關鍵判斷——每一步只處理一件事" loading="lazy"></figure>
+<p>如果新手想做一款類似的學習遊戲，我會建議不要一開始就碰美術。</p>
+<p>先畫這張表。</p>
+<p>第一步，先決定這款遊戲要練哪個能力。 我這次選的是族語聽辨、拼字和看圖辨識。</p>
+<p>第二步，確認題目資料從哪裡來。 族語射手使用族語 E 樂園的詞彙、圖片與發音，不自己亂編題目。</p>
+<p>第三步，設計玩家答對後看到什麼。 我的做法是角色狀態、分數、正解對照一起出現，讓答案有立即回饋。</p>
+<p>第四步，想清楚玩家答錯時怎麼辦。 答錯會扣血，但也保留回顧和再練習的線索。</p>
+<p>第五步，安排關卡怎麼變難。 從辨識到輸入，提示一層一層拿掉。</p>
+<p>第六步，想像老師怎麼使用。 免安裝、瀏覽器打開、可用排行榜帶活動，這些比功能華麗更重要。</p>
+<p>我自己第一版也是這樣來的。</p>
+<p>先不要想「我要做一款很完整的教育遊戲」。 那句話太大了，會把人嚇跑。</p>
+<p>我比較常問的是：</p>
+<p>「學生按下一個答案後，下一秒要發生什麼？」 「老師帶活動時，三分鐘內能不能看懂怎麼開始？」 「如果學生答錯，他會知道自己錯在哪裡嗎？」 「如果換成手機，這套操作還成立嗎？」</p>
+<p>這些問題比功能清單更有用。</p>
+<h2>我帶走的一個方法：先做學習斜坡</h2>
+<figure><img src="/admin/previews/blog/20260717-tribe-shooter-making-story/assets/tribe-shooter-01-blog-04.svg" alt="族語射手 01 圖解四：實作檢查——錯誤路線也要留下" loading="lazy"></figure>
+<p>這次最有用的做法，是先把「學習斜坡」畫出來。</p>
+<p>很多學習遊戲失敗，不是因為不漂亮。 是它一下子把玩家丟到太難的地方。</p>
+<p>族語射手一開始如果直接做盲打，很多人會卡住。 如果只做音選詞，又很容易變成一直猜。</p>
+<p>所以我把關卡改成五個不同練習，不只是五個難度。</p>
+<p>新手先聽聲音、選答案。 熟一點後，看提示拼字。 再往後，開始自己輸入。 最後才把圖和中文也慢慢收起來。</p>
+<p>哇，這個方法看起來很樸素，但真的救了我很多次。</p>
+<p>每當我想加新功能，我就回去看這個斜坡： 它是讓玩家更容易往上走，還是只是讓畫面更熱鬧？</p>
+<p>如果只是熱鬧，我就先放旁邊。</p>
+<h2>真正花時間的地方</h2>
+<figure><img src="/admin/previews/blog/20260717-tribe-shooter-making-story/assets/tribe-shooter-01-blog-05.svg" alt="族語射手 01 圖解五：回到可玩狀態——用真實畫面回頭驗證" loading="lazy"></figure>
+<p>真正花時間的不是讓 AI 產出程式。</p>
+<p>AI 很快。 快到有時候會讓人誤會事情已經好了。</p>
+<p>比較花時間的是判斷。</p>
+<p>例如，美術不能亂用「原民風」。 我不能為了看起來有文化感，就把不確定的圖紋、服飾、符號通通塞進去。 所以後來視覺方向盡量走森林、木牌、弓箭、奇幻冒險，不去模仿特定族群的文化符號。</p>
+<p>又例如，資料來源不能自己亂編。 題目、圖片、發音都要知道從哪裡來，之後授權、標示來源、更新資料才有辦法處理。</p>
+<p>再例如，手機版不能只是把桌機畫面縮小。 手指點選、直式畫面、字母磚位置，全部都會影響玩家願不願意繼續玩。</p>
+<p>這些不是 AI 幫我「生成」就結束的事。 它比較像每次都要停下來問一句：這樣對學生真的比較好嗎？</p>
+<h2>如果你也想試一次</h2>
+<p>不用一開始就做族語射手這種完整版本。</p>
+<p>你可以先做一個很小的原型：</p>
+<ol><li>找 20 題你有授權使用的題目。</li><li>每題只保留「題目、正解、三個錯誤選項」。</li><li>設計一個答對動畫，哪怕只是角色往前走一步。</li><li>加一個錯題回顧。</li><li>找一個朋友試玩三分鐘。</li></ol>
+<p>重點不是第一版多完整。</p>
+<p>重點是你能不能從試玩裡看見： 玩家知道自己在練什麼嗎？ 他卡住時，是因為題目太難，還是介面看不懂？ 他玩完後，會想再試一次嗎？</p>
+<p>這三個問題，比「畫面夠不夠炫」更早要回答。</p>
+<h2>這篇先停在這裡</h2>
+<p>族語射手第一篇，我想先記下這個起點。</p>
+<p>它不是從一份產品規格開始的。 它是從一位老師對舊遊戲的懷念開始的。</p>
+<p>我原本以為自己是在復刻一種玩法。 後來才發現，我其實是在整理一條學習路線：怎麼讓學生先敢玩，再願意練，最後慢慢記住。</p>
+<p>這也是我覺得這款遊戲值得繼續做下去的原因。</p>
+<p>#族語射手 #族語學習 #BuildInPublic #AI協作 #教育遊戲</p></article></main></body>
+</html>
