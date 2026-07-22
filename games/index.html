@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
@@ -9,9 +9,9 @@
       location.replace("https://" + location.host + location.pathname + location.search + location.hash);
     }
   </script>
-  <meta name="description" content="CALUMAI 教學遊戲入口與說明，包含原地重生・返璞歸真文化策略桌遊數位版。">
+  <meta name="description" content="這裡先放已經可以打開體驗的教學遊戲。每個遊戲會整理玩法、適合對象、課堂使用方式，以及可以怎麼延伸成教案。">
   <meta name="theme-color" content="#f6f7f4">
-  <title>遊戲介紹｜CALUMAI</title>
+  <title>遊戲入口與玩法說明｜CALUMAI</title>
   <link rel="stylesheet" href="../styles.css?v=20260717-10">
   <script src="../assets/lucide.min.js" defer></script>
   <script src="../app.js" defer></script>
@@ -19,21 +19,20 @@
 <body class="mission-site">
   <a class="skip-link" href="#main">跳到主要內容</a>
   <header class="site-header mission-header" data-header>
-    <a class="brand mission-brand" href="../" aria-label="CALUMAI 首頁">
-      <img class="mission-brand-logo" src="../assets/calumai-logo-mark.png" alt="" width="96" height="96">
+    <a class="brand mission-brand" href="/" aria-label="CALUMAI 首頁">
+      <img class="mission-brand-logo" src="/assets/calumai-logo-mark.png" alt="" width="96" height="96">
       <span>CALUMAI</span>
     </a>
     <button class="menu-toggle icon-button mission-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle>
       <i data-lucide="menu" aria-hidden="true"></i>
     </button>
     <nav class="primary-nav mission-nav" id="primary-nav" aria-label="主要導覽" data-nav>
-      <a href="./" aria-current="page">遊戲介紹</a>
-      <a href="../blog/">製作心得</a>
-      <a href="../ai-helper/">備課小幫手</a>
-      <a class="nav-cta" href="../tools/">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+      <a href="/games/" aria-current="page">遊戲介紹</a>
+      <a href="/blog/">製作心得</a>
+      <a href="/ai-helper/">備課小幫手</a>
+      <a href="/tools/" class="nav-cta">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
     </nav>
   </header>
-
   <main id="main" class="mission-simple-page">
     <section class="shell mission-status mission-game-hero">
       <p class="mission-kicker">MODULE 01 / GAME HUB</p>
@@ -43,7 +42,7 @@
 
     <section class="shell mission-game-list" aria-label="CALUMAI 教學遊戲列表">
       <article class="mission-game-card reveal">
-        <img class="mission-game-thumb" src="../assets/origin-rebirth-game-thumb.png" alt="原地重生・返璞歸真遊戲入口縮圖" width="800" height="800">
+        <img class="mission-game-thumb" src="/assets/origin-rebirth-game-thumb.png" alt="原地重生・返璞歸真遊戲入口縮圖" width="800" height="800">
         <div class="mission-game-content">
           <div>
             <p class="mission-kicker">CULTURE STRATEGY GAME</p>
@@ -68,7 +67,7 @@
               開始旅程
               <i data-lucide="arrow-up-right" aria-hidden="true"></i>
             </a>
-            <a class="mission-link" href="../blog/">
+            <a class="mission-link" href="/blog/">
               看製作心得
               <i data-lucide="notebook-pen" aria-hidden="true"></i>
             </a>
@@ -77,5 +76,17 @@
       </article>
     </section>
   </main>
+  <footer class="site-footer mission-footer">
+    <div class="footer-bottom shell">
+      <p>CALUMAI</p>
+      <nav aria-label="頁尾導覽">
+        <a href="/games/">遊戲介紹</a>
+        <a href="/blog/">製作心得</a>
+        <a href="/ai-helper/">備課小幫手</a>
+        <a href="/tools/">小工具</a>
+      </nav>
+      <p>&copy; <span data-year></span> CALUMAI</p>
+    </div>
+  </footer>
 </body>
 </html>

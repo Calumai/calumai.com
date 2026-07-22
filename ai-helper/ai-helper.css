@@ -273,6 +273,13 @@
   transition: transform 320ms ease;
 }
 
+.course-latest-media img.is-fallback-cover,
+.episode-cover-button img.is-fallback-cover,
+.lesson-cover-card img.is-fallback-cover {
+  object-fit: contain;
+  padding: 48px;
+}
+
 .course-latest-card:hover .course-latest-media img {
   transform: scale(1.025);
 }

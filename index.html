@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
@@ -8,40 +8,31 @@
     if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
       location.replace("https://" + location.host + location.pathname + location.search + location.hash);
     }
-  </script>  <meta name="description" content="CALUMAI 是給族語老師、教學工作者與喜歡原住民族文化的人看的作品集兼教學網站，整理教學遊戲、製作心得、AI 備課規劃與實用小工具。">
+  </script>
+  <meta name="description" content="CALUMAI 是給族語老師、教學工作者與喜歡原住民族文化的人看的作品集兼教學網站，整理教學遊戲、製作心得、AI 備課規劃與實用小工具。">
   <meta name="theme-color" content="#f6f7f4">
-  <meta property="og:title" content="CALUMAI｜族語教學作品集">
-  <meta property="og:description" content="給族語老師與喜歡原住民族文化的人看的教學工具、遊戲入口、製作心得與 AI 備課規劃。">
-  <meta property="og:image" content="https://calumai.com/assets/pixel-hero.webp">
   <title>CALUMAI｜族語教學作品集</title>
-  <link rel="stylesheet" href="styles.css?v=20260717-8">
+  <link rel="stylesheet" href="styles.css?v=20260717-10">
   <script src="assets/lucide.min.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body class="mission-site">
   <a class="skip-link" href="#main">跳到主要內容</a>
-
   <header class="site-header mission-header" data-header>
     <a class="brand mission-brand" href="/" aria-label="CALUMAI 首頁">
       <img class="mission-brand-logo" src="/assets/calumai-logo-mark.png" alt="" width="96" height="96">
       <span>CALUMAI</span>
     </a>
-
     <button class="menu-toggle icon-button mission-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle>
       <i data-lucide="menu" aria-hidden="true"></i>
     </button>
-
     <nav class="primary-nav mission-nav" id="primary-nav" aria-label="主要導覽" data-nav>
       <a href="/games/">遊戲介紹</a>
       <a href="/blog/">製作心得</a>
       <a href="/ai-helper/">備課小幫手</a>
-      <a class="nav-cta" href="/tools/">
-        小工具
-        <i data-lucide="arrow-up-right" aria-hidden="true"></i>
-      </a>
+      <a href="/tools/" class="nav-cta">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
     </nav>
   </header>
-
   <main id="main">
     <section class="mission-hero" aria-labelledby="hero-title">
       <div class="mission-grid-bg" aria-hidden="true"></div>
@@ -58,42 +49,8 @@
           </dl>
         </div>
 
-        <aside class="mission-audience-panel reveal" aria-label="這裡主要給誰看">
-          <p class="mission-kicker">FOR WHO</p>
-          <ul class="mission-audience-list">
-            <li>
-              <i data-lucide="school" aria-hidden="true"></i>
-              <div>
-                <strong>族語老師</strong>
-                <span>快速找到可以放進課堂的工具、遊戲入口與備課流程，不用從零整理。</span>
-              </div>
-            </li>
-            <li>
-              <i data-lucide="users-round" aria-hidden="true"></i>
-              <div>
-                <strong>文化推廣與教學夥伴</strong>
-                <span>看懂 CALUMAI 正在累積哪些作品，也方便評估合作、課程或活動使用情境。</span>
-              </div>
-            </li>
-            <li>
-              <i data-lucide="heart-handshake" aria-hidden="true"></i>
-              <div>
-                <strong>喜歡原住民族文化的人</strong>
-                <span>從遊戲、文章和小工具開始，慢慢理解族語教學可以怎麼和 AI、網頁互相配合。</span>
-              </div>
-            </li>
-          </ul>
-        </aside>
-      </div>
-    </section>
-
-    <section class="mission-latest-section section shell" aria-labelledby="latest-title">
-      <div class="mission-section-heading reveal">
-        <p class="mission-kicker">LATEST</p>
-        <h2 id="latest-title">最新內容</h2>
-      </div>
-
-      <div class="mission-latest-grid">
+        <aside class="mission-latest-panel reveal" aria-label="最新內容">
+          <div class="mission-card-grid mission-latest-grid">
         <a class="mission-card reveal" href="/ai-helper/handouts/EP005.html">
           <span>備課小幫手</span>
           <strong>EP005｜請 ChatGPT 幫忙設計 5 分鐘暖身活動</strong>
@@ -109,6 +66,35 @@
           <b class="mission-card-action">閱讀全文</b>
         </a>
       </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="mission-audience section shell" aria-labelledby="audience-title">
+      <div class="mission-section-heading reveal">
+        <p class="mission-kicker">FOR WHO</p>
+        <h2 id="audience-title">這裡主要給誰看</h2>
+      </div>
+
+      <div class="mission-audience-grid">
+        <article class="mission-audience-card reveal">
+          <i data-lucide="school" aria-hidden="true"></i>
+          <strong>族語老師</strong>
+          <p>快速找到可以放進課堂的工具、遊戲入口與備課流程，不用從零整理。</p>
+        </article>
+
+        <article class="mission-audience-card reveal">
+          <i data-lucide="users-round" aria-hidden="true"></i>
+          <strong>文化推廣與教學夥伴</strong>
+          <p>看懂 CALUMAI 正在累積哪些作品，也方便評估合作、課程或活動使用情境。</p>
+        </article>
+
+        <article class="mission-audience-card reveal">
+          <i data-lucide="heart-handshake" aria-hidden="true"></i>
+          <strong>喜歡原住民族文化的人</strong>
+          <p>從遊戲、文章和小工具開始，慢慢理解族語教學可以怎麼和 AI、網頁互相配合。</p>
+        </article>
+      </div>
     </section>
 
     <section class="mission-index section shell" id="home-entries" aria-labelledby="home-entries-title">
@@ -117,7 +103,7 @@
         <h2 id="home-entries-title">作品、文章與工具總覽</h2>
       </div>
 
-      <nav class="mission-card-grid" aria-label="CALUMAI 四個作品分類">
+      <nav class="mission-card-grid" aria-label="CALUMAI 作品分類">
         <a class="mission-card reveal" href="/games/">
           <span>01</span>
           <i data-lucide="gamepad-2" aria-hidden="true"></i>
@@ -156,7 +142,6 @@
       </nav>
     </section>
   </main>
-
   <footer class="site-footer mission-footer">
     <div class="footer-bottom shell">
       <p>CALUMAI</p>
@@ -165,7 +150,6 @@
         <a href="/blog/">製作心得</a>
         <a href="/ai-helper/">備課小幫手</a>
         <a href="/tools/">小工具</a>
-        <a href="https://line.me/ti/p/@calumai8107" target="_blank" rel="noopener noreferrer">LINE：@calumai8107</a>
       </nav>
       <p>&copy; <span data-year></span> CALUMAI</p>
     </div>

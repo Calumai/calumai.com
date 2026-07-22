@@ -15,6 +15,7 @@
   const dialogClose = dialog?.querySelector("[data-dialog-close]");
 
   let episodes = [];
+  const fallbackCover = "../assets/calumai-logo-mark.png";
 
   const escapeHtml = (value = "") => String(value)
     .replaceAll("&", "&amp;")
@@ -33,6 +34,21 @@
 
   const cleanSummary = (summary = "") => summary.replace(/\s+/g, " ").trim();
 
+  const coverUrl = (episode) => {
+    const file = String(episode.coverFile || "").trim();
+    return file ? `./covers/${encodeURIComponent(file)}` : fallbackCover;
+  };
+
+  const fallbackImage = (image) => {
+    if (!image || image.dataset.fallbackReady === "true") return;
+    image.dataset.fallbackReady = "true";
+    image.addEventListener("error", () => {
+      if (image.src.endsWith("/assets/calumai-logo-mark.png")) return;
+      image.src = fallbackCover;
+      image.classList.add("is-fallback-cover");
+    });
+  };
+
   const renderCard = (episode, index) => {
     const isLatest = index === episodes.length - 1;
     const tag = getToolTag(episode.title);
@@ -41,7 +57,7 @@
     return `
       <article class="episode-card" data-search-text="${escapeHtml(`${episode.id} ${episode.title} ${episode.summary} ${tag}`.toLowerCase())}">
         <button class="episode-cover-button" type="button" data-play-episode="${escapeHtml(episode.id)}" aria-label="播放 ${escapeHtml(episode.title)}">
-          <img src="./covers/${escapeHtml(episode.coverFile)}" alt="${escapeHtml(episode.title)} 封面" loading="lazy">
+          <img src="${escapeHtml(coverUrl(episode))}" alt="${escapeHtml(episode.title)} 封面" loading="lazy">
           <span class="episode-play" aria-hidden="true"><i data-lucide="play"></i></span>
         </button>
         <div class="episode-card-body">
@@ -73,6 +89,7 @@
     }
 
     episodeGrid.innerHTML = items.map((episode) => renderCard(episode, episodes.indexOf(episode))).join("");
+    episodeGrid.querySelectorAll("img").forEach(fallbackImage);
     window.lucide?.createIcons();
   };
 
@@ -87,7 +104,8 @@
     const playButton = latestCard.querySelector("[data-play-episode]");
 
     if (image) {
-      image.src = `./covers/${latest.coverFile}`;
+      fallbackImage(image);
+      image.src = coverUrl(latest);
       image.alt = `${latest.title} 封面`;
     }
     if (number) number.textContent = latest.id;

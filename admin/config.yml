@@ -1,0 +1,202 @@
+backend:
+  name: github
+  repo: Calumai/blog-content
+  branch: main
+  auth_methods: [token]
+
+app_title: CalumAi 網站後台
+
+media_folder: posts
+public_folder: ''
+
+site_url: https://calumai.com
+display_url: https://calumai.com/blog/
+
+collections:
+  - name: site_content
+    label: 網站基本內容
+    files:
+      - name: content
+        label: 首頁、遊戲與小工具
+        file: site/content.yml
+        fields:
+          - name: global
+            label: 全站設定
+            widget: object
+            fields:
+              - { name: brand_name, label: 品牌名稱, widget: string }
+              - { name: site_title, label: 網站標題, widget: string }
+              - { name: site_description, label: 網站描述, widget: text }
+              - name: nav
+                label: 主選單
+                widget: list
+                fields:
+                  - { name: label, label: 選單文字, widget: string }
+                  - { name: url, label: 連結, widget: string }
+          - name: homepage
+            label: 首頁
+            widget: object
+            fields:
+              - { name: kicker, label: 首頁小標, widget: string }
+              - { name: title, label: 首頁大標題, widget: string }
+              - { name: intro, label: 首頁介紹文字, widget: text }
+              - name: stats
+                label: 首頁數字狀態
+                widget: list
+                fields:
+                  - { name: label, label: 標籤, widget: string }
+                  - { name: value, label: 數字或狀態, widget: string }
+              - { name: audience_title, label: 受眾區標題, widget: string }
+              - name: audiences
+                label: 受眾卡片
+                widget: list
+                fields:
+                  - { name: icon, label: 圖示名稱（Lucide，例如 school）, widget: string }
+                  - { name: title, label: 卡片標題, widget: string }
+                  - { name: text, label: 卡片文字, widget: text }
+              - { name: index_title, label: 作品總覽標題, widget: string }
+              - name: index_cards
+                label: 首頁入口卡片
+                widget: list
+                fields:
+                  - { name: number, label: 編號, widget: string }
+                  - { name: icon, label: 圖示名稱（Lucide）, widget: string }
+                  - { name: title, label: 標題, widget: string }
+                  - { name: audience, label: 對象, widget: string }
+                  - { name: text, label: 說明, widget: text }
+                  - { name: action, label: 按鈕文字, widget: string }
+                  - { name: url, label: 連結, widget: string }
+          - name: games_page
+            label: 遊戲頁
+            widget: object
+            fields:
+              - { name: title, label: 頁面標題, widget: string }
+              - { name: intro, label: 頁面介紹, widget: text }
+              - name: games
+                label: 遊戲列表
+                widget: list
+                fields:
+                  - { name: kicker, label: 小標, widget: string }
+                  - { name: title, label: 遊戲名稱, widget: string }
+                  - { name: description, label: 遊戲說明, widget: text }
+                  - { name: image, label: 圖片路徑（/assets/...）, widget: string }
+                  - { name: image_alt, label: 圖片替代文字, widget: string }
+                  - name: facts
+                    label: 遊戲資訊
+                    widget: list
+                    fields:
+                      - { name: label, label: 標籤, widget: string }
+                      - { name: value, label: 內容, widget: string }
+                  - { name: note, label: 備註, widget: text }
+                  - { name: primary_label, label: 主要按鈕文字, widget: string }
+                  - { name: primary_url, label: 主要按鈕連結, widget: string }
+                  - { name: secondary_label, label: 次要按鈕文字, widget: string }
+                  - { name: secondary_url, label: 次要按鈕連結, widget: string }
+          - name: tools_page
+            label: 小工具頁
+            widget: object
+            fields:
+              - { name: title, label: 頁面標題, widget: string }
+              - { name: intro, label: 頁面介紹, widget: text }
+              - name: tools
+                label: 工具列表
+                widget: list
+                fields:
+                  - { name: icon, label: 圖示名稱（Lucide）, widget: string }
+                  - { name: title, label: 工具名稱, widget: string }
+                  - { name: description, label: 工具說明, widget: text }
+                  - { name: url, label: 工具連結, widget: string }
+
+  - name: posts
+    label: 部落格文章
+    label_singular: 文章
+    folder: posts
+    create: true
+    format: yaml-frontmatter
+    extension: md
+    path: '{{slug}}/article'
+    media_folder: ''
+    public_folder: ''
+    slug: '{{fields.folder_id}}'
+    identifier_field: title
+    summary: '{{title}}（{{fields.status}}）'
+    sortable_fields: [title, status]
+    fields:
+      - { name: title, label: 標題, widget: string }
+      - name: folder_id
+        label: 資料夾編號（建立後不可改，格式 YYYYMMDD-英文短名）
+        widget: string
+        pattern: ['^\d{8}-[a-z0-9-]+$', '必須是 YYYYMMDD-英文短名，例如 20260720-my-post']
+      - { name: slug, label: 網址 slug（小寫英文與連字號）, widget: string }
+      - { name: excerpt, label: 摘要, widget: text }
+      - name: status
+        label: 狀態（改成 published 並儲存 = 核准發布）
+        widget: select
+        options: [draft, awaiting_human_review, published]
+        default: draft
+      - { name: approval_required, label: 需要人工核准, widget: boolean, default: true }
+      - { name: featured, label: 精選文章, widget: boolean, default: false, required: false }
+      - { name: author, label: 作者, widget: string, default: CalumAi Studio, required: false }
+      - { name: category, label: 分類, widget: string, required: false }
+      - { name: series, label: 系列, widget: string, required: false }
+      - { name: series_order, label: 系列順序, widget: number, required: false }
+      - { name: feature_image, label: 主圖, widget: image, required: false }
+      - { name: feature_image_alt, label: 主圖說明, widget: string, required: false }
+      - name: image_source_type
+        label: 圖片來源類型（發布前必須是真實截圖或編輯圖解）
+        widget: select
+        options: [project_screenshot, editorial_diagram, pending]
+        default: pending
+      - { name: image_source_path, label: 圖片來源紀錄, widget: string, required: false }
+      - { name: seo_title, label: SEO 標題, widget: string, required: false }
+      - { name: seo_description, label: SEO 描述, widget: text, required: false }
+      - { name: body, label: 內文, widget: markdown }
+
+  - name: episodes
+    label: 課程集數（備課小幫手）
+    label_singular: 集數
+    folder: episodes
+    create: true
+    format: yaml-frontmatter
+    extension: md
+    path: '{{slug}}/episode'
+    media_folder: ''
+    public_folder: ''
+    slug: '{{fields.id}}'
+    identifier_field: title
+    summary: '{{fields.id}}｜{{title}}（{{fields.status}}）'
+    sortable_fields: [title, status]
+    fields:
+      - name: id
+        label: 集數編號（建立後不可改）
+        widget: string
+        pattern: ['^EP\d{3}$', '必須是 EP001 這種格式']
+      - { name: title, label: 標題, widget: string }
+      - { name: summary, label: 本集摘要, widget: text, required: false }
+      - { name: learning_goal, label: 學習目標（僅內部參考）, widget: text, required: false }
+      - { name: teaching_result, label: 教學成果（僅內部參考）, widget: text, required: false }
+      - name: cover_image
+        label: 封面圖（PNG 或 JPEG，會存進這一集自己的資料夾）
+        widget: image
+        required: false
+        media_folder: ''
+        public_folder: ''
+      - name: youtube_url
+        label: YouTube 網址（影片請先手動上傳 YouTube）
+        widget: string
+        required: false
+        pattern: ['^$|^https://(www\.)?(youtube\.com/watch\?v=|youtu\.be/).+', '必須是 youtube.com/watch?v=... 或 youtu.be/... 網址']
+      - name: status
+        label: 狀態（改成 published 並儲存 = 核准發布）
+        widget: select
+        options: [draft, published]
+        default: draft
+      - { name: content_approved, label: 人工確認：教學內容與字幕正確, widget: boolean, default: false }
+      - { name: privacy_approved, label: 人工確認：畫面隱私沒問題, widget: boolean, default: false }
+      - { name: youtube_approved, label: 人工確認：YouTube 已確認可公開, widget: boolean, default: false }
+      - { name: published_at, label: 發布時間（自動保留，勿改）, widget: string, required: false }
+      - { name: notes, label: 備註, widget: text, required: false }
+      - name: body
+        label: 講義內文（圖片放本集 assets/，引用路徑寫 assets/EPxxx/檔名）
+        widget: markdown
+        required: false
