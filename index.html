@@ -179,27 +179,13 @@
         </article>
       </div>
 
-      <div class="mission-card-grid" aria-label="CALUMAI 想學主題送出方式">
-        <article class="mission-comment-box reveal">
-          <p class="mission-kicker">LINE</p>
-          <h2>用 LINE 跟我說</h2>
-          <p>適合想快速丟一句話、附截圖，或想私下跟我說需求的人。</p>
-          <div class="mission-comment-actions">
-            <a class="mission-game-primary" href="https://line.me/ti/p/@calumai8107" target="_blank" rel="noopener noreferrer">
-              跟我說想學什麼
-              <i data-lucide="message-circle" aria-hidden="true"></i>
-            </a>
-          </div>
-          <p class="mission-copy-feedback">不用寫得很完整，一句「我想學……」就可以。</p>
-        </article>
-
-        <form class="mission-comment-box reveal" action="https://github.com/Calumai/calumai.com/issues/new" method="get" target="_blank" rel="noopener" aria-label="直接在頁面留言">
-          <input type="hidden" name="title" value="CALUMAI 想學主題留言">
-          <p class="mission-kicker">PUBLIC NOTE</p>
-          <h2>直接在頁面留言</h2>
-          <p>先在下面寫好想學的題目，送出後會開啟公開留言單。請不要填電話、地址或私人資料。</p>
-          <label for="learning-request-body" class="mission-card-audience">留言內容</label>
-          <textarea id="learning-request-body" name="body" required rows="7" style="width:100%; min-height:170px; resize:vertical;" class="mission-copy-template" placeholder="我想學：
+      <form class="mission-comment-box reveal" action="https://github.com/Calumai/calumai.com/issues/new" method="get" target="_blank" rel="noopener" aria-label="直接在頁面留言">
+        <input type="hidden" name="title" value="CALUMAI 想學主題留言">
+        <p class="mission-kicker">PUBLIC NOTE</p>
+        <h2>直接在頁面留言</h2>
+        <p>先在下面寫好想學的題目，送出後會開啟公開留言單。請不要填電話、地址或私人資料；如果內容比較私密，可以改用頁尾的 LINE 聯絡。</p>
+        <label for="learning-request-body" class="mission-card-audience">留言內容</label>
+        <textarea id="learning-request-body" name="body" required rows="7" style="width:100%; min-height:170px; resize:vertical;" class="mission-copy-template" placeholder="我想學：
 
 我目前卡住的是：
 
@@ -208,15 +194,14 @@
 我目前卡住的是：
 
 如果做成教學，我希望它能幫我：</textarea>
-          <div class="mission-comment-actions">
-            <button class="mission-copy-button" type="submit">
-              送出公開留言
-              <i data-lucide="send" aria-hidden="true"></i>
-            </button>
-          </div>
-          <p class="mission-copy-feedback">直接留言會成為公開留言；如果內容比較私密，請用 LINE。</p>
-        </form>
-      </div>
+        <div class="mission-comment-actions">
+          <button class="mission-copy-button" type="submit">
+            送出公開留言
+            <i data-lucide="send" aria-hidden="true"></i>
+          </button>
+        </div>
+        <p class="mission-copy-feedback">直接留言會成為公開留言；私密內容請改用頁尾 LINE。</p>
+      </form>
     </section>
   </main>
   <footer class="site-footer mission-footer">
