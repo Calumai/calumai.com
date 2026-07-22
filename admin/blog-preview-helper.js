@@ -129,7 +129,8 @@
     }
 
     showNotice("如果剛剛才儲存，請等自動發布跑完後再重新整理預覽頁。");
-    window.open(`/admin/previews/blog/${encodeURIComponent(folderId)}/`, "_blank", "noopener,noreferrer");
+    const previewUrl = `/admin/previews/blog/${encodeURIComponent(folderId)}/?preview=${Date.now()}`;
+    window.open(previewUrl, "_blank", "noopener,noreferrer");
   });
 
   const ai100Button = document.createElement("button");
@@ -144,7 +145,8 @@
     }
 
     showNotice("如果剛剛才儲存，請等自動發布跑完後再重新整理預覽頁。");
-    window.open(`/admin/previews/ai100/${encodeURIComponent(contentId)}/`, "_blank", "noopener,noreferrer");
+    const previewUrl = `/admin/previews/ai100/${encodeURIComponent(contentId)}/?preview=${Date.now()}`;
+    window.open(previewUrl, "_blank", "noopener,noreferrer");
   });
 
   window.addEventListener("load", () => {

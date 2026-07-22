@@ -145,8 +145,9 @@ collections:
     extension: md
     path: '{{slug}}/article'
     preview_path: '/admin/previews/blog/{{slug}}/'
-    media_folder: ''
-    public_folder: ''
+    # 部落格圖片一律放在該文章自己的 assets/，避免跨電腦上傳後找不到圖片。
+    media_folder: assets
+    public_folder: assets
     slug: '{{fields.folder_id}}'
     identifier_field: title
     summary: '{{title}}（{{fields.status}}）'
