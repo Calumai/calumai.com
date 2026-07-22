@@ -4,14 +4,15 @@
     "contentType": "video_lesson",
     "contentLabel": "影片課程",
     "track": "intro",
-    "trackLabel": "導論",
+    "trackLabel": "入門",
     "title": "今天，我們來認識 AI",
     "summary": "第 1 集先不教操作，而是用溫暖、慢速、鼓勵的方式，陪老師認識 AI 是什麼，建立繼續學習的信心。",
     "embedUrl": "https://www.youtube.com/embed/3snPosMVpLw",
     "srtFile": "EP001.srt",
     "handoutFile": "EP001.md",
     "coverFile": "EP001.png",
-    "publishedAt": "2026-07-20T08:33:19.082Z"
+    "publishedAt": "2026-07-20T08:33:19.082Z",
+    "managedBy": "blog-content"
   },
   {
     "id": "EP002",
@@ -25,7 +26,8 @@
     "srtFile": "EP002.srt",
     "handoutFile": "EP002.md",
     "coverFile": "EP002.png",
-    "publishedAt": "2026-07-20T08:33:33.484Z"
+    "publishedAt": "2026-07-20T08:33:33.484Z",
+    "managedBy": "blog-content"
   },
   {
     "id": "EP003",
@@ -39,7 +41,8 @@
     "srtFile": "EP003.srt",
     "handoutFile": "EP003.md",
     "coverFile": "EP003.png",
-    "publishedAt": "2026-07-20T16:12:11.282Z"
+    "publishedAt": "2026-07-20T16:12:11.282Z",
+    "managedBy": "blog-content"
   },
   {
     "id": "EP004",
@@ -53,7 +56,8 @@
     "srtFile": "EP004.srt",
     "handoutFile": "EP004.md",
     "coverFile": "EP004.png",
-    "publishedAt": "2026-07-21T03:47:54.131Z"
+    "publishedAt": "2026-07-21T03:47:54.131Z",
+    "managedBy": "blog-content"
   },
   {
     "id": "EP005",
@@ -67,20 +71,22 @@
     "srtFile": "EP005.srt",
     "handoutFile": "EP005.md",
     "coverFile": "EP005.png",
-    "publishedAt": "2026-07-21T11:39:48.221Z"
+    "publishedAt": "2026-07-21T11:39:48.221Z",
+    "managedBy": "blog-content"
   },
   {
     "id": "SP001",
     "contentType": "handout",
     "contentLabel": "圖文講義",
     "track": "intro",
-    "trackLabel": "導論",
+    "trackLabel": "入門",
     "title": "【特別篇01】不會寫提示詞沒關係：先把你想做的事情告訴 AI",
     "summary": "",
     "embedUrl": null,
     "srtFile": null,
     "handoutFile": "SP001.md",
     "coverFile": "SP001.png",
-    "publishedAt": "2026-07-22T10:00:52.948Z"
+    "publishedAt": "2026-07-22T10:00:52.948Z",
+    "managedBy": "blog-content"
   }
 ]

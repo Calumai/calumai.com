@@ -11,8 +11,14 @@
   const github = window.CalumAiGithub;
   const CATEGORIES = ["製作心得", "遊戲", "AI 教學", "族語教學", "Podcast", "自動化", "幕後花絮"];
   const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
+  const MAX_IMAGE_BATCH_COUNT = 20;
+  const MAX_PENDING_IMAGE_COUNT = 30;
+  const MAX_PENDING_IMAGE_BYTES = 48 * 1024 * 1024;
+  const MAX_EXISTING_PREVIEW_COUNT = 100;
+  const MAX_EXISTING_PREVIEW_BYTES = 64 * 1024 * 1024;
   const PUBLIC_REGISTRY = "https://calumai.com/blog/published-posts.json";
   const PUBLIC_DEPLOY_STATUS = "https://calumai.com/admin/deploy-status.json";
+  const PUBLIC_FETCH_TIMEOUT_MS = 8000;
   const SESSION_TOKEN_KEY = "calumai-studio:github-session";
   const TEST_MODE = Boolean(window.__CALUMAI_STUDIO_TEST_MODE__);
   if (TEST_MODE && !Array.isArray(window.__CALUMAI_STUDIO_TEST_TOASTS__)) {
@@ -39,7 +45,12 @@
     activeOperation: null,
     previewFingerprint: "",
     assetUrls: new Map(),
+    assetDescriptions: new Map(),
+    assetLoadFailures: new Set(),
+    assetLoadLimitMessage: "",
     pendingAssets: new Map(),
+    assetsLoading: false,
+    assetLoadToken: 0,
     deployments: new Map(),
     livePosts: new Map(),
     liveRegistryChecked: false,
@@ -47,9 +58,13 @@
     liveDeploymentContainsHead: false,
     contentHeadSha: "",
     recovery: null,
+    conflictDetected: false,
     importUndo: null,
     draftTimer: 0,
     sessionVersion: 0,
+    lastArticleSyncAt: 0,
+    articleRefreshGeneration: 0,
+    articleOpenGeneration: 0,
   };
 
   function escape(value) {
@@ -58,6 +73,25 @@
 
   function sleep(milliseconds) {
     return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+  }
+
+  async function readPublicJson(url, timeoutMs = PUBLIC_FETCH_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(url, { cache: "no-store", signal: controller.signal });
+      if (!response.ok) throw new Error(`Public status request failed: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      if (controller.signal.aborted) {
+        const timeoutError = new Error("公開網站狀態讀取逾時。");
+        timeoutError.code = "PUBLIC_STATUS_TIMEOUT";
+        throw timeoutError;
+      }
+      throw error;
+    } finally {
+      window.clearTimeout(timeout);
+    }
   }
 
   function sessionSnapshot() {
@@ -96,16 +130,22 @@
     const toast = document.createElement("div");
     toast.className = "toast";
     toast.dataset.tone = tone;
+    toast.setAttribute("role", tone === "danger" ? "alert" : "status");
     toast.textContent = message;
     region.append(toast);
     window.setTimeout(() => toast.remove(), duration);
   }
 
   function revokeAssetUrls() {
+    state.assetLoadToken += 1;
+    state.assetsLoading = false;
     for (const url of new Set(state.assetUrls.values())) {
       if (String(url).startsWith("blob:")) URL.revokeObjectURL(url);
     }
     state.assetUrls.clear();
+    state.assetDescriptions.clear();
+    state.assetLoadFailures.clear();
+    state.assetLoadLimitMessage = "";
   }
 
   function emptyEditor() {
@@ -129,6 +169,10 @@
 
   function localDraftKey() {
     return `calumai-studio:draft:${state.editor?.id || "new"}`;
+  }
+
+  function recoveryPendingAssets() {
+    return state.recovery?.pendingAssets instanceof Map ? state.recovery.pendingAssets : new Map();
   }
 
   function articleFingerprint() {
@@ -190,6 +234,16 @@
     if (!state.editor) return true;
 
     if (state.route === "editor") syncEditorFromDom();
+    if (blockPendingAssets && (state.pendingAssets.size || recoveryPendingAssets().size)) {
+      if (!persistLocalDraftNow()) {
+        blockEditorTransition("本機草稿儲存失敗，已停止切換。請先複製文章內容或釋放瀏覽器儲存空間後再試。");
+        return false;
+      }
+      blockEditorTransition(recoveryPendingAssets().size
+        ? "另一台電腦修改期間，你上傳的圖片仍保留在版本比較裡。請先選擇要使用的版本，再按「儲存草稿」，才能切換文章。"
+        : "還有尚未儲存的圖片。請先按「儲存草稿」把圖片存到 GitHub，再切換文章。");
+      return false;
+    }
     if (
       confirmLeave &&
       state.dirty &&
@@ -201,10 +255,6 @@
 
     if (!persistLocalDraftNow()) {
       blockEditorTransition("本機草稿儲存失敗，已停止切換。請先複製文章內容或釋放瀏覽器儲存空間後再試。");
-      return false;
-    }
-    if (blockPendingAssets && state.pendingAssets.size) {
-      blockEditorTransition("還有尚未儲存的圖片。請先按「儲存草稿」把圖片存到 GitHub，再切換文章。");
       return false;
     }
     return true;
@@ -242,11 +292,14 @@
 
   function markDirty({ preserveImportUndo = false } = {}) {
     if (!state.editor) return;
-    if (!preserveImportUndo) state.importUndo = null;
+    if (!preserveImportUndo && state.importUndo) {
+      state.importUndo = null;
+      root.querySelector("[data-import-undo-banner]")?.remove();
+    }
     state.dirty = true;
     state.editorRevision += 1;
     state.previewFingerprint = "";
-    updateSaveState("尚未儲存", "warning");
+    updateSaveState("尚未存到 GitHub", "warning");
     saveLocalDraftSoon();
   }
 
@@ -270,6 +323,41 @@
     });
   }
 
+  function captureEditorFocus() {
+    if (TEST_MODE) return null;
+    const active = document.activeElement;
+    if (!(active instanceof HTMLElement) || !root.contains(active)) return null;
+    const token = {
+      field: active.dataset.field || "",
+      action: active.dataset.action || "",
+      format: active.dataset.format || "",
+      imageAltPath: active.dataset.imageAltPath || "",
+    };
+    if (!Object.values(token).some(Boolean)) return null;
+    if (typeof active.selectionStart === "number") {
+      token.selectionStart = active.selectionStart;
+      token.selectionEnd = active.selectionEnd;
+    }
+    return token;
+  }
+
+  function restoreEditorFocus(token) {
+    if (!token || TEST_MODE) return;
+    const candidates = [...root.querySelectorAll("[data-field], [data-action], [data-format], [data-image-alt-path]")];
+    const target = candidates.find((candidate) => (
+      (token.field && candidate.dataset.field === token.field)
+      || (token.imageAltPath && candidate.dataset.imageAltPath === token.imageAltPath)
+      || (token.action && candidate.dataset.action === token.action)
+      || (token.format && candidate.dataset.format === token.format)
+    ));
+    if (!(target instanceof HTMLElement)) return;
+    target.focus({ preventScroll: true });
+    if (typeof token.selectionStart === "number" && typeof target.setSelectionRange === "function") {
+      const length = String(target.value || "").length;
+      target.setSelectionRange(Math.min(token.selectionStart, length), Math.min(token.selectionEnd, length));
+    }
+  }
+
   function deploymentFor(articleId) {
     return articleId ? state.deployments.get(articleId) || null : null;
   }
@@ -289,6 +377,31 @@
       deploymentChecked: state.liveDeploymentChecked,
       deploymentContainsHead: state.liveDeploymentContainsHead,
     });
+  }
+
+  function deploymentTrackerIsCurrent(articleId, commitSha) {
+    const deployment = deploymentFor(articleId);
+    return Boolean(deployment?.commitSha) && String(deployment.commitSha) === String(commitSha);
+  }
+
+  function deploymentCanFinish(registryMatchesMode, currentHeadChecked, containsCurrentHead) {
+    return Boolean(registryMatchesMode && currentHeadChecked && containsCurrentHead);
+  }
+
+  function sourceRemovalState(article = state.editor) {
+    if (!article?.id || !state.loaded) {
+      return { allowed: false, reason: "這篇文章尚未存到 GitHub，沒有可移除的來源檔案。" };
+    }
+    if (article.status === "published") {
+      return { allowed: false, reason: "請先按「暫時下架」，並等網站確認完成後再移除文章。" };
+    }
+    if (!state.liveRegistryChecked) {
+      return { allowed: false, reason: "正在確認公開文章清單；確認完成前不會移除文章。" };
+    }
+    if (state.livePosts.has(article.id)) {
+      return { allowed: false, reason: "公開頁仍存在，請等待下架完成後再移除文章。" };
+    }
+    return { allowed: true, reason: "公開頁已確認下架，可以安全移除文章來源。" };
   }
 
   function sidebar() {
@@ -349,7 +462,7 @@
 
   function renderArticles() {
     const content = `<div class="content">
-      <div class="page-heading"><div><h1 tabindex="-1" data-page-heading>文章</h1><p>草稿不會出現在網站。按下發布後，這裡會一路顯示到真正上線。</p></div><button class="button button--primary" type="button" data-action="new-article">新增文章</button></div>
+      <div class="page-heading"><div><h1 tabindex="-1" data-page-heading>文章</h1><p>草稿不會出現在網站。按下發布後，這裡會一路顯示到真正上線。</p></div><div class="page-heading-actions"><button class="button" type="button" data-action="refresh-articles" ${state.loading ? "disabled" : ""}>${state.loading ? "正在同步…" : "同步最新內容"}</button><button class="button button--primary" type="button" data-action="new-article">新增文章</button></div></div>
       ${state.pageError ? `<div class="error-banner" role="alert" tabindex="-1" data-focus-error>${escape(state.pageError)}</div>` : ""}
       <div class="toolbar-line"><label class="search-wrap"><span class="sr-only">搜尋文章</span><input class="search-input" type="search" value="${escape(state.query)}" placeholder="輸入標題、摘要或分類" data-search></label>
         <div class="segment" aria-label="文章狀態">
@@ -359,7 +472,7 @@
           <button type="button" data-filter="published" aria-pressed="${state.filter === "published"}">已公開</button>
         </div>
       </div>
-      <section class="panel article-list" aria-label="文章清單" data-article-list>${articleRows()}</section>
+      <section class="panel article-list" aria-label="文章清單" aria-busy="${state.loading}" data-article-list>${articleRows()}</section>
     </div>`;
     root.innerHTML = shell(content);
   }
@@ -405,7 +518,6 @@
   function availableAssetKeys() {
     const keys = new Set();
     for (const item of assetEntries()) {
-      if (!item.url) continue;
       keys.add(normalizeAssetKey(item.path));
       keys.add(decodePath(normalizeAssetKey(item.path)));
     }
@@ -417,6 +529,22 @@
     const refs = [...core.extractAssetPaths(state.editor?.body || "")];
     if (state.editor?.featureImage && !/^https?:\/\//i.test(state.editor.featureImage)) refs.push(state.editor.featureImage);
     return [...new Set(refs.map(normalizeAssetKey))].filter((item) => !available.has(item) && !available.has(decodePath(item)));
+  }
+
+  function previewAssetFailures() {
+    const required = new Set(core.extractAssetPaths(state.editor?.body || "").map((value) => decodePath(normalizeAssetKey(value)).toLowerCase()));
+    if (state.editor?.featureImage && !/^https?:\/\//i.test(state.editor.featureImage)) {
+      required.add(decodePath(normalizeAssetKey(state.editor.featureImage)).toLowerCase());
+    }
+    return [...state.assetLoadFailures].filter((value) => required.has(decodePath(normalizeAssetKey(value)).toLowerCase()));
+  }
+
+  function unloadedExistingRequiredAssets() {
+    const existing = new Map(assetEntries().map((item) => [decodePath(normalizeAssetKey(item.path)).toLowerCase(), item.path]));
+    const required = [...core.extractAssetPaths(state.editor?.body || "")];
+    if (state.editor?.featureImage && !/^https?:\/\//i.test(state.editor.featureImage)) required.unshift(state.editor.featureImage);
+    return [...new Set(required.map((value) => decodePath(normalizeAssetKey(value)).toLowerCase()))]
+      .filter((key) => key && existing.has(key) && !assetUrlFor(existing.get(key)));
   }
 
   function imageAltIssues() {
@@ -436,14 +564,106 @@
 
   function coverMarkup() {
     const url = assetUrlFor(state.editor?.featureImage);
-    if (url) return `<img class="cover-preview" src="${escape(url)}" alt="${escape(state.editor.featureImageAlt || state.editor.title || "封面預覽")}">`;
+    if (url) return `<img class="cover-preview" src="${escape(url)}" alt="">`;
+    if (state.editor?.featureImage && state.assetsLoading) return `<span class="cover-empty"><strong>正在載入封面…</strong>你可以先編輯文章，不用等圖片。</span>`;
+    if (state.editor?.featureImage) return `<span class="cover-empty"><strong>目前讀不到這張封面</strong>可重新選圖，預覽與發布也會再次檢查。</span>`;
     return `<span class="cover-empty"><strong>選一張文章封面</strong>從電腦選圖，不需要先搬到 assets 資料夾。</span>`;
+  }
+
+  function assetDescriptionKey(path) {
+    return decodePath(normalizeAssetKey(path)).toLowerCase();
+  }
+
+  function normalizedAssetDescriptions(value) {
+    const entries = value instanceof Map ? value : new Map(value || []);
+    return new Map([...entries].map(([path, description]) => [assetDescriptionKey(path), description]));
+  }
+
+  function assetDescriptionFor(path) {
+    const descriptionKey = assetDescriptionKey(path);
+    if (state.assetDescriptions.has(descriptionKey)) return state.assetDescriptions.get(descriptionKey);
+    const bodyAlt = core.imageAltFor(state.editor?.body || "", path);
+    if (bodyAlt) return bodyAlt;
+    const target = decodePath(normalizeAssetKey(path)).toLowerCase();
+    const cover = decodePath(normalizeAssetKey(state.editor?.featureImage)).toLowerCase();
+    return target && target === cover ? state.editor?.featureImageAlt || "" : "";
+  }
+
+  function assetIsUsed(path) {
+    const target = decodePath(normalizeAssetKey(path)).toLowerCase();
+    if (!target) return false;
+    if (decodePath(normalizeAssetKey(state.editor?.featureImage)).toLowerCase() === target) return true;
+    return core.extractAssetPaths(state.editor?.body || "")
+      .some((value) => decodePath(normalizeAssetKey(value)).toLowerCase() === target);
+  }
+
+  function assetThumbMarkup(item) {
+    if (item.url) return `<img src="${escape(item.url)}" alt="">`;
+    const failed = state.assetLoadFailures.has(item.path);
+    return `<span class="asset-thumb-placeholder" aria-hidden="true">${failed ? "!" : state.assetsLoading ? "…" : "圖"}</span>`;
+  }
+
+  function cleanImageDescription(value) {
+    return String(value || "").replace(/[\r\n]+/g, " ").replace(/[\[\]]/g, "").replace(/\s+/g, " ").trim();
+  }
+
+  function updateFeatureImageDescription(value) {
+    if (!state.editor) return false;
+    state.editor.featureImageAlt = String(value || "");
+    const featurePath = state.editor.featureImage;
+    if (!featurePath) return false;
+    const description = cleanImageDescription(value);
+    state.assetDescriptions.set(assetDescriptionKey(featurePath), description);
+    const nextBody = core.replaceImageAlt(state.editor.body || "", featurePath, description);
+    const bodyChanged = nextBody !== state.editor.body;
+    if (bodyChanged) state.editor.body = nextBody;
+    return bodyChanged;
+  }
+
+  function insertExistingImage(target) {
+    const path = target?.dataset.path || "";
+    const input = target?.closest("[data-asset-path]")?.querySelector("[data-image-alt-path]");
+    const description = cleanImageDescription(input?.value || assetDescriptionFor(path));
+    if (!description || description === "請填寫圖片說明") {
+      if (input) {
+        input.setAttribute("aria-invalid", "true");
+        input.focus();
+      }
+      showToast("請先寫一句圖片說明，再插入內文。", "danger", 7000);
+      return false;
+    }
+    if (input) {
+      input.value = description;
+      input.removeAttribute("aria-invalid");
+    }
+    state.assetDescriptions.set(assetDescriptionKey(path), description);
+    insertRawAtCursor(`\n![${description}](${path})\n`);
+    if (!assetUrlFor(path) && !state.pendingAssets.has(path)) retryAssetLoading();
+    return true;
+  }
+
+  function focusImageDescription(path) {
+    if (TEST_MODE || !path) return;
+    window.requestAnimationFrame(() => {
+      const target = [...root.querySelectorAll("[data-image-alt-path]")]
+        .find((input) => input.dataset.imageAltPath === path);
+      if (!(target instanceof HTMLElement)) return;
+      target.focus({ preventScroll: false });
+    });
   }
 
   function assetListMarkup() {
     const items = assetEntries();
     if (!items.length) return `<p class="field-hint">目前還沒有文章圖片。</p>`;
-    return items.map((item) => `<div class="asset-item"><img src="${escape(item.url || "")}" alt=""><span>${escape(item.path.replace(/^assets\//, ""))}${item.pending ? "（尚未儲存）" : ""}</span><button type="button" data-action="insert-existing-image" data-path="${escape(item.path)}">插入</button></div>`).join("");
+    return items.map((item) => {
+      const fileName = item.path.replace(/^assets\//, "");
+      const description = assetDescriptionFor(item.path);
+      const pendingLabel = item.pending
+        ? assetIsUsed(item.path) ? "（尚未存到 GitHub）" : "（尚未使用、尚未存到 GitHub）"
+        : "";
+      const used = assetIsUsed(item.path);
+      return `<div class="asset-item" data-asset-path="${escape(item.path)}"><span class="asset-thumb-slot" data-asset-thumb>${assetThumbMarkup(item)}</span><span class="asset-filename">${escape(fileName)}${pendingLabel}</span><label class="asset-alt"><span>圖片說明</span><input type="text" value="${escape(description)}" placeholder="例如：學生操作網站的畫面" aria-label="${escape(`${fileName} 的圖片說明`)}" data-image-alt-path="${escape(item.path)}"></label><span class="asset-actions"><button type="button" data-action="insert-existing-image" data-path="${escape(item.path)}" aria-label="把 ${escape(fileName)} 插入內文">插入內文</button>${item.pending ? `<button type="button" class="asset-remove" data-action="request-remove-pending" data-path="${escape(item.path)}" aria-label="移除尚未儲存的 ${escape(fileName)}">移除</button>` : used ? `<button type="button" class="asset-remove" data-action="request-unlink-image" data-path="${escape(item.path)}" aria-label="把 ${escape(fileName)} 從文章移除">從文章移除</button>` : ""}</span></div>`;
+    }).join("");
   }
 
   function deploymentMarkup() {
@@ -457,11 +677,38 @@
     ];
     const order = { saved: 0, building: 1, deploying: 2, live: 3, failed: -1 };
     const current = order[deployment.stage] ?? 0;
+    const linkLabel = deployment.stage === "failed" ? "查看失敗原因" : deployment.stage === "live" ? "打開公開文章" : "查看發布進度";
+    const retry = deployment.stage === "failed" ? `<button class="button button--small" type="button" data-action="retry-deployment">重新確認發布狀態</button>` : "";
     return `<section class="panel progress-panel" aria-live="polite"><h3>${deployment.stage === "failed" ? "這次發布沒有完成" : "發布進度"}</h3><div class="progress-steps">${steps.map(([key, label], index) => {
       let stepState = index < current ? "done" : index === current ? "active" : "waiting";
       if (deployment.stage === "failed" && index === Math.max(0, deployment.failedAt || 1)) stepState = "failed";
       return `<div class="progress-step" data-state="${stepState}">${escape(label)}</div>`;
-    }).join("")}</div>${deployment.message ? `<p class="field-hint">${escape(deployment.message)}</p>` : ""}${deployment.url ? `<a class="button button--small" href="${escape(deployment.url)}" target="_blank" rel="noopener">開啟文章</a>` : ""}</section>`;
+    }).join("")}</div>${deployment.message ? `<p class="field-hint">${escape(deployment.message)}</p>` : ""}<div class="progress-actions">${deployment.url ? `<a class="button button--small" href="${escape(deployment.url)}" target="_blank" rel="noopener">${linkLabel}</a>` : ""}${retry}</div></section>`;
+  }
+
+  function publicationMessageFor(article = state.editor) {
+    if (!article) return "";
+    const publicStatus = visibleStatus(article);
+    if (state.recovery) return "先比較 GitHub 與這台電腦保留的版本，選好後才會開放儲存與發布。";
+    if (publicStatus.state === "live") return "這篇目前在網站上。修改後先預覽，再用上方按鈕更新網站。";
+    if (publicStatus.state === "unpublish-pending") return "已改回草稿；公開網站仍是較早版本，正在等待下架。";
+    if (article.status === "published") return "這篇已設為公開，但網站可能仍在等待部署；請以狀態標籤為準。";
+    return "存草稿不會公開；只有按上方的發布才會出現在網站。";
+  }
+
+  function publicLinkMarkup(articleId = state.editor?.id) {
+    const publicPost = state.livePosts.get(articleId) || null;
+    return publicPost?.url
+      ? `<div class="public-link-row"><a class="button button--small" href="${escape(publicPost.url)}" target="_blank" rel="noopener">打開公開文章</a></div>`
+      : "";
+  }
+
+  function removalMarkup(article = state.editor) {
+    if (!article || !state.loaded || state.recovery) return "";
+    const removal = sourceRemovalState(article);
+    return removal.allowed
+      ? `<section class="panel aside-card danger-zone"><h2>移除文章</h2><p>公開頁已確認下架；這會移除文章來源與圖片，GitHub 仍保留歷史紀錄。</p><button class="button button--danger button--small" type="button" data-action="request-delete">移除這篇文章</button></section>`
+      : `<section class="panel aside-card"><h2>移除文章</h2><p>${escape(removal.reason)}</p></section>`;
   }
 
   function refreshDeploymentView(articleId) {
@@ -474,6 +721,12 @@
         status.dataset.tone = info.tone;
         status.textContent = info.label;
       }
+      const message = root.querySelector("[data-publication-message]");
+      if (message) message.textContent = publicationMessageFor(state.editor);
+      const publicLink = root.querySelector("[data-public-link-slot]");
+      if (publicLink) publicLink.innerHTML = publicLinkMarkup(articleId);
+      const removal = root.querySelector("[data-removal-slot]");
+      if (removal) removal.innerHTML = removalMarkup(state.editor);
       return;
     }
     if (state.route === "articles") {
@@ -489,6 +742,9 @@
 
   function editorActions() {
     const published = state.editor?.status === "published";
+    if (state.recovery) {
+      return `<button class="button button--small" type="button" data-action="preview">預覽 GitHub 版本</button><button class="button button--primary button--small" type="button" data-action="compare-recovery">先比較版本</button>`;
+    }
     return `<button class="button button--small" type="button" data-action="preview">預覽</button>
       ${published
         ? `<button class="button button--primary button--small" type="button" data-action="request-publish">儲存並更新網站</button>`
@@ -496,48 +752,44 @@
   }
 
   function renderEditor() {
+    const focusToken = captureEditorFocus();
     const article = state.editor;
     if (!article) return renderArticles();
     const title = article.title || "新增文章";
     const published = article.status === "published";
     const publicStatus = visibleStatus(article);
-    const publicationMessage = publicStatus.state === "live"
-      ? "這篇目前在網站上。修改後先預覽，再用上方按鈕更新網站。"
-      : publicStatus.state === "unpublish-pending"
-        ? "已改回草稿；公開網站仍是較早版本，正在等待下架。"
-        : published
-          ? "這篇已設為公開，但網站可能仍在等待部署；請以狀態標籤為準。"
-          : "存草稿不會公開；只有按上方的發布才會出現在網站。";
+    const recoveryImageCount = recoveryPendingAssets().size;
     const content = `<div class="content content--editor">
-      <div class="page-heading editor-heading"><div><button class="button button--quiet back-button" type="button" data-action="back-to-list">返回文章清單</button><h1 tabindex="-1" data-page-heading>${escape(title)}</h1></div><div class="save-state" data-save-state data-tone="${state.dirty ? "warning" : "success"}"><span class="save-dot" aria-hidden="true"></span><span>${state.dirty ? "尚未儲存" : state.loaded ? "已存檔" : "新文章"}</span></div></div>
-      ${state.recovery ? `<div class="error-banner" role="status">${state.recovery.conflict ? "這台電腦留有一份較早、尚未存上 GitHub 的版本。先比較再決定，不會自動蓋掉雲端內容。" : "這台電腦留有一份尚未存到 GitHub 的文字。"}${state.recovery.alternates?.length ? ` 另外還安全保留 ${state.recovery.alternates.length} 份較早版本。` : ""}<button class="button button--small" type="button" data-action="compare-recovery">比較版本</button> <button class="button button--quiet button--small" type="button" data-action="discard-recovery">保留 GitHub 版本</button></div>` : ""}
-      ${state.importUndo ? `<div class="error-banner" role="status">已帶入 Markdown 內容。<button class="button button--small" type="button" data-action="undo-import">撤銷這次匯入</button></div>` : ""}
-      ${state.pageError ? `<div class="error-banner" role="alert" tabindex="-1" data-focus-error>${escape(state.pageError)}</div>` : ""}
+      <div class="page-heading editor-heading"><div><button class="button button--quiet back-button" type="button" data-action="back-to-list">返回文章清單</button><h1 tabindex="-1" data-page-heading>${escape(title)}</h1></div><div class="save-state" data-save-state data-tone="${state.dirty ? "warning" : "success"}"><span class="save-dot" aria-hidden="true"></span><span>${state.dirty ? "尚未存到 GitHub" : state.loaded ? "已存到 GitHub" : "新文章"}</span></div></div>
+      ${state.recovery ? `<div class="error-banner" role="status">${state.recovery.conflict ? "這台電腦留有一份較早、尚未存上 GitHub 的版本。先比較再決定，不會自動蓋掉雲端內容。" : "這台電腦留有一份尚未存到 GitHub 的文字。"}${recoveryImageCount ? ` 你剛上傳的 ${recoveryImageCount} 張圖片也還安全留在這個分頁。` : ""}${state.recovery.alternates?.length ? ` 另外還安全保留 ${state.recovery.alternates.length} 份較早版本。` : ""}<button class="button button--small" type="button" data-action="compare-recovery">比較版本</button> <button class="button button--quiet button--small" type="button" data-action="discard-recovery">保留 GitHub 版本</button></div>` : ""}
+      ${state.importUndo ? `<div class="error-banner" role="status" data-import-undo-banner>已帶入 Markdown 內容。<button class="button button--small" type="button" data-action="undo-import">撤銷這次匯入</button></div>` : ""}
+      ${state.pendingAssets.size ? `<div class="pending-banner" role="status"><strong>${state.pendingAssets.size} 張圖片還只在這個分頁。</strong>關閉或重新整理後圖片無法復原；請先按「儲存草稿」存到 GitHub。</div>` : ""}
+      ${state.pageError ? `<div class="error-banner" role="alert" tabindex="-1" data-focus-error>${escape(state.pageError)}${state.conflictDetected ? ` <button class="button button--small" type="button" data-action="reload-conflict">讀取 GitHub 版本並比較</button>` : ""}</div>` : ""}
       <div class="editor-grid">
         <section class="panel editor-card">
           <label class="field"><span class="field-label">標題 <span class="field-hint">讀者第一眼看到的文字</span></span><input type="text" maxlength="100" value="${escape(article.title)}" data-field="title" placeholder="這篇文章想告訴大家什麼？"></label>
           <label class="field"><span class="field-label">文章摘要 <span class="field-hint">可以留空，系統會幫你擷取</span></span><textarea data-field="excerpt" maxlength="260" placeholder="用一兩句話說明這篇文章">${escape(article.excerpt)}</textarea></label>
           <label class="field"><span class="field-label">分類</span><select data-field="category">${categoryOptions(article.category)}</select></label>
-          <div class="field"><span class="field-label" id="article-body-label">講義或文章內文 <span class="field-hint">可直接貼 Markdown</span></span>
+          <div class="field"><span class="field-label" id="article-body-label">文章內文 <span class="field-hint">直接打字即可</span></span>
             <div class="markdown-wrap"><div class="markdown-toolbar" aria-label="文字工具">
               <button class="toolbar-button" type="button" data-format="heading">小標題</button>
               <button class="toolbar-button" type="button" data-format="bold">粗體</button>
               <button class="toolbar-button" type="button" data-format="quote">引言</button>
               <button class="toolbar-button" type="button" data-format="list">清單</button>
               <span class="toolbar-separator" aria-hidden="true"></span>
-              <button class="toolbar-button" type="button" data-action="choose-body-images">插入圖片</button>
-              <button class="toolbar-button" type="button" data-action="choose-markdown">匯入 .md 與圖片</button>
+              <button class="toolbar-button" type="button" data-action="choose-body-images">放圖片</button>
+              <button class="toolbar-button" type="button" data-action="choose-markdown">匯入現成講義</button>
             </div><textarea class="article-body-input" data-field="body" data-body-input aria-labelledby="article-body-label" placeholder="從這裡開始寫文章…">${escape(article.body)}</textarea></div>
-            <p class="field-hint">預覽會直接顯示 Markdown 排版。上傳圖片後，系統會自動放到正確位置。</p>
+            <p class="field-hint">不用懂 Markdown；使用上方按鈕排版，預覽會顯示讀者最後看到的樣子。</p>
           </div>
         </section>
         <aside class="editor-aside">
-          <section class="panel aside-card"><h2>封面</h2><p>會顯示在文章上方與部落格列表。</p><button class="cover-drop" type="button" data-action="choose-cover">${coverMarkup()}</button><div class="cover-actions"><button class="button button--small" type="button" data-action="choose-cover">更換</button>${article.featureImage ? `<button class="button button--quiet button--small" type="button" data-action="remove-cover">移除</button>` : ""}</div><label class="field field--cover-alt"><span class="field-label">圖片說明</span><input type="text" value="${escape(article.featureImageAlt)}" data-field="featureImageAlt" placeholder="例如：遊戲首頁操作畫面"></label></section>
-          <section class="panel aside-card"><h2>儲存與發布</h2><p>${publicationMessage}</p><span class="status-badge" data-current-status data-tone="${escape(publicStatus.tone)}">${escape(publicStatus.label)}</span>${published ? `<div class="danger-zone"><button class="button button--quiet button--small" type="button" data-action="request-unpublish">暫時下架</button></div>` : ""}</section>
+          <section class="panel aside-card"><h2>封面</h2><p>會顯示在文章上方與部落格列表。</p><button class="cover-drop" type="button" data-action="choose-cover" aria-label="選擇或更換封面圖片">${coverMarkup()}</button><div class="cover-actions"><button class="button button--small" type="button" data-action="choose-cover">更換</button>${article.featureImage ? `<button class="button button--quiet button--small" type="button" data-action="remove-cover">移除</button>` : ""}</div><label class="field field--cover-alt"><span class="field-label">圖片說明</span><input type="text" value="${escape(article.featureImageAlt)}" data-field="featureImageAlt" placeholder="例如：遊戲首頁操作畫面"></label></section>
+          <section class="panel aside-card"><h2>儲存與發布</h2><p data-publication-message>${publicationMessageFor(article)}</p><span class="status-badge" data-current-status data-tone="${escape(publicStatus.tone)}">${escape(publicStatus.label)}</span><div data-public-link-slot>${publicLinkMarkup(article.id)}</div>${published && !state.recovery ? `<div class="danger-zone"><button class="button button--quiet button--small" type="button" data-action="request-unpublish">暫時下架</button></div>` : ""}</section>
           <div data-deployment-slot>${deploymentMarkup()}</div>
-          <section class="panel aside-card"><h2>文章圖片</h2><p>同一張圖可以再次插入，不用重傳。</p><button class="button button--small" type="button" data-action="choose-body-images">上傳並插入圖片</button><div class="asset-list" data-asset-list>${assetListMarkup()}</div></section>
+          <section class="panel aside-card"><h2>文章圖片</h2><p>同一張圖可以再次插入，不用重傳；圖片說明可直接在這裡修改。</p><div class="asset-toolbar"><button class="button button--small" type="button" data-action="choose-body-images">上傳並插入圖片</button><button class="button button--small" type="button" data-action="retry-assets" ${state.assetLoadFailures.size || state.assetLoadLimitMessage ? "" : "hidden"}>重新載入圖片</button></div><p class="field-hint" role="status" data-assets-loading ${state.assetsLoading ? "" : "hidden"}>文章需要的圖片正在背景載入，你可以先繼續寫文章。</p><p class="asset-load-error" role="alert" data-assets-error ${state.assetLoadLimitMessage ? "" : "hidden"}>${escape(state.assetLoadLimitMessage)}</p><div class="asset-list" data-asset-list>${assetListMarkup()}</div></section>
           <section class="panel aside-card"><h2>新手安心檢查</h2><div class="tip-list"><div class="tip"><span class="tip-number">1</span><span>先按預覽，確認標題、清單與圖片位置。</span></div><div class="tip"><span class="tip-number">2</span><span>發布時文章和圖片會一起存，不會分家。</span></div><div class="tip"><span class="tip-number">3</span><span>看到「已在網站上線」才是真的完成。</span></div></div></section>
-          ${state.loaded ? `<section class="panel aside-card danger-zone"><h2>移除文章</h2><p>會從文章清單與網站移除，但 GitHub 仍保留歷史紀錄。</p><button class="button button--danger button--small" type="button" data-action="request-delete">移除這篇文章</button></section>` : ""}
+          <div data-removal-slot>${removalMarkup(article)}</div>
         </aside>
       </div>
       <input hidden type="file" accept="image/*" multiple data-file-input="body">
@@ -545,6 +797,7 @@
       <input hidden type="file" accept=".md,text/markdown,image/*" multiple data-file-input="markdown">
     </div>`;
     root.innerHTML = shell(content, editorActions());
+    restoreEditorFocus(focusToken);
   }
 
   function renderInbox() {
@@ -566,11 +819,11 @@
       return `<section class="panel inbox-card"><div class="inbox-copy"><span class="inbox-id">${escape(row.id)}</span><h2>${escape(title)}</h2><p class="inbox-excerpt">${escape(excerpt)}</p><p class="inbox-meta">${row.imageCount} 張圖片 · ${row.hasImageSources ? "有圖片來源說明" : "缺圖片來源說明"}</p>${integrity}</div>${action}</section>`;
     }).join("");
     const body = state.loading
-      ? `<section class="panel skeleton"><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></section>`
+      ? `<section class="panel skeleton" role="status" aria-live="polite"><span class="sr-only">正在同步 GitHub 收件匣…</span><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></section>`
       : state.inbox.length
         ? `<div class="inbox-list">${rows}</div>`
         : `<section class="panel empty-state"><strong>收件匣目前沒有新稿</strong><p>其他電腦推送的新文章，按同步後會出現在這裡。</p></section>`;
-    const content = `<div class="content"><div class="page-heading"><div><h1 tabindex="-1" data-page-heading>GitHub 收件匣</h1><p>按一次就讀取私人收件匣，文章和圖片會一起帶進文章清單。</p></div><button class="button button--primary" type="button" data-action="sync-inbox" ${state.loading ? "disabled" : ""}>${available.length ? `同步並帶入 ${available.length} 篇` : "同步收件匣"}</button></div>${state.pageError ? `<div class="error-banner" role="alert" tabindex="-1" data-focus-error>${escape(state.pageError)}</div>` : ""}${body}</div>`;
+    const content = `<div class="content" aria-busy="${state.loading}"><div class="page-heading"><div><h1 tabindex="-1" data-page-heading>GitHub 收件匣</h1><p>按一次就讀取私人收件匣，文章和圖片會一起帶進文章清單。</p></div><button class="button button--primary" type="button" data-action="sync-inbox" ${state.loading ? "disabled" : ""}>${available.length ? `同步並帶入 ${available.length} 篇` : "同步收件匣"}</button></div>${state.pageError ? `<div class="error-banner" role="alert" tabindex="-1" data-focus-error>${escape(state.pageError)}</div>` : ""}${body}</div>`;
     root.innerHTML = shell(content);
   }
 
@@ -640,39 +893,97 @@
   }
 
   async function loadArticles() {
-    const result = await state.client.listArticles();
-    state.articles = result.articles.map((item) => ({ ...core.parseArticle(item.raw, item.id), articleSha: item.articleSha }));
-    state.contentHeadSha = String(result.headSha || "");
-    state.liveRegistryChecked = false;
-    state.liveDeploymentChecked = false;
-    state.liveDeploymentContainsHead = false;
-    state.livePosts.clear();
+    const session = sessionSnapshot();
+    if (!session.client) return false;
+    const generation = ++state.articleRefreshGeneration;
+    const result = await session.client.listArticles();
+    if (!sessionIsCurrent(session) || generation !== state.articleRefreshGeneration) return false;
+    const requiredHeadSha = String(result.headSha || "");
+    const nextArticles = result.articles.map((item) => ({ ...core.parseArticle(item.raw, item.id), articleSha: item.articleSha }));
+    let nextLivePosts = new Map();
+    let nextRegistryChecked = false;
+    let nextDeploymentChecked = false;
+    let nextDeploymentContainsHead = false;
     const cacheKey = Date.now();
-    const readPublicJson = async (url) => {
-      const response = await fetch(url, { cache: "no-store" });
-      if (!response.ok) throw new Error(`Public status request failed: ${response.status}`);
-      return response.json();
-    };
     const [registryResult, deploymentResult] = await Promise.allSettled([
       readPublicJson(`${PUBLIC_REGISTRY}?studio-list=${cacheKey}`),
       readPublicJson(`${PUBLIC_DEPLOY_STATUS}?studio-list=${cacheKey}`),
     ]);
+    if (!sessionIsCurrent(session) || generation !== state.articleRefreshGeneration) return false;
 
     if (registryResult.status === "fulfilled" && Array.isArray(registryResult.value)) {
-      state.livePosts = new Map(registryResult.value.map((item) => [item.submissionId, item]));
-      state.liveRegistryChecked = true;
+      nextLivePosts = new Map(registryResult.value.map((item) => [item.submissionId, item]));
+      nextRegistryChecked = true;
     }
     if (deploymentResult.status === "fulfilled") {
       const deployedSha = String(deploymentResult.value?.sourceSha || "");
-      if (state.contentHeadSha && deployedSha) {
+      if (requiredHeadSha && deployedSha) {
         try {
-          state.liveDeploymentContainsHead = await state.client.deploymentContainsCommit(state.contentHeadSha, deployedSha);
-          state.liveDeploymentChecked = true;
+          const containsHead = await session.client.deploymentContainsCommit(requiredHeadSha, deployedSha);
+          if (!sessionIsCurrent(session) || generation !== state.articleRefreshGeneration) return false;
+          nextDeploymentContainsHead = containsHead;
+          nextDeploymentChecked = true;
         } catch {
           // Keep the status unconfirmed when GitHub cannot compare the commits.
         }
       }
     }
+    if (!sessionIsCurrent(session) || generation !== state.articleRefreshGeneration) return false;
+    state.articles = nextArticles;
+    state.contentHeadSha = requiredHeadSha;
+    state.livePosts = nextLivePosts;
+    state.liveRegistryChecked = nextRegistryChecked;
+    state.liveDeploymentChecked = nextDeploymentChecked;
+    state.liveDeploymentContainsHead = nextDeploymentContainsHead;
+    state.lastArticleSyncAt = Date.now();
+    return true;
+  }
+
+  async function refreshArticles({ announce = true } = {}) {
+    if (!state.client || state.loading || state.busy) return false;
+    const session = sessionSnapshot();
+    state.loading = true;
+    state.pageError = "";
+    if (state.route === "articles") renderArticles();
+    let generation = state.articleRefreshGeneration;
+    try {
+      const loading = loadArticles();
+      generation = state.articleRefreshGeneration;
+      const loaded = await loading;
+      if (!loaded || !sessionIsCurrent(session) || generation !== state.articleRefreshGeneration) return false;
+      if (announce) showToast("已同步 GitHub 上的最新文章。", "success");
+      return true;
+    } catch (error) {
+      if (!sessionIsCurrent(session) || generation !== state.articleRefreshGeneration) return false;
+      state.pageError = `暫時無法同步最新文章：${errorMessage(error)}`;
+      return false;
+    } finally {
+      if (sessionIsCurrent(session) && generation === state.articleRefreshGeneration) {
+        state.loading = false;
+        if (state.route === "articles") {
+          renderArticles();
+          if (state.pageError) focusMain();
+        }
+      }
+    }
+  }
+
+  function refreshArticleListInBackground() {
+    const session = sessionSnapshot();
+    if (!session.client) return;
+    const generation = ++state.articleRefreshGeneration;
+    void session.client.listArticles().then((result) => {
+      if (!sessionIsCurrent(session) || generation !== state.articleRefreshGeneration) return;
+      state.articles = result.articles.map((item) => ({ ...core.parseArticle(item.raw, item.id), articleSha: item.articleSha }));
+      state.contentHeadSha = String(result.headSha || state.contentHeadSha || "");
+      if (state.route === "articles") {
+        const list = root.querySelector("[data-article-list]");
+        if (list) list.innerHTML = articleRows();
+      }
+    }).catch((error) => {
+      if (!sessionIsCurrent(session) || generation !== state.articleRefreshGeneration) return;
+      showToast(`資料已存好；文章清單稍後再同步：${errorMessage(error)}`, "danger", 7000);
+    });
   }
 
   function startNewArticle() {
@@ -686,30 +997,155 @@
     state.previewFingerprint = "";
     state.pageError = "";
     state.recovery = findLocalDraft("new", "");
+    state.conflictDetected = false;
     state.importUndo = null;
     state.route = "editor";
+    state.articleOpenGeneration += 1;
+    state.articleRefreshGeneration += 1;
+    state.loading = false;
     render();
     focusMain();
     return true;
   }
 
-  async function loadAssetUrls(article, loaded) {
+  function requiredExistingImageEntries(article = state.editor, loaded = state.loaded) {
+    if (!article || !loaded) return { prefix: "", entries: [] };
     const prefix = `posts/${article.id}/`;
-    const imageEntries = loaded.files.filter((file) => {
+    const imageEntries = (loaded.files || []).filter((file) => {
       const relative = relativeAssetPathFor(file.path, prefix);
       return /^assets\//i.test(relative) && /\.(?:png|jpe?g|webp|gif|avif|svg)$/i.test(relative);
     });
-    await Promise.all(imageEntries.map(async (entry) => {
-      const relative = relativeAssetPathFor(entry.path, prefix);
-      try {
-        const url = await state.client.blobObjectUrl(github.CONTENT_REPO, entry.sha, entry.path);
-        state.assetUrls.set(relative, url);
-        state.assetUrls.set(decodePath(relative), url);
-        state.assetUrls.set(encodeURI(decodePath(relative)), url);
-      } catch {
-        // Missing previews are reported explicitly in the preview sheet.
+    const byKey = new Map(imageEntries.map((entry) => [
+      decodePath(normalizeAssetKey(relativeAssetPathFor(entry.path, prefix))).toLowerCase(),
+      entry,
+    ]));
+    const requiredKeys = [...core.extractAssetPaths(article.body || "")];
+    if (article.featureImage && !/^https?:\/\//i.test(article.featureImage)) requiredKeys.unshift(article.featureImage);
+    const entries = [];
+    const seen = new Set();
+    for (const value of requiredKeys) {
+      const key = decodePath(normalizeAssetKey(value)).toLowerCase();
+      const entry = byKey.get(key);
+      if (!entry || seen.has(entry.path)) continue;
+      seen.add(entry.path);
+      entries.push(entry);
+    }
+    return { prefix, entries };
+  }
+
+  function previewAssetLimitMessage(article = state.editor, loaded = state.loaded) {
+    const { entries } = requiredExistingImageEntries(article, loaded);
+    const requiredBytes = entries.reduce((total, entry) => total + Number(entry.size || 0), 0);
+    if (entries.length <= MAX_EXISTING_PREVIEW_COUNT && requiredBytes <= MAX_EXISTING_PREVIEW_BYTES) return "";
+    const sizeMb = Math.max(1, Math.ceil(requiredBytes / 1024 / 1024));
+    return `這篇文章一次引用 ${entries.length} 張、約 ${sizeMb} MB 的圖片，超過後台安全預覽上限。請用「從文章移除」減少圖片，或先在電腦縮小圖片再重新上傳。`;
+  }
+
+  function releaseUnreferencedAssetUrls(article = state.editor) {
+    const required = new Set(core.extractAssetPaths(article?.body || "")
+      .map((value) => decodePath(normalizeAssetKey(value)).toLowerCase()));
+    if (article?.featureImage && !/^https?:\/\//i.test(article.featureImage)) {
+      required.add(decodePath(normalizeAssetKey(article.featureImage)).toLowerCase());
+    }
+    const pendingUrls = new Set([...state.pendingAssets.values()].map((item) => item.url));
+    const urls = new Map();
+    for (const [key, url] of state.assetUrls) {
+      if (!urls.has(url)) urls.set(url, []);
+      urls.get(url).push(key);
+    }
+    for (const [url, keys] of urls) {
+      const stillUsed = pendingUrls.has(url) || keys.some((key) => required.has(decodePath(normalizeAssetKey(key)).toLowerCase()));
+      if (stillUsed) continue;
+      for (const key of keys) state.assetUrls.delete(key);
+      if (String(url).startsWith("blob:")) URL.revokeObjectURL(url);
+    }
+  }
+
+  function refreshAssetView() {
+    if (state.route !== "editor" || !state.editor) return;
+    const cover = root.querySelector(".cover-drop");
+    if (cover) cover.innerHTML = coverMarkup();
+    const entries = new Map(assetEntries().map((item) => [item.path, item]));
+    for (const row of root.querySelectorAll("[data-asset-path]")) {
+      const item = entries.get(row.dataset.assetPath);
+      const thumb = row.querySelector("[data-asset-thumb]");
+      if (item && thumb) thumb.innerHTML = assetThumbMarkup(item);
+    }
+    const loading = root.querySelector("[data-assets-loading]");
+    if (loading) loading.hidden = !state.assetsLoading;
+    const retry = root.querySelector("[data-action='retry-assets']");
+    if (retry) retry.hidden = !(state.assetLoadFailures.size || state.assetLoadLimitMessage);
+    const error = root.querySelector("[data-assets-error]");
+    if (error) {
+      error.hidden = !state.assetLoadLimitMessage;
+      error.textContent = state.assetLoadLimitMessage;
+    }
+  }
+
+  async function loadAssetUrls(article, loaded, loadToken) {
+    const { prefix, entries: requiredEntries } = requiredExistingImageEntries(article, loaded);
+    releaseUnreferencedAssetUrls(article);
+    const requiredPathKeys = new Set(requiredEntries.map((entry) => (
+      decodePath(normalizeAssetKey(relativeAssetPathFor(entry.path, prefix))).toLowerCase()
+    )));
+    for (const failure of [...state.assetLoadFailures]) {
+      if (!requiredPathKeys.has(decodePath(normalizeAssetKey(failure)).toLowerCase())) state.assetLoadFailures.delete(failure);
+    }
+    state.assetLoadLimitMessage = previewAssetLimitMessage(article, loaded);
+    if (state.assetLoadLimitMessage) {
+      for (const entry of requiredEntries) {
+        const relative = relativeAssetPathFor(entry.path, prefix);
+        if (!assetUrlFor(relative)) state.assetLoadFailures.add(relative);
       }
-    }));
+      return;
+    }
+    state.assetLoadLimitMessage = "";
+    const pendingPaths = new Set([...state.pendingAssets.keys()].map((value) => decodePath(normalizeAssetKey(value)).toLowerCase()));
+    const entriesToLoad = requiredEntries.filter((entry) => {
+      const relative = relativeAssetPathFor(entry.path, prefix);
+      const key = decodePath(normalizeAssetKey(relative)).toLowerCase();
+      return !pendingPaths.has(key) && !assetUrlFor(relative);
+    });
+    const client = state.client;
+    let cursor = 0;
+    const worker = async () => {
+      while (cursor < entriesToLoad.length && state.assetLoadToken === loadToken && state.client === client) {
+        const entry = entriesToLoad[cursor];
+        cursor += 1;
+        const relative = relativeAssetPathFor(entry.path, prefix);
+        try {
+          const url = await client.blobObjectUrl(github.CONTENT_REPO, entry.sha, entry.path);
+          if (state.assetLoadToken !== loadToken || state.client !== client) {
+            if (String(url).startsWith("blob:")) URL.revokeObjectURL(url);
+            return;
+          }
+          state.assetUrls.set(relative, url);
+          state.assetUrls.set(decodePath(relative), url);
+          state.assetUrls.set(encodeURI(decodePath(relative)), url);
+          state.assetLoadFailures.delete(relative);
+        } catch {
+          if (state.assetLoadToken === loadToken && state.client === client) {
+            state.assetLoadFailures.add(relative);
+          }
+        }
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(3, entriesToLoad.length) }, worker));
+  }
+
+  function retryAssetLoading() {
+    if (!state.editor || !state.loaded || state.assetsLoading) return false;
+    state.assetLoadFailures.clear();
+    state.assetLoadLimitMessage = "";
+    state.assetsLoading = true;
+    const loadToken = ++state.assetLoadToken;
+    refreshAssetView();
+    void loadAssetUrls(state.editor, state.loaded, loadToken).finally(() => {
+      if (state.assetLoadToken !== loadToken) return;
+      state.assetsLoading = false;
+      refreshAssetView();
+    });
+    return true;
   }
 
   function relativeAssetPathFor(filePath, prefix) {
@@ -718,36 +1154,51 @@
 
   async function openArticle(id) {
     if (!persistEditorBeforeTransition({ confirmLeave: true, blockPendingAssets: true })) return false;
+    const session = sessionSnapshot();
+    if (!session.client) return false;
+    const generation = ++state.articleOpenGeneration;
+    state.articleRefreshGeneration += 1;
+    const openIsCurrent = () => sessionIsCurrent(session) && generation === state.articleOpenGeneration;
     state.loading = true;
     state.pageError = "";
     renderLoading("正在打開文章與圖片…");
     try {
       revokeAssetUrls();
       state.pendingAssets.clear();
-      const loaded = await state.client.loadArticle(id);
+      const loaded = await session.client.loadArticle(id);
+      if (!openIsCurrent()) return false;
       const article = core.parseArticle(loaded.raw, id);
       const sourceEntry = loaded.files.find((file) => /\/IMAGE_SOURCES\.md$/i.test(file.path));
       loaded.imageSourcesText = sourceEntry
-        ? await state.client.blobText(github.CONTENT_REPO, sourceEntry.sha)
+        ? await session.client.blobText(github.CONTENT_REPO, sourceEntry.sha)
         : "";
+      if (!openIsCurrent()) return false;
       state.editor = article;
       state.loaded = loaded;
       state.dirty = false;
       state.editorRevision = 0;
       state.previewFingerprint = "";
       state.recovery = findLocalDraft(id, loaded.articleSha);
+      state.conflictDetected = false;
       state.importUndo = null;
-      await loadAssetUrls(article, loaded);
+      state.assetsLoading = true;
+      const loadToken = ++state.assetLoadToken;
       state.route = "editor";
       render();
       focusMain();
+      void loadAssetUrls(article, loaded, loadToken).finally(() => {
+        if (state.assetLoadToken !== loadToken) return;
+        state.assetsLoading = false;
+        refreshAssetView();
+      });
     } catch (error) {
+      if (!openIsCurrent()) return false;
       state.route = "articles";
       state.pageError = errorMessage(error);
       render();
       focusMain();
     } finally {
-      state.loading = false;
+      if (openIsCurrent()) state.loading = false;
     }
     return true;
   }
@@ -794,23 +1245,35 @@
     return new Set(assetEntries().map((item) => item.path.replace(/^assets\//, "").toLowerCase()));
   }
 
+  function pendingAssetBytes() {
+    return [...state.pendingAssets.values()].reduce((total, item) => total + (item.bytes?.byteLength || 0), 0);
+  }
+
   function linkUploadedImages(article, additions) {
     const byOriginalName = new Map();
     for (const item of additions) {
       byOriginalName.set(decodePath(item.originalName).toLowerCase(), item.path);
     }
     const matched = new Set();
-    article.body = article.body.replace(
-      /!\[([^\]]*)\]\(\s*(?:<([^>]+)>|([^\s)]+))(\s+["'][^"']*["'])?\s*\)/g,
-      (whole, alt, anglePath, plainPath) => {
-        const originalPath = decodePath(anglePath || plainPath || "").replace(/\\/g, "/");
-        const originalName = originalPath.split("/").pop().toLowerCase();
-        const replacement = byOriginalName.get(originalName);
-        if (!replacement) return whole;
-        matched.add(replacement);
-        return `![${alt}](${replacement})`;
-      },
-    );
+    let inFence = false;
+    article.body = String(article.body || "").replace(/\r\n/g, "\n").split("\n").map((line) => {
+      if (/^\s*(?:```|\\`\\`\\`|~~~)/.test(line)) {
+        inFence = !inFence;
+        return line;
+      }
+      if (inFence) return line;
+      return line.replace(
+        /!\[([^\]]*)\]\(\s*(?:<([^>]+)>|([^\s)]+))(\s+["'][^"']*["'])?\s*\)/g,
+        (whole, alt, anglePath, plainPath, title = "") => {
+          const originalPath = decodePath(anglePath || plainPath || "").replace(/\\/g, "/");
+          const originalName = originalPath.split("/").pop().toLowerCase();
+          const replacement = byOriginalName.get(originalName);
+          if (!replacement) return whole;
+          matched.add(replacement);
+          return `![${alt}](${replacement}${title})`;
+        },
+      );
+    }).join("\n");
     if (article.featureImage && !/^https?:\/\//i.test(article.featureImage)) {
       const featureName = decodePath(article.featureImage).replace(/\\/g, "/").split("/").pop().toLowerCase();
       const replacement = byOriginalName.get(featureName);
@@ -836,13 +1299,31 @@
   }
 
   async function prepareImages(images) {
+    if (images.length > MAX_IMAGE_BATCH_COUNT) {
+      const error = new Error(`一次最多選 ${MAX_IMAGE_BATCH_COUNT} 張圖片，請分批上傳。`);
+      error.userMessage = error.message;
+      throw error;
+    }
+    const oversized = images.find((file) => file.size > MAX_IMAGE_BYTES);
+    if (oversized) {
+      const error = new Error(`${oversized.name} 超過 12 MB，請先縮小圖片。`);
+      error.userMessage = error.message;
+      throw error;
+    }
+    if (state.pendingAssets.size + images.length > MAX_PENDING_IMAGE_COUNT) {
+      const error = new Error(`尚未儲存的圖片最多 ${MAX_PENDING_IMAGE_COUNT} 張。請先儲存草稿，再繼續上傳。`);
+      error.userMessage = error.message;
+      throw error;
+    }
+    const selectedBytes = images.reduce((total, file) => total + Number(file.size || 0), 0);
+    if (pendingAssetBytes() + selectedBytes > MAX_PENDING_IMAGE_BYTES) {
+      const error = new Error("尚未儲存的圖片合計超過 48 MB。請先儲存草稿，再繼續上傳。");
+      error.userMessage = error.message;
+      throw error;
+    }
     const used = usedFilenames();
     const additions = [];
     for (const file of images) {
-      if (file.size > MAX_IMAGE_BYTES) {
-        showToast(`${file.name} 超過 12 MB，請先縮小圖片。`, "danger");
-        continue;
-      }
       const fileName = core.uniqueFilename(file.name, used);
       used.add(fileName.toLowerCase());
       const path = `assets/${fileName}`;
@@ -858,7 +1339,7 @@
     return additions;
   }
 
-  function applyPreparedImages(article, additions, { cover = false, insert = true, selection = null } = {}) {
+  function applyPreparedImages(article, additions, { cover = false, insert = true, selection = null, matchReferences = false } = {}) {
     for (const item of additions) {
       const url = URL.createObjectURL(item.file);
       item.url = url;
@@ -866,20 +1347,17 @@
       state.assetUrls.set(item.path, url);
     }
     let unlinked = additions;
-    if (!cover) unlinked = linkUploadedImages(article, additions);
+    if (!cover && matchReferences) unlinked = linkUploadedImages(article, additions);
     if (cover) {
       article.featureImage = additions[0].path;
-      article.featureImageAlt = article.featureImageAlt || article.title || "文章封面";
+      article.featureImageAlt = "請填寫圖片說明";
     }
     if (insert && unlinked.length) {
       const lines = unlinked.map((item) => `![請填寫圖片說明](${item.path})`).join("\n\n");
-      const start = Math.max(0, Math.min(selection?.start ?? article.body.length, article.body.length));
-      const end = Math.max(start, Math.min(selection?.end ?? start, article.body.length));
-      article.body = `${article.body.slice(0, start)}\n${lines}\n${article.body.slice(end)}`;
-    }
-    if (!article.featureImage) {
-      article.featureImage = additions[0].path;
-      article.featureImageAlt = article.title || "文章封面";
+      const selectionEnd = Math.max(0, Math.min(selection?.end ?? article.body.length, article.body.length));
+      const nextLineBreak = selection?.start !== selection?.end ? article.body.indexOf("\n", selectionEnd) : -1;
+      const insertionPoint = nextLineBreak >= 0 ? nextLineBreak + 1 : selection?.start !== selection?.end ? article.body.length : selectionEnd;
+      article.body = `${article.body.slice(0, insertionPoint)}\n${lines}\n${article.body.slice(insertionPoint)}`;
     }
     if (article.imageSourcePath && article.imageSourcePath !== "IMAGE_SOURCES.md" && !article.priorImageSourcePath) {
       article.priorImageSourceType = article.imageSourceType;
@@ -887,6 +1365,74 @@
     }
     if (!article.imageSourceType || article.imageSourceType === "none") article.imageSourceType = "original_upload";
     article.imageSourcePath = "IMAGE_SOURCES.md";
+  }
+
+  function removePendingImage(path) {
+    const item = state.pendingAssets.get(path);
+    if (!item || !state.editor) return false;
+    syncEditorFromDom();
+    const target = decodePath(normalizeAssetKey(path)).toLowerCase();
+    if (decodePath(normalizeAssetKey(state.editor.featureImage)).toLowerCase() === target) {
+      state.editor.featureImage = "";
+      state.editor.featureImageAlt = "";
+    }
+    state.editor.body = core.removeMarkdownImage(state.editor.body || "", path);
+    state.pendingAssets.delete(path);
+    state.assetDescriptions.delete(assetDescriptionKey(path));
+    state.assetLoadFailures.delete(path);
+    for (const [key, url] of [...state.assetUrls]) {
+      if (url === item.url || decodePath(normalizeAssetKey(key)).toLowerCase() === target) state.assetUrls.delete(key);
+    }
+    if (String(item.url).startsWith("blob:")) URL.revokeObjectURL(item.url);
+    markDirty();
+    renderEditor();
+    showToast("這張尚未儲存的圖片已移除，內文與封面引用也一起清掉。", "success");
+    return true;
+  }
+
+  function requestRemovePendingImage(path) {
+    const item = state.pendingAssets.get(path);
+    if (!item) return false;
+    const name = path.replace(/^assets\//i, "");
+    showConfirm({
+      title: "移除這張尚未儲存的圖片？",
+      lead: `「${name}」會從這個分頁、文章內文與封面一起移除。GitHub 上既有的圖片不會受影響。`,
+      confirmLabel: "移除圖片",
+      danger: true,
+      onConfirm: () => removePendingImage(path),
+    });
+    return true;
+  }
+
+  function unlinkImageFromArticle(path) {
+    if (!state.editor) return false;
+    syncEditorFromDom();
+    const target = decodePath(normalizeAssetKey(path)).toLowerCase();
+    const wasCover = decodePath(normalizeAssetKey(state.editor.featureImage)).toLowerCase() === target;
+    const nextBody = core.removeMarkdownImage(state.editor.body || "", path);
+    if (!wasCover && nextBody === state.editor.body) return false;
+    if (wasCover) {
+      state.editor.featureImage = "";
+      state.editor.featureImageAlt = "";
+    }
+    state.editor.body = nextBody;
+    markDirty();
+    renderEditor();
+    showToast("圖片已從文章與封面移除；GitHub 裡的原圖仍保留，可隨時再插入。", "success");
+    return true;
+  }
+
+  function requestUnlinkImage(path) {
+    if (!assetIsUsed(path) || state.pendingAssets.has(path)) return false;
+    const name = path.replace(/^assets\//i, "");
+    showConfirm({
+      title: "把這張圖從文章移除？",
+      lead: `「${name}」在內文中的所有位置與封面設定都會清除；GitHub 裡的原圖仍會保留，所以之後還能重新插入。`,
+      confirmLabel: "從文章移除",
+      danger: true,
+      onConfirm: () => unlinkImageFromArticle(path),
+    });
+    return true;
   }
 
   function currentEditorOperation(operation) {
@@ -908,6 +1454,8 @@
       selection: textarea ? { start: textarea.selectionStart, end: textarea.selectionEnd } : null,
     };
     state.activeOperation = operation;
+    state.pageError = "";
+    state.conflictDetected = false;
     setInterfaceBusy(true, "正在讀取圖片…");
     try {
       const additions = await prepareImages(images);
@@ -918,7 +1466,12 @@
       markDirty();
       setInterfaceBusy(false);
       renderEditor();
-      showToast(cover ? "封面已帶入，儲存時會和文章一起上傳。" : "圖片已帶入正確位置。", "success");
+      if (cover && !TEST_MODE) {
+        window.requestAnimationFrame(() => root.querySelector('[data-field="featureImageAlt"]')?.focus());
+      } else if (!cover) {
+        focusImageDescription(additions[0]?.path);
+      }
+      showToast(cover ? "封面已帶入；請補上圖片說明，再儲存草稿。" : "圖片已插入；請補上圖片說明，再儲存草稿。", "success");
       return additions;
     } catch (error) {
       if (state.activeOperation === operation) {
@@ -938,12 +1491,51 @@
     }
   }
 
+  function mergeImportedMarkdown(currentArticle, originalMarkdown) {
+    let nextArticle = { ...currentArticle };
+    const parts = core.splitFrontmatter(originalMarkdown);
+    if (!parts.hasFrontmatter) {
+      nextArticle.body = String(originalMarkdown || "").trim();
+      return nextArticle;
+    }
+    const stableId = nextArticle.id;
+    const stableSlug = nextArticle.slug;
+    const stableStatus = nextArticle.status || "draft";
+    nextArticle = { ...nextArticle, ...core.parseArticle(originalMarkdown, stableId) };
+    nextArticle.id = stableId || "";
+    nextArticle.slug = stableId ? stableSlug : "";
+    nextArticle.status = stableStatus;
+    return nextArticle;
+  }
+
   async function importMarkdownAndImages(files) {
     if (state.busy || !state.editor) return;
     syncEditorFromDom();
     const list = [...files];
-    const markdownFile = list.find((file) => /\.md$/i.test(file.name) || file.type === "text/markdown");
+    const markdownFiles = list.filter((file) => /\.md$/i.test(file.name) || file.type === "text/markdown");
+    if (markdownFiles.length > 1) {
+      state.pageError = "一次只能匯入一份 .md 講義。請保留要使用的那一份，再重新選擇。";
+      renderEditor();
+      focusMain();
+      return;
+    }
+    const markdownFile = markdownFiles[0] || null;
     const imageFiles = supportedImageFiles(list.filter((file) => file !== markdownFile));
+    if (markdownFile) {
+      const names = new Set();
+      const duplicate = imageFiles.find((file) => {
+        const name = decodePath(file.name).toLowerCase();
+        if (names.has(name)) return true;
+        names.add(name);
+        return false;
+      });
+      if (duplicate) {
+        state.pageError = `選到兩張同名的「${duplicate.name}」，系統無法判斷講義要用哪張。請先改成不同檔名再匯入。`;
+        renderEditor();
+        focusMain();
+        return;
+      }
+    }
     if (!markdownFile && !imageFiles.length) return;
     const textarea = root.querySelector("[data-body-input]");
     const operation = {
@@ -955,8 +1547,10 @@
       article: { ...state.editor },
       pendingAssets: new Map(state.pendingAssets),
       assetUrls: new Map(state.assetUrls),
+      assetDescriptions: new Map(state.assetDescriptions),
     };
     state.activeOperation = operation;
+    state.pageError = "";
     setInterfaceBusy(true, "正在帶入講義與圖片…");
     try {
       const [originalMarkdown, additions] = await Promise.all([
@@ -966,20 +1560,10 @@
       if (!currentEditorOperation(operation)) return;
       let nextArticle = { ...operation.editor };
       if (markdownFile) {
-        const imported = core.parseArticle(originalMarkdown, nextArticle.id);
-        const parts = core.splitFrontmatter(originalMarkdown);
-        if (parts.hasFrontmatter) {
-          const stableId = nextArticle.id;
-          const stableSlug = nextArticle.slug;
-          nextArticle = { ...nextArticle, ...imported };
-          nextArticle.id = stableId || "";
-          nextArticle.slug = stableId ? stableSlug : "";
-        } else {
-          nextArticle.body = originalMarkdown.trim();
-        }
+        nextArticle = mergeImportedMarkdown(nextArticle, originalMarkdown);
       }
       if (additions.length) {
-        applyPreparedImages(nextArticle, additions, { cover: false, insert: !markdownFile, selection: operation.selection });
+        applyPreparedImages(nextArticle, additions, { cover: false, insert: !markdownFile, selection: operation.selection, matchReferences: Boolean(markdownFile) });
       }
       state.editor = nextArticle;
       state.importUndo = undo;
@@ -1006,6 +1590,22 @@
 
   function showPreview() {
     syncEditorFromDom();
+    releaseUnreferencedAssetUrls();
+    state.assetLoadLimitMessage = previewAssetLimitMessage();
+    refreshAssetView();
+    if (state.assetLoadLimitMessage) {
+      showToast(state.assetLoadLimitMessage, "danger", 7500);
+      return;
+    }
+    if (!state.assetsLoading && unloadedExistingRequiredAssets().length) retryAssetLoading();
+    if (state.assetsLoading) {
+      showToast(state.assetLoadLimitMessage || "圖片還在背景載入。你可以繼續寫字，等圖片載完後再開預覽。", "danger", 6500);
+      return;
+    }
+    if (previewAssetFailures().length) {
+      showToast(state.assetLoadLimitMessage || "有圖片暫時無法顯示。請先按右側的「重新載入圖片」，確認畫面後再預覽。", "danger", 7500);
+      return;
+    }
     const errors = core.validateArticle(state.editor, "draft");
     if (errors.length) {
       state.pageError = errors.map((item) => item.message).join(" ");
@@ -1081,21 +1681,135 @@
     state.editor = { ...undo.article };
     state.pendingAssets = new Map(undo.pendingAssets);
     state.assetUrls = new Map(undo.assetUrls);
+    state.assetDescriptions = normalizedAssetDescriptions(undo.assetDescriptions);
     state.importUndo = null;
     markDirty();
     renderEditor();
     showToast("已恢復匯入前的內容。", "success");
   }
 
+  async function reloadConflictVersion() {
+    if (!state.conflictDetected || !state.client || !state.editor?.id || state.busy) return false;
+    syncEditorFromDom();
+    if (!persistLocalDraftNow()) {
+      state.pageError = "這個瀏覽器目前無法保存本機備份，所以已停止讀取 GitHub 版本。你的修改仍留在畫面上；請先複製文字備份，或釋放瀏覽器儲存空間後再試。";
+      renderEditor();
+      focusMain();
+      return false;
+    }
+    const session = sessionSnapshot();
+    const articleId = state.editor.id;
+    const localVersion = {
+      savedAt: new Date().toISOString(),
+      baseSha: state.loaded?.articleSha || "",
+      conflict: true,
+      article: { ...state.editor },
+      pendingAssets: new Map(state.pendingAssets),
+      assetUrls: new Map([...state.pendingAssets].map(([path, item]) => [path, item.url])),
+      assetDescriptions: new Map(state.assetDescriptions),
+    };
+    setInterfaceBusy(true, "正在讀取 GitHub 最新版本…");
+    try {
+      const loaded = await session.client.loadArticle(articleId);
+      if (!sessionIsCurrent(session) || state.editor?.id !== articleId) return false;
+      const sourceEntry = loaded.files.find((file) => /\/IMAGE_SOURCES\.md$/i.test(file.path));
+      loaded.imageSourcesText = sourceEntry
+        ? await session.client.blobText(github.CONTENT_REPO, sourceEntry.sha)
+        : "";
+      if (!sessionIsCurrent(session) || state.editor?.id !== articleId) return false;
+
+      const pendingUrls = new Set([...localVersion.assetUrls.values()]);
+      for (const url of new Set(state.assetUrls.values())) {
+        if (!pendingUrls.has(url) && String(url).startsWith("blob:")) URL.revokeObjectURL(url);
+      }
+      state.assetLoadToken += 1;
+      state.assetUrls = new Map();
+      state.assetDescriptions = new Map();
+      state.assetLoadFailures.clear();
+      state.pendingAssets = new Map();
+      state.editor = core.parseArticle(loaded.raw, articleId);
+      state.loaded = loaded;
+      state.recovery = localVersion;
+      state.conflictDetected = false;
+      state.dirty = false;
+      state.editorRevision += 1;
+      state.previewFingerprint = "";
+      state.pageError = "";
+      state.assetsLoading = true;
+      const loadToken = ++state.assetLoadToken;
+      setInterfaceBusy(false);
+      renderEditor();
+      focusMain();
+      showToast("已讀取 GitHub 最新版本。請按「比較版本」，選好後再儲存。", "success", 7500);
+      void loadAssetUrls(state.editor, loaded, loadToken).finally(() => {
+        if (state.assetLoadToken !== loadToken) return;
+        state.assetsLoading = false;
+        refreshAssetView();
+      });
+      return true;
+    } catch (error) {
+      if (!sessionIsCurrent(session)) return false;
+      state.pageError = `無法讀取 GitHub 最新版本：${errorMessage(error)}`;
+      setInterfaceBusy(false);
+      renderEditor();
+      focusMain();
+      return false;
+    }
+  }
+
   function restoreRecoveryVersion(version = state.recovery) {
     if (!version?.article || !state.editor) return;
     const stableId = state.editor.id;
     const stableSlug = state.editor.slug;
-    state.editor = { ...state.editor, ...version.article, id: stableId, slug: stableSlug };
+    const stableStatus = state.editor.status;
+    const pendingAssets = version.pendingAssets instanceof Map ? new Map(version.pendingAssets) : new Map();
+    const assetUrls = version.assetUrls instanceof Map ? new Map(version.assetUrls) : new Map();
+    const descriptions = normalizedAssetDescriptions(version.assetDescriptions);
+    revokeAssetUrls();
+    state.editor = { ...state.editor, ...version.article, id: stableId, slug: stableSlug, status: stableStatus };
+    state.pendingAssets = pendingAssets;
+    state.assetUrls = assetUrls;
+    state.assetDescriptions = descriptions;
     state.recovery = null;
+    state.conflictDetected = false;
     markDirty();
     renderEditor();
     showToast("已改用這台電腦留下的版本；請預覽後再儲存。", "success");
+  }
+
+  function blockUnresolvedRecovery() {
+    if (!state.recovery) return false;
+    state.pageError = "這台電腦還保留另一個版本。請先按「比較版本」，選擇要保留哪一份，再儲存、發布、下架或移除。";
+    renderEditor();
+    focusMain();
+    return true;
+  }
+
+  function recoveryArticleSummary(article) {
+    return `<dl class="compare-meta"><div><dt>原版本狀態</dt><dd>${escape(statusInfo(article.status).label)}</dd></div><div><dt>分類</dt><dd>${escape(article.category || "未填")}</dd></div><div><dt>摘要</dt><dd>${escape(article.excerpt || "未填")}</dd></div><div><dt>封面</dt><dd>${escape(article.featureImage || "未設定")}</dd></div><div><dt>封面說明</dt><dd>${escape(article.featureImageAlt || "未填")}</dd></div></dl>`;
+  }
+
+  function requestDiscardRecovery() {
+    if (!state.recovery) return;
+    showConfirm({
+      title: "刪除這台電腦保留的版本？",
+      lead: "GitHub 上的文章不會改變，但這台電腦尚未存上去的標題、摘要、分類、封面、內文與圖片檔會全部刪除。",
+      checks: ["我已比較過兩個版本，確定只保留 GitHub 版本"],
+      confirmLabel: "刪除本機保留版",
+      danger: true,
+      onConfirm: () => {
+        if (state.recovery?.assetUrls instanceof Map) {
+          for (const url of new Set(state.recovery.assetUrls.values())) {
+            if (String(url).startsWith("blob:")) URL.revokeObjectURL(url);
+          }
+        }
+        clearLocalDraft();
+        state.recovery = null;
+        state.conflictDetected = false;
+        renderEditor();
+        showToast("已保留 GitHub 版本。", "success");
+      },
+    });
   }
 
   function showRecoveryComparison() {
@@ -1105,14 +1819,12 @@
     const titleId = `recovery-title-${Date.now()}`;
     dialog.className = "compare-dialog";
     dialog.setAttribute("aria-labelledby", titleId);
-    const localPanes = localVersions.map((version, index) => `<section class="compare-pane"><h3>${index === 0 ? "這台電腦最新保留版" : `較早保留版本 ${index}`}</h3><strong>${escape(version.article.title || "尚無標題")}</strong><pre>${escape(version.article.body || "（空白）")}</pre><button class="button button--primary button--small" type="button" data-use-local="${index}">改用這個版本</button></section>`).join("");
-    dialog.innerHTML = `<div class="dialog-header"><h2 id="${titleId}">比較保留的版本</h2><button class="dialog-close" type="button" aria-label="關閉">×</button></div><div class="dialog-body"><p class="dialog-lead">第一格是 GitHub 上的版本，其他是這台電腦尚未存好的版本。系統不會自動覆蓋。</p><div class="compare-grid"><section class="compare-pane"><h3>GitHub 版本</h3><strong>${escape(state.editor.title || "尚無標題")}</strong><pre>${escape(state.editor.body || "（空白）")}</pre></section>${localPanes}</div></div><div class="dialog-footer"><button class="button" type="button" data-keep-cloud>保留 GitHub 版本</button></div>`;
+    const localPanes = localVersions.map((version, index) => `<section class="compare-pane"><h3>${index === 0 ? "這台電腦最新保留版" : `較早保留版本 ${index}`}</h3><strong>${escape(version.article.title || "尚無標題")}</strong>${recoveryArticleSummary(version.article)}<pre>${escape(version.article.body || "（空白）")}</pre><button class="button button--primary button--small" type="button" data-use-local="${index}">改用這個版本</button></section>`).join("");
+    dialog.innerHTML = `<div class="dialog-header"><h2 id="${titleId}">比較保留的版本</h2><button class="dialog-close" type="button" aria-label="關閉">×</button></div><div class="dialog-body"><p class="dialog-lead">第一格是 GitHub 上的版本，其他是這台電腦尚未存好的版本。系統不會自動覆蓋。無論選哪份文字，公開／草稿狀態都會沿用目前 GitHub 版本，避免意外重新發布。</p><div class="compare-grid"><section class="compare-pane"><h3>GitHub 版本</h3><strong>${escape(state.editor.title || "尚無標題")}</strong>${recoveryArticleSummary(state.editor)}<pre>${escape(state.editor.body || "（空白）")}</pre></section>${localPanes}</div></div><div class="dialog-footer"><button class="button button--danger" type="button" data-keep-cloud>刪除本機保留版，只留 GitHub</button></div>`;
     dialog.querySelector(".dialog-close").addEventListener("click", () => dialog.close());
     dialog.querySelector("[data-keep-cloud]").addEventListener("click", () => {
-      clearLocalDraft();
-      state.recovery = null;
       dialog.close();
-      renderEditor();
+      requestDiscardRecovery();
     });
     for (const button of dialog.querySelectorAll("[data-use-local]")) {
       button.addEventListener("click", () => {
@@ -1137,9 +1849,11 @@
 
   function logout() {
     if (state.route === "editor") syncEditorFromDom();
-    if (state.pendingAssets.size) {
+    if (state.pendingAssets.size || recoveryPendingAssets().size) {
       persistLocalDraftNow();
-      blockEditorTransition("還有尚未儲存的圖片，無法安全登出。請先按「儲存草稿」把圖片存到 GitHub。");
+      blockEditorTransition(recoveryPendingAssets().size
+        ? "版本比較裡還保留尚未儲存的圖片，無法安全登出。請先選擇版本並按「儲存草稿」存到 GitHub。"
+        : "還有尚未儲存的圖片，無法安全登出。請先按「儲存草稿」把圖片存到 GitHub。");
       return false;
     }
     if (state.dirty && !window.confirm("這篇還有尚未存檔的文字。登出前要先保留在這台電腦嗎？\n\n按「確定」會保留本機草稿並登出。")) return false;
@@ -1169,11 +1883,15 @@
       loaded: null,
       dirty: false,
       recovery: null,
+      conflictDetected: false,
       importUndo: null,
       liveRegistryChecked: false,
       liveDeploymentChecked: false,
       liveDeploymentContainsHead: false,
       contentHeadSha: "",
+      lastArticleSyncAt: 0,
+      articleRefreshGeneration: state.articleRefreshGeneration + 1,
+      articleOpenGeneration: state.articleOpenGeneration + 1,
       sessionVersion: state.sessionVersion + 1,
     });
     state.pendingAssets.clear();
@@ -1186,7 +1904,20 @@
   }
 
   function requestPublish() {
+    if (blockUnresolvedRecovery()) return false;
     syncEditorFromDom();
+    releaseUnreferencedAssetUrls();
+    state.assetLoadLimitMessage = previewAssetLimitMessage();
+    refreshAssetView();
+    if (state.assetLoadLimitMessage) {
+      showToast(state.assetLoadLimitMessage, "danger", 7500);
+      return false;
+    }
+    if (!state.assetsLoading && unloadedExistingRequiredAssets().length) retryAssetLoading();
+    if (state.assetsLoading || previewAssetFailures().length) {
+      showToast(state.assetLoadLimitMessage || (state.assetsLoading ? "圖片還在載入，載完後才能發布。" : "請先重新載入圖片並完成預覽，再發布。"), "danger", 7000);
+      return;
+    }
     const errors = core.validateArticle(state.editor, "published");
     const missing = missingAssets();
     const altIssues = imageAltIssues();
@@ -1257,6 +1988,7 @@
 
   async function saveArticle(status, mode = status === "published" ? "publish" : "save") {
     if (state.busy) return;
+    if (blockUnresolvedRecovery()) return false;
     syncEditorFromDom();
     const operation = {
       token: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -1317,6 +2049,8 @@
         expectedArticle: operation.loaded ? { path: `posts/${operation.loaded.id}/article.md`, sha: operation.loaded.articleSha } : null,
         expectedFiles,
       });
+      state.contentHeadSha = String(result.commitSha || state.contentHeadSha || "");
+      state.liveDeploymentContainsHead = false;
 
       const stillSameEditor = state.activeOperation === operation
         && state.route === "editor"
@@ -1331,7 +2065,12 @@
 
       state.editor = core.parseArticle(built.content, built.id);
       const existingFiles = operation.loaded?.files || [];
-      const newFiles = files.map((file) => ({ path: file.path, type: "blob", sha: result.fileShas[file.path] }));
+      const newFiles = files.map((file) => ({
+        path: file.path,
+        type: "blob",
+        sha: result.fileShas[file.path],
+        size: file.bytes?.byteLength ?? new TextEncoder().encode(String(file.content || "")).byteLength,
+      }));
       const newPaths = new Set(newFiles.map((file) => file.path));
       state.loaded = {
         ...(operation.loaded || {}),
@@ -1340,36 +2079,38 @@
         imageSourcesText: nextImageSourcesText,
         files: [...existingFiles.filter((file) => !newPaths.has(file.path)), ...newFiles],
       };
+      const articleSummary = { ...state.editor, articleSha: result.fileShas[articlePath] };
+      state.articles = [...state.articles.filter((article) => article.id !== built.id), articleSummary];
       state.pendingAssets.clear();
+      releaseUnreferencedAssetUrls(state.editor);
       state.dirty = false;
       state.editorRevision += 1;
       state.previewFingerprint = "";
       state.recovery = null;
+      state.conflictDetected = false;
       state.importUndo = null;
       clearLocalDraft([operation.oldDraftKey, localDraftKey()]);
       const needsDeployment = status === "published" || previousStatus === "published" || mode === "remove";
       if (needsDeployment) {
         state.deployments.set(built.id, { stage: "saved", mode, commitSha: result.commitSha, message: "已安全存到 GitHub。" });
       }
-      renderEditor();
-      updateSaveState(status === "published" ? "已存好，正在更新網站" : "草稿已安全存好", "success");
-      showToast(status === "published" ? "文章與圖片已一起存好，正在更新網站。" : "草稿已存好，網站不會公開。", "success");
-      try {
-        await loadArticles();
-      } catch (refreshError) {
-        showToast(`文章已經存好，但清單暫時無法重新整理：${errorMessage(refreshError)}`, "danger", 7000);
-      }
       state.activeOperation = null;
       setInterfaceBusy(false);
       renderEditor();
+      updateSaveState(status === "published" ? "已存好，正在更新網站" : "草稿已安全存好", "success");
+      showToast(status === "published" ? "文章與圖片已一起存好，正在更新網站。" : "草稿已存好，網站不會公開。", "success");
       if (needsDeployment) {
         void trackDeployment(result.commitSha, built.id, mode);
       }
+      refreshArticleListInBackground();
     } catch (error) {
       if (state.activeOperation !== operation) return;
       state.activeOperation = null;
       setInterfaceBusy(false);
-      state.pageError = errorMessage(error);
+      state.conflictDetected = error?.code === "EDIT_CONFLICT";
+      state.pageError = state.conflictDetected
+        ? "另一台電腦已先修改這篇文章。你的文字與尚未儲存圖片仍在這個分頁；請讀取 GitHub 版本並比較，系統不會直接覆寫。"
+        : errorMessage(error);
       updateSaveState("沒有存檔", "danger");
       renderEditor();
       focusMain();
@@ -1380,44 +2121,53 @@
     const client = state.client;
     const sessionVersion = state.sessionVersion;
     const sessionActive = () => state.client === client && state.sessionVersion === sessionVersion;
-    if (!client) return;
-    setDeployment(articleId, { stage: "saved", mode, commitSha, message: "已安全存到 GitHub。" });
+    const trackerActive = () => sessionActive() && deploymentTrackerIsCurrent(articleId, commitSha);
+    const updateTrackedDeployment = (patch) => {
+      if (!trackerActive()) return false;
+      setDeployment(articleId, { ...deploymentFor(articleId), ...patch, mode, commitSha });
+      return true;
+    };
+    if (!client || !trackerActive()) return;
+    updateTrackedDeployment({ stage: "saved", message: "已安全存到 GitHub。" });
     let run = null;
     try {
       for (let attempt = 0; attempt < 45; attempt += 1) {
-        if (!sessionActive()) return;
+        if (!trackerActive()) return;
         run = await client.workflowForCommit(commitSha);
-        if (!sessionActive()) return;
+        if (!trackerActive()) return;
         if (!run) {
-          setDeployment(articleId, { ...deploymentFor(articleId), stage: "building", message: "正在等待網站製作開始。" });
+          updateTrackedDeployment({ stage: "building", message: "正在等待網站製作開始。" });
         } else if (run.status !== "completed") {
-          setDeployment(articleId, { ...deploymentFor(articleId), stage: "building", message: "正在排版文章與檢查圖片。" });
+          updateTrackedDeployment({ stage: "building", message: "正在排版文章與檢查圖片。" });
         } else if (run.conclusion !== "success") {
-          setDeployment(articleId, { ...deploymentFor(articleId), stage: "failed", failedAt: 1, message: "網站檢查沒有通過，文章沒有被說成已上線。", url: run.html_url || "" });
+          updateTrackedDeployment({ stage: "failed", failedAt: 1, message: "網站檢查沒有通過，文章沒有被說成已上線。", url: run.html_url || "" });
           return;
         } else {
-          setDeployment(articleId, { ...deploymentFor(articleId), stage: "deploying", message: "文章已產生，正在等網站換成新版本。" });
+          updateTrackedDeployment({ stage: "deploying", message: "文章已產生，正在等網站換成新版本。" });
           break;
         }
         await sleep(4000);
       }
 
       for (let attempt = 0; attempt < 36; attempt += 1) {
-        if (!sessionActive()) return;
+        if (!trackerActive()) return;
         const cacheKey = `${encodeURIComponent(commitSha)}-${Date.now()}`;
-        const deployResponse = await fetch(`${PUBLIC_DEPLOY_STATUS}?studio=${cacheKey}`, { cache: "no-store" });
-        if (!sessionActive()) return;
-        if (!deployResponse.ok) {
+        let deployStatus;
+        try {
+          deployStatus = await readPublicJson(`${PUBLIC_DEPLOY_STATUS}?studio=${cacheKey}`);
+        } catch {
+          if (!trackerActive()) return;
+          updateTrackedDeployment({ stage: "deploying", message: "公開網站暫時沒有回應，仍在安全確認中。" });
           await sleep(5000);
           continue;
         }
-        const deployStatus = await deployResponse.json();
+        if (!trackerActive()) return;
         const deployedSha = String(deployStatus?.sourceSha || "");
         let containsCommit = deployedSha.toLowerCase() === String(commitSha).toLowerCase();
         if (!containsCommit && deployedSha) {
           try {
             containsCommit = await client.deploymentContainsCommit(commitSha, deployedSha);
-            if (!sessionActive()) return;
+            if (!trackerActive()) return;
           } catch {
             containsCommit = false;
           }
@@ -1429,45 +2179,64 @@
 
         let currentHeadChecked = false;
         let containsCurrentHead = false;
-        if (state.contentHeadSha && deployedSha) {
+        const currentHeadSha = String(state.contentHeadSha || "");
+        if (currentHeadSha && deployedSha) {
           try {
-            containsCurrentHead = await client.deploymentContainsCommit(state.contentHeadSha, deployedSha);
+            containsCurrentHead = await client.deploymentContainsCommit(currentHeadSha, deployedSha);
             currentHeadChecked = true;
-            if (!sessionActive()) return;
+            if (!trackerActive()) return;
+            if (String(state.contentHeadSha || "") !== currentHeadSha) continue;
           } catch {
             // The per-article commit is deployed, but the current repository head is still unconfirmed.
           }
         }
 
-        const response = await fetch(`${PUBLIC_REGISTRY}?studio=${cacheKey}`, { cache: "no-store" });
-        if (!sessionActive()) return;
-        if (response.ok) {
-          const registry = await response.json();
-          if (!sessionActive()) return;
-          state.liveRegistryChecked = true;
-          const published = Array.isArray(registry) ? registry.find((item) => item.submissionId === articleId) : null;
-          const done = mode === "remove" ? !published : Boolean(published);
-          if (done) {
-            state.liveDeploymentChecked = currentHeadChecked;
-            state.liveDeploymentContainsHead = containsCurrentHead;
-            if (mode === "remove") state.livePosts.delete(articleId);
-            else state.livePosts.set(articleId, published);
-            setDeployment(articleId, { stage: "live", mode, commitSha, message: mode === "remove" ? "公開頁面已移除。" : "已從公開網站重新讀取確認。", url: published?.url || "" });
-            showToast(mode === "remove" ? "文章已從網站下架。" : "文章真的上線了，可以放心。", "success", 7000);
-            return;
-          }
+        let registry;
+        try {
+          registry = await readPublicJson(`${PUBLIC_REGISTRY}?studio=${cacheKey}`);
+        } catch {
+          if (!trackerActive()) return;
+          updateTrackedDeployment({ stage: "deploying", message: "文章已產生，正在確認公開頁面。" });
+          await sleep(5000);
+          continue;
         }
+        if (!trackerActive()) return;
+        if (String(state.contentHeadSha || "") !== currentHeadSha) continue;
+        if (!Array.isArray(registry)) {
+          updateTrackedDeployment({ stage: "deploying", message: "公開文章清單格式異常，尚未宣告完成。" });
+          await sleep(5000);
+          continue;
+        }
+
+        state.liveRegistryChecked = true;
+        state.livePosts = new Map(registry.map((item) => [item.submissionId, item]));
+        state.liveDeploymentChecked = currentHeadChecked;
+        state.liveDeploymentContainsHead = containsCurrentHead;
+        const published = state.livePosts.get(articleId) || null;
+        const registryMatchesMode = mode === "remove" ? !published : Boolean(published);
+        if (deploymentCanFinish(registryMatchesMode, currentHeadChecked, containsCurrentHead)) {
+          if (!updateTrackedDeployment({ stage: "live", message: mode === "remove" ? "公開頁面已移除。" : "已從公開網站重新讀取確認。", url: published?.url || "" })) return;
+          showToast(mode === "remove" ? "文章已從網站下架。" : "文章真的上線了，可以放心。", "success", 7000);
+          return;
+        }
+        updateTrackedDeployment({
+          stage: "deploying",
+          message: registryMatchesMode
+            ? "公開網站仍是較早版本，正在等待目前版本完成部署。"
+            : mode === "remove" ? "正在等待公開頁面移除。" : "正在等待公開文章出現。",
+        });
         await sleep(5000);
       }
-      if (!sessionActive()) return;
-      setDeployment(articleId, { ...deploymentFor(articleId), stage: "deploying", message: "網站平台還在更新。可以先離開，稍後回文章清單查看。" });
+      if (!trackerActive()) return;
+      updateTrackedDeployment({ stage: "deploying", message: "網站平台還在更新。可以先離開，稍後回文章清單查看。" });
     } catch (error) {
-      if (!sessionActive()) return;
-      setDeployment(articleId, { stage: "failed", failedAt: 2, mode, commitSha, message: `無法確認網站狀態：${errorMessage(error)}`, url: run?.html_url || "" });
+      if (!trackerActive()) return;
+      updateTrackedDeployment({ stage: "failed", failedAt: 2, message: `無法確認網站狀態：${errorMessage(error)}`, url: run?.html_url || "" });
     }
   }
 
   function requestUnpublish() {
+    if (blockUnresolvedRecovery()) return false;
     syncEditorFromDom();
     showConfirm({
       title: "暫時下架這篇文章？",
@@ -1482,18 +2251,35 @@
   }
 
   function requestDelete() {
+    if (blockUnresolvedRecovery()) return false;
+    const removal = sourceRemovalState();
+    if (!removal.allowed) {
+      state.pageError = removal.reason;
+      renderEditor();
+      focusMain();
+      return false;
+    }
     showConfirm({
       title: "移除這篇文章？",
-      lead: "文章與圖片會從目前清單移除，公開頁面也會刪除。GitHub 歷史仍可協助復原。",
+      lead: "公開頁已確認下架。文章與圖片會從目前清單移除，GitHub 歷史仍可協助復原。",
       checks: ["我確認要移除這篇文章"],
       confirmLabel: "移除文章",
       danger: true,
       onConfirm: deleteArticle,
     });
+    return true;
   }
 
   async function deleteArticle() {
     if (!state.loaded || state.busy) return;
+    if (blockUnresolvedRecovery()) return false;
+    const removal = sourceRemovalState();
+    if (!removal.allowed) {
+      state.pageError = removal.reason;
+      renderEditor();
+      focusMain();
+      return false;
+    }
     const operation = {
       token: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
       id: state.editor.id,
@@ -1512,6 +2298,8 @@
         expectedArticle: { path: `posts/${operation.loaded.id}/article.md`, sha: operation.loaded.articleSha },
         expectedFiles: operation.loaded.files.map((file) => ({ path: file.path, sha: file.sha })),
       });
+      state.contentHeadSha = String(result.commitSha || state.contentHeadSha || "");
+      state.liveDeploymentContainsHead = false;
       if (state.activeOperation !== operation || state.editor?.id !== operation.id || state.editorRevision !== operation.revision) {
         state.activeOperation = null;
         setInterfaceBusy(false);
@@ -1523,20 +2311,15 @@
       state.editor = null;
       state.loaded = null;
       state.route = "articles";
-      state.deployments.set(operation.id, { stage: "saved", mode: "remove", commitSha: result.commitSha, message: "已安全存到 GitHub。" });
-      render();
-      try {
-        await loadArticles();
-      } catch (refreshError) {
-        state.articles = state.articles.filter((article) => article.id !== operation.id);
-        showToast(`文章已移除，但清單暫時無法重新整理：${errorMessage(refreshError)}`, "danger", 7000);
-      }
+      state.articles = state.articles.filter((article) => article.id !== operation.id);
+      state.deployments.delete(operation.id);
       state.activeOperation = null;
       setInterfaceBusy(false);
       render();
       focusMain();
-      showToast("文章已從清單移除，正在同步公開網站。", "success");
-      void trackDeployment(result.commitSha, operation.id, "remove");
+      showToast("文章來源已移除；公開頁先前已確認下架。", "success");
+      refreshArticleListInBackground();
+      return true;
     } catch (error) {
       if (state.activeOperation !== operation) return;
       state.activeOperation = null;
@@ -1664,8 +2447,11 @@
       showToast("目前正在安全儲存，完成後才能切換頁面。", "danger");
       return;
     }
-    if (route !== state.route && !persistEditorBeforeTransition({ confirmLeave: true })) return false;
+    if (route !== state.route && !persistEditorBeforeTransition({ confirmLeave: true, blockPendingAssets: true })) return false;
     state.pageError = "";
+    state.articleOpenGeneration += 1;
+    state.articleRefreshGeneration += 1;
+    state.loading = false;
     state.route = route;
     render();
     focusMain();
@@ -1676,14 +2462,37 @@
   if (TEST_MODE) {
     window.__CALUMAI_STUDIO_TEST_API__ = {
       SESSION_TOKEN_KEY,
+      deploymentCanFinish,
+      deploymentTrackerIsCurrent,
+      applyPreparedImages,
+      assetDescriptionFor,
+      linkUploadedImages,
       logout,
       markDirty,
+      mergeImportedMarkdown,
       openArticle,
       persistEditorBeforeTransition,
       persistLocalDraftNow,
+      prepareImages,
+      previewAssetLimitMessage,
+      readPublicJson,
+      refreshArticles,
+      refreshArticleListInBackground,
+      retryAssetLoading,
+      loadAssetUrls,
+      reloadConflictVersion,
+      requestDelete,
+      removePendingImage,
+      releaseUnreferencedAssetUrls,
+      unlinkImageFromArticle,
+      updateFeatureImageDescription,
+      restoreRecoveryVersion,
       routeTo,
+      saveArticle,
+      sourceRemovalState,
       startNewArticle,
       state,
+      trackDeployment,
     };
     return;
   }
@@ -1704,6 +2513,7 @@
     }
     if (target.dataset.format) return applyFormat(target.dataset.format);
     if (action === "sign-in") void signIn();
+    if (action === "refresh-articles") void refreshArticles();
     if (action === "new-article") startNewArticle();
     if (action === "open-article") void openArticle(target.dataset.id);
     if (action === "back-to-list") routeTo("articles");
@@ -1712,13 +2522,21 @@
     if (action === "request-publish") requestPublish();
     if (action === "request-unpublish") requestUnpublish();
     if (action === "request-delete") requestDelete();
+    if (action === "reload-conflict") void reloadConflictVersion();
+    if (action === "retry-deployment") {
+      const deployment = deploymentFor(state.editor?.id);
+      if (deployment?.commitSha) void trackDeployment(deployment.commitSha, state.editor.id, deployment.mode);
+    }
     if (action === "choose-body-images") root.querySelector('[data-file-input="body"]')?.click();
     if (action === "choose-cover") root.querySelector('[data-file-input="cover"]')?.click();
     if (action === "choose-markdown") requestMarkdownImport();
-    if (action === "insert-existing-image") insertRawAtCursor(`\n![請填寫圖片說明](${target.dataset.path})\n`);
+    if (action === "retry-assets") retryAssetLoading();
+    if (action === "insert-existing-image") insertExistingImage(target);
+    if (action === "request-remove-pending") requestRemovePendingImage(target.dataset.path);
+    if (action === "request-unlink-image") requestUnlinkImage(target.dataset.path);
     if (action === "remove-cover") { state.editor.featureImage = ""; state.editor.featureImageAlt = ""; markDirty(); renderEditor(); }
     if (action === "compare-recovery") showRecoveryComparison();
-    if (action === "discard-recovery") { clearLocalDraft(); state.recovery = null; renderEditor(); }
+    if (action === "discard-recovery") requestDiscardRecovery();
     if (action === "undo-import") undoMarkdownImport();
     if (action === "logout") logout();
     if (action === "sync-inbox") void syncAndImportInbox();
@@ -1733,9 +2551,51 @@
       if (list) list.innerHTML = articleRows();
       return;
     }
+    if (event.target.matches("[data-image-alt-path]")) {
+      if (!state.editor) return;
+      const path = event.target.dataset.imageAltPath;
+      const description = cleanImageDescription(event.target.value);
+      state.assetDescriptions.set(assetDescriptionKey(path), description);
+      const nextBody = core.replaceImageAlt(state.editor.body, path, description);
+      let changed = false;
+      if (nextBody !== state.editor.body) {
+        state.editor.body = nextBody;
+        const textarea = root.querySelector("[data-body-input]");
+        if (textarea) textarea.value = nextBody;
+        changed = true;
+      }
+      if (
+        decodePath(normalizeAssetKey(state.editor.featureImage)).toLowerCase()
+        === decodePath(normalizeAssetKey(path)).toLowerCase()
+        && state.editor.featureImageAlt !== description
+      ) {
+        state.editor.featureImageAlt = description;
+        const coverAlt = root.querySelector('[data-field="featureImageAlt"]');
+        if (coverAlt) coverAlt.value = description;
+        changed = true;
+      }
+      if (changed) markDirty();
+      if (description && description !== "請填寫圖片說明") event.target.removeAttribute("aria-invalid");
+      return;
+    }
     if (event.target.matches("[data-field]")) {
       if (!state.editor) return;
-      state.editor[event.target.dataset.field] = event.target.value;
+      const field = event.target.dataset.field;
+      if (field === "featureImageAlt") {
+        updateFeatureImageDescription(event.target.value);
+        const textarea = root.querySelector("[data-body-input]");
+        if (textarea) textarea.value = state.editor.body;
+      } else {
+        state.editor[field] = event.target.value;
+      }
+      if (field === "featureImageAlt" && state.editor.featureImage) {
+        const featurePath = state.editor.featureImage;
+        for (const input of root.querySelectorAll("[data-image-alt-path]")) {
+          if (decodePath(normalizeAssetKey(input.dataset.imageAltPath)).toLowerCase() === decodePath(normalizeAssetKey(featurePath)).toLowerCase()) {
+            input.value = event.target.value;
+          }
+        }
+      }
       markDirty();
     }
   });
@@ -1753,16 +2613,29 @@
     }
     if (event.target.matches("[data-field]")) {
       if (!state.editor) return;
-      state.editor[event.target.dataset.field] = event.target.value;
+      const field = event.target.dataset.field;
+      if (field === "featureImageAlt") {
+        updateFeatureImageDescription(event.target.value);
+        const textarea = root.querySelector("[data-body-input]");
+        if (textarea) textarea.value = state.editor.body;
+      } else {
+        state.editor[field] = event.target.value;
+      }
       markDirty();
     }
   });
 
   window.addEventListener("beforeunload", (event) => {
-    if (!state.dirty) return;
+    if (!state.dirty && !state.pendingAssets.size && !recoveryPendingAssets().size) return;
     persistLocalDraftNow();
     event.preventDefault();
     event.returnValue = "";
+  });
+
+  window.addEventListener("focus", () => {
+    if (!state.client || state.route !== "articles" || state.loading || state.busy) return;
+    if (Date.now() - state.lastArticleSyncAt < 30000) return;
+    void refreshArticles({ announce: false });
   });
 
   if (!root || !core || !github) {

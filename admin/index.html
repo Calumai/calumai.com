@@ -4,17 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#edf1ef">
+  <meta name="theme-color" content="#f2f4f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111513" media="(prefers-color-scheme: dark)">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://api.github.com https://calumai.com; img-src 'self' blob: data: https://calumai.com; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
   <title>CalumAi 管理台</title>
-  <link rel="stylesheet" href="./studio.css?v=c8e3ea4aec78">
+  <link rel="stylesheet" href="./studio.css?v=6161a69866ed">
 </head>
 <body>
   <noscript>CalumAi 管理台需要開啟 JavaScript。</noscript>
   <div id="studio-live-region" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
-  <div id="studio-app"></div>
-  <script src="./studio-core.js?v=c9b9a40c721e"></script>
-  <script src="./github-client.js?v=588af2155bb9"></script>
-  <script src="./studio.js?v=583831599f46"></script>
+  <div id="studio-app">
+    <main class="loading-page" role="status" aria-live="polite" aria-atomic="true">
+      <div><div class="spinner" aria-hidden="true"></div><p>正在載入 CalumAi 網站發文台…</p></div>
+    </main>
+  </div>
+  <script src="./studio-core.js?v=14f8d89da58c"></script>
+  <script src="./github-client.js?v=2dbd096242b3"></script>
+  <script src="./studio.js?v=c1fdf4c7d168"></script>
 </body>
 </html>

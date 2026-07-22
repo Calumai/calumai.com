@@ -8,6 +8,7 @@
   const CONTENT_REPO = "blog-content";
   const INBOX_REPO = "calumai-blog-inbox";
   const BRANCH = "main";
+  const GITHUB_API_TIMEOUT_MS = 20 * 1000;
 
   class GithubError extends Error {
     constructor(message, status = 0, data = null) {
@@ -15,6 +16,42 @@
       this.name = "GithubError";
       this.status = status;
       this.data = data;
+    }
+  }
+
+  function githubTimeoutError(timeoutMs) {
+    const seconds = Math.max(1, Math.round(timeoutMs / 1000));
+    const error = new GithubError(`GitHub 連線逾時（${seconds} 秒），請檢查網路後再試一次。`);
+    error.code = "GITHUB_API_TIMEOUT";
+    error.userMessage = error.message;
+    return error;
+  }
+
+  function githubNetworkError(cause) {
+    const error = new GithubError("無法連線到 GitHub，請檢查網路後再試一次。");
+    error.code = "GITHUB_NETWORK_ERROR";
+    error.userMessage = error.message;
+    error.cause = cause;
+    return error;
+  }
+
+  async function withGithubTimeout(task, timeoutMs) {
+    const controller = typeof AbortController === "function" ? new AbortController() : null;
+    let timeoutId;
+    const timeout = new Promise((resolve, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(githubTimeoutError(timeoutMs));
+        controller?.abort();
+      }, timeoutMs);
+    });
+
+    try {
+      return await Promise.race([
+        Promise.resolve().then(() => task(controller?.signal)),
+        timeout,
+      ]);
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -210,32 +247,46 @@
   }
 
   class GithubClient {
-    constructor(token) {
+    constructor(token, options = {}) {
       this.token = token;
+      const configuredTimeout = Number(options?.requestTimeoutMs);
+      this.requestTimeoutMs = Number.isFinite(configuredTimeout) && configuredTimeout > 0
+        ? configuredTimeout
+        : GITHUB_API_TIMEOUT_MS;
     }
 
     async request(path, options = {}) {
-      const response = await fetch(`${API}${path}`, {
-        ...options,
-        cache: "no-store",
-        headers: {
-          Accept: "application/vnd.github+json",
-          "X-GitHub-Api-Version": "2022-11-28",
-          Authorization: `Bearer ${this.token}`,
-          ...(options.headers || {}),
-        },
-      });
-      if (response.status === 204) return null;
-      const data = await response.json().catch(() => null);
-      if (!response.ok) {
-        const error = new GithubError(data?.message || `GitHub 回應 ${response.status}`, response.status, data);
-        if (response.status === 401) error.userMessage = "GitHub 登入已過期，請重新登入。";
-        if (response.status === 403) error.userMessage = "這個 GitHub 帳號目前沒有足夠權限。";
-        if (response.status === 404) error.userMessage = "找不到指定資料，可能已在另一台電腦刪除。";
-        if (response.status === 409 || response.status === 422) error.userMessage = "另一台電腦剛好也有修改，請重新載入後再儲存。";
-        throw error;
+      try {
+        return await withGithubTimeout(async (timeoutSignal) => {
+          const requestOptions = {
+            ...options,
+            cache: "no-store",
+            headers: {
+              Accept: "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+              Authorization: `Bearer ${this.token}`,
+              ...(options.headers || {}),
+            },
+          };
+          if (!requestOptions.signal && timeoutSignal) requestOptions.signal = timeoutSignal;
+
+          const response = await fetch(`${API}${path}`, requestOptions);
+          if (response.status === 204) return null;
+          const data = await response.json().catch(() => null);
+          if (!response.ok) {
+            const error = new GithubError(data?.message || `GitHub 回應 ${response.status}`, response.status, data);
+            if (response.status === 401) error.userMessage = "GitHub 登入已過期，請重新登入。";
+            if (response.status === 403) error.userMessage = "這個 GitHub 帳號目前沒有足夠權限。";
+            if (response.status === 404) error.userMessage = "找不到指定資料，可能已在另一台電腦刪除。";
+            if (response.status === 409 || response.status === 422) error.userMessage = "另一台電腦剛好也有修改，請重新載入後再儲存。";
+            throw error;
+          }
+          return data;
+        }, this.requestTimeoutMs);
+      } catch (error) {
+        if (error instanceof GithubError) throw error;
+        throw githubNetworkError(error);
       }
-      return data;
     }
 
     async verify() {
@@ -392,7 +443,10 @@
 
     async workflowForCommit(commitSha) {
       const result = await this.request(`/repos/${OWNER}/${CONTENT_REPO}/actions/runs?head_sha=${encodeURIComponent(commitSha)}&per_page=5`);
-      return (result.workflow_runs || []).find((run) => run.path?.endsWith("publish.yml")) || result.workflow_runs?.[0] || null;
+      return (result.workflow_runs || []).find((run) => {
+        const workflowPath = String(run?.path || "").replace(/\\/g, "/");
+        return workflowPath === "publish.yml" || workflowPath.endsWith("/publish.yml");
+      }) || null;
     }
 
     async deploymentContainsCommit(requiredSha, deployedSha) {

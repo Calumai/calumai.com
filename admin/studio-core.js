@@ -295,7 +295,7 @@
 
     if (article.featureImage) {
       header = replaceHeaderValue(header, "feature_image", article.featureImage);
-      header = replaceHeaderValue(header, "feature_image_alt", article.featureImageAlt || article.title);
+      header = replaceHeaderValue(header, "feature_image_alt", article.featureImageAlt || "請填寫圖片說明");
     } else {
       header = removeHeaderValue(removeHeaderValue(header, "feature_image"), "feature_image_alt");
     }
@@ -314,7 +314,7 @@
     const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
     let inFence = false;
     return lines.map((line) => {
-      if (/^\s*```/.test(line)) {
+      if (/^\s*(?:```|\\`\\`\\`)/.test(line)) {
         inFence = !inFence;
         return "";
       }
@@ -332,6 +332,105 @@
       if (value && !references.includes(value)) references.push(value);
     }
     return references;
+  }
+
+  function imageReferenceKey(raw) {
+    const reference = unwrapMarkdownDestination(raw);
+    const inspected = inspectAssetReference(reference);
+    if (inspected.valid && !inspected.remote) return inspected.path.toLowerCase();
+    return String(reference || "").trim().replace(/^\.\//, "").toLowerCase();
+  }
+
+  function listMarkdownImages(markdown) {
+    const images = [];
+    const regex = /!\[([^\]]*)\]\(\s*(<[^>]+>|[^\s)]+)(?:\s+["'][^"']*["'])?\s*\)/g;
+    let match;
+    const visibleMarkdown = stripMarkdownCode(markdown);
+    while ((match = regex.exec(visibleMarkdown)) !== null) {
+      images.push({
+        alt: match[1],
+        reference: unwrapMarkdownDestination(match[2]),
+      });
+    }
+    return images;
+  }
+
+  function imageAltFor(markdown, reference) {
+    const target = imageReferenceKey(reference);
+    return listMarkdownImages(markdown).find((image) => imageReferenceKey(image.reference) === target)?.alt || "";
+  }
+
+  function replaceImageAlt(markdown, reference, nextAlt) {
+    const target = imageReferenceKey(reference);
+    const safeAlt = String(nextAlt || "")
+      .replace(/[\r\n]+/g, " ")
+      .replace(/[\[\]]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
+    let inFence = false;
+    return lines.map((line) => {
+      if (/^\s*(?:```|\\`\\`\\`)/.test(line)) {
+        inFence = !inFence;
+        return line;
+      }
+      if (inFence) return line;
+      return line.replace(
+        /!\[([^\]]*)\]\(\s*(<[^>]+>|[^\s)]+)((?:\s+["'][^"']*["'])?)\s*\)/g,
+        (whole, _oldAlt, destination, title = "") => (
+          imageReferenceKey(destination) === target
+            ? `![${safeAlt}](${destination}${title})`
+            : whole
+        ),
+      );
+    }).join("\n");
+  }
+
+  function removeMarkdownImage(markdown, reference) {
+    const source = String(markdown || "");
+    const target = imageReferenceKey(reference);
+    if (!target) return source;
+
+    const lines = source.replace(/\r\n/g, "\n").split("\n");
+    const output = [];
+    let inFence = false;
+    let skipNextBlank = false;
+    const imagePattern = /!\[([^\]]*)\]\(\s*(<[^>]+>|[^\s)]+)((?:\s+["'][^"']*["'])?)\s*\)/g;
+
+    for (let index = 0; index < lines.length; index += 1) {
+      const line = lines[index];
+      if (/^\s*(?:```|\\`\\`\\`|~~~)/.test(line)) {
+        inFence = !inFence;
+        output.push(line);
+        continue;
+      }
+      if (inFence) {
+        output.push(line);
+        continue;
+      }
+      if (skipNextBlank && !line.trim()) {
+        skipNextBlank = false;
+        continue;
+      }
+      skipNextBlank = false;
+
+      let removed = false;
+      const nextLine = line.replace(imagePattern, (whole, _alt, destination) => {
+        if (imageReferenceKey(destination) !== target) return whole;
+        removed = true;
+        return "";
+      });
+
+      if (removed && !nextLine.trim()) {
+        const previousIsBlank = output.length > 0 && !output[output.length - 1].trim();
+        const nextIsBlank = index + 1 < lines.length && !lines[index + 1].trim();
+        if (nextIsBlank && (!output.length || previousIsBlank)) skipNextBlank = true;
+        if (!nextIsBlank && index === lines.length - 1 && previousIsBlank) output.pop();
+        continue;
+      }
+      output.push(nextLine);
+    }
+    return output.join("\n");
   }
 
   function isRemoteAssetReference(value) {
@@ -455,13 +554,34 @@
       status = article.status || "draft";
     }
     const errors = [];
-    if (!String(article.title || "").trim()) errors.push({ field: "title", message: "請先寫文章標題。" });
-    if (!String(article.body || "").trim()) errors.push({ field: "body", message: "文章內文還是空白的。" });
-    if (String(article.title || "").trim().length > 100) errors.push({ field: "title", message: "標題請控制在 100 個字以內。" });
-    if (status === "published" && String(article.body || "").trim().length < 40) {
+    const title = String(article.title || "").trim();
+    const body = String(article.body || "").trim();
+    const publishing = status === "published";
+    if (publishing && !title) errors.push({ field: "title", message: "請先寫文章標題。" });
+    if (publishing && !body) errors.push({ field: "body", message: "文章內文還是空白的。" });
+    if (!publishing && !title && !body) {
+      errors.push({ field: "body", message: "先寫一點標題或內文，就可以儲存草稿。" });
+    }
+    if (title.length > 100) errors.push({ field: "title", message: "標題請控制在 100 個字以內。" });
+    if (publishing && body.length < 40) {
       errors.push({ field: "body", message: "內文太短，請確認不是只留下測試文字。" });
     }
-    errors.push(...validateAssetReferences(article, resolveAssetInventory(article, options)));
+    if (publishing && article.featureImage) {
+      const coverAlt = String(article.featureImageAlt || "").trim();
+      if (!coverAlt || coverAlt === "請填寫圖片說明") {
+        errors.push({ field: "featureImageAlt", message: "請替封面寫一句能說明畫面內容的文字。" });
+      }
+    }
+    if (publishing && listMarkdownImages(body).some((image) => {
+      const alt = String(image.alt || "").trim();
+      return !alt || alt === "請填寫圖片說明";
+    })) {
+      errors.push({ field: "body", message: "請替每張內文圖片寫一句能說明畫面內容的文字。" });
+    }
+    // A half-written draft must remain saveable across devices. Broken or
+    // external image references are shown as preview warnings and become hard
+    // errors only at the human-controlled publish gate.
+    if (publishing) errors.push(...validateAssetReferences(article, resolveAssetInventory(article, options)));
     return errors;
   }
 
@@ -541,11 +661,11 @@
   }
 
   function fenceMatch(line) {
-    return String(line || "").match(/^```\s*([\w-]*)\s*$/);
+    return String(line || "").match(/^(?:```|\\`\\`\\`)\s*([\w-]*)\s*$/);
   }
 
   function isFenceClose(line) {
-    return /^```\s*$/.test(String(line || ""));
+    return /^(?:```|\\`\\`\\`)\s*$/.test(String(line || ""));
   }
 
   function collectListItems(lines, start, itemPattern, stripPattern) {
@@ -648,7 +768,7 @@
 
       const paragraph = [line.trim()];
       index += 1;
-      while (index < lines.length && lines[index].trim() && !/^(#{1,6})\s+|^```|^>\s?|^\s*[-*+]\s+|^\s*\d+\.\s+/.test(lines[index])) {
+      while (index < lines.length && lines[index].trim() && !/^(#{1,6})\s+|^```|^\\`\\`\\`|^>\s?|^\s*[-*+]\s+|^\s*\d+\.\s+/.test(lines[index])) {
         paragraph.push(lines[index].trim());
         index += 1;
       }
@@ -664,12 +784,16 @@
     escapeHtml,
     extractAssetPaths,
     extractImageReferences,
+    imageAltFor,
+    listMarkdownImages,
     makeIdentity,
     normalizeBody,
     parseArticle,
     plainExcerpt,
     readHeaderValue,
+    removeMarkdownImage,
     renderMarkdown,
+    replaceImageAlt,
     resolvePublicationStatus,
     sanitizeFilename,
     splitFrontmatter,

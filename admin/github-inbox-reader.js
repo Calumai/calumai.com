@@ -12,6 +12,18 @@
   const BLOG_REPO = "blog-content";
   const BRANCH = "main";
   const SAFE_ID = /^\d{8}-[a-z0-9-]+$/;
+  const GITHUB_API_TIMEOUT_MS = 20 * 1000;
+  const LEGACY_CMS_AUTH_KEYS = Object.freeze([
+    "sveltia-cms.user",
+    "sveltia-cms-user",
+    "netlify-cms-user",
+    "decap-cms-user",
+  ]);
+
+  if (typeof module === "object" && module.exports) {
+    module.exports = { clearStoredGithubLogin, collectCmsGithubTokens, github };
+    return;
+  }
 
   const style = document.createElement("style");
   style.textContent = `
@@ -53,30 +65,51 @@
     setTimeout(() => notice.remove(), 4800);
   }
 
-  // Sveltia stores its GitHub login in this site's browser storage. We collect
-  // GitHub-shaped values, then test which one can actually read the inbox.
-  function collectCmsGithubTokens() {
+  // Only inspect the explicit auth records used by legacy CMS versions. Studio
+  // drafts can contain GitHub-shaped text and must never be treated as auth.
+  function collectCmsGithubTokens(stores = [localStorage, sessionStorage]) {
     const tokenPattern = /(?:github_pat_[A-Za-z0-9_]+|gh[opusr]_[A-Za-z0-9_]+)/g;
     const tokens = new Set();
-    for (const store of [localStorage, sessionStorage]) {
-      for (let i = 0; i < store.length; i += 1) {
-        const raw = store.getItem(store.key(i)) || "";
+    for (const store of stores) {
+      for (const key of LEGACY_CMS_AUTH_KEYS) {
+        const raw = store?.getItem(key) || "";
         for (const match of raw.matchAll(tokenPattern)) tokens.add(match[0]);
       }
     }
     return [...tokens];
   }
 
-  function clearStoredGithubLogin() {
-    const looksLikeCmsAuth = /(github_pat_|gh[opusr]_|github|sveltia|netlify-cms|decap|Calumai\/blog-content)/i;
-    for (const store of [localStorage, sessionStorage]) {
-      const keys = [];
-      for (let i = 0; i < store.length; i += 1) {
-        const key = store.key(i);
-        const raw = store.getItem(key) || "";
-        if (looksLikeCmsAuth.test(`${key}\n${raw}`)) keys.push(key);
-      }
-      keys.forEach((key) => store.removeItem(key));
+  function clearStoredGithubLogin(stores = [localStorage, sessionStorage]) {
+    for (const store of stores) {
+      for (const key of LEGACY_CMS_AUTH_KEYS) store?.removeItem(key);
+    }
+  }
+
+  function githubTimeoutError(timeoutMs) {
+    const seconds = Math.max(1, Math.round(timeoutMs / 1000));
+    const error = new Error(`GitHub 連線逾時（${seconds} 秒），請檢查網路後再試一次。`);
+    error.code = "GITHUB_API_TIMEOUT";
+    error.userMessage = error.message;
+    return error;
+  }
+
+  async function withGithubTimeout(task, timeoutMs) {
+    const controller = typeof AbortController === "function" ? new AbortController() : null;
+    let timeoutId;
+    const timeout = new Promise((resolve, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(githubTimeoutError(timeoutMs));
+        controller?.abort();
+      }, timeoutMs);
+    });
+
+    try {
+      return await Promise.race([
+        Promise.resolve().then(() => task(controller?.signal)),
+        timeout,
+      ]);
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -100,22 +133,42 @@
   }
 
   async function github(path, token, options = {}) {
-    const response = await fetch(`https://api.github.com${path}`, {
-      ...options,
-      headers: {
-        Accept: "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        Authorization: `Bearer ${token}`,
-        ...(options.headers || {}),
-      },
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      const error = new Error(data.message || `GitHub 回應 ${response.status}`);
-      error.status = response.status;
-      throw error;
+    const configuredTimeout = Number(options?.requestTimeoutMs);
+    const timeoutMs = Number.isFinite(configuredTimeout) && configuredTimeout > 0
+      ? configuredTimeout
+      : GITHUB_API_TIMEOUT_MS;
+    const { requestTimeoutMs, ...fetchOptions } = options;
+
+    try {
+      return await withGithubTimeout(async (timeoutSignal) => {
+        const requestOptions = {
+          ...fetchOptions,
+          headers: {
+            Accept: "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            Authorization: `Bearer ${token}`,
+            ...(fetchOptions.headers || {}),
+          },
+        };
+        if (!requestOptions.signal && timeoutSignal) requestOptions.signal = timeoutSignal;
+
+        const response = await fetch(`https://api.github.com${path}`, requestOptions);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          const error = new Error(data.message || `GitHub 回應 ${response.status}`);
+          error.status = response.status;
+          throw error;
+        }
+        return data;
+      }, timeoutMs);
+    } catch (error) {
+      if (error?.code === "GITHUB_API_TIMEOUT" || Number.isFinite(error?.status)) throw error;
+      const networkError = new Error("無法連線到 GitHub，請檢查網路後再試一次。");
+      networkError.code = "GITHUB_NETWORK_ERROR";
+      networkError.userMessage = networkError.message;
+      networkError.cause = error;
+      throw networkError;
     }
-    return data;
   }
 
   function decodeContent(content) {
