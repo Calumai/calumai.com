@@ -91,30 +91,35 @@ collections:
                   - { name: direct_privacy_note, label: 頁面留言提醒, widget: text, required: false }
           - name: games_page
             label: 遊戲頁
+            hint: 新增遊戲請在這裡的「遊戲列表」按「新增」。每一筆就是 /games/ 頁面上的一張遊戲卡片。
             widget: object
             fields:
               - { name: title, label: 頁面標題, widget: string }
               - { name: intro, label: 頁面介紹, widget: text }
               - name: games
-                label: 遊戲列表
+                label: 遊戲列表（按新增就能多一個遊戲）
                 widget: list
+                summary: '{{title}}'
                 fields:
-                  - { name: kicker, label: 小標, widget: string }
+                  - { name: kicker, label: 小標, widget: string, hint: 顯示在遊戲名稱上方，例如 CULTURE STRATEGY GAME。 }
                   - { name: title, label: 遊戲名稱, widget: string }
-                  - { name: description, label: 遊戲說明, widget: text }
-                  - { name: image, label: 圖片路徑（/assets/...）, widget: string }
+                  - { name: description, label: 遊戲簡介, widget: text, hint: 顯示在遊戲卡片上，1–3 句就好。 }
+                  - { name: image, label: 遊戲縮圖路徑（/assets/...）, widget: string, hint: 圖片要先放到網站 assets，路徑像 /assets/my-game-thumb.png。 }
                   - { name: image_alt, label: 圖片替代文字, widget: string }
                   - name: facts
-                    label: 遊戲資訊
+                    label: 遊戲資訊（玩家、時間、目標等）
                     widget: list
+                    summary: '{{label}}：{{value}}'
                     fields:
                       - { name: label, label: 標籤, widget: string }
                       - { name: value, label: 內容, widget: string }
                   - { name: note, label: 備註, widget: text }
-                  - { name: primary_label, label: 主要按鈕文字, widget: string }
-                  - { name: primary_url, label: 主要按鈕連結, widget: string }
-                  - { name: secondary_label, label: 次要按鈕文字, widget: string }
-                  - { name: secondary_url, label: 次要按鈕連結, widget: string }
+                  - { name: primary_label, label: 開始遊戲按鈕文字, widget: string, hint: 例如：開始旅程、開始遊戲。 }
+                  - { name: primary_url, label: 開始遊戲連結, widget: string, hint: 可以填 https 網址或站內路徑。 }
+                  - { name: guide_label, label: 遊戲說明按鈕文字, widget: string, required: false, hint: 例如：遊戲說明、看玩法。留空就不顯示。 }
+                  - { name: guide_url, label: 遊戲說明連結, widget: string, required: false, hint: 例如 /blog/origin-rebirth-game-guide/。留空就不顯示。 }
+                  - { name: secondary_label, label: 其他按鈕文字, widget: string }
+                  - { name: secondary_url, label: 其他按鈕連結, widget: string }
           - name: tools_page
             label: 小工具頁
             widget: object
