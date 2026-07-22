@@ -294,10 +294,11 @@
         ${message}
         <p>請先在這台電腦啟動一次「收件匣小助手」。最簡單方式：</p>
         <ol>
-          <li>打開 <code>C:\\Users\\asd81\\Documents\\CalumAi\\blog-content\\start-inbox-helper.cmd</code>。</li>
+          <li>回到桌面，雙擊 <code>CalumAi 收件匣小助手</code>。</li>
           <li>黑色視窗出現「收件匣小助手已啟動」後，不要關掉。</li>
           <li>回到這個後台，再按一次「讀取並匯入可處理文章」。</li>
         </ol>
+        <p class="hint">如果桌面沒有看到捷徑，再打開文章庫裡的 <code>start-inbox-helper.cmd</code>；通常只需要設定一次。</p>
         <p class="hint">這是因為瀏覽器不能直接改你電腦裡的文章檔案，需要本機小助手代辦。</p>
       </div>
     `;
