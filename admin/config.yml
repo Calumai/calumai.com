@@ -183,6 +183,7 @@ collections:
     format: yaml-frontmatter
     extension: md
     path: '{{slug}}/episode'
+    preview_path: '/admin/previews/ai100/{{slug}}/'
     media_folder: ''
     public_folder: ''
     slug: '{{fields.id}}'
