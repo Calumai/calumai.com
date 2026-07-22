@@ -84,6 +84,13 @@
     setTimeout(() => notice.remove(), 5600);
   }
 
+  function normalizeMarkdownInput(value) {
+    return String(value || "")
+      .replace(/\r\n/g, "\n")
+      .replace(/^\\`\\`\\`/gm, "```")
+      .trim();
+  }
+
   function setEditorValue(editor, value) {
     editor.focus();
 
@@ -114,7 +121,7 @@
         return;
       }
 
-      const ok = setEditorValue(editor, String(reader.result || "").trim());
+      const ok = setEditorValue(editor, normalizeMarkdownInput(reader.result));
       if (ok) showNotice(`已把「${file.name}」帶入講義內文。你現在可以在右側預覽排版，儲存後就會發布這份內容。`);
       else showNotice("Markdown 已讀取，但瀏覽器沒有允許自動填入。請按右下角按鈕重試，或手動貼上內容。", "warning");
     });
