@@ -32,7 +32,13 @@
     return "AI 入門";
   };
 
+  const hasVideo = (episode) => Boolean(episode?.embedUrl) && episode?.contentType !== "handout";
   const cleanSummary = (summary = "") => summary.replace(/\s+/g, " ").trim();
+
+  const handoutUrl = (episode) => {
+    const handoutName = (episode.handoutFile || "").replace(/\.md$/i, ".html");
+    return handoutName ? `./handouts/${encodeURIComponent(handoutName)}` : "./";
+  };
 
   const coverUrl = (episode) => {
     const file = String(episode.coverFile || "").trim();
@@ -52,31 +58,42 @@
   const renderCard = (episode, index) => {
     const isLatest = index === episodes.length - 1;
     const tag = getToolTag(episode.title);
-    const handoutName = (episode.handoutFile || "").replace(/\.md$/i, ".html");
+    const videoLesson = hasVideo(episode);
+    const contentKind = episode.contentLabel || (videoLesson ? "影片課程" : "圖文講義");
+    const searchText = `${episode.id} ${episode.title} ${episode.summary} ${tag} ${contentKind}`.toLowerCase();
+    const cover = `
+          <img src="${escapeHtml(coverUrl(episode))}" alt="${escapeHtml(episode.title)} 封面" loading="lazy">
+          <span class="episode-play${videoLesson ? "" : " episode-read"}" aria-hidden="true"><i data-lucide="${videoLesson ? "play" : "book-open"}"></i></span>`;
+    const coverLink = videoLesson
+      ? `<button class="episode-cover-button" type="button" data-play-episode="${escapeHtml(episode.id)}" aria-label="播放 ${escapeHtml(episode.title)}">${cover}</button>`
+      : `<a class="episode-cover-button" href="${escapeHtml(handoutUrl(episode))}" aria-label="閱讀 ${escapeHtml(episode.title)}">${cover}</a>`;
+    const watchAction = videoLesson
+      ? `<button class="episode-watch" type="button" data-play-episode="${escapeHtml(episode.id)}">
+              <i data-lucide="play"></i>觀看影片
+            </button>`
+      : "";
+    const captionAction = episode.srtFile
+      ? `<a class="episode-link" href="./captions/${escapeHtml(episode.srtFile)}" download>
+              <i data-lucide="captions"></i>字幕
+            </a>`
+      : "";
 
     return `
-      <article class="episode-card" data-search-text="${escapeHtml(`${episode.id} ${episode.title} ${episode.summary} ${tag}`.toLowerCase())}">
-        <button class="episode-cover-button" type="button" data-play-episode="${escapeHtml(episode.id)}" aria-label="播放 ${escapeHtml(episode.title)}">
-          <img src="${escapeHtml(coverUrl(episode))}" alt="${escapeHtml(episode.title)} 封面" loading="lazy">
-          <span class="episode-play" aria-hidden="true"><i data-lucide="play"></i></span>
-        </button>
+      <article class="episode-card" data-search-text="${escapeHtml(searchText)}">
+        ${coverLink}
         <div class="episode-card-body">
           <div class="episode-meta">
             <span class="episode-number">${escapeHtml(episode.id)}${isLatest ? " · 最新" : ""}</span>
-            <span class="episode-tag">${escapeHtml(tag)}</span>
+            <span class="episode-tag">${escapeHtml(contentKind)}</span>
           </div>
           <h3>${escapeHtml(episode.title)}</h3>
           <p class="episode-summary">${escapeHtml(cleanSummary(episode.summary))}</p>
           <div class="episode-actions">
-            <button class="episode-watch" type="button" data-play-episode="${escapeHtml(episode.id)}">
-              <i data-lucide="play"></i>觀看本集
-            </button>
-            <a class="episode-link" href="./handouts/${escapeHtml(handoutName)}">
+            ${watchAction}
+            <a class="episode-link" href="${escapeHtml(handoutUrl(episode))}">
               <i data-lucide="book-open"></i>閱讀講義
             </a>
-            <a class="episode-link" href="./captions/${escapeHtml(episode.srtFile)}" download>
-              <i data-lucide="captions"></i>字幕
-            </a>
+            ${captionAction}
           </div>
         </div>
       </article>`;
@@ -84,7 +101,7 @@
 
   const renderEpisodes = (items) => {
     if (!items.length) {
-      episodeGrid.innerHTML = '<div class="course-empty">找不到符合的課程，換一個關鍵字試試看。</div>';
+      episodeGrid.innerHTML = '<div class="course-empty">目前找不到符合條件的 AI-100 內容。</div>';
       return;
     }
 
@@ -111,7 +128,7 @@
     if (number) number.textContent = latest.id;
     if (title) title.textContent = latest.title;
     if (summary) summary.textContent = cleanSummary(latest.summary);
-    if (playButton) playButton.dataset.playEpisode = latest.id;
+    if (playButton && hasVideo(latest)) playButton.dataset.playEpisode = latest.id;
   };
 
   const updateCourseStats = () => {
@@ -125,15 +142,12 @@
     }
 
     const first = episodes[0];
-    if (first && firstLessonLink) {
-      const handoutName = (first.handoutFile || "").replace(/\.md$/i, ".html");
-      firstLessonLink.href = `./handouts/${handoutName}`;
-    }
+    if (first && firstLessonLink) firstLessonLink.href = handoutUrl(first);
   };
 
   const openVideo = (episodeId) => {
     const episode = episodes.find((item) => item.id === episodeId);
-    if (!episode || !dialog || !dialogFrame) return;
+    if (!episode || !hasVideo(episode) || !dialog || !dialogFrame) return;
 
     dialogTitle.textContent = `${episode.id}｜${episode.title}`;
     const separator = episode.embedUrl.includes("?") ? "&" : "?";
@@ -166,7 +180,7 @@
   searchInput?.addEventListener("input", () => {
     const keyword = searchInput.value.trim().toLowerCase();
     const filtered = keyword
-      ? episodes.filter((episode) => `${episode.id} ${episode.title} ${episode.summary} ${getToolTag(episode.title)}`.toLowerCase().includes(keyword))
+      ? episodes.filter((episode) => `${episode.id} ${episode.title} ${episode.summary} ${getToolTag(episode.title)} ${episode.contentLabel || ""}`.toLowerCase().includes(keyword))
       : episodes;
     renderEpisodes(filtered);
   });
@@ -195,6 +209,6 @@
     })
     .catch((error) => {
       console.error("Unable to load episodes", error);
-      episodeGrid.innerHTML = '<div class="course-empty">課程清單暫時載入失敗，請重新整理頁面。</div>';
+      episodeGrid.innerHTML = '<div class="course-empty">AI-100 內容暫時載入失敗，請稍後再試。</div>';
     });
 })();

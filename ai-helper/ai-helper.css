@@ -432,7 +432,9 @@
   border: 0;
   background: var(--course-green-soft);
   padding: 0;
+  color: var(--course-green);
   cursor: pointer;
+  text-decoration: none;
 }
 
 .episode-cover-button img {
@@ -476,6 +478,11 @@
   height: 25px;
   margin-left: 3px;
   fill: currentColor;
+}
+
+.episode-read svg {
+  margin-left: 0;
+  fill: none;
 }
 
 .episode-cover-button:hover .episode-play {
