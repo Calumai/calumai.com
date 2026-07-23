@@ -75,6 +75,21 @@
     "managedBy": "blog-content"
   },
   {
+    "id": "EP006",
+    "contentType": "video_lesson",
+    "contentLabel": "影片課程",
+    "track": "chatgpt",
+    "trackLabel": "ChatGPT",
+    "title": "請 ChatGPT 幫我調整暖身活動，更適合自己的班級",
+    "summary": "本集延續 EP005 做出的 5 分鐘暖身活動，帶老師請 ChatGPT 依照自己班級的實際狀況（人數、程度、時間）調整活動細節，而不是直接照抄。\n\n重點不是重新設計一個活動，而是完成「把現成活動改成適合自己班級」這一件小任務。",
+    "embedUrl": "https://www.youtube.com/embed/D8GUTlnHaBs",
+    "srtFile": "EP006.srt",
+    "handoutFile": "EP006.md",
+    "coverFile": null,
+    "publishedAt": "2026-07-23T12:35:10.597Z",
+    "managedBy": "blog-content"
+  },
+  {
     "id": "SP001",
     "contentType": "handout",
     "contentLabel": "圖文講義",
