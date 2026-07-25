@@ -90,6 +90,21 @@
     "managedBy": "blog-content"
   },
   {
+    "id": "EP007",
+    "contentType": "video_lesson",
+    "contentLabel": "影片課程",
+    "track": "chatgpt",
+    "trackLabel": "ChatGPT",
+    "title": "請 ChatGPT 幫我排一堂課的節奏",
+    "summary": "前面幾集老師已經學會請 ChatGPT 做出單一活動。本集往上一層：把一堂課從頭到尾的時間分配交給 ChatGPT 先排一版，老師再依實際情況調整。\n\n重點不是設計完整教案，而是完成「一堂課的時間，大概怎麼分配」這一件小任務。",
+    "embedUrl": "https://www.youtube.com/embed/gAAkiRNa00I",
+    "srtFile": "EP007.srt",
+    "handoutFile": "EP007.md",
+    "coverFile": null,
+    "publishedAt": "2026-07-25T15:00:56.011Z",
+    "managedBy": "blog-content"
+  },
+  {
     "id": "SP001",
     "contentType": "handout",
     "contentLabel": "圖文講義",
