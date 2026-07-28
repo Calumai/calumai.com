@@ -32,6 +32,7 @@ collections:
               - name: nav
                 label: 主選單
                 widget: list
+                summary: '{{label}}'
                 fields:
                   - { name: label, label: 選單文字, widget: string }
                   - { name: url, label: 連結, widget: string }
@@ -45,6 +46,7 @@ collections:
               - name: stats
                 label: 首頁數字狀態
                 widget: list
+                summary: '{{label}}：{{value}}'
                 fields:
                   - { name: label, label: 標籤, widget: string }
                   - { name: value, label: 數字或狀態, widget: string }
@@ -52,6 +54,7 @@ collections:
               - name: audiences
                 label: 受眾卡片
                 widget: list
+                summary: '{{title}}'
                 fields:
                   - { name: icon, label: 圖示名稱（Lucide，例如 school）, widget: string }
                   - { name: title, label: 卡片標題, widget: string }
@@ -60,6 +63,7 @@ collections:
               - name: index_cards
                 label: 首頁入口卡片
                 widget: list
+                summary: '{{number}}｜{{title}}'
                 fields:
                   - { name: number, label: 編號, widget: string }
                   - { name: icon, label: 圖示名稱（Lucide）, widget: string }
@@ -78,6 +82,7 @@ collections:
                   - name: prompts
                     label: 引導卡片
                     widget: list
+                    summary: '{{title}}'
                     fields:
                       - { name: icon, label: 圖示名稱（Lucide，例如 sparkles）, widget: string }
                       - { name: title, label: 卡片標題, widget: string }
@@ -129,6 +134,7 @@ collections:
               - name: tools
                 label: 工具列表
                 widget: list
+                summary: '{{title}}'
                 fields:
                   - { name: icon, label: 圖示名稱（Lucide）, widget: string }
                   - { name: title, label: 工具名稱, widget: string }
