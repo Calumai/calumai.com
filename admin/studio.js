@@ -801,7 +801,7 @@
   }
 
   function renderInbox() {
-    const available = state.inbox.filter((row) => !row.imported && row.canImport);
+    const available = state.inbox.filter((row) => row.canImport);
     const rows = state.inbox.map((row) => {
       const title = row.title || "未命名投稿";
       const excerpt = row.excerpt || "這份投稿尚未提供摘要。";
@@ -809,18 +809,20 @@
       const integrity = problems.length
         ? `<ul class="inbox-problems" aria-label="暫時不能帶入的原因">${problems.map((reason) => `<li>${escape(reason)}</li>`).join("")}</ul>`
         : `<p class="inbox-ready">文章、圖片與來源說明都已備齊。</p>`;
-      const action = row.inboxDispositionLabel
-        ? statusBadge("draft", row.inboxDispositionLabel)
+      const action = row.imported
+        ? statusBadge("published", "已在文章清單")
+        : row.inboxDispositionLabel
+          ? statusBadge("draft", row.inboxDispositionLabel)
         : row.canImport
-          ? `<button class="button button--small" type="button" data-action="import-inbox" data-id="${escape(row.id)}">${row.imported ? "再次帶入" : "帶入文章清單"}</button>`
+          ? `<button class="button button--small" type="button" data-action="import-inbox" data-id="${escape(row.id)}">帶入文章清單</button>`
           : statusBadge("awaiting_human_review", "資料不完整");
       return `<section class="panel inbox-card"><div class="inbox-copy"><span class="inbox-id">${escape(row.id)}</span><h2>${escape(title)}</h2><p class="inbox-excerpt">${escape(excerpt)}</p><p class="inbox-meta">${row.imageCount} 張圖片 · ${row.hasImageSources ? "有圖片來源說明" : "缺圖片來源說明"}</p>${integrity}</div>${action}</section>`;
     }).join("");
     const body = state.loading
-      ? '<section class="panel skeleton" role="status" aria-live="polite"><span class="sr-only">正在同步 GitHub 收件匣…</span><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></section>'
+      ? `<section class="panel skeleton" role="status" aria-live="polite"><span class="sr-only">正在同步 GitHub 收件匣…</span><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></section>`
       : state.inbox.length
         ? `<div class="inbox-list">${rows}</div>`
-        : '<section class="panel empty-state"><strong>收件匣目前沒有新稿</strong><p>其他電腦推送的新文章，按同步後會出現在這裡。</p></section>';
+        : `<section class="panel empty-state"><strong>收件匣目前沒有新稿</strong><p>其他電腦推送的新文章，按同步後會出現在這裡。</p></section>`;
     const content = `<div class="content" aria-busy="${state.loading}"><div class="page-heading"><div><h1 tabindex="-1" data-page-heading>GitHub 收件匣</h1><p>按一次就讀取私人收件匣，文章和圖片會一起帶進文章清單。</p></div><button class="button button--primary" type="button" data-action="sync-inbox" ${state.loading ? "disabled" : ""}>${available.length ? `同步並帶入 ${available.length} 篇` : "同步收件匣"}</button></div>${state.pageError ? `<div class="error-banner" role="alert" tabindex="-1" data-focus-error>${escape(state.pageError)}</div>` : ""}${body}</div>`;
     root.innerHTML = shell(content);
   }
@@ -2361,24 +2363,24 @@
     const session = sessionSnapshot();
     if (!session.client) return;
     const row = state.inbox.find((item) => item.id === id);
-    if (!row || !row.canImport || state.loading) return;
+    if (!row || row.imported || !row.canImport || state.loading) return;
     state.loading = true;
     state.busy = true;
     state.pageError = "";
     if (state.route === "inbox") renderInbox();
     try {
-      const wasImported = Boolean(row.imported);
-      showToast(wasImported ? `正在重新帶入 ${id}，會更新文章內容。` : `正在帶入 ${id}，文章與圖片會一起儲存。`);
+      showToast(`正在帶入 ${id}，文章與圖片會一起儲存。`);
       await session.client.importInboxSubmission(row, core);
       if (!sessionIsCurrent(session)) return;
       row.imported = true;
+      row.canImport = false;
       try {
         await loadArticles();
       } catch (refreshError) {
         if (!sessionIsCurrent(session)) return;
         state.pageError = `投稿已帶入，但文章清單暫時無法重新整理：${errorMessage(refreshError)}`;
       }
-      showToast(wasImported ? `${id} 已重新帶入文章清單。` : `${id} 已出現在文章清單。`, "success");
+      showToast(`${id} 已出現在文章清單。`, "success");
     } catch (error) {
       if (!sessionIsCurrent(session)) return;
       state.pageError = errorMessage(error);
@@ -2398,7 +2400,7 @@
     if (!session.client) return;
     const loaded = await loadInbox();
     if (!loaded || !sessionIsCurrent(session)) return;
-    const rows = state.inbox.filter((row) => !row.imported && row.canImport);
+    const rows = state.inbox.filter((row) => row.canImport);
     if (!rows.length) {
       const blocked = state.inbox.some((row) => !row.imported && row.missingReasons?.length);
       showToast(blocked ? "收件匣已同步；有投稿缺少資料，請查看卡片上的原因。" : "收件匣已同步，目前沒有需要帶入的新稿。", blocked ? "danger" : "success");
@@ -2414,6 +2416,7 @@
           await session.client.importInboxSubmission(row, core);
           if (!sessionIsCurrent(session)) return;
           row.imported = true;
+          row.canImport = false;
           imported += 1;
         } catch (error) {
           if (!sessionIsCurrent(session)) return;

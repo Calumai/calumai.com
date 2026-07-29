@@ -176,7 +176,7 @@
       missingReasons: problems.map((problem) => problem.message),
       inboxDisposition,
       inboxDispositionLabel,
-      canImport: problems.length === 0,
+      canImport: !imported && problems.length === 0,
     };
   }
 
@@ -480,6 +480,7 @@
     }
 
     async importInboxSubmission(row, core) {
+      if (row.imported) throw new GithubError("這份投稿已經在文章清單裡。", 409);
       const sourceArticle = findInboxFile(row.id, row.files, "article.md");
       const raw = sourceArticle ? await this.blobText(INBOX_REPO, sourceArticle.sha) : "";
       const inspection = inspectInboxSubmission({ ...row, raw }, core);

@@ -100,8 +100,23 @@
     "embedUrl": "https://www.youtube.com/embed/gAAkiRNa00I",
     "srtFile": "EP007.srt",
     "handoutFile": "EP007.md",
-    "coverFile": null,
+    "coverFile": "EP007.png",
     "publishedAt": "2026-07-25T15:00:56.011Z",
+    "managedBy": "blog-content"
+  },
+  {
+    "id": "EP008",
+    "contentType": "video_lesson",
+    "contentLabel": "影片課程",
+    "track": "chatgpt",
+    "trackLabel": "ChatGPT",
+    "title": "做一張學習單",
+    "summary": "這集帶老師完成「做一張學習單」。影片不是要把老師變成工具專家，而是讓老師看見一個很小、很安全、可以明天就試的 AI 備課步驟。\n\n本集操作重點是：先說清楚任務，再用 ChatGPT 產生第一版，最後由老師檢查、補條件、改成適合自己班級與族語教材的版本。",
+    "embedUrl": "https://www.youtube.com/embed/UOPPAjSN934",
+    "srtFile": "EP008.srt",
+    "handoutFile": "EP008.md",
+    "coverFile": "EP008.png",
+    "publishedAt": "2026-07-29T16:12:14.527Z",
     "managedBy": "blog-content"
   },
   {

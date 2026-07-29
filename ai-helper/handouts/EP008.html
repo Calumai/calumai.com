@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <script>
+    if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
+      location.replace("https://" + location.host + location.pathname + location.search + location.hash);
+    }
+  </script>
+  <meta name="description" content="做一張學習單 教學講義：這集帶老師完成「做一張學習單」。影片不是要把老師變成工具專家，而是讓老師看見一個很小、很安全、可以明天就試的 AI 備課…">
+  <meta name="theme-color" content="#f7f3ec">
+  <title>EP008 做一張學習單｜講義｜CALUMAI</title>
+  <link rel="stylesheet" href="../../styles.css?v=20260717-4">
+  <link rel="stylesheet" href="../ai-helper.css?v=20260722-3">
+  <script src="../../assets/lucide.min.js" defer></script>
+  <script src="../../app.js" defer></script>
+  <script src="../handout.js?v=20260722-3" defer></script>
+</head>
+<body class="course-site course-handout" data-episode="EP008">
+  <a class="skip-link" href="#lesson-content">跳到講義內容</a>
+
+  <header class="site-header course-header" data-header>
+    <a class="brand course-brand" href="../../" aria-label="CALUMAI 首頁">
+      <img src="../../assets/calumai-logo-mark.png" alt="" width="96" height="96">
+      <span>CALUMAI</span>
+    </a>
+    <button class="menu-toggle icon-button course-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle><i data-lucide="menu" aria-hidden="true"></i></button>
+    <nav class="primary-nav course-nav" id="primary-nav" aria-label="主要導覽" data-nav>
+      <a href="../../games/">遊戲介紹</a>
+      <a href="../../blog/">製作心得</a>
+      <a href="../" aria-current="page">備課小幫手</a>
+      <a class="nav-cta" href="../../tools/">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+    </nav>
+  </header>
+
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+
+  <main class="lesson-main">
+    <section class="lesson-hero">
+      <div class="course-shell">
+        <nav class="lesson-breadcrumb" aria-label="麵包屑">
+          <a href="../../">CALUMAI</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <a href="../">備課小幫手</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <span>EP008 講義</span>
+        </nav>
+
+        <div class="lesson-hero-grid">
+          <div>
+            <p class="course-eyebrow">EP008 · ChatGPT</p>
+            <h1>做一張學習單</h1>
+            <p class="lesson-lead">這集帶老師完成「做一張學習單」。影片不是要把老師變成工具專家，而是讓老師看見一個很小、很安全、可以明天就試的 AI 備課步驟。
+
+本集操作重點是：先說清楚任務，再用 ChatGPT 產生第一版，最後由老師檢查、補條件、改成適合自己班級與族語教材的版本。</p>
+            <div class="lesson-meta-row">
+              <span><i data-lucide="clock-3" aria-hidden="true"></i>約 3–5 分鐘</span>
+              <span><i data-lucide="signal-low" aria-hidden="true"></i>零基礎</span>
+              <span><i data-lucide="target" aria-hidden="true"></i>一次一招</span>
+            </div>
+          </div>
+          <figure class="lesson-cover-card">
+            <img src="../covers/EP008.png" alt="做一張學習單 課程封面" onerror="this.onerror=null;this.src='../../assets/calumai-logo-mark.png';this.classList.add('is-fallback-cover');">
+            <figcaption class="lesson-cover-info"><small>本集任務</small><strong>這集帶老師完成「做一張學習單」。影片不是要把老師變成工具專家，而是讓老師看見一個…</strong></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-content-section" id="lesson-content">
+      <div class="course-shell lesson-layout">
+        <aside class="lesson-sidebar" aria-label="講義工具">
+          <div class="lesson-side-card lesson-toc-card"><strong>本集導覽</strong><nav class="lesson-toc" data-lesson-toc></nav></div>
+          <div class="lesson-side-card">
+            <strong>學習進度</strong>
+            <button class="lesson-complete" type="button" aria-pressed="false" data-complete-lesson>標記本集已完成</button>
+            <div class="lesson-resource-list">
+              <a href="https://www.youtube.com/watch?v=UOPPAjSN934" target="_blank" rel="noopener noreferrer"><i data-lucide="youtube" aria-hidden="true"></i>觀看本集影片</a>
+              <a href="../captions/EP008.srt" download><i data-lucide="captions" aria-hidden="true"></i>下載字幕</a>
+              <a href="javascript:window.print()"><i data-lucide="printer" aria-hidden="true"></i>列印講義</a>
+            </div>
+          </div>
+        </aside>
+
+        <div>
+          <article class="lesson-body" data-lesson-body><h1>EP008 講義：做一張學習單</h1>
+<h2>今天只做一件事</h2>
+<p>老師能把上課重點轉成一張學習單初稿。</p>
+<h2>你會學到</h2>
+<p>老師能理解「做一張學習單」可以怎麼交給 ChatGPT 協助，並知道 AI 產出後要如何檢查與修改。</p>
+<h2>需要準備</h2>
+<ul><li>一個你真的要拿來上課的小主題。</li><li>學生程度、上課時間或班級狀況。</li><li>可以替換成自己族語內容的詞句、例子或教材片段。</li></ul>
+<h2>步驟 1：先把任務縮小</h2>
+<p>不要一開始就請 AI 做整套教材。先用一句話說清楚你今天要完成什麼，例如：「我想做一份可以讓初學者練習的課堂材料」。</p>
+<blockquote>這集帶老師完成「做一張學習單」。影片不是要把老師變成工具專家，而是讓老師看見一個很小、很安全、可以明天就試的 AI 備課步驟。</blockquote>
+<h2>步驟 2：把提示詞貼進 ChatGPT</h2>
+<p>可以直接從這段開始改：</p>
+<blockquote>我想做「做一張學習單」。請用族語課初學者可以理解的方式，幫我產生一份可修改的教材草稿。請包含題目、作答方式、老師提醒、答案或評分重點，並標出哪些地方需要我替換成自己的族語內容。</blockquote>
+<h2>步驟 3：看 AI 給的第一版</h2>
+<p>你要先確認它是不是有產出這些東西：</p>
+<ul><li>有沒有清楚對應今天的課堂任務。</li><li>有沒有把作答方式、老師提醒或檢查重點寫出來。</li><li>有沒有標出哪些內容需要老師替換或修正。</li></ul>
+<p>這集期待的 AI 產出是：一份有題目、作答方式、答案或評分重點的教材草稿。</p>
+<h2>步驟 4：老師最後把關</h2>
+<ul><li>題目、範例與答案要符合學生程度。</li><li>族語、文化內容與班級脈絡要由老師最後確認。</li><li>AI 產出的文字可以改短、改白話，不需要照單全收。</li></ul>
+<h2>影片流程速記</h2>
+<ul><li>1. EP008｜本集任務</li><li>2. 老師先準備什麼</li><li>3. 打開 ChatGPT</li><li>4. 輸入本集任務</li><li>5. 看第一版結果</li><li>6. 補條件再修改</li></ul>
+<h2>今日金句</h2>
+<blockquote>不用先會寫漂亮提示詞。先把想做的事情說清楚，讓 AI 做第一版；真正能進課堂的版本，永遠由老師最後把關。</blockquote>
+<h2>下一步</h2>
+<p>把這份草稿改成你自己班上能用的版本，再存成下次備課可以重複使用的模板。</p></article>
+
+          <div class="lesson-next">
+            <div><small>完成 EP008</small><strong>回到課程首頁，繼續下一個小任務。</strong></div>
+          <a href="../">回課程首頁<i data-lucide="arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer course-footer">
+    <div class="shell footer-bottom"><p>© CALUMAI · AI 族語備課小妙招</p><nav><a href="../">所有課程</a><a href="../../">CALUMAI 首頁</a></nav><p>EP008</p></div>
+  </footer>
+</body>
+</html>
