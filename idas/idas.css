@@ -512,3 +512,34 @@
     width: min(calc(100% - 36px), 1240px);
   }
 }
+
+
+.idas-card-art {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.idas-game-image,
+.idas-art-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.idas-game-image {
+  z-index: -2;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 350ms ease;
+}
+
+.idas-art-overlay {
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(10, 24, 30, 0.22), rgba(10, 24, 30, 0.66));
+}
+
+.idas-work-card:hover .idas-game-image {
+  transform: scale(1.05);
+}
