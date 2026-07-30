@@ -1,0 +1,341 @@
+:root {
+  --idas-ink: #14242a;
+  --idas-muted: #607276;
+  --idas-paper: #f6f7f4;
+  --idas-line: rgba(20, 36, 42, 0.14);
+  --idas-teal: #1f8a93;
+  --idas-orange: #ef7a45;
+}
+
+.idas-site {
+  background: var(--idas-paper);
+  color: var(--idas-ink);
+}
+
+.idas-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: min(690px, 88svh);
+  border-bottom: 1px solid var(--idas-line);
+  background: #e8efeb;
+}
+
+.idas-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.5;
+  background-image: linear-gradient(rgba(31, 138, 147, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(31, 138, 147, 0.1) 1px, transparent 1px);
+  background-size: 58px 58px;
+  mask-image: linear-gradient(to right, black, transparent 78%);
+}
+
+.idas-hero-inner,
+.idas-work-section,
+.idas-note-section {
+  width: min(calc(100% - 64px), 1240px);
+  margin-inline: auto;
+}
+
+.idas-hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  align-items: center;
+  gap: 70px;
+  min-height: min(690px, 88svh);
+  padding-top: 72px;
+}
+
+.idas-kicker {
+  margin: 0;
+  color: var(--idas-teal);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.idas-hero h1 {
+  max-width: 800px;
+  margin: 24px 0 0;
+  color: var(--idas-ink);
+  font-size: clamp(52px, 8vw, 112px);
+  line-height: 0.98;
+  letter-spacing: -0.07em;
+}
+
+.idas-hero h1 span {
+  color: var(--idas-teal);
+}
+
+.idas-lede {
+  max-width: 650px;
+  margin: 28px 0 0;
+  color: var(--idas-muted);
+  font-size: clamp(17px, 2vw, 21px);
+  line-height: 1.8;
+}
+
+.idas-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 26px;
+  margin-top: 38px;
+  color: var(--idas-muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.idas-meta strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--idas-ink);
+  font-size: 28px;
+  line-height: 1;
+}
+
+.idas-hero-stamp {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border: 1px solid rgba(31, 138, 147, 0.4);
+  border-radius: 50%;
+  background: rgba(246, 247, 244, 0.52);
+  color: var(--idas-teal);
+  text-align: center;
+  transform: rotate(8deg);
+}
+
+.idas-hero-stamp span {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.idas-hero-stamp strong {
+  margin: -16px 0;
+  color: var(--idas-ink);
+  font-size: 74px;
+  letter-spacing: -0.09em;
+}
+
+.idas-work-section {
+  padding-block: 112px;
+}
+
+.idas-section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  align-items: end;
+  margin-bottom: 42px;
+}
+
+.idas-section-heading h2 {
+  margin: 12px 0 0;
+  color: var(--idas-ink);
+  font-size: clamp(36px, 5vw, 62px);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.idas-section-heading > p {
+  max-width: 360px;
+  margin: 0;
+  color: var(--idas-muted);
+  line-height: 1.75;
+}
+
+.idas-work-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.idas-work-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 42% 1fr;
+  overflow: hidden;
+  border: 1px solid var(--idas-line);
+  background: rgba(255, 255, 255, 0.72);
+  color: inherit;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.idas-work-card:hover {
+  border-color: rgba(31, 138, 147, 0.45);
+  box-shadow: 0 18px 48px rgba(20, 36, 42, 0.1);
+  transform: translateY(-5px);
+}
+
+.idas-work-card-featured {
+  grid-column: 1 / -1;
+  grid-template-columns: 46% 1fr;
+}
+
+.idas-number {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 900;
+  mix-blend-mode: difference;
+}
+
+.idas-card-art {
+  display: flex;
+  min-height: 260px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 28px;
+  color: #fff;
+}
+
+.idas-card-art svg {
+  width: 48px;
+  height: 48px;
+  stroke-width: 1.4;
+}
+
+.idas-card-art b {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+
+.art-forest { background: linear-gradient(145deg, #143b3f, #2c7266 55%, #dfb56b); }
+.art-canyon { background: linear-gradient(145deg, #1a3454, #5b8a91 55%, #e3b16f); }
+.art-hunter { background: linear-gradient(145deg, #342d45, #784e5f 55%, #f0aa6a); }
+.art-rebirth { background: linear-gradient(145deg, #324437, #879963 55%, #d8b885); }
+.art-retro { background: linear-gradient(145deg, #1c2140, #4b4f92 55%, #e99a5f); }
+
+.idas-card-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 30px;
+}
+
+.idas-card-copy h3 {
+  margin: 12px 0 0;
+  color: var(--idas-ink);
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+}
+
+.idas-card-copy h3 small {
+  display: block;
+  margin-top: 5px;
+  color: var(--idas-muted);
+  font-size: 0.5em;
+  letter-spacing: 0;
+}
+
+.idas-card-copy p:not(.idas-kicker) {
+  margin: 18px 0 0;
+  color: var(--idas-muted);
+  line-height: 1.75;
+}
+
+.idas-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 24px;
+  color: var(--idas-teal);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.idas-card-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.idas-note-section {
+  margin-bottom: 110px;
+  border-top: 1px solid var(--idas-line);
+  border-bottom: 1px solid var(--idas-line);
+  padding-block: 70px;
+}
+
+.idas-note-section h2 {
+  max-width: 760px;
+  margin: 14px 0 0;
+  color: var(--idas-ink);
+  font-size: clamp(32px, 5vw, 62px);
+  line-height: 1.05;
+  letter-spacing: -0.06em;
+}
+
+.idas-note-section > p:last-child {
+  max-width: 630px;
+  margin: 22px 0 0;
+  color: var(--idas-muted);
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+@media (max-width: 820px) {
+  .idas-hero-inner {
+    grid-template-columns: 1fr;
+    gap: 34px;
+    padding-block: 120px 72px;
+  }
+
+  .idas-hero-stamp {
+    width: 170px;
+    margin-left: auto;
+  }
+
+  .idas-work-grid,
+  .idas-work-card,
+  .idas-work-card-featured {
+    grid-template-columns: 1fr;
+  }
+
+  .idas-work-card-featured {
+    grid-column: auto;
+  }
+
+  .idas-card-art {
+    min-height: 190px;
+  }
+
+  .idas-section-heading {
+    display: block;
+  }
+
+  .idas-section-heading > p {
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .idas-hero-inner,
+  .idas-work-section,
+  .idas-note-section {
+    width: min(calc(100% - 36px), 1240px);
+  }
+
+  .idas-hero h1 {
+    font-size: clamp(46px, 14vw, 74px);
+  }
+
+  .idas-work-section {
+    padding-block: 76px;
+  }
+
+  .idas-card-copy {
+    padding: 24px;
+  }
+}
