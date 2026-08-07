@@ -1016,6 +1016,14 @@
   margin-top: 13px;
 }
 
+.lesson-resource-note {
+  display: block;
+  min-height: 44px;
+  color: var(--course-muted);
+  font-size: 17px;
+  font-weight: 900;
+}
+
 .lesson-resource-list a {
   display: flex;
   align-items: center;

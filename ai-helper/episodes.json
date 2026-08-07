@@ -120,6 +120,326 @@
     "managedBy": "blog-content"
   },
   {
+    "id": "EP009",
+    "title": "請 ChatGPT 出幾道課堂小測驗題",
+    "summary": "請 ChatGPT 根據今天上課的重點，出 3～5 題下課前可以直接開口問的快問快答，並附上參考答案。 這不是正式考試，也不需要計分。目的是用最後 5 分鐘，快速確認學生哪些地方聽懂了、哪些地方還需要再說一次。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP009.md",
+    "coverFile": "EP009.png",
+    "publishedAt": "2026-08-07T13:34:00.567Z"
+  },
+  {
+    "id": "EP010",
+    "title": "請 ChatGPT 幫忙看學生的作答，給回饋建議",
+    "summary": "把學生的回答去掉姓名與身分資料，再請 ChatGPT 找出常見誤解，提供下一堂課可以怎麼教的建議。 ChatGPT 在這裡是協助老師整理線索，不是替學生打成績。是否正確、要不要調整教法，最後都由老師判斷。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP010.md",
+    "coverFile": "EP010.png",
+    "publishedAt": "2026-08-07T13:34:00.560Z"
+  },
+  {
+    "id": "EP011",
+    "title": "請 ChatGPT 幫我設計一個分組活動",
+    "summary": "告訴 ChatGPT 班級人數、組數、時間與活動主題，請它排出一個每位學生都有明確任務的分組活動。 這一集不處理複雜的分組工具。先拿到一個能在教室裡直接試做的簡單版本就好。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP011.md",
+    "coverFile": "EP011.png",
+    "publishedAt": "2026-08-07T13:34:00.555Z"
+  },
+  {
+    "id": "EP012",
+    "title": "請 ChatGPT 幫忙把活動改成適合不同程度的學生",
+    "summary": "把一個已經有的課堂活動，改成「基礎版」和「進階版」。兩個版本教同一個主題，只是給學生的提示和挑戰不同。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP012.md",
+    "coverFile": "EP012.png",
+    "publishedAt": "2026-08-07T13:34:00.549Z"
+  },
+  {
+    "id": "EP013",
+    "title": "請 ChatGPT 幫忙寫一則給家長的聯絡簿留言",
+    "summary": "把今天真的發生的上課情況，整理成一則簡短、正向、家長看得懂的聯絡簿留言草稿。 ChatGPT 可以幫忙把句子寫順，但事實是否正確，最後一定要依正式資料核對。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP013.md",
+    "coverFile": "EP013.png",
+    "publishedAt": "2026-08-07T13:34:00.542Z"
+  },
+  {
+    "id": "EP014",
+    "title": "請 ChatGPT 幫忙整理一堂課的重點回顧",
+    "summary": "下課後花一分鐘記下今天的情況，再請 ChatGPT 整理成一份簡短的重點回顧。下次備課前先看這一份，就不用重新回想上次教到哪裡。 這份回顧是給老師自己接續備課用，不是正式評鑑文件，也不是學生個人紀錄。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP014.md",
+    "coverFile": "EP014.png",
+    "publishedAt": "2026-08-07T13:34:00.537Z"
+  },
+  {
+    "id": "EP015",
+    "title": "請 ChatGPT 幫忙想一個課堂小遊戲",
+    "summary": "請 ChatGPT 想一個 不用道具、時間短、馬上能玩的課堂小遊戲 ，再依正式資料核對它適不適合自己的班級。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP015.md",
+    "coverFile": "EP015.png",
+    "publishedAt": "2026-08-07T13:34:00.532Z"
+  },
+  {
+    "id": "EP016",
+    "title": "請 ChatGPT 幫我整理這個模組學到的提問清單",
+    "summary": "把前面學過的問法整理成一張 自己的提問清單 。以後備課時，不必從頭想，只要找到合適的句子、換成自己的資料就能使用。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP016.md",
+    "coverFile": "EP016.png",
+    "publishedAt": "2026-08-07T13:34:00.526Z"
+  },
+  {
+    "id": "EP017",
+    "title": "把一個主題做成完整教材包",
+    "summary": "把一個族語課程主題整理成一套可以修改的教材初稿，內容包含： 學習目標 課堂活動 學習單 口頭小測驗 AI 先協助整理第一版，最後依正式資料核對內容，才能帶進課堂。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP017.md",
+    "coverFile": "EP017.png",
+    "publishedAt": "2026-08-07T13:34:00.520Z"
+  },
+  {
+    "id": "EP018",
+    "title": "把教材包拆成三種程度",
+    "summary": "EP018 教學講義",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP018.md",
+    "coverFile": "EP018.png",
+    "publishedAt": "2026-08-07T13:34:00.514Z"
+  },
+  {
+    "id": "EP019",
+    "title": "做一份可列印學習單與答案",
+    "summary": "EP019 教學講義",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP019.md",
+    "coverFile": "EP019.png",
+    "publishedAt": "2026-08-07T13:34:00.508Z"
+  },
+  {
+    "id": "EP020",
+    "title": "做口說練習腳本",
+    "summary": "EP020 教學講義",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP020.md",
+    "coverFile": "EP020.png",
+    "publishedAt": "2026-08-07T13:34:00.502Z"
+  },
+  {
+    "id": "EP021",
+    "title": "把教材變成一堂遊戲課",
+    "summary": "EP021 教學講義",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP021.md",
+    "coverFile": "EP021.png",
+    "publishedAt": "2026-08-07T13:34:00.496Z"
+  },
+  {
+    "id": "EP022",
+    "title": "做評量規準與回饋句",
+    "summary": "老師能產生口說、聽力或作業的簡單評量規準。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP022.md",
+    "coverFile": "EP022.png",
+    "publishedAt": "2026-08-07T13:34:00.489Z"
+  },
+  {
+    "id": "EP023",
+    "title": "把學生錯誤整理成補救教學",
+    "summary": "老師能把常見錯誤轉成下一堂課的補救活動。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP023.md",
+    "coverFile": "EP023.png",
+    "publishedAt": "2026-08-07T13:34:00.483Z"
+  },
+  {
+    "id": "EP024",
+    "title": "用族語教學提示詞助教產生提示詞",
+    "summary": "今天不請 AI 直接寫教案。 我們先使用「族語教學提示詞助教」，把老師的教學需求整理成一份完整提示詞。完成後，再把這份提示詞複製到 ChatGPT、Gemini 或其他 AI 使用。 這個網站的工作是整理規則，不是替老師判定族語正不正確，也不是直接產生教材。 工具網址： 開啟族語教學提示詞助教",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP024.md",
+    "coverFile": "EP024.png",
+    "publishedAt": "2026-08-07T13:34:00.474Z"
+  },
+  {
+    "id": "EP025",
+    "title": "認識 Gemini Spark：先分清楚技能、工作與排程",
+    "summary": "這一集先不急著做大型自動化。 我們先打開 Gemini Spark，認識三個會反覆用到的區域： 1. 技能 ：把固定的做事方式保存起來。 2. 工作 ：交代一件需要執行的任務。 3. 排程 ：讓重複工作在指定時間執行。 看懂這三個區域後，你才知道下一個備課需求應該放在哪裡。 本集畫面依目前 S...",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP025.md",
+    "coverFile": "EP025.png",
+    "publishedAt": "2026-08-07T13:34:00.465Z"
+  },
+  {
+    "id": "EP026",
+    "title": "檢查 Gemini Spark 是否能用：先看帳號與權限",
+    "summary": "今天先不做完整自動化，也不急著授權所有應用程式。 我們要完成一張「Spark 可用性檢查卡」，確認： 1. 目前帳號看不看得到 Spark。 2. 能不能看到技能、工作與排程入口。 3. 哪些應用程式已連結，哪些還沒有。 4. 如果功能不見了，下一步要記錄什麼。 Spark 會受到帳號類型、管...",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP026.md",
+    "coverFile": "EP026.png",
+    "publishedAt": "2026-08-07T13:34:00.458Z"
+  },
+  {
+    "id": "EP027",
+    "title": "用 Spark 建立族語老師專屬 Skill",
+    "summary": "這一集要在 Gemini Spark 裡建立一個自己的 Skill。 Skill 可以先記住一套固定工作方式。之後老師要整理教材時，就不用每次重新貼一大段規則。 今天做完，你會有： 一個可以重複使用的 Skill 一段可以直接貼上的使用說明 一個能提醒 AI「只能整理，不能自行補族語內容」的工作規則",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP027.md",
+    "coverFile": "EP027.png",
+    "publishedAt": "2026-08-07T13:34:00.445Z"
+  },
+  {
+    "id": "EP028",
+    "title": "用 Spark 整理 Drive 與教學文件",
+    "summary": "這一集要把分散在雲端資料夾裡的文章、圖片和表格，整理成一份老師看得懂的教材清單，再整理成備課草稿與交接卡。 今天先使用「示範檔名」練習，不直接處理學生資料，也不讓 Spark 自己修改或發布檔案。 完成後會得到： 一份有來源的教材清單。 一份保持草稿狀態的備課文件草稿。 一張可以交給下一位工作...",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP028.md",
+    "coverFile": "EP028.png",
+    "publishedAt": "2026-08-07T13:34:00.437Z"
+  },
+  {
+    "id": "EP029",
+    "title": "用 Spark 整理課程詢問與回信草稿",
+    "summary": "課程詢問一多，很容易漏掉問題，或不小心把還沒確認的日期、費用和名額寫出去。 這一集用三則去識別化的假詢問，練習一條比較穩的流程： 先分類，再標出待確認資訊，最後才產出不會自動寄出的回信草稿。 完成後會得到： 一份課程詢問分類表。 一份待確認資訊表。 一封保持草稿狀態的回信。 一張交接卡。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP029.md",
+    "coverFile": "EP029.png",
+    "publishedAt": "2026-08-07T13:34:00.429Z"
+  },
+  {
+    "id": "EP030",
+    "title": "用 Spark 整理活動報名與需求",
+    "summary": "今天用 Gemini Spark 整理一份 去識別化的活動報名資料 。 我們會把零散的報名需求整理成： 工作人員檢查表 活動前確認項目 活動前通知草稿 一張交接卡 今天不寄信、不發布，也不把真實個人資料交給 AI。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP030.md",
+    "coverFile": "EP030.png",
+    "publishedAt": "2026-08-07T13:34:00.418Z"
+  },
+  {
+    "id": "EP031",
+    "title": "用 Spark 設定族語文化新聞排程",
+    "summary": "這一集不把新聞直接變成教材，也不請 AI 自動翻譯族語。 我們要做的是一個備課前的小工具： 每週從指定的公開官方網站整理最多 5 則資料，做成一張可以快速閱讀的資料卡。 這樣老師不用每週重新找入口，也不會把還沒查證的內容直接放進課堂。 完成後，你會有： 一個每週執行的 Spark 工作 一次實...",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP031.md",
+    "coverFile": "EP031.png",
+    "publishedAt": "2026-08-07T13:34:00.410Z"
+  },
+  {
+    "id": "EP032",
+    "title": "用 Spark 管理 Calendar Keep Tasks 教學進度",
+    "summary": "備課時，事情常常同時出現在腦中：哪一天要上課、哪個教材點子要記住、下一步要完成什麼。 如果全部混在一起，最後會變成「我知道有事情，但不知道現在該做哪一件」。 這一集先不碰真實帳號，也不直接建立任何事件、備忘或待辦。我們只用一組示範資料，練習把工作分到三個位置，再做一張建立前確認表。 今天完成後...",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP032.md",
+    "coverFile": "EP032.png",
+    "publishedAt": "2026-08-07T13:34:00.403Z"
+  },
+  {
+    "id": "EP033",
+    "title": "Spark 任務收尾與權限檢查",
+    "summary": "Spark 顯示「完成」，不代表我們已經知道成果在哪裡，也不代表排程和權限已經處理好。 今天用一個小型示範任務，練習在工作結束時回答四個問題： 1. 成果在哪裡？ 2. 使用了哪些來源？ 3. 還有什麼地方沒有確認？ 4. 有沒有不需要的排程、通知或權限？ 這一集只做紀錄和檢查，不讀取或修改真...",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP033.md",
+    "coverFile": "EP033.png",
+    "publishedAt": "2026-08-07T13:34:00.395Z"
+  },
+  {
+    "id": "EP034",
+    "title": "生圖前先寫教材圖需求",
+    "summary": "這一集先 不要急著叫 AI 畫圖 。 我們先花幾分鐘，把「這張圖片到底要拿來教什麼」寫清楚。 完成後，你會得到： 一張教材圖需求小卡 ＋ 一段可以直接貼進 AI 生圖工具的提示文字。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP034.md",
+    "coverFile": "EP034.png",
+    "publishedAt": "2026-08-07T13:34:00.387Z"
+  },
+  {
+    "id": "EP035",
+    "title": "角色一致性與阿桃參考圖",
+    "summary": "這一集先不要急著一直生很多圖。 我們先幫自己的教材，建立一個固定的教學 IP。 這個 IP 可以是一位小老師、一隻小動物角色，或是一個固定出現的教材夥伴。重點不是畫得多華麗，而是讓它在不同教材裡，看起來都像同一個角色。",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP035.md",
+    "coverFile": "EP035.png",
+    "publishedAt": "2026-08-07T13:34:00.379Z"
+  },
+  {
+    "id": "EP036",
+    "title": "免費生圖網站怎麼選？",
+    "summary": "網路上的 AI 生圖網站很多。 有人推薦 ChatGPT，有人用 Gemini，也有人說 Bing Image Creator、Adobe Firefly 很好用。 初學者最容易發生的事情就是： 還沒開始做教材，就先花很多時間研究哪一個 AI 最厲害。 其實不用。 今天我們只學一件事： 根據你...",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP036.md",
+    "coverFile": "EP036.png",
+    "publishedAt": "2026-08-07T13:34:00.370Z"
+  },
+  {
+    "id": "EP037",
+    "title": "生成生活情境背景圖",
+    "summary": "EP037 教學講義",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP037.md",
+    "coverFile": "EP037.png",
+    "publishedAt": "2026-08-07T13:34:00.363Z"
+  },
+  {
+    "id": "EP038",
+    "title": "把草稿變成乾淨教材插圖",
+    "summary": "EP038 教學講義",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP038.md",
+    "coverFile": "EP038.png",
+    "publishedAt": "2026-08-07T13:34:00.354Z"
+  },
+  {
+    "id": "EP039",
+    "title": "封面主視覺與中文字校對",
+    "summary": "EP039 教學講義",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP039.md",
+    "coverFile": "EP039.png",
+    "publishedAt": "2026-08-07T13:34:00.343Z"
+  },
+  {
+    "id": "EP040",
+    "title": "先建立生圖文化安全判斷指南",
+    "summary": "這一集先不要急著叫 AI 生圖。 我們先用 ChatGPT 做一份「生圖前判斷指南」，幫助老師分辨：哪些畫面可以直接用 AI 生成，哪些畫面需要先查資料或請熟悉文化內容的人確認。 完成後，你會有： 一份綠色、黃色、紅色的生圖判斷指南。 一張可以在生圖前先看的檢查表。 一段可以保存、之後重複使用...",
+    "embedUrl": null,
+    "srtFile": null,
+    "handoutFile": "EP040.md",
+    "coverFile": "EP040.png",
+    "publishedAt": "2026-08-07T13:34:00.323Z"
+  },
+  {
     "id": "SP001",
     "contentType": "handout",
     "contentLabel": "圖文講義",
