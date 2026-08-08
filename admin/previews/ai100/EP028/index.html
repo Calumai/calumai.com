@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <script>
+    if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
+      location.replace("https://" + location.host + location.pathname + location.search + location.hash);
+    }
+  </script>
+  <meta name="description" content="用 Spark 整理 Drive 與教學文件 教學講義：老師能讓 Spark 依照指定的 Drive 資料夾整理教材清單，並產出 Docs、Slides 或 Sheets 的初…">
+  <meta name="theme-color" content="#f7f3ec">
+  <title>[預覽] EP028 用 Spark 整理 Drive 與教學文件｜講義｜CALUMAI</title>
+  <link rel="stylesheet" href="/styles.css?v=20260717-4">
+  <link rel="stylesheet" href="/ai-helper/ai-helper.css?v=20260722-3">
+  <script src="/assets/lucide.min.js" defer></script>
+  <script src="/app.js" defer></script>
+  <script src="/ai-helper/handout.js?v=20260722-3" defer></script>
+</head>
+<body class="course-site course-handout" data-episode="EP028">
+  <a class="skip-link" href="#lesson-content">跳到講義內容</a>
+
+  <header class="site-header course-header" data-header>
+    <a class="brand course-brand" href="/" aria-label="CALUMAI 首頁">
+      <img src="/assets/calumai-logo-mark.png" alt="" width="96" height="96">
+      <span>CALUMAI</span>
+    </a>
+    <button class="menu-toggle icon-button course-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle><i data-lucide="menu" aria-hidden="true"></i></button>
+    <nav class="primary-nav course-nav" id="primary-nav" aria-label="主要導覽" data-nav>
+      <a href="/games/">遊戲介紹</a>
+      <a href="/blog/">製作心得</a>
+      <a href="/ai-helper/" aria-current="page">備課小幫手</a>
+      <a class="nav-cta" href="/tools/">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+    </nav>
+  </header>
+
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+
+  <main class="lesson-main">
+    <section class="course-shell" style="padding-top:18px;">
+      <p class="course-eyebrow">PREVIEW ONLY</p>
+      <p class="lesson-lead" style="margin-top:6px;">這是發布前預覽頁，不會被搜尋引擎收錄。請確認標題、段落、表格與圖片都正常，再改成 published。</p>
+    </section>
+    <section class="lesson-hero">
+      <div class="course-shell">
+        <nav class="lesson-breadcrumb" aria-label="麵包屑">
+          <a href="/">CALUMAI</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <a href="/ai-helper/">備課小幫手</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <span>EP028 講義</span>
+        </nav>
+
+        <div class="lesson-hero-grid">
+          <div>
+            <p class="course-eyebrow">EP028 · Gemini</p>
+            <h1>用 Spark 整理 Drive 與教學文件</h1>
+            <p class="lesson-lead">老師能讓 Spark 依照指定的 Drive 資料夾整理教材清單，並產出 Docs、Slides 或 Sheets 的初稿供老師審核。</p>
+            <div class="lesson-meta-row">
+              <span><i data-lucide="file-text" aria-hidden="true"></i>圖文講義</span>
+              <span><i data-lucide="signal-low" aria-hidden="true"></i>零基礎</span>
+              <span><i data-lucide="target" aria-hidden="true"></i>一次一招</span>
+            </div>
+          </div>
+          <figure class="lesson-cover-card">
+            <img src="covers/EP028.png" alt="用 Spark 整理 Drive 與教學文件 課程封面" onerror="this.onerror=null;this.src='../../assets/calumai-logo-mark.png';this.classList.add('is-fallback-cover');">
+            <figcaption class="lesson-cover-info"><small>本集任務</small><strong>老師能讓 Spark 依照指定的 Drive 資料夾整理教材清單，並產出 Doc…</strong></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-content-section" id="lesson-content">
+      <div class="course-shell lesson-layout">
+        <aside class="lesson-sidebar" aria-label="講義工具">
+          <div class="lesson-side-card lesson-toc-card"><strong>本集導覽</strong><nav class="lesson-toc" data-lesson-toc></nav></div>
+          <div class="lesson-side-card">
+            <strong>學習進度</strong>
+            <button class="lesson-complete" type="button" aria-pressed="false" data-complete-lesson>標記本集已完成</button>
+            <div class="lesson-resource-list">
+              
+              
+              <a href="javascript:window.print()"><i data-lucide="printer" aria-hidden="true"></i>列印講義</a>
+            </div>
+          </div>
+        </aside>
+
+        <div>
+          <article class="lesson-body" data-lesson-body><h1>EP028｜用 Spark 整理 Drive 與教學文件</h1>
+<h2>今天只做一件事</h2>
+<p>這一集要把分散在雲端資料夾裡的文章、圖片和表格，整理成一份老師看得懂的教材清單，再整理成備課草稿與交接卡。</p>
+<p>今天先使用「示範檔名」練習，不直接處理學生資料，也不讓 Spark 自己修改或發布檔案。</p>
+<p>完成後會得到：</p>
+<ul><li>一份有來源的教材清單。</li><li>一份保持草稿狀態的備課文件草稿。</li><li>一張可以交給下一位工作者的交接卡。</li></ul>
+<h2>先準備</h2>
+<ul><li>一個指定的 Drive 資料夾，不要一開始就開放整個雲端硬碟。</li><li>3 到 5 個示範檔案：文章、圖片、表格都可以。</li><li>檔名規則，例如 <code>EP028_主題_用途_日期</code>。</li><li>不含學生姓名、照片、電話或其他個資的測試資料。</li></ul>
+<p>本集截圖使用以下示範檔名，不代表你的 Drive 裡一定有完全相同的檔案：</p>
+<pre><code class="language-text">articles/EP028_問候文章_20260807.md
+images/EP028_教室門口.png
+tables/EP028_教材清單_20260807.csv</code></pre>
+<h2>STEP 1｜進入 Spark 的「工作」</h2>
+<p>打開 Spark，從側邊選單進入「工作」。你會看到「讓 Gemini Spark 為你效勞」的任務輸入區。</p>
+<figure><img src="assets/EP028/EP028_step01_spark_work.png" alt="Spark 工作頁的任務輸入區" loading="lazy"></figure>
+<blockquote>圖說：先進入 Spark 的「工作」，後面所有任務都從這個輸入區開始。</blockquote>
+<h2>STEP 2｜先說清楚資料夾範圍</h2>
+<p>不要只說「幫我整理雲端資料」。要先寫清楚 Spark 只能看哪個資料夾，以及要整理哪些欄位。</p>
+<p>可直接複製：</p>
+<pre><code class="language-text">請只整理指定的示範資料夾：
+AI族語備課示範/EP028_Drive整理示範
+
+示範檔案：
+- articles/EP028_問候文章_20260807.md
+- images/EP028_教室門口.png
+- tables/EP028_教材清單_20260807.csv
+
+請輸出教材清單，欄位包含：
+檔名、檔案類型、可能用途、是否像最新版本、需要老師確認的地方。
+
+限制：
+- 不要搜尋其他資料夾。
+- 不要修改、移動或刪除檔案。
+- 不要自行新增族語內容。</code></pre>
+<figure><img src="assets/EP028/EP028_step02_task_prompt.png" alt="Spark 已填入指定資料夾範圍與示範檔名" loading="lazy"></figure>
+<blockquote>圖說：畫面中要看得到指定資料夾、檔案清單和「不要修改檔案」的限制。</blockquote>
+<p>如果你要整理真正的 Drive 資料，請把示範資料夾名稱換成老師已確認可以使用的資料夾，不要把整個雲端硬碟交給 AI 自己搜尋。</p>
+<h2>STEP 3｜送出任務，先看教材清單</h2>
+<p>按下「傳送訊息」，等 Spark 回覆。第一輪只看它有沒有把檔名、類型、用途和待確認事項列出來。</p>
+<figure><img src="assets/EP028/EP028_step03_material_list.png" alt="Spark 產出的教材清單結果" loading="lazy"></figure>
+<blockquote>圖說：教材清單要保留原始檔名，並把族語、版本與文化內容留給老師確認。</blockquote>
+<p>這一輪先不要急著叫 Spark 寫完整教案。清單的用途是先知道「有哪些資料、資料從哪裡來、哪些還不能直接用」。</p>
+<h2>STEP 4｜請 Spark 產出備課草稿</h2>
+<p>看過清單後，再輸入下一個任務。這次仍然只產出草稿，不直接建立公開文件。</p>
+<p>可直接複製：</p>
+<pre><code class="language-text">請根據剛剛的教材清單，建立一份備課文件草稿。
+
+文件包含：
+1. 本次教材資料來源
+2. 可用素材清單
+3. 初步課堂流程
+4. 需要補充資料的項目
+5. 不建議使用的檔案與原因
+
+請保持草稿狀態，不要發布，也不要自行新增族語內容。</code></pre>
+<figure><img src="assets/EP028/EP028_step04_docs_draft_prompt.png" alt="Spark 已填入備課草稿任務" loading="lazy"></figure>
+<blockquote>圖說：在送出前，先確認任務要求的是「草稿」，不是發布或覆蓋原始檔案。</blockquote>
+<h2>STEP 5｜檢查備課草稿</h2>
+<p>送出後，先看草稿開頭和來源段落。確認它有保留資料夾位置與原始檔名，也確認族語內容有標示待補，而不是 AI 自己補上去。</p>
+<figure><img src="assets/EP028/EP028_step05_docs_draft.png" alt="Spark 產出的備課文件草稿" loading="lazy"></figure>
+<blockquote>圖說：草稿要看得到來源、可用素材、課堂流程和【待老師補充】項目。</blockquote>
+<p>這份內容可以複製到 Docs 再由老師整理，但目前仍是草稿。正式放進教材前，要再核對來源、圖片授權、課程流程和族語資料。</p>
+<h2>STEP 6｜把清單與草稿整理成交接卡</h2>
+<p>接著請 Spark 只保留交接需要的欄位：</p>
+<pre><code class="language-text">請把剛剛的教材清單與備課草稿整理成一張交接卡，只保留：
+資料夾位置、本次整理檔案數、可用教材、待確認教材、不使用教材、下一步。
+
+請保留檔名與來源，不要發布，不要自行新增族語內容。</code></pre>
+<figure><img src="assets/EP028/EP028_step06_handoff_prompt.png" alt="Spark 已填入交接卡任務" loading="lazy"></figure>
+<blockquote>圖說：交接卡要保留檔名、來源與下一步，不要只剩一段沒有來源的摘要。</blockquote>
+<h2>STEP 7｜確認交接卡可以交給下一位工作者</h2>
+<p>送出後，確認交接卡至少有：</p>
+<ul><li>資料夾位置。</li><li>本次整理檔案數。</li><li>可用教材與來源。</li><li>待確認教材。</li><li>不使用教材與原因。</li><li>下一步由誰確認或補充。</li></ul>
+<figure><img src="assets/EP028/EP028_step07_handoff_card.png" alt="Spark 產出的教材清單交接卡" loading="lazy"></figure>
+<blockquote>圖說：交接卡的重點是讓下一位工作者不用重新猜資料從哪裡來、還缺什麼。</blockquote>
+<h2>如果 Spark 找到太多資料</h2>
+<p>先不要繼續往下做。把資料夾範圍縮小，只留下這一集要用的示範資料，再重新測試。</p>
+<h2>如果結果只有摘要，沒有檔名</h2>
+<p>補一句：</p>
+<pre><code class="language-text">請保留每一個原始檔名與相對路徑，不要只輸出摘要。</code></pre>
+<h2>如果草稿出現 AI 自行補寫的族語</h2>
+<p>那段不能直接使用。請刪掉猜測內容，回到正式資料核對；必要時在任務裡寫明「資料不足請標示【待老師補充】」。</p>
+<h2>完成前檢查</h2>
+<ul><li>[ ] Spark 只處理指定資料夾。</li><li>[ ] 任務中有保留檔名與相對路徑。</li><li>[ ] 沒有要求 Spark 移動、刪除或覆蓋原始檔。</li><li>[ ] 教材清單有列出待確認事項。</li><li>[ ] 備課草稿有保留來源與草稿狀態。</li><li>[ ] 交接卡有可用教材、待確認教材、不使用教材與下一步。</li><li>[ ] 族語、拼寫、發音與文化內容沒有交給 AI 自行判定。</li><li>[ ] 截圖沒有露出私人帳號、學生個資或不公開資料。</li></ul>
+<h2>今天記住一句話就好</h2>
+<p><strong>先限制資料範圍，再整理來源，最後才做草稿與交接卡。</strong></p></article>
+
+          <div class="lesson-next">
+            <div><small>完成 EP028</small><strong>回到課程首頁，繼續下一個小任務。</strong></div>
+          <a href="/ai-helper/">回課程首頁<i data-lucide="arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer course-footer">
+    <div class="shell footer-bottom"><p>© CALUMAI · AI 族語備課小妙招</p><nav><a href="/ai-helper/">所有課程</a><a href="/">CALUMAI 首頁</a></nav><p>EP028</p></div>
+  </footer>
+</body>
+</html>

@@ -176,7 +176,7 @@
       missingReasons: problems.map((problem) => problem.message),
       inboxDisposition,
       inboxDispositionLabel,
-      canImport: !imported && problems.length === 0,
+      canImport: problems.length === 0,
     };
   }
 
@@ -332,6 +332,20 @@
       return { ...state, articles };
     }
 
+    async listEpisodes() {
+      const state = await this.repositoryState(CONTENT_REPO);
+      const episodeEntries = state.entries.filter((entry) => (
+        entry.type === "blob"
+        && /^episodes\/(?:EP|SP|GM)\d{3}\/episode\.md$/i.test(entry.path)
+      ));
+      const episodes = await Promise.all(episodeEntries.map(async (entry) => {
+        const id = entry.path.split("/")[1].toUpperCase();
+        const raw = await this.blobText(CONTENT_REPO, entry.sha);
+        return { id, raw, episodeSha: entry.sha };
+      }));
+      return { ...state, episodes };
+    }
+
     async loadArticle(id) {
       const state = await this.repositoryState(CONTENT_REPO);
       const articlePath = `posts/${id}/article.md`;
@@ -341,6 +355,20 @@
       const prefix = `posts/${id}/`;
       const files = state.entries.filter((entry) => entry.type === "blob" && entry.path.startsWith(prefix));
       return { ...state, id, raw, articleSha: articleEntry.sha, files };
+    }
+
+    async loadEpisode(id) {
+      const episodeId = String(id || "").trim().toUpperCase();
+      if (!/^(?:EP|SP|GM)\d{3}$/.test(episodeId)) throw new GithubError("講義編號格式不正確。", 422);
+      const state = await this.repositoryState(CONTENT_REPO);
+      const episodePath = `episodes/${episodeId}/episode.md`;
+      const episodeEntry = state.entries.find((entry) => entry.type === "blob" && entry.path.toUpperCase() === episodePath.toUpperCase());
+      if (!episodeEntry) throw new GithubError("這份講義已不存在，請回講義清單重新整理。", 404);
+      const folderName = episodeEntry.path.split("/")[1];
+      const prefix = `episodes/${folderName}/`;
+      const raw = await this.blobText(CONTENT_REPO, episodeEntry.sha);
+      const files = state.entries.filter((entry) => entry.type === "blob" && entry.path.startsWith(prefix));
+      return { ...state, id: episodeId, folderName, raw, episodeSha: episodeEntry.sha, files };
     }
 
     async createBlob(file) {
@@ -480,7 +508,6 @@
     }
 
     async importInboxSubmission(row, core) {
-      if (row.imported) throw new GithubError("這份投稿已經在文章清單裡。", 409);
       const sourceArticle = findInboxFile(row.id, row.files, "article.md");
       const raw = sourceArticle ? await this.blobText(INBOX_REPO, sourceArticle.sha) : "";
       const inspection = inspectInboxSubmission({ ...row, raw }, core);

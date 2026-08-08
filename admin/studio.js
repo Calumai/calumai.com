@@ -10,6 +10,12 @@
   const core = window.CalumAiStudioCore;
   const github = window.CalumAiGithub;
   const CATEGORIES = ["製作心得", "遊戲", "AI 教學", "族語教學", "Podcast", "自動化", "幕後花絮"];
+  const EPISODE_TRACKS = [
+    ["intro", "導論／其他"],
+    ["chatgpt", "ChatGPT"],
+    ["gemini", "Gemini"],
+    ["notebooklm", "NotebookLM / Gemini Book"],
+  ];
   const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
   const MAX_IMAGE_BATCH_COUNT = 20;
   const MAX_PENDING_IMAGE_COUNT = 30;
@@ -30,6 +36,10 @@
     user: null,
     route: "articles",
     articles: [],
+    episodes: [],
+    episodesLoaded: false,
+    episodeFilter: "all",
+    episodeQuery: "",
     filter: "all",
     query: "",
     inbox: [],
@@ -39,6 +49,7 @@
     loginError: "",
     pageError: "",
     editor: null,
+    editorKind: "article",
     loaded: null,
     dirty: false,
     editorRevision: 0,
@@ -65,6 +76,10 @@
     lastArticleSyncAt: 0,
     articleRefreshGeneration: 0,
     articleOpenGeneration: 0,
+    episodeRefreshGeneration: 0,
+    episodeOpenGeneration: 0,
+    lastEpisodeSyncAt: 0,
+    episodeImageInsertOffset: null,
   };
 
   function escape(value) {
@@ -167,8 +182,20 @@
     };
   }
 
+  function isEditorRoute(route = state.route) {
+    return route === "editor" || route === "episode-editor";
+  }
+
+  function editorBasePrefix(article = state.editor) {
+    if (!article?.id) return "";
+    const folder = state.editorKind === "episode" ? (state.loaded?.folderName || article.id) : article.id;
+    return state.editorKind === "episode" ? `episodes/${folder}/` : `posts/${folder}/`;
+  }
+
   function localDraftKey() {
-    return `calumai-studio:draft:${state.editor?.id || "new"}`;
+    return state.editorKind === "episode"
+      ? `calumai-studio:episode:draft:${state.editor?.id || "new"}`
+      : `calumai-studio:draft:${state.editor?.id || "new"}`;
   }
 
   function recoveryPendingAssets() {
@@ -181,6 +208,10 @@
       title: state.editor.title,
       excerpt: state.editor.excerpt,
       category: state.editor.category,
+      contentType: state.editor.contentType,
+      track: state.editor.track,
+      summary: state.editor.summary,
+      youtubeUrl: state.editor.youtubeUrl,
       featureImage: state.editor.featureImage,
       featureImageAlt: state.editor.featureImageAlt,
       body: state.editor.body,
@@ -200,7 +231,7 @@
     try {
       const record = {
         savedAt: new Date().toISOString(),
-        baseSha: state.loaded?.articleSha || "",
+        baseSha: state.loaded?.articleSha || state.loaded?.episodeSha || "",
         article: state.editor,
       };
       if (state.recovery?.article) {
@@ -223,7 +254,7 @@
 
   function blockEditorTransition(message) {
     state.pageError = message;
-    state.route = "editor";
+    state.route = state.editorKind === "episode" ? "episode-editor" : "editor";
     render();
     focusMain();
   }
@@ -233,7 +264,7 @@
     state.draftTimer = 0;
     if (!state.editor) return true;
 
-    if (state.route === "editor") syncEditorFromDom();
+    if (isEditorRoute()) syncEditorFromDom();
     if (blockPendingAssets && (state.pendingAssets.size || recoveryPendingAssets().size)) {
       if (!persistLocalDraftNow()) {
         blockEditorTransition("本機草稿儲存失敗，已停止切換。請先複製文章內容或釋放瀏覽器儲存空間後再試。");
@@ -247,7 +278,7 @@
     if (
       confirmLeave &&
       state.dirty &&
-      state.route === "editor" &&
+      isEditorRoute() &&
       !window.confirm("這篇還有尚未存檔的文字。要先保留本機草稿並離開嗎？")
     ) {
       return false;
@@ -266,9 +297,12 @@
     }
   }
 
-  function findLocalDraft(id, baseSha) {
+  function findLocalDraft(id, baseSha, kind = state.editorKind) {
     try {
-      const raw = localStorage.getItem(`calumai-studio:draft:${id || "new"}`);
+      const key = kind === "episode"
+        ? `calumai-studio:episode:draft:${id || "new"}`
+        : `calumai-studio:draft:${id || "new"}`;
+      const raw = localStorage.getItem(key);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
       parsed.conflict = (parsed.baseSha || "") !== (baseSha || "");
@@ -410,10 +444,11 @@
       <div class="brand"><span class="brand-mark" aria-hidden="true">CA</span><span class="brand-copy">CalumAi<small>網站發文台</small></span></div>
       <nav class="studio-nav" aria-label="管理台功能">
         <button class="nav-button" type="button" data-route="articles" aria-current="${state.route === "articles" ? "page" : "false"}"><span class="nav-symbol" aria-hidden="true">文</span>文章</button>
+        <button class="nav-button" type="button" data-route="episodes" aria-current="${state.route === "episodes" || state.route === "episode-editor" ? "page" : "false"}"><span class="nav-symbol" aria-hidden="true">課</span><span class="nav-desktop-prefix">AI-100&nbsp;</span>講義</button>
         <button class="nav-button" type="button" data-route="inbox" aria-current="${state.route === "inbox" ? "page" : "false"}"><span class="nav-symbol" aria-hidden="true">收</span>收件匣${inboxCount ? `<span class="nav-count">${inboxCount}</span>` : ""}</button>
         <button class="nav-button" type="button" data-route="advanced" aria-current="${state.route === "advanced" ? "page" : "false"}"><span class="nav-symbol" aria-hidden="true">設</span>其他內容</button>
       </nav>
-      <div class="sidebar-footer"><strong>${escape(state.user?.name || state.user?.login || "已登入")}</strong>文章存在 GitHub，換電腦登入後也看得到。<button type="button" class="button button--quiet button--small logout-button" data-action="logout">登出這台裝置</button></div>
+      <div class="sidebar-footer"><strong>${escape(state.user?.name || state.user?.login || "已登入")}</strong>文章與講義存在 GitHub，換電腦登入後也看得到。<button type="button" class="button button--quiet button--small logout-button" data-action="logout">登出這台裝置</button></div>
     </aside>`;
   }
 
@@ -429,7 +464,7 @@
     root.innerHTML = `<main class="login-page"><section class="panel login-card">
       <div class="login-logo" aria-hidden="true">CA</div>
       <h1>CalumAi 網站發文台</h1>
-      <p>不用找資料夾，也不用開指令視窗。登入後就能寫文章、放圖片、預覽，再決定要不要發布。</p>
+      <p>不用找資料夾，也不用開指令視窗。登入後就能改文章與 AI-100 講義、放圖片、預覽，再決定要不要發布。</p>
       ${state.loginError ? `<div class="error-banner" role="alert">${escape(state.loginError)}</div>` : ""}
       <button class="button button--primary" type="button" data-action="sign-in" ${state.busy ? "disabled" : ""}>${state.busy ? "正在登入…" : "使用 GitHub 登入"}</button>
       <div class="login-note">登入權限只保留在這個分頁的暫存區，重新整理不必重登；結束這個瀏覽工作階段後清除。</div>
@@ -477,13 +512,58 @@
     root.innerHTML = shell(content);
   }
 
+  function episodeTrackLabel(value) {
+    return EPISODE_TRACKS.find(([key]) => key === value)?.[1] || "其他";
+  }
+
+  function episodeRows() {
+    const query = state.episodeQuery.trim().toLowerCase();
+    const rows = state.episodes
+      .filter((episode) => state.episodeFilter === "all" || episode.status === state.episodeFilter)
+      .filter((episode) => !query || `${episode.id} ${episode.title} ${episode.summary} ${episode.track}`.toLowerCase().includes(query))
+      .sort((a, b) => String(a.id).localeCompare(String(b.id), "en", { numeric: true }));
+    if (!rows.length) {
+      return `<div class="empty-state"><strong>${state.episodes.length ? "沒有符合的講義" : "還沒有讀到講義"}</strong><p>${state.episodes.length ? "換一個集數、標題或狀態看看。" : "按右上角同步，從 GitHub 讀取 AI-100 講義。"}</p></div>`;
+    }
+    return rows.map((episode) => {
+      const info = statusInfo(episode.status);
+      const publicOption = episode.status === "published"
+        ? `<option value="public">開啟公開講義</option>`
+        : "";
+      return `<div class="episode-row">
+        <button class="episode-row-main" type="button" data-action="open-episode" data-id="${escape(episode.id)}">
+          <span class="episode-id">${escape(episode.id)}</span>
+          <span class="episode-copy"><strong>${escape(episode.title || "未命名講義")}</strong><span>${escape(episodeTrackLabel(episode.track))} · ${escape(episode.contentType === "video_lesson" ? "影片課程" : "圖文講義")}</span></span>
+          <span class="status-badge" data-tone="${escape(info.tone)}">${escape(info.label)}</span>
+        </button>
+        <label class="episode-menu-label"><span class="sr-only">${escape(episode.id)} 操作</span><select data-episode-menu data-id="${escape(episode.id)}" aria-label="${escape(`${episode.id} 操作`)}"><option value="">操作</option><option value="edit">編輯講義</option>${publicOption}</select></label>
+      </div>`;
+    }).join("");
+  }
+
+  function renderEpisodes() {
+    const content = `<div class="content">
+      <div class="page-heading"><div><h1 tabindex="-1" data-page-heading>AI-100 講義</h1><p>在同一個後台改講義、補步驟圖、預覽與發布。草稿不會出現在網站。</p></div><div class="page-heading-actions"><button class="button" type="button" data-action="refresh-episodes" ${state.loading ? "disabled" : ""}>${state.loading ? "正在同步…" : "同步最新講義"}</button></div></div>
+      ${state.pageError ? `<div class="error-banner" role="alert" tabindex="-1" data-focus-error>${escape(state.pageError)}</div>` : ""}
+      <div class="toolbar-line"><label class="search-wrap"><span class="sr-only">搜尋講義</span><input class="search-input" type="search" value="${escape(state.episodeQuery)}" placeholder="輸入 EP 編號或講義標題" data-episode-search></label>
+        <div class="segment" aria-label="講義狀態">
+          <button type="button" data-episode-filter="all" aria-pressed="${state.episodeFilter === "all"}">全部</button>
+          <button type="button" data-episode-filter="draft" aria-pressed="${state.episodeFilter === "draft"}">草稿</button>
+          <button type="button" data-episode-filter="published" aria-pressed="${state.episodeFilter === "published"}">已公開</button>
+        </div>
+      </div>
+      <section class="panel episode-list" aria-label="AI-100 講義清單" aria-busy="${state.loading}" data-episode-list>${episodeRows()}</section>
+    </div>`;
+    root.innerHTML = shell(content);
+  }
+
   function categoryOptions(current) {
     const values = [...new Set([current, ...CATEGORIES].filter(Boolean))];
     return values.map((value) => `<option value="${escape(value)}" ${value === current ? "selected" : ""}>${escape(value)}</option>`).join("");
   }
 
   function relativeAssetPath(entryPath) {
-    const prefix = state.editor?.id ? `posts/${state.editor.id}/` : "";
+    const prefix = editorBasePrefix();
     return prefix && entryPath.startsWith(prefix) ? entryPath.slice(prefix.length) : entryPath;
   }
 
@@ -491,7 +571,8 @@
     const items = new Map();
     for (const file of state.loaded?.files || []) {
       const relative = relativeAssetPath(file.path);
-      if (/^assets\//i.test(relative)) items.set(relative, { path: relative, url: assetUrlFor(relative), pending: false });
+      const episodeImage = state.editorKind === "episode" && /\.(?:png|jpe?g|webp|gif|avif|svg)$/i.test(relative);
+      if (/^assets\//i.test(relative) || episodeImage) items.set(relative, { path: relative, url: assetUrlFor(relative), pending: false });
     }
     for (const [path, item] of state.pendingAssets) items.set(path, { path, url: item.url, pending: true });
     return [...items.values()].sort((a, b) => a.path.localeCompare(b.path));
@@ -505,21 +586,36 @@
     return String(value || "").trim().replace(/\\/g, "/").replace(/^\.\//, "").split(/[?#]/, 1)[0];
   }
 
+  function canonicalEditorAssetKey(value) {
+    const normalized = decodePath(normalizeAssetKey(value));
+    if (state.editorKind !== "episode" || !state.editor?.id) return normalized;
+    const prefix = `assets/${state.editor.id}/`;
+    return normalized.toLowerCase().startsWith(prefix.toLowerCase())
+      ? `assets/${normalized.slice(prefix.length)}`
+      : normalized;
+  }
+
   function assetUrlFor(value) {
     const normalized = normalizeAssetKey(value);
     if (!normalized) return "";
     if (/^https?:\/\//i.test(normalized)) return normalized;
+    const canonical = canonicalEditorAssetKey(normalized);
     return state.assetUrls.get(normalized)
       || state.assetUrls.get(decodePath(normalized))
       || state.assetUrls.get(encodeURI(decodePath(normalized)))
+      || state.assetUrls.get(canonical)
+      || state.assetUrls.get(encodeURI(canonical))
       || "";
   }
 
   function availableAssetKeys() {
     const keys = new Set();
     for (const item of assetEntries()) {
-      keys.add(normalizeAssetKey(item.path));
-      keys.add(decodePath(normalizeAssetKey(item.path)));
+      const normalized = decodePath(normalizeAssetKey(item.path));
+      keys.add(normalized);
+      if (state.editorKind === "episode" && state.editor?.id && /^assets\//i.test(normalized)) {
+        keys.add(`assets/${state.editor.id}/${normalized.slice("assets/".length)}`);
+      }
     }
     return keys;
   }
@@ -528,22 +624,25 @@
     const available = availableAssetKeys();
     const refs = [...core.extractAssetPaths(state.editor?.body || "")];
     if (state.editor?.featureImage && !/^https?:\/\//i.test(state.editor.featureImage)) refs.push(state.editor.featureImage);
-    return [...new Set(refs.map(normalizeAssetKey))].filter((item) => !available.has(item) && !available.has(decodePath(item)));
+    return [...new Set(refs.map(normalizeAssetKey))].filter((item) => {
+      const canonical = canonicalEditorAssetKey(item);
+      return !available.has(item) && !available.has(decodePath(item)) && !available.has(canonical);
+    });
   }
 
   function previewAssetFailures() {
-    const required = new Set(core.extractAssetPaths(state.editor?.body || "").map((value) => decodePath(normalizeAssetKey(value)).toLowerCase()));
+    const required = new Set(core.extractAssetPaths(state.editor?.body || "").map((value) => canonicalEditorAssetKey(value).toLowerCase()));
     if (state.editor?.featureImage && !/^https?:\/\//i.test(state.editor.featureImage)) {
-      required.add(decodePath(normalizeAssetKey(state.editor.featureImage)).toLowerCase());
+      required.add(canonicalEditorAssetKey(state.editor.featureImage).toLowerCase());
     }
-    return [...state.assetLoadFailures].filter((value) => required.has(decodePath(normalizeAssetKey(value)).toLowerCase()));
+    return [...state.assetLoadFailures].filter((value) => required.has(canonicalEditorAssetKey(value).toLowerCase()));
   }
 
   function unloadedExistingRequiredAssets() {
-    const existing = new Map(assetEntries().map((item) => [decodePath(normalizeAssetKey(item.path)).toLowerCase(), item.path]));
+    const existing = new Map(assetEntries().map((item) => [canonicalEditorAssetKey(item.path).toLowerCase(), item.path]));
     const required = [...core.extractAssetPaths(state.editor?.body || "")];
     if (state.editor?.featureImage && !/^https?:\/\//i.test(state.editor.featureImage)) required.unshift(state.editor.featureImage);
-    return [...new Set(required.map((value) => decodePath(normalizeAssetKey(value)).toLowerCase()))]
+    return [...new Set(required.map((value) => canonicalEditorAssetKey(value).toLowerCase()))]
       .filter((key) => key && existing.has(key) && !assetUrlFor(existing.get(key)));
   }
 
@@ -567,7 +666,7 @@
     if (url) return `<img class="cover-preview" src="${escape(url)}" alt="">`;
     if (state.editor?.featureImage && state.assetsLoading) return `<span class="cover-empty"><strong>正在載入封面…</strong>你可以先編輯文章，不用等圖片。</span>`;
     if (state.editor?.featureImage) return `<span class="cover-empty"><strong>目前讀不到這張封面</strong>可重新選圖，預覽與發布也會再次檢查。</span>`;
-    return `<span class="cover-empty"><strong>選一張文章封面</strong>從電腦選圖，不需要先搬到 assets 資料夾。</span>`;
+    return `<span class="cover-empty"><strong>選一張${state.editorKind === "episode" ? "講義" : "文章"}封面</strong>從電腦選圖，不需要先搬到 assets 資料夾。</span>`;
   }
 
   function assetDescriptionKey(path) {
@@ -654,7 +753,7 @@
 
   function assetListMarkup() {
     const items = assetEntries();
-    if (!items.length) return `<p class="field-hint">目前還沒有文章圖片。</p>`;
+    if (!items.length) return `<p class="field-hint">目前還沒有${state.editorKind === "episode" ? "講義" : "文章"}圖片。</p>`;
     return items.map((item) => {
       const fileName = item.path.replace(/^assets\//, "");
       const description = assetDescriptionFor(item.path);
@@ -669,15 +768,16 @@
   function deploymentMarkup() {
     const deployment = deploymentFor(state.editor?.id);
     if (!deployment) return "";
+    const noun = state.editorKind === "episode" ? "講義" : "文章";
     const steps = [
-      ["saved", "文章與圖片已安全存好"],
+      ["saved", `${noun}與圖片已安全存好`],
       ["building", "正在產生網站頁面"],
       ["deploying", "正在更新 calumai.com"],
       ["live", deployment.mode === "remove" ? "已從網站下架" : "已在網站上線"],
     ];
     const order = { saved: 0, building: 1, deploying: 2, live: 3, failed: -1 };
     const current = order[deployment.stage] ?? 0;
-    const linkLabel = deployment.stage === "failed" ? "查看失敗原因" : deployment.stage === "live" ? "打開公開文章" : "查看發布進度";
+    const linkLabel = deployment.stage === "failed" ? "查看失敗原因" : deployment.stage === "live" ? `打開公開${noun}` : "查看發布進度";
     const retry = deployment.stage === "failed" ? `<button class="button button--small" type="button" data-action="retry-deployment">重新確認發布狀態</button>` : "";
     return `<section class="panel progress-panel" aria-live="polite"><h3>${deployment.stage === "failed" ? "這次發布沒有完成" : "發布進度"}</h3><div class="progress-steps">${steps.map(([key, label], index) => {
       let stepState = index < current ? "done" : index === current ? "active" : "waiting";
@@ -712,7 +812,7 @@
   }
 
   function refreshDeploymentView(articleId) {
-    if (state.route === "editor" && state.editor?.id === articleId) {
+    if (isEditorRoute() && state.editor?.id === articleId) {
       const slot = root.querySelector("[data-deployment-slot]");
       if (slot) slot.innerHTML = deploymentMarkup();
       const status = root.querySelector("[data-current-status]");
@@ -751,7 +851,7 @@
         : `<button class="button button--small" type="button" data-action="save-draft">儲存草稿</button><button class="button button--primary button--small" type="button" data-action="request-publish">發布</button>`}`;
   }
 
-  function renderEditor() {
+  function renderArticleEditor() {
     const focusToken = captureEditorFocus();
     const article = state.editor;
     if (!article) return renderArticles();
@@ -800,8 +900,120 @@
     restoreEditorFocus(focusToken);
   }
 
+  function episodeTrackOptions(current) {
+    return EPISODE_TRACKS.map(([value, label]) => `<option value="${escape(value)}" ${value === current ? "selected" : ""}>${escape(label)}</option>`).join("");
+  }
+
+  function episodeStepSections(body) {
+    const source = String(body || "");
+    const heading = /^#{2,3}\s+(.+)$/gm;
+    const all = [];
+    let match;
+    while ((match = heading.exec(source)) !== null) all.push({ title: match[1].trim(), start: match.index, afterHeading: heading.lastIndex });
+    return all.map((item, index) => ({
+      ...item,
+      end: all[index + 1]?.start ?? source.length,
+    })).filter((item) => /^(?:STEP|步驟)\s*\d+/i.test(item.title));
+  }
+
+  function episodeResultSection(body) {
+    const source = String(body || "");
+    const heading = /^#{2,3}\s+(.+)$/gm;
+    let match;
+    while ((match = heading.exec(source)) !== null) {
+      if (/(?:成品|成果|完成版|完成結果)/.test(match[1])) return { title: match[1].trim(), end: source.length };
+    }
+    return null;
+  }
+
+  function episodeImageGuideMarkup(article) {
+    const steps = episodeStepSections(article.body);
+    const result = episodeResultSection(article.body);
+    const stepRows = steps.length
+      ? steps.map((step) => `<div class="episode-step-row"><span><strong>${escape(step.title)}</strong><small>圖片會插在這個步驟結束前</small></span><button class="button button--small" type="button" data-action="choose-step-image" data-offset="${step.end}">插入圖片</button></div>`).join("")
+      : `<div class="episode-step-empty">目前找不到「STEP 1」或「步驟 1」標題。先在內文補上步驟標題，這裡就會自動出現插圖位置。</div>`;
+    return `<section class="episode-image-guide" aria-label="步驟圖片與成品區">
+      <div class="episode-guide-heading"><div><h2>步驟圖片</h2><p>選對步驟後上傳，圖片會直接放到那一步，不必找 Markdown 位置。</p></div></div>
+      <div class="episode-step-list">${stepRows}</div>
+      <div class="episode-result-row"><span><strong>成品區</strong><small>${result ? `已找到「${escape(result.title)}」` : "尚未建立，按下後會自動加在講義最後"}</small></span><button class="button button--small" type="button" data-action="choose-result-image" data-offset="${result?.end ?? article.body.length}">${result ? "插入成品圖" : "建立並插入成品圖"}</button></div>
+    </section>`;
+  }
+
+  function chooseEpisodeImage(target, result = false) {
+    if (state.editorKind !== "episode" || !state.editor) return false;
+    syncEditorFromDom();
+    let offset = Number(target?.dataset.offset);
+    if (result && !episodeResultSection(state.editor.body)) {
+      state.editor.body = `${String(state.editor.body || "").trim()}\n\n## 成品區\n\n`;
+      const textarea = root.querySelector("[data-body-input]");
+      if (textarea) textarea.value = state.editor.body;
+      offset = state.editor.body.length;
+      markDirty();
+    }
+    state.episodeImageInsertOffset = Number.isFinite(offset) ? offset : state.editor.body.length;
+    root.querySelector(`[data-file-input="${result ? "episode-result" : "episode-step"}"]`)?.click();
+    return true;
+  }
+
+  function episodeEditorActions() {
+    const published = state.editor?.status === "published";
+    return `<button class="button button--small" type="button" data-action="preview">預覽講義</button>
+      ${published
+        ? `<button class="button button--primary button--small" type="button" data-action="request-publish">儲存並更新網站</button>`
+        : `<button class="button button--small" type="button" data-action="save-episode-draft">儲存草稿</button><button class="button button--primary button--small" type="button" data-action="request-publish">發布講義</button>`}`;
+  }
+
+  function renderEpisodeEditor() {
+    const focusToken = captureEditorFocus();
+    const article = state.editor;
+    if (!article) return renderEpisodes();
+    const published = article.status === "published";
+    const info = statusInfo(article.status);
+    const title = article.title || `${article.id} 未命名講義`;
+    const content = `<div class="content content--editor">
+      <div class="page-heading editor-heading"><div><button class="button button--quiet back-button" type="button" data-action="back-to-list">返回講義清單</button><p class="episode-editor-id">${escape(article.id)}</p><h1 tabindex="-1" data-page-heading>${escape(title)}</h1></div><div class="save-state" data-save-state data-tone="${state.dirty ? "warning" : "success"}"><span class="save-dot" aria-hidden="true"></span><span>${state.dirty ? "尚未存到 GitHub" : "已存到 GitHub"}</span></div></div>
+      ${state.pendingAssets.size ? `<div class="pending-banner" role="status"><strong>${state.pendingAssets.size} 張圖片還只在這個分頁。</strong>請先儲存草稿，圖片才會進 GitHub。</div>` : ""}
+      ${state.pageError ? `<div class="error-banner" role="alert" tabindex="-1" data-focus-error>${escape(state.pageError)}${state.conflictDetected ? ` <button class="button button--small" type="button" data-action="reload-conflict">讀取 GitHub 版本並比較</button>` : ""}</div>` : ""}
+      <div class="editor-grid">
+        <section class="panel editor-card">
+          <div class="episode-meta-grid">
+            <label class="field"><span class="field-label">講義標題</span><input type="text" maxlength="120" value="${escape(article.title)}" data-field="title" placeholder="這一集要教什麼？"></label>
+            <label class="field"><span class="field-label">內容類型</span><select data-field="contentType"><option value="handout" ${article.contentType === "handout" ? "selected" : ""}>圖文講義（沒有影片也能發布）</option><option value="video_lesson" ${article.contentType === "video_lesson" ? "selected" : ""}>影片課程（發布前需 YouTube）</option></select></label>
+            <label class="field"><span class="field-label">課程路線</span><select data-field="track">${episodeTrackOptions(article.track)}</select></label>
+            <label class="field"><span class="field-label">YouTube 網址 <span class="field-hint">影片尚未完成可留空</span></span><input type="url" value="${escape(article.youtubeUrl)}" data-field="youtubeUrl" placeholder="https://www.youtube.com/watch?v=..."></label>
+          </div>
+          <label class="field"><span class="field-label">講義摘要 <span class="field-hint">列表與頁首會使用</span></span><textarea data-field="summary" maxlength="360" placeholder="老師看完這集會完成什麼？">${escape(article.summary)}</textarea></label>
+          <div class="episode-meta-grid">
+            <label class="field"><span class="field-label">學習目標</span><textarea data-field="learningGoal" placeholder="老師會學會什麼？">${escape(article.learningGoal)}</textarea></label>
+            <label class="field"><span class="field-label">完成成果</span><textarea data-field="teachingResult" placeholder="最後會做出什麼？">${escape(article.teachingResult)}</textarea></label>
+          </div>
+          ${episodeImageGuideMarkup(article)}
+          <div class="field"><span class="field-label" id="episode-body-label">講義內文 <span class="field-hint">步驟、圖說與提示文字都寫在這裡</span></span>
+            <div class="markdown-wrap"><div class="markdown-toolbar" aria-label="講義文字工具">
+              <button class="toolbar-button" type="button" data-format="heading">小標題</button><button class="toolbar-button" type="button" data-format="bold">粗體</button><button class="toolbar-button" type="button" data-format="quote">提醒</button><button class="toolbar-button" type="button" data-format="list">清單</button><span class="toolbar-separator" aria-hidden="true"></span><button class="toolbar-button" type="button" data-action="choose-body-images">游標處放圖</button><button class="toolbar-button" type="button" data-action="choose-markdown">匯入 Markdown</button>
+            </div><textarea class="article-body-input" data-field="body" data-body-input aria-labelledby="episode-body-label" placeholder="從今天只做一件事開始…">${escape(article.body)}</textarea></div>
+          </div>
+        </section>
+        <aside class="editor-aside">
+          <section class="panel aside-card"><h2>封面</h2><p>只上傳這一集確定對題的正式封面。</p><button class="cover-drop" type="button" data-action="choose-cover" aria-label="選擇或更換講義封面">${coverMarkup()}</button><div class="cover-actions"><button class="button button--small" type="button" data-action="choose-cover">更換</button>${article.featureImage ? `<button class="button button--quiet button--small" type="button" data-action="remove-cover">移除</button>` : ""}</div></section>
+          <section class="panel aside-card"><h2>儲存與發布</h2><p>${published ? "這一集目前公開；儲存後會更新網站。" : "目前是草稿，只有你在後台看得到。"}</p><span class="status-badge" data-tone="${escape(info.tone)}">${escape(info.label)}</span>${published ? `<div class="public-link-row"><a class="button button--small" href="/ai-helper/handouts/${escape(article.id)}.html" target="_blank" rel="noopener">開啟公開講義</a></div><div class="danger-zone"><button class="button button--quiet button--small" type="button" data-action="request-unpublish">暫時下架</button></div>` : ""}</section>
+          <div data-deployment-slot>${deploymentMarkup()}</div>
+          <section class="panel aside-card"><h2>本集圖片</h2><p>圖片可再次插入；正式發布前請把圖片說明補清楚。</p><div class="asset-toolbar"><button class="button button--small" type="button" data-action="choose-body-images">上傳圖片</button><button class="button button--small" type="button" data-action="retry-assets" ${state.assetLoadFailures.size || state.assetLoadLimitMessage ? "" : "hidden"}>重新載入</button></div><p class="field-hint" role="status" data-assets-loading ${state.assetsLoading ? "" : "hidden"}>圖片正在背景載入。</p><p class="asset-load-error" role="alert" data-assets-error ${state.assetLoadLimitMessage ? "" : "hidden"}>${escape(state.assetLoadLimitMessage)}</p><div class="asset-list" data-asset-list>${assetListMarkup()}</div></section>
+          <section class="panel aside-card"><h2>發布前只看三件事</h2><div class="tip-list"><div class="tip"><span class="tip-number">1</span><span>每個步驟初學者都做得下去。</span></div><div class="tip"><span class="tip-number">2</span><span>圖和該步驟的文字真的對得起來。</span></div><div class="tip"><span class="tip-number">3</span><span>先預覽，再決定是否公開。</span></div></div></section>
+        </aside>
+      </div>
+      <input hidden type="file" accept="image/*" multiple data-file-input="body"><input hidden type="file" accept="image/*" data-file-input="cover"><input hidden type="file" accept="image/*" data-file-input="episode-step"><input hidden type="file" accept="image/*" data-file-input="episode-result"><input hidden type="file" accept=".md,text/markdown,image/*" multiple data-file-input="markdown">
+    </div>`;
+    root.innerHTML = shell(content, episodeEditorActions());
+    restoreEditorFocus(focusToken);
+  }
+
+  function renderEditor() {
+    return state.editorKind === "episode" ? renderEpisodeEditor() : renderArticleEditor();
+  }
+
   function renderInbox() {
-    const available = state.inbox.filter((row) => row.canImport);
+    const available = state.inbox.filter((row) => !row.imported && row.canImport);
     const rows = state.inbox.map((row) => {
       const title = row.title || "未命名投稿";
       const excerpt = row.excerpt || "這份投稿尚未提供摘要。";
@@ -809,27 +1021,25 @@
       const integrity = problems.length
         ? `<ul class="inbox-problems" aria-label="暫時不能帶入的原因">${problems.map((reason) => `<li>${escape(reason)}</li>`).join("")}</ul>`
         : `<p class="inbox-ready">文章、圖片與來源說明都已備齊。</p>`;
-      const action = row.imported
-        ? statusBadge("published", "已在文章清單")
-        : row.inboxDispositionLabel
-          ? statusBadge("draft", row.inboxDispositionLabel)
+      const action = row.inboxDispositionLabel
+        ? statusBadge("draft", row.inboxDispositionLabel)
         : row.canImport
-          ? `<button class="button button--small" type="button" data-action="import-inbox" data-id="${escape(row.id)}">帶入文章清單</button>`
+          ? `<button class="button button--small" type="button" data-action="import-inbox" data-id="${escape(row.id)}">${row.imported ? "再次帶入" : "帶入文章清單"}</button>`
           : statusBadge("awaiting_human_review", "資料不完整");
       return `<section class="panel inbox-card"><div class="inbox-copy"><span class="inbox-id">${escape(row.id)}</span><h2>${escape(title)}</h2><p class="inbox-excerpt">${escape(excerpt)}</p><p class="inbox-meta">${row.imageCount} 張圖片 · ${row.hasImageSources ? "有圖片來源說明" : "缺圖片來源說明"}</p>${integrity}</div>${action}</section>`;
     }).join("");
     const body = state.loading
-      ? `<section class="panel skeleton" role="status" aria-live="polite"><span class="sr-only">正在同步 GitHub 收件匣…</span><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></section>`
+      ? '<section class="panel skeleton" role="status" aria-live="polite"><span class="sr-only">正在同步 GitHub 收件匣…</span><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></section>'
       : state.inbox.length
         ? `<div class="inbox-list">${rows}</div>`
-        : `<section class="panel empty-state"><strong>收件匣目前沒有新稿</strong><p>其他電腦推送的新文章，按同步後會出現在這裡。</p></section>`;
+        : '<section class="panel empty-state"><strong>收件匣目前沒有新稿</strong><p>其他電腦推送的新文章，按同步後會出現在這裡。</p></section>';
     const content = `<div class="content" aria-busy="${state.loading}"><div class="page-heading"><div><h1 tabindex="-1" data-page-heading>GitHub 收件匣</h1><p>按一次就讀取私人收件匣，文章和圖片會一起帶進文章清單。</p></div><button class="button button--primary" type="button" data-action="sync-inbox" ${state.loading ? "disabled" : ""}>${available.length ? `同步並帶入 ${available.length} 篇` : "同步收件匣"}</button></div>${state.pageError ? `<div class="error-banner" role="alert" tabindex="-1" data-focus-error>${escape(state.pageError)}</div>` : ""}${body}</div>`;
     root.innerHTML = shell(content);
   }
 
   function renderAdvanced() {
     const content = `<div class="content"><div class="page-heading"><div><h1 tabindex="-1" data-page-heading>其他網站內容</h1><p>平常發文章不用進這裡。遊戲清單、首頁文字等低頻設定，暫時放在進階編輯器。</p></div></div>
-      <section class="panel aside-card"><h2>遊戲、首頁與 AI 100</h2><p>這些設定牽涉整個網站結構，所以保留在備援編輯器。之後會逐項搬成跟文章一樣直覺的頁面。</p><a class="button" href="./cms.html" target="_blank" rel="noopener">開啟進階編輯器</a></section>
+      <section class="panel aside-card"><h2>遊戲與首頁設定</h2><p>AI-100 講義已經搬到左側的「AI-100 講義」。首頁與遊戲等低頻設定仍保留在備援編輯器。</p><a class="button" href="./cms.html" target="_blank" rel="noopener">開啟進階編輯器</a></section>
     </div>`;
     root.innerHTML = shell(content);
   }
@@ -838,6 +1048,8 @@
     if (TEST_MODE) return;
     if (!state.client) return renderLogin();
     if (state.route === "editor") return renderEditor();
+    if (state.route === "episode-editor") return renderEditor();
+    if (state.route === "episodes") return renderEpisodes();
     if (state.route === "inbox") return renderInbox();
     if (state.route === "advanced") return renderAdvanced();
     return renderArticles();
@@ -939,6 +1151,46 @@
     return true;
   }
 
+  async function loadEpisodes() {
+    const session = sessionSnapshot();
+    if (!session.client) return false;
+    const generation = ++state.episodeRefreshGeneration;
+    const result = await session.client.listEpisodes();
+    if (!sessionIsCurrent(session) || generation !== state.episodeRefreshGeneration) return false;
+    state.episodes = result.episodes.map((item) => ({ ...core.parseEpisode(item.raw, item.id), episodeSha: item.episodeSha }));
+    state.episodesLoaded = true;
+    state.contentHeadSha = String(result.headSha || state.contentHeadSha || "");
+    state.lastEpisodeSyncAt = Date.now();
+    return true;
+  }
+
+  async function refreshEpisodes({ announce = true } = {}) {
+    if (!state.client || state.loading || state.busy) return false;
+    const session = sessionSnapshot();
+    state.loading = true;
+    state.pageError = "";
+    if (state.route === "episodes") renderEpisodes();
+    const generation = state.episodeRefreshGeneration + 1;
+    try {
+      const loaded = await loadEpisodes();
+      if (!loaded || !sessionIsCurrent(session) || generation !== state.episodeRefreshGeneration) return false;
+      if (announce) showToast("已同步 GitHub 上的最新講義。", "success");
+      return true;
+    } catch (error) {
+      if (!sessionIsCurrent(session)) return false;
+      state.pageError = `暫時無法同步最新講義：${errorMessage(error)}`;
+      return false;
+    } finally {
+      if (sessionIsCurrent(session)) {
+        state.loading = false;
+        if (state.route === "episodes") {
+          renderEpisodes();
+          if (state.pageError) focusMain();
+        }
+      }
+    }
+  }
+
   async function refreshArticles({ announce = true } = {}) {
     if (!state.client || state.loading || state.busy) return false;
     const session = sessionSnapshot();
@@ -991,6 +1243,7 @@
     revokeAssetUrls();
     state.pendingAssets.clear();
     state.editor = emptyEditor();
+    state.editorKind = "article";
     state.loaded = null;
     state.dirty = false;
     state.editorRevision = 0;
@@ -1010,13 +1263,14 @@
 
   function requiredExistingImageEntries(article = state.editor, loaded = state.loaded) {
     if (!article || !loaded) return { prefix: "", entries: [] };
-    const prefix = `posts/${article.id}/`;
+    const prefix = editorBasePrefix(article);
     const imageEntries = (loaded.files || []).filter((file) => {
       const relative = relativeAssetPathFor(file.path, prefix);
-      return /^assets\//i.test(relative) && /\.(?:png|jpe?g|webp|gif|avif|svg)$/i.test(relative);
+      const inAllowedFolder = state.editorKind === "episode" || /^assets\//i.test(relative);
+      return inAllowedFolder && /\.(?:png|jpe?g|webp|gif|avif|svg)$/i.test(relative);
     });
     const byKey = new Map(imageEntries.map((entry) => [
-      decodePath(normalizeAssetKey(relativeAssetPathFor(entry.path, prefix))).toLowerCase(),
+      canonicalEditorAssetKey(relativeAssetPathFor(entry.path, prefix)).toLowerCase(),
       entry,
     ]));
     const requiredKeys = [...core.extractAssetPaths(article.body || "")];
@@ -1024,7 +1278,7 @@
     const entries = [];
     const seen = new Set();
     for (const value of requiredKeys) {
-      const key = decodePath(normalizeAssetKey(value)).toLowerCase();
+      const key = canonicalEditorAssetKey(value).toLowerCase();
       const entry = byKey.get(key);
       if (!entry || seen.has(entry.path)) continue;
       seen.add(entry.path);
@@ -1038,14 +1292,14 @@
     const requiredBytes = entries.reduce((total, entry) => total + Number(entry.size || 0), 0);
     if (entries.length <= MAX_EXISTING_PREVIEW_COUNT && requiredBytes <= MAX_EXISTING_PREVIEW_BYTES) return "";
     const sizeMb = Math.max(1, Math.ceil(requiredBytes / 1024 / 1024));
-    return `這篇文章一次引用 ${entries.length} 張、約 ${sizeMb} MB 的圖片，超過後台安全預覽上限。請用「從文章移除」減少圖片，或先在電腦縮小圖片再重新上傳。`;
+    return `這份內容一次引用 ${entries.length} 張、約 ${sizeMb} MB 的圖片，超過後台安全預覽上限。請減少圖片，或先在電腦縮小圖片再重新上傳。`;
   }
 
   function releaseUnreferencedAssetUrls(article = state.editor) {
     const required = new Set(core.extractAssetPaths(article?.body || "")
-      .map((value) => decodePath(normalizeAssetKey(value)).toLowerCase()));
+      .map((value) => canonicalEditorAssetKey(value).toLowerCase()));
     if (article?.featureImage && !/^https?:\/\//i.test(article.featureImage)) {
-      required.add(decodePath(normalizeAssetKey(article.featureImage)).toLowerCase());
+      required.add(canonicalEditorAssetKey(article.featureImage).toLowerCase());
     }
     const pendingUrls = new Set([...state.pendingAssets.values()].map((item) => item.url));
     const urls = new Map();
@@ -1054,7 +1308,7 @@
       urls.get(url).push(key);
     }
     for (const [url, keys] of urls) {
-      const stillUsed = pendingUrls.has(url) || keys.some((key) => required.has(decodePath(normalizeAssetKey(key)).toLowerCase()));
+      const stillUsed = pendingUrls.has(url) || keys.some((key) => required.has(canonicalEditorAssetKey(key).toLowerCase()));
       if (stillUsed) continue;
       for (const key of keys) state.assetUrls.delete(key);
       if (String(url).startsWith("blob:")) URL.revokeObjectURL(url);
@@ -1062,7 +1316,7 @@
   }
 
   function refreshAssetView() {
-    if (state.route !== "editor" || !state.editor) return;
+    if (!isEditorRoute() || !state.editor) return;
     const cover = root.querySelector(".cover-drop");
     if (cover) cover.innerHTML = coverMarkup();
     const entries = new Map(assetEntries().map((item) => [item.path, item]));
@@ -1086,10 +1340,10 @@
     const { prefix, entries: requiredEntries } = requiredExistingImageEntries(article, loaded);
     releaseUnreferencedAssetUrls(article);
     const requiredPathKeys = new Set(requiredEntries.map((entry) => (
-      decodePath(normalizeAssetKey(relativeAssetPathFor(entry.path, prefix))).toLowerCase()
+      canonicalEditorAssetKey(relativeAssetPathFor(entry.path, prefix)).toLowerCase()
     )));
     for (const failure of [...state.assetLoadFailures]) {
-      if (!requiredPathKeys.has(decodePath(normalizeAssetKey(failure)).toLowerCase())) state.assetLoadFailures.delete(failure);
+      if (!requiredPathKeys.has(canonicalEditorAssetKey(failure).toLowerCase())) state.assetLoadFailures.delete(failure);
     }
     state.assetLoadLimitMessage = previewAssetLimitMessage(article, loaded);
     if (state.assetLoadLimitMessage) {
@@ -1100,10 +1354,10 @@
       return;
     }
     state.assetLoadLimitMessage = "";
-    const pendingPaths = new Set([...state.pendingAssets.keys()].map((value) => decodePath(normalizeAssetKey(value)).toLowerCase()));
+    const pendingPaths = new Set([...state.pendingAssets.keys()].map((value) => canonicalEditorAssetKey(value).toLowerCase()));
     const entriesToLoad = requiredEntries.filter((entry) => {
       const relative = relativeAssetPathFor(entry.path, prefix);
-      const key = decodePath(normalizeAssetKey(relative)).toLowerCase();
+      const key = canonicalEditorAssetKey(relative).toLowerCase();
       return !pendingPaths.has(key) && !assetUrlFor(relative);
     });
     const client = state.client;
@@ -1174,6 +1428,7 @@
         : "";
       if (!openIsCurrent()) return false;
       state.editor = article;
+      state.editorKind = "article";
       state.loaded = loaded;
       state.dirty = false;
       state.editorRevision = 0;
@@ -1194,6 +1449,53 @@
     } catch (error) {
       if (!openIsCurrent()) return false;
       state.route = "articles";
+      state.pageError = errorMessage(error);
+      render();
+      focusMain();
+    } finally {
+      if (openIsCurrent()) state.loading = false;
+    }
+    return true;
+  }
+
+  async function openEpisode(id) {
+    if (!persistEditorBeforeTransition({ confirmLeave: true, blockPendingAssets: true })) return false;
+    const session = sessionSnapshot();
+    if (!session.client) return false;
+    const generation = ++state.episodeOpenGeneration;
+    state.episodeRefreshGeneration += 1;
+    const openIsCurrent = () => sessionIsCurrent(session) && generation === state.episodeOpenGeneration;
+    state.loading = true;
+    state.pageError = "";
+    renderLoading("正在打開講義與步驟圖片…");
+    try {
+      revokeAssetUrls();
+      state.pendingAssets.clear();
+      const loaded = await session.client.loadEpisode(id);
+      if (!openIsCurrent()) return false;
+      const episode = core.parseEpisode(loaded.raw, id);
+      state.editorKind = "episode";
+      state.editor = episode;
+      state.loaded = loaded;
+      state.dirty = false;
+      state.editorRevision = 0;
+      state.previewFingerprint = "";
+      state.recovery = findLocalDraft(id, loaded.episodeSha, "episode");
+      state.conflictDetected = false;
+      state.importUndo = null;
+      state.assetsLoading = true;
+      const loadToken = ++state.assetLoadToken;
+      state.route = "episode-editor";
+      render();
+      focusMain();
+      void loadAssetUrls(episode, loaded, loadToken).finally(() => {
+        if (state.assetLoadToken !== loadToken) return;
+        state.assetsLoading = false;
+        refreshAssetView();
+      });
+    } catch (error) {
+      if (!openIsCurrent()) return false;
+      state.route = "episodes";
       state.pageError = errorMessage(error);
       render();
       focusMain();
@@ -1437,12 +1739,12 @@
 
   function currentEditorOperation(operation) {
     return state.activeOperation === operation
-      && state.route === "editor"
+      && isEditorRoute()
       && state.editor === operation.editor
       && state.editorRevision === operation.revision;
   }
 
-  async function addImages(files, { cover = false, insert = true } = {}) {
+  async function addImages(files, { cover = false, insert = true, selection = null } = {}) {
     if (state.busy || !state.editor) return [];
     syncEditorFromDom();
     const images = supportedImageFiles(files);
@@ -1451,7 +1753,7 @@
     const operation = {
       editor: state.editor,
       revision: state.editorRevision,
-      selection: textarea ? { start: textarea.selectionStart, end: textarea.selectionEnd } : null,
+      selection: selection || (textarea ? { start: textarea.selectionStart, end: textarea.selectionEnd } : null),
     };
     state.activeOperation = operation;
     state.pageError = "";
@@ -1494,6 +1796,22 @@
   function mergeImportedMarkdown(currentArticle, originalMarkdown) {
     let nextArticle = { ...currentArticle };
     const parts = core.splitFrontmatter(originalMarkdown);
+    if (state.editorKind === "episode") {
+      if (!parts.hasFrontmatter) {
+        nextArticle.body = String(originalMarkdown || "").trim();
+        return nextArticle;
+      }
+      const imported = core.parseEpisode(originalMarkdown, currentArticle.id);
+      nextArticle = {
+        ...nextArticle,
+        title: imported.title || nextArticle.title,
+        summary: imported.summary || nextArticle.summary,
+        learningGoal: imported.learningGoal || nextArticle.learningGoal,
+        teachingResult: imported.teachingResult || nextArticle.teachingResult,
+        body: imported.body,
+      };
+      return nextArticle;
+    }
     if (!parts.hasFrontmatter) {
       nextArticle.body = String(originalMarkdown || "").trim();
       return nextArticle;
@@ -1606,7 +1924,8 @@
       showToast(state.assetLoadLimitMessage || "有圖片暫時無法顯示。請先按右側的「重新載入圖片」，確認畫面後再預覽。", "danger", 7500);
       return;
     }
-    const errors = core.validateArticle(state.editor, "draft");
+    const isEpisode = state.editorKind === "episode";
+    const errors = isEpisode ? core.validateEpisode(state.editor, "draft") : core.validateArticle(state.editor, "draft");
     if (errors.length) {
       state.pageError = errors.map((item) => item.message).join(" ");
       renderEditor();
@@ -1624,10 +1943,10 @@
     dialog.className = "preview-dialog";
     dialog.setAttribute("aria-labelledby", previewTitleId);
     dialog.setAttribute("aria-describedby", previewDescriptionId);
-    dialog.innerHTML = `<div class="dialog-header"><div><h2 id="${previewTitleId}">發布前預覽</h2><span class="field-hint" id="${previewDescriptionId}">這是讀者會看到的文章排版</span></div><button class="dialog-close" type="button" aria-label="關閉預覽">×</button></div><div class="dialog-body"><div class="preview-shell">
+    dialog.innerHTML = `<div class="dialog-header"><div><h2 id="${previewTitleId}">發布前預覽</h2><span class="field-hint" id="${previewDescriptionId}">這是讀者會看到的${isEpisode ? "講義" : "文章"}排版</span></div><button class="dialog-close" type="button" aria-label="關閉預覽">×</button></div><div class="dialog-body"><div class="preview-shell">
       ${missing.length ? `<div class="preview-warning"><strong>有 ${missing.length} 張圖片還沒找到：</strong><br>${missing.map(escape).join("<br>")}<br>請關閉預覽後重新上傳，發布按鈕會先擋住。</div>` : ""}
       ${altIssues.length ? `<div class="preview-warning"><strong>有圖片還缺少有意義的說明。</strong><br>請把「請填寫圖片說明」改成畫面內容；發布前會再次檢查。</div>` : ""}
-      <header class="preview-hero"><small>CALUMAI / 發布前預覽</small><h1>${escape(state.editor.title)}</h1><p>${escape(state.editor.excerpt || core.plainExcerpt(state.editor.body))}</p></header>
+      <header class="preview-hero"><small>${isEpisode ? `${escape(state.editor.id)} / AI-100 講義預覽` : "CALUMAI / 發布前預覽"}</small><h1>${escape(state.editor.title)}</h1><p>${escape((isEpisode ? state.editor.summary : state.editor.excerpt) || core.plainExcerpt(state.editor.body))}</p></header>
       ${feature ? `<img class="preview-feature" src="${escape(feature)}" alt="${escape(state.editor.featureImageAlt || state.editor.title)}">` : ""}
       <article class="preview-article">${articleHtml}</article>
     </div></div>`;
@@ -1699,9 +2018,10 @@
     }
     const session = sessionSnapshot();
     const articleId = state.editor.id;
+    const editorKind = state.editorKind;
     const localVersion = {
       savedAt: new Date().toISOString(),
-      baseSha: state.loaded?.articleSha || "",
+      baseSha: state.loaded?.articleSha || state.loaded?.episodeSha || "",
       conflict: true,
       article: { ...state.editor },
       pendingAssets: new Map(state.pendingAssets),
@@ -1710,12 +2030,16 @@
     };
     setInterfaceBusy(true, "正在讀取 GitHub 最新版本…");
     try {
-      const loaded = await session.client.loadArticle(articleId);
+      const loaded = editorKind === "episode"
+        ? await session.client.loadEpisode(articleId)
+        : await session.client.loadArticle(articleId);
       if (!sessionIsCurrent(session) || state.editor?.id !== articleId) return false;
-      const sourceEntry = loaded.files.find((file) => /\/IMAGE_SOURCES\.md$/i.test(file.path));
-      loaded.imageSourcesText = sourceEntry
-        ? await session.client.blobText(github.CONTENT_REPO, sourceEntry.sha)
-        : "";
+      if (editorKind === "article") {
+        const sourceEntry = loaded.files.find((file) => /\/IMAGE_SOURCES\.md$/i.test(file.path));
+        loaded.imageSourcesText = sourceEntry
+          ? await session.client.blobText(github.CONTENT_REPO, sourceEntry.sha)
+          : "";
+      }
       if (!sessionIsCurrent(session) || state.editor?.id !== articleId) return false;
 
       const pendingUrls = new Set([...localVersion.assetUrls.values()]);
@@ -1727,7 +2051,7 @@
       state.assetDescriptions = new Map();
       state.assetLoadFailures.clear();
       state.pendingAssets = new Map();
-      state.editor = core.parseArticle(loaded.raw, articleId);
+      state.editor = editorKind === "episode" ? core.parseEpisode(loaded.raw, articleId) : core.parseArticle(loaded.raw, articleId);
       state.loaded = loaded;
       state.recovery = localVersion;
       state.conflictDetected = false;
@@ -1848,7 +2172,7 @@
   }
 
   function logout() {
-    if (state.route === "editor") syncEditorFromDom();
+    if (isEditorRoute()) syncEditorFromDom();
     if (state.pendingAssets.size || recoveryPendingAssets().size) {
       persistLocalDraftNow();
       blockEditorTransition(recoveryPendingAssets().size
@@ -1871,6 +2195,8 @@
       user: null,
       route: "articles",
       articles: [],
+      episodes: [],
+      episodesLoaded: false,
       inbox: [],
       inboxLoaded: false,
       loading: false,
@@ -1880,6 +2206,7 @@
         : "本頁已登出，但瀏覽器無法清除登入工作階段。請關閉這個分頁，避免重新整理後自動登入。",
       pageError: "",
       editor: null,
+      editorKind: "article",
       loaded: null,
       dirty: false,
       recovery: null,
@@ -1892,6 +2219,8 @@
       lastArticleSyncAt: 0,
       articleRefreshGeneration: state.articleRefreshGeneration + 1,
       articleOpenGeneration: state.articleOpenGeneration + 1,
+      episodeRefreshGeneration: state.episodeRefreshGeneration + 1,
+      episodeOpenGeneration: state.episodeOpenGeneration + 1,
       sessionVersion: state.sessionVersion + 1,
     });
     state.pendingAssets.clear();
@@ -1904,6 +2233,7 @@
   }
 
   function requestPublish() {
+    if (state.editorKind === "episode") return requestEpisodePublish();
     if (blockUnresolvedRecovery()) return false;
     syncEditorFromDom();
     releaseUnreferencedAssetUrls();
@@ -1942,6 +2272,153 @@
       confirmLabel: updating ? "儲存並更新網站" : "確認發布",
       onConfirm: () => saveArticle("published"),
     });
+  }
+
+  function requestEpisodePublish() {
+    if (blockUnresolvedRecovery()) return false;
+    syncEditorFromDom();
+    releaseUnreferencedAssetUrls();
+    state.assetLoadLimitMessage = previewAssetLimitMessage();
+    refreshAssetView();
+    if (state.assetLoadLimitMessage) {
+      showToast(state.assetLoadLimitMessage, "danger", 7500);
+      return false;
+    }
+    if (!state.assetsLoading && unloadedExistingRequiredAssets().length) retryAssetLoading();
+    if (state.assetsLoading || previewAssetFailures().length) {
+      showToast(state.assetsLoading ? "圖片還在載入，載完後才能發布。" : "有圖片無法顯示，請先重新載入並預覽。", "danger", 7000);
+      return false;
+    }
+    const errors = core.validateEpisode(state.editor, "published", { assetPaths: availableAssetKeys() });
+    const missing = missingAssets();
+    const altIssues = imageAltIssues();
+    if (missing.length) errors.push({ message: `還有圖片沒有上傳：${missing.join("、")}` });
+    if (altIssues.length) errors.push({ message: "步驟圖片還缺清楚的畫面說明。" });
+    if (errors.length) {
+      state.pageError = errors.map((item) => item.message).join(" ");
+      renderEditor();
+      focusMain();
+      return false;
+    }
+    if (state.previewFingerprint !== articleFingerprint()) {
+      showToast("請先看一次目前版本的講義預覽。", "danger");
+      showPreview();
+      return false;
+    }
+    const updating = state.editor.status === "published";
+    showConfirm({
+      title: updating ? `更新 ${state.editor.id} 公開講義？` : `發布 ${state.editor.id} 講義？`,
+      lead: updating ? "儲存後會直接更新網站上的講義。" : "確認後才會把這份草稿放到 AI-100 網站。",
+      checks: ["我已看過完整講義預覽", "每一步的文字與圖片互相符合", "這份內容可以公開給族語老師使用"],
+      confirmLabel: updating ? "儲存並更新網站" : "確認發布講義",
+      onConfirm: () => saveEpisode("published"),
+    });
+    return true;
+  }
+
+  async function saveEpisode(status, mode = status === "published" ? "publish" : "save") {
+    if (state.busy || state.editorKind !== "episode") return false;
+    if (blockUnresolvedRecovery()) return false;
+    syncEditorFromDom();
+    const operation = {
+      token: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      revision: state.editorRevision,
+      originalId: state.editor.id,
+      episode: { ...state.editor },
+      loaded: state.loaded ? { ...state.loaded, files: [...state.loaded.files] } : null,
+      pendingAssets: [...state.pendingAssets.values()],
+      oldDraftKey: localDraftKey(),
+    };
+    const previousStatus = operation.episode.status;
+    const errors = core.validateEpisode(operation.episode, status, { assetPaths: availableAssetKeys() });
+    if (errors.length) {
+      state.pageError = errors.map((item) => item.message).join(" ");
+      renderEditor();
+      focusMain();
+      return false;
+    }
+    state.activeOperation = operation;
+    state.pageError = "";
+    setInterfaceBusy(true, "正在安全儲存講義…");
+    try {
+      const built = core.buildEpisode(operation.episode, status);
+      const folderName = operation.loaded?.folderName || built.id;
+      const episodePath = `episodes/${folderName}/episode.md`;
+      const files = [{ path: episodePath, content: built.content }];
+      for (const item of operation.pendingAssets) files.push({ path: `episodes/${folderName}/${item.path}`, bytes: item.bytes });
+      const loadedByPath = new Map((operation.loaded?.files || []).map((file) => [file.path, file.sha]));
+      const expectedFiles = operation.loaded
+        ? [
+          ...operation.loaded.files.map((file) => ({ path: file.path, sha: file.sha })),
+          ...files.filter((file) => !loadedByPath.has(file.path)).map((file) => ({ path: file.path, sha: null })),
+        ]
+        : [];
+      const result = await state.client.commitFiles({
+        files,
+        message: status === "published" ? `Publish episode: ${built.id} ${operation.episode.title}` : `Save episode draft: ${built.id} ${operation.episode.title}`,
+        expectedArticle: operation.loaded ? { path: episodePath, sha: operation.loaded.episodeSha } : null,
+        expectedFiles,
+      });
+      state.contentHeadSha = String(result.commitSha || state.contentHeadSha || "");
+      const stillSameEditor = state.activeOperation === operation
+        && state.route === "episode-editor"
+        && state.editorRevision === operation.revision
+        && state.editor?.id === operation.originalId;
+      if (!stillSameEditor) {
+        state.activeOperation = null;
+        setInterfaceBusy(false);
+        showToast("講義已存到 GitHub；目前畫面已切換，所以沒有覆蓋正在看的內容。", "success");
+        return true;
+      }
+      state.editor = core.parseEpisode(built.content, built.id);
+      const existingFiles = operation.loaded?.files || [];
+      const newFiles = files.map((file) => ({
+        path: file.path,
+        type: "blob",
+        sha: result.fileShas[file.path],
+        size: file.bytes?.byteLength ?? new TextEncoder().encode(String(file.content || "")).byteLength,
+      }));
+      const newPaths = new Set(newFiles.map((file) => file.path));
+      state.loaded = {
+        ...(operation.loaded || {}),
+        id: built.id,
+        folderName,
+        episodeSha: result.fileShas[episodePath],
+        files: [...existingFiles.filter((file) => !newPaths.has(file.path)), ...newFiles],
+      };
+      const summary = { ...state.editor, episodeSha: result.fileShas[episodePath] };
+      state.episodes = [...state.episodes.filter((episode) => episode.id !== built.id), summary];
+      state.pendingAssets.clear();
+      releaseUnreferencedAssetUrls(state.editor);
+      state.dirty = false;
+      state.editorRevision += 1;
+      state.previewFingerprint = "";
+      state.recovery = null;
+      state.conflictDetected = false;
+      state.importUndo = null;
+      clearLocalDraft([operation.oldDraftKey, localDraftKey()]);
+      const needsDeployment = status === "published" || previousStatus === "published" || mode === "remove";
+      if (needsDeployment) state.deployments.set(built.id, { stage: "saved", mode, commitSha: result.commitSha, message: "講義已安全存到 GitHub。" });
+      state.activeOperation = null;
+      setInterfaceBusy(false);
+      renderEditor();
+      updateSaveState(status === "published" ? "已存好，正在更新網站" : "草稿已安全存好", "success");
+      showToast(status === "published" ? "講義與圖片已一起存好，正在更新網站。" : "講義草稿已存好，網站不會公開。", "success");
+      if (needsDeployment) void trackEpisodeDeployment(result.commitSha, built.id, mode);
+      return true;
+    } catch (error) {
+      if (state.activeOperation !== operation) return false;
+      state.activeOperation = null;
+      setInterfaceBusy(false);
+      state.conflictDetected = error?.code === "EDIT_CONFLICT";
+      state.pageError = state.conflictDetected
+        ? "另一台電腦已先修改這份講義。你的文字與圖片仍留在這個分頁，請讀取 GitHub 版本並比較。"
+        : errorMessage(error);
+      updateSaveState("沒有存檔", "danger");
+      renderEditor();
+      focusMain();
+      return false;
+    }
   }
 
   function articleLocalImagePaths(article) {
@@ -2235,7 +2712,95 @@
     }
   }
 
+  async function trackEpisodeDeployment(commitSha, episodeId, mode = "publish") {
+    const client = state.client;
+    const sessionVersion = state.sessionVersion;
+    const active = () => state.client === client
+      && state.sessionVersion === sessionVersion
+      && deploymentTrackerIsCurrent(episodeId, commitSha);
+    const update = (patch) => {
+      if (!active()) return false;
+      setDeployment(episodeId, { ...deploymentFor(episodeId), ...patch, mode, commitSha });
+      return true;
+    };
+    if (!client || !active()) return;
+    update({ stage: "saved", message: "講義已安全存到 GitHub。" });
+    let run = null;
+    try {
+      for (let attempt = 0; attempt < 45; attempt += 1) {
+        if (!active()) return;
+        run = await client.workflowForCommit(commitSha);
+        if (!active()) return;
+        if (!run) update({ stage: "building", message: "正在等待網站製作開始。" });
+        else if (run.status !== "completed") update({ stage: "building", message: "正在檢查講義與產生網站頁面。" });
+        else if (run.conclusion !== "success") {
+          update({ stage: "failed", failedAt: 1, message: "網站檢查沒有通過，這份講義尚未更新。", url: run.html_url || "" });
+          return;
+        } else {
+          update({ stage: "deploying", message: "講義已產生，正在等待網站換成新版本。" });
+          break;
+        }
+        await sleep(4000);
+      }
+      for (let attempt = 0; attempt < 36; attempt += 1) {
+        if (!active()) return;
+        let deployStatus;
+        try {
+          deployStatus = await readPublicJson(`${PUBLIC_DEPLOY_STATUS}?episode=${encodeURIComponent(episodeId)}&studio=${Date.now()}`);
+        } catch {
+          update({ stage: "deploying", message: "網站暫時沒有回應，仍在確認新版本。" });
+          await sleep(5000);
+          continue;
+        }
+        const deployedSha = String(deployStatus?.sourceSha || "");
+        let containsCommit = deployedSha.toLowerCase() === String(commitSha).toLowerCase();
+        if (!containsCommit && deployedSha) {
+          try { containsCommit = await client.deploymentContainsCommit(commitSha, deployedSha); } catch { containsCommit = false; }
+        }
+        if (!containsCommit) {
+          await sleep(5000);
+          continue;
+        }
+        const publicUrl = `/ai-helper/handouts/${encodeURIComponent(episodeId)}.html`;
+        if (mode !== "remove") {
+          try {
+            const response = await fetch(`${publicUrl}?studio=${Date.now()}`, { cache: "no-store" });
+            if (!response.ok) {
+              await sleep(4000);
+              continue;
+            }
+          } catch {
+            await sleep(4000);
+            continue;
+          }
+        }
+        update({
+          stage: "live",
+          message: mode === "remove" ? "公開講義已下架，草稿仍保留在後台。" : "講義已在網站上線。",
+          url: mode === "remove" ? "" : publicUrl,
+        });
+        return;
+      }
+      if (active()) update({ stage: "deploying", message: "網站仍在更新，可以先離開，稍後回講義清單查看。" });
+    } catch (error) {
+      if (active()) update({ stage: "failed", failedAt: 2, message: `無法確認網站狀態：${errorMessage(error)}`, url: run?.html_url || "" });
+    }
+  }
+
   function requestUnpublish() {
+    if (state.editorKind === "episode") {
+      if (blockUnresolvedRecovery()) return false;
+      syncEditorFromDom();
+      showConfirm({
+        title: `暫時下架 ${state.editor.id}？`,
+        lead: "講義會保留在後台並改回草稿，公開網站上的頁面會移除。",
+        checks: ["我知道讀者將暫時看不到這份講義"],
+        confirmLabel: "確認下架",
+        danger: true,
+        onConfirm: () => saveEpisode("draft", "remove"),
+      });
+      return true;
+    }
     if (blockUnresolvedRecovery()) return false;
     syncEditorFromDom();
     showConfirm({
@@ -2363,24 +2928,24 @@
     const session = sessionSnapshot();
     if (!session.client) return;
     const row = state.inbox.find((item) => item.id === id);
-    if (!row || row.imported || !row.canImport || state.loading) return;
+    if (!row || !row.canImport || state.loading) return;
     state.loading = true;
     state.busy = true;
     state.pageError = "";
     if (state.route === "inbox") renderInbox();
     try {
-      showToast(`正在帶入 ${id}，文章與圖片會一起儲存。`);
+      const wasImported = Boolean(row.imported);
+      showToast(wasImported ? `正在重新帶入 ${id}，會更新文章內容。` : `正在帶入 ${id}，文章與圖片會一起儲存。`);
       await session.client.importInboxSubmission(row, core);
       if (!sessionIsCurrent(session)) return;
       row.imported = true;
-      row.canImport = false;
       try {
         await loadArticles();
       } catch (refreshError) {
         if (!sessionIsCurrent(session)) return;
         state.pageError = `投稿已帶入，但文章清單暫時無法重新整理：${errorMessage(refreshError)}`;
       }
-      showToast(`${id} 已出現在文章清單。`, "success");
+      showToast(wasImported ? `${id} 已重新帶入文章清單。` : `${id} 已出現在文章清單。`, "success");
     } catch (error) {
       if (!sessionIsCurrent(session)) return;
       state.pageError = errorMessage(error);
@@ -2400,7 +2965,7 @@
     if (!session.client) return;
     const loaded = await loadInbox();
     if (!loaded || !sessionIsCurrent(session)) return;
-    const rows = state.inbox.filter((row) => row.canImport);
+    const rows = state.inbox.filter((row) => !row.imported && row.canImport);
     if (!rows.length) {
       const blocked = state.inbox.some((row) => !row.imported && row.missingReasons?.length);
       showToast(blocked ? "收件匣已同步；有投稿缺少資料，請查看卡片上的原因。" : "收件匣已同步，目前沒有需要帶入的新稿。", blocked ? "danger" : "success");
@@ -2416,7 +2981,6 @@
           await session.client.importInboxSubmission(row, core);
           if (!sessionIsCurrent(session)) return;
           row.imported = true;
-          row.canImport = false;
           imported += 1;
         } catch (error) {
           if (!sessionIsCurrent(session)) return;
@@ -2451,11 +3015,14 @@
     state.pageError = "";
     state.articleOpenGeneration += 1;
     state.articleRefreshGeneration += 1;
+    state.episodeOpenGeneration += 1;
+    state.episodeRefreshGeneration += 1;
     state.loading = false;
     state.route = route;
     render();
     focusMain();
     if (route === "inbox" && !state.inboxLoaded) void loadInbox();
+    if (route === "episodes" && !state.episodesLoaded) void refreshEpisodes({ announce: false });
     return true;
   }
 
@@ -2501,9 +3068,16 @@
     if (state.busy) return;
     const route = event.target.closest("[data-route]")?.dataset.route;
     if (route) return routeTo(route);
-    const target = event.target.closest("[data-action], [data-filter], [data-format]");
+    const target = event.target.closest("[data-action], [data-filter], [data-episode-filter], [data-format]");
     if (!target) return;
     const action = target.dataset.action;
+    if (target.dataset.episodeFilter) {
+      state.episodeFilter = target.dataset.episodeFilter;
+      const list = root.querySelector("[data-episode-list]");
+      if (list) list.innerHTML = episodeRows();
+      for (const button of root.querySelectorAll("[data-episode-filter]")) button.setAttribute("aria-pressed", String(button.dataset.episodeFilter === state.episodeFilter));
+      return;
+    }
     if (target.dataset.filter) {
       state.filter = target.dataset.filter;
       const list = root.querySelector("[data-article-list]");
@@ -2514,22 +3088,30 @@
     if (target.dataset.format) return applyFormat(target.dataset.format);
     if (action === "sign-in") void signIn();
     if (action === "refresh-articles") void refreshArticles();
+    if (action === "refresh-episodes") void refreshEpisodes();
     if (action === "new-article") startNewArticle();
     if (action === "open-article") void openArticle(target.dataset.id);
-    if (action === "back-to-list") routeTo("articles");
+    if (action === "open-episode") void openEpisode(target.dataset.id);
+    if (action === "back-to-list") routeTo(state.editorKind === "episode" ? "episodes" : "articles");
     if (action === "preview") showPreview();
     if (action === "save-draft") void saveArticle("draft");
+    if (action === "save-episode-draft") void saveEpisode("draft");
     if (action === "request-publish") requestPublish();
     if (action === "request-unpublish") requestUnpublish();
     if (action === "request-delete") requestDelete();
     if (action === "reload-conflict") void reloadConflictVersion();
     if (action === "retry-deployment") {
       const deployment = deploymentFor(state.editor?.id);
-      if (deployment?.commitSha) void trackDeployment(deployment.commitSha, state.editor.id, deployment.mode);
+      if (deployment?.commitSha) {
+        if (state.editorKind === "episode") void trackEpisodeDeployment(deployment.commitSha, state.editor.id, deployment.mode);
+        else void trackDeployment(deployment.commitSha, state.editor.id, deployment.mode);
+      }
     }
     if (action === "choose-body-images") root.querySelector('[data-file-input="body"]')?.click();
     if (action === "choose-cover") root.querySelector('[data-file-input="cover"]')?.click();
     if (action === "choose-markdown") requestMarkdownImport();
+    if (action === "choose-step-image") chooseEpisodeImage(target, false);
+    if (action === "choose-result-image") chooseEpisodeImage(target, true);
     if (action === "retry-assets") retryAssetLoading();
     if (action === "insert-existing-image") insertExistingImage(target);
     if (action === "request-remove-pending") requestRemovePendingImage(target.dataset.path);
@@ -2549,6 +3131,12 @@
       state.query = event.target.value;
       const list = root.querySelector("[data-article-list]");
       if (list) list.innerHTML = articleRows();
+      return;
+    }
+    if (event.target.matches("[data-episode-search]")) {
+      state.episodeQuery = event.target.value;
+      const list = root.querySelector("[data-episode-list]");
+      if (list) list.innerHTML = episodeRows();
       return;
     }
     if (event.target.matches("[data-image-alt-path]")) {
@@ -2608,7 +3196,21 @@
       if (input.dataset.fileInput === "body") void addImages(files, { insert: true });
       if (input.dataset.fileInput === "cover") void addImages(files, { cover: true, insert: false });
       if (input.dataset.fileInput === "markdown") void importMarkdownAndImages(files);
+      if (input.dataset.fileInput === "episode-step" || input.dataset.fileInput === "episode-result") {
+        const offset = Number.isFinite(state.episodeImageInsertOffset) ? state.episodeImageInsertOffset : state.editor?.body?.length || 0;
+        void addImages(files, { insert: true, selection: { start: offset, end: offset } });
+        state.episodeImageInsertOffset = null;
+      }
       input.value = "";
+      return;
+    }
+    const episodeMenu = event.target.closest("[data-episode-menu]");
+    if (episodeMenu) {
+      const id = episodeMenu.dataset.id;
+      const value = episodeMenu.value;
+      episodeMenu.value = "";
+      if (value === "edit") void openEpisode(id);
+      if (value === "public") window.open(`/ai-helper/handouts/${encodeURIComponent(id)}.html`, "_blank", "noopener");
       return;
     }
     if (event.target.matches("[data-field]")) {
@@ -2633,9 +3235,9 @@
   });
 
   window.addEventListener("focus", () => {
-    if (!state.client || state.route !== "articles" || state.loading || state.busy) return;
-    if (Date.now() - state.lastArticleSyncAt < 30000) return;
-    void refreshArticles({ announce: false });
+    if (!state.client || state.loading || state.busy) return;
+    if (state.route === "articles" && Date.now() - state.lastArticleSyncAt >= 30000) void refreshArticles({ announce: false });
+    if (state.route === "episodes" && Date.now() - state.lastEpisodeSyncAt >= 30000) void refreshEpisodes({ announce: false });
   });
 
   if (!root || !core || !github) {

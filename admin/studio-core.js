@@ -310,6 +310,86 @@
     };
   }
 
+  const EPISODE_ID_PATTERN = /^(?:EP|SP|GM)\d{3}$/i;
+
+  function validYoutubeUrl(value) {
+    const raw = String(value || "").trim();
+    if (!raw) return false;
+    try {
+      const url = new URL(raw);
+      if (url.protocol !== "https:") return false;
+      const host = url.hostname.toLowerCase();
+      if (host === "youtu.be") return /^[A-Za-z0-9_-]{6,}$/.test(url.pathname.replace(/^\//, "").split("/")[0]);
+      if (host === "youtube.com" || host === "www.youtube.com") {
+        return url.pathname === "/watch" && /^[A-Za-z0-9_-]{6,}$/.test(url.searchParams.get("v") || "");
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
+  function parseEpisode(raw, id = "") {
+    const parts = splitFrontmatter(raw);
+    const declaredId = String(readHeaderValue(parts.header, "id") || "").toUpperCase();
+    const episodeId = String(id || declaredId).toUpperCase();
+    const title = String(readHeaderValue(parts.header, "title") || "");
+    return {
+      id: episodeId,
+      contentType: String(readHeaderValue(parts.header, "content_type") || "handout"),
+      track: String(readHeaderValue(parts.header, "track") || "intro"),
+      title,
+      summary: String(readHeaderValue(parts.header, "summary") || ""),
+      learningGoal: String(readHeaderValue(parts.header, "learning_goal") || ""),
+      teachingResult: String(readHeaderValue(parts.header, "teaching_result") || ""),
+      featureImage: String(readHeaderValue(parts.header, "cover_image") || ""),
+      featureImageAlt: title ? `${episodeId} ${title} 封面` : `${episodeId} 講義封面`,
+      youtubeUrl: String(readHeaderValue(parts.header, "youtube_url") || ""),
+      status: String(readHeaderValue(parts.header, "status") || "draft"),
+      contentApproved: readBoolean(readHeaderValue(parts.header, "content_approved"), false),
+      privacyApproved: readBoolean(readHeaderValue(parts.header, "privacy_approved"), false),
+      youtubeApproved: readBoolean(readHeaderValue(parts.header, "youtube_approved"), false),
+      publishedAt: String(readHeaderValue(parts.header, "published_at") || ""),
+      notes: String(readHeaderValue(parts.header, "notes") || ""),
+      body: String(parts.body || "").trim(),
+      raw: String(raw || ""),
+      header: parts.header,
+    };
+  }
+
+  function buildEpisode(episode, status = episode.status || "draft") {
+    const id = String(episode.id || "").trim().toUpperCase();
+    if (!EPISODE_ID_PATTERN.test(id)) throw new Error("AI-100 內容編號格式不正確。");
+    const contentType = String(episode.contentType || "handout").trim();
+    const publishing = status === "published";
+    let header = String(episode.header || "");
+    const values = {
+      id,
+      content_type: contentType,
+      track: String(episode.track || "intro"),
+      title: String(episode.title || "").trim(),
+      summary: String(episode.summary || "").trim(),
+      learning_goal: String(episode.learningGoal || "").trim(),
+      teaching_result: String(episode.teachingResult || "").trim(),
+      youtube_url: String(episode.youtubeUrl || "").trim(),
+      status,
+      content_approved: publishing,
+      privacy_approved: publishing,
+      youtube_approved: publishing && contentType === "video_lesson",
+      published_at: publishing ? String(episode.publishedAt || new Date().toISOString()) : String(episode.publishedAt || ""),
+      notes: String(episode.notes || ""),
+    };
+    for (const [key, value] of Object.entries(values)) header = replaceHeaderValue(header, key, value);
+    if (episode.featureImage) header = replaceHeaderValue(header, "cover_image", episode.featureImage);
+    else header = removeHeaderValue(header, "cover_image");
+    const body = String(episode.body || "").replace(/\r\n/g, "\n").trim();
+    return {
+      id,
+      status,
+      content: `---\n${header.trim()}\n---\n${body ? `${body}\n` : ""}`,
+    };
+  }
+
   function stripMarkdownCode(markdown) {
     const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
     let inFence = false;
@@ -585,6 +665,36 @@
     return errors;
   }
 
+  function validateEpisode(episode = {}, status = episode.status || "draft", options) {
+    const errors = [];
+    const publishing = status === "published";
+    const id = String(episode.id || "").trim().toUpperCase();
+    const title = String(episode.title || "").trim();
+    const body = String(episode.body || "").trim();
+    const contentType = String(episode.contentType || "handout").trim();
+    const youtubeUrl = String(episode.youtubeUrl || "").trim();
+
+    if (!EPISODE_ID_PATTERN.test(id)) errors.push({ field: "id", message: "內容編號必須是 EP001、SP001 或 GM001 這種格式。" });
+    if (!new Set(["handout", "video_lesson"]).has(contentType)) errors.push({ field: "contentType", message: "內容類型只能是圖文講義或影片課程。" });
+    if (publishing && !title) errors.push({ field: "title", message: "請先填寫講義標題。" });
+    if (publishing && !body) errors.push({ field: "body", message: "講義內文還是空白的。" });
+    if (!publishing && !title && !body) errors.push({ field: "body", message: "先保留一點標題或內文，才能儲存草稿。" });
+    if (title.length > 120) errors.push({ field: "title", message: "講義標題請控制在 120 個字以內。" });
+    if (publishing && body.length < 100) errors.push({ field: "body", message: "講義內容太短，請確認不是測試文字。" });
+    if (youtubeUrl && !validYoutubeUrl(youtubeUrl)) errors.push({ field: "youtubeUrl", message: "YouTube 網址格式不正確。" });
+    if (publishing && contentType === "video_lesson" && !validYoutubeUrl(youtubeUrl)) {
+      errors.push({ field: "youtubeUrl", message: "影片課程正式發布前必須填入可公開播放的 YouTube 網址；只有講義請改選「圖文講義」。" });
+    }
+    if (publishing && listMarkdownImages(body).some((image) => {
+      const alt = String(image.alt || "").trim();
+      return !alt || alt === "請填寫圖片說明";
+    })) {
+      errors.push({ field: "body", message: "請替每張步驟圖片填寫清楚的畫面說明。" });
+    }
+    if (publishing) errors.push(...validateAssetReferences(body, resolveAssetInventory(episode, options)));
+    return errors;
+  }
+
   function validateSvgText(source) {
     const text = String(source || "");
     const errors = [];
@@ -780,6 +890,7 @@
   return {
     STATUS,
     buildArticle,
+    buildEpisode,
     dateStamp,
     escapeHtml,
     extractAssetPaths,
@@ -789,6 +900,7 @@
     makeIdentity,
     normalizeBody,
     parseArticle,
+    parseEpisode,
     plainExcerpt,
     readHeaderValue,
     removeMarkdownImage,
@@ -801,6 +913,7 @@
     uniqueFilename,
     validateAssetReferences,
     validateArticle,
+    validateEpisode,
     validateImageBytes,
     validateSvgText,
   };
