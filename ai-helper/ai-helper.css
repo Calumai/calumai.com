@@ -485,15 +485,14 @@
 
 .episode-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 26px;
+  gap: 10px;
 }
 
 .episode-card {
+  display: block;
   min-width: 0;
-  overflow: hidden;
   border: 1px solid var(--course-line);
-  border-radius: 26px;
+  border-radius: 14px;
   background: var(--course-surface-strong);
   box-shadow: var(--course-shadow-soft);
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
@@ -501,8 +500,13 @@
 
 .episode-card:hover {
   border-color: rgba(36, 86, 66, 0.32);
-  transform: translateY(-5px);
+  transform: translateX(3px);
   box-shadow: var(--course-shadow);
+}
+
+/* The library is a fast-scanning index. Keep artwork inside each handout instead. */
+.episode-card > .episode-cover-button {
+  display: none;
 }
 
 .episode-cover-button {
@@ -573,7 +577,7 @@
 }
 
 .episode-card-body {
-  padding: 26px;
+  padding: 16px 18px;
 }
 
 .episode-meta {
@@ -600,17 +604,17 @@
 }
 
 .episode-card h3 {
-  margin: 14px 0 0;
+  margin: 7px 0 0;
   color: var(--course-ink);
-  font-size: 26px;
+  font-size: 20px;
   line-height: 1.32;
   letter-spacing: -0.01em;
 }
 
 .episode-summary {
   display: -webkit-box;
-  min-height: 5.2em;
-  margin: 12px 0 0;
+  min-height: 0;
+  margin: 5px 0 0;
   overflow: hidden;
   color: var(--course-muted);
   line-height: 1.72;
@@ -623,9 +627,9 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 11px 16px;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--course-line);
+  margin-top: 9px;
+  padding-top: 0;
+  border-top: 0;
 }
 
 .episode-watch {
@@ -1401,11 +1405,11 @@
   }
 
   .episode-card-body {
-    padding: 22px;
+    padding: 14px 16px;
   }
 
   .episode-card h3 {
-    font-size: 23px;
+    font-size: 19px;
   }
 
   .lesson-hero {
