@@ -55,7 +55,7 @@
     return "導論";
   };
 
-  const hasVideo = (episode) => Boolean(episode?.embedUrl) && episode?.contentType !== "handout";
+  const hasVideo = () => false;
   const cleanSummary = (summary = "") => summary.replace(/\s+/g, " ").trim();
 
   const handoutUrl = (episode) => {
@@ -90,11 +90,9 @@
     const coverLink = videoLesson
       ? `<button class="episode-cover-button" type="button" data-play-episode="${escapeHtml(episode.id)}" aria-label="播放 ${escapeHtml(episode.title)}">${cover}</button>`
       : `<a class="episode-cover-button" href="${escapeHtml(handoutUrl(episode))}" aria-label="閱讀 ${escapeHtml(episode.title)}">${cover}</a>`;
-    const watchAction = videoLesson
-      ? `<button class="episode-watch" type="button" data-play-episode="${escapeHtml(episode.id)}">
-              <i data-lucide="play"></i>觀看影片
-            </button>`
-      : "";
+    const watchAction = `<span class="episode-link episode-video-pending">
+              <i data-lucide="clock-3"></i>影片建置中，請稍後
+            </span>`;
     const captionAction = episode.srtFile
       ? `<a class="episode-link" href="./captions/${escapeHtml(episode.srtFile)}" download>
               <i data-lucide="captions"></i>字幕
