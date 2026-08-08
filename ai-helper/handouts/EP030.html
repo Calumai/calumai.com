@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <script>
+    if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
+      location.replace("https://" + location.host + location.pathname + location.search + location.hash);
+    }
+  </script>
+  <meta name="description" content="用 Spark 整理活動報名與需求 教學講義：今天用 Gemini Spark 整理一份 去識別化的活動報名資料 。 我們會把零散的報名需求整理成： 工作人員檢查表 …">
+  <meta name="theme-color" content="#f7f3ec">
+  <title>EP030 用 Spark 整理活動報名與需求｜講義｜CALUMAI</title>
+  <link rel="stylesheet" href="../../styles.css?v=20260717-4">
+  <link rel="stylesheet" href="../ai-helper.css?v=20260720-1">
+  <script src="../../assets/lucide.min.js" defer></script>
+  <script src="../../app.js" defer></script>
+  <script src="../handout.js?v=20260720-1" defer></script>
+</head>
+<body class="course-site course-handout" data-episode="EP030">
+  <a class="skip-link" href="#lesson-content">跳到講義內容</a>
+
+  <header class="site-header course-header" data-header>
+    <a class="brand course-brand" href="../../" aria-label="CALUMAI 首頁">
+      <img src="../../assets/calumai-logo-mark.png" alt="" width="96" height="96">
+      <span>CALUMAI</span>
+    </a>
+    <button class="menu-toggle icon-button course-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle><i data-lucide="menu" aria-hidden="true"></i></button>
+    <nav class="primary-nav course-nav" id="primary-nav" aria-label="主要導覽" data-nav>
+      <a href="../../games/">遊戲介紹</a>
+      <a href="../../blog/">製作心得</a>
+      <a href="../" aria-current="page">備課小幫手</a>
+      <a class="nav-cta" href="../../tools/">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+    </nav>
+  </header>
+
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+
+  <main class="lesson-main">
+    <section class="lesson-hero">
+      <div class="course-shell">
+        <nav class="lesson-breadcrumb" aria-label="麵包屑">
+          <a href="../../">CALUMAI</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <a href="../">備課小幫手</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <span>EP030 講義</span>
+        </nav>
+
+        <div class="lesson-hero-grid">
+          <div>
+            <p class="course-eyebrow">EP030 · AI 入門</p>
+            <h1>用 Spark 整理活動報名與需求</h1>
+            <p class="lesson-lead">今天用 Gemini Spark 整理一份 去識別化的活動報名資料 。 我們會把零散的報名需求整理成： 工作人員檢查表 活動前確認項目 活動前通知草稿 一張交接卡 今天不寄信、不發布，也不把真實個人資料交給 AI。</p>
+            <div class="lesson-meta-row">
+              <span><i data-lucide="clock-3" aria-hidden="true"></i>約 3–5 分鐘</span>
+              <span><i data-lucide="signal-low" aria-hidden="true"></i>零基礎</span>
+              <span><i data-lucide="target" aria-hidden="true"></i>一次一招</span>
+            </div>
+          </div>
+          <figure class="lesson-cover-card">
+            <img src="../covers/EP030.png" alt="用 Spark 整理活動報名與需求 課程封面">
+            <figcaption class="lesson-cover-info"><small>本集任務</small><strong>今天用 Gemini Spark 整理一份 去識別化的活動報名資料 。 我們會把…</strong></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-content-section" id="lesson-content">
+      <div class="course-shell lesson-layout">
+        <aside class="lesson-sidebar" aria-label="講義工具">
+          <div class="lesson-side-card lesson-toc-card"><strong>本集導覽</strong><nav class="lesson-toc" data-lesson-toc></nav></div>
+          <div class="lesson-side-card">
+            <strong>學習進度</strong>
+            <button class="lesson-complete" type="button" aria-pressed="false" data-complete-lesson>標記本集已完成</button>
+            <div class="lesson-resource-list">
+              <a href="https://www.youtube.com/watch?v=vq81c8TlUpA" target="_blank" rel="noopener noreferrer"><i data-lucide="youtube" aria-hidden="true"></i>觀看本集影片</a>
+
+              <a href="javascript:window.print()"><i data-lucide="printer" aria-hidden="true"></i>列印講義</a>
+            </div>
+          </div>
+        </aside>
+
+        <div>
+          <article class="lesson-body" data-lesson-body><h1>EP030｜用 Spark 整理活動報名與需求</h1>
+<h2>今天只做一件事</h2>
+<p>今天用 Gemini Spark 整理一份<strong>去識別化的活動報名資料</strong>。</p>
+<p>我們會把零散的報名需求整理成：</p>
+<ul><li>工作人員檢查表</li><li>活動前確認項目</li><li>活動前通知草稿</li><li>一張交接卡</li></ul>
+<p>今天不寄信、不發布，也不把真實個人資料交給 AI。</p>
+<hr>
+<h2>先準備一份安全的示範資料</h2>
+<p>第一次練習請使用下面這四筆資料。這些是示範資料，不是真實報名者：</p>
+<ol><li>國小四年級學生，素食，需家長陪同。</li><li>國小二年級學生，無特殊飲食，第一次參加。</li><li>成人學員，需停車資訊。</li><li>國小五年級學生，對花生過敏。</li></ol>
+<p>如果你要換成自己的資料，請先把姓名、電話、Email、地址、學號和可辨識身分的內容拿掉。</p>
+<h3>今天的工作範圍</h3>
+<p>Spark 只負責整理我們提供的文字。它不能替我們確認：</p>
+<ul><li>過敏程度或醫療需求</li><li>家長或陪同者的實際安排</li><li>停車資訊是否正確</li><li>活動是否適合某一位參加者</li></ul>
+<p>這些仍要由老師或工作人員依正式資料確認。</p>
+<hr>
+<h2>STEP 1｜開啟 Spark，建立這次的工作</h2>
+<p>進入 Gemini Spark 的工作區，在提示詞欄貼上下面內容。</p>
+<h3>可直接複製的提示文字</h3>
+<pre><code class="language-text">建立一個名為「EP030 活動報名需求整理」的工作。
+
+請用去識別化的示範資料，協助活動工作人員整理報名需求：
+1. 國小四年級學生，素食，需家長陪同。
+2. 國小二年級學生，無特殊飲食，第一次參加。
+3. 成人學員，需停車資訊。
+4. 國小五年級學生，對花生過敏。
+
+工作目標：先整理成工作人員檢查表，再整理活動前一定要確認的項目，最後產出一份不寄出的活動前通知草稿與交接卡。
+
+限制：只使用上述資料；不要輸出姓名、電話或 Email；不要判定任何人是否適合參加；不要自行承諾活動安排；不要寄出或發布任何訊息。</code></pre>
+<figure><img src="assets/EP030/EP030_step01_anonymized_registration.png" alt="Spark 工作區已填入去識別化的活動報名示範資料" loading="lazy"></figure>
+<blockquote>圖說：先用四筆沒有姓名和聯絡方式的示範資料，讓 Spark 知道這次要整理什麼。</blockquote>
+<p>送出前檢查一次：畫面中沒有真實姓名、電話、Email 或學生可識別資料，再按傳送。</p>
+<hr>
+<h2>STEP 2｜先看工作人員檢查表</h2>
+<p>Spark 回覆後，先找「工作人員檢查表」。</p>
+<p>你應該能看見類似下面的欄位：</p>
+<table><thead><tr><th>編號</th><th>對象類別</th><th>飲食需求</th><th>特殊需求／備註</th></tr></thead><tbody><tr><td>01</td><td>國小四年級學生</td><td>素食</td><td>需家長陪同</td></tr><tr><td>02</td><td>國小二年級學生</td><td>無特殊飲食</td><td>第一次參加</td></tr><tr><td>03</td><td>成人學員</td><td>未特別註記</td><td>需停車資訊</td></tr><tr><td>04</td><td>國小五年級學生</td><td>對花生過敏</td><td>無特別註記</td></tr></tbody></table>
+<figure><img src="assets/EP030/EP030_step02_staff_checklist.png" alt="Spark 產出的工作人員報名檢查表" loading="lazy"></figure>
+<blockquote>圖說：先看 Spark 有沒有把四筆資料放進正確欄位；不要只看表格漂不漂亮。</blockquote>
+<h3>這一步要確認</h3>
+<ul><li>四筆資料都有出現。</li><li>素食、花生過敏、家長陪同、停車資訊沒有漏掉。</li><li>沒有出現原始資料沒有提供的姓名或聯絡方式。</li><li>「未特別註記」沒有被誤寫成「沒有需求」。</li></ul>
+<hr>
+<h2>STEP 3｜請 Spark 分類活動前要確認的事</h2>
+<p>在同一個對話繼續輸入：</p>
+<pre><code class="language-text">請從剛剛的工作人員檢查表中，整理出活動前一定要確認的項目。
+請分成：1. 飲食與過敏 2. 交通與接送 3. 陪同需求 4. 現場工作人員要知道的提醒
+請只根據資料整理，不要自行新增安排。對於資料沒有提供的內容，請標示【待確認】，不要自行猜測。</code></pre>
+<figure><img src="assets/EP030/EP030_step03_risk_prompt.png" alt="Spark 已填入「活動前確認項目」的分類提示" loading="lazy"></figure>
+<blockquote>圖說：這個提示詞要求 Spark 分類資料，也要求資料不足時明確寫出【待確認】。</blockquote>
+<p>送出後，逐類查看結果。</p>
+<figure><img src="assets/EP030/EP030_step04_risk_items.png" alt="Spark 產出的飲食、交通、陪同與現場提醒清單" loading="lazy"></figure>
+<blockquote>圖說：看到【待確認】不是失敗，而是提醒工作人員回頭查正式資料。</blockquote>
+<h3>這一步不要直接照單執行</h3>
+<p>例如「對花生過敏」只能表示報名資料有這項註記，不能由 Spark 推測過敏反應程度，也不能自行承諾餐點一定安全。請把它列入人工確認清單。</p>
+<hr>
+<h2>STEP 4｜請 Spark 先寫一份不寄出的通知草稿</h2>
+<p>在同一個對話輸入：</p>
+<pre><code class="language-text">請寫一份活動前通知草稿。
+請包含：
+1. 活動日期與地點欄位，先用【待填】表示。
+2. 攜帶物品提醒。
+3. 飲食或過敏資料請工作人員再次確認。
+4. 交通與報到提醒。
+語氣清楚、親切，不要像制式公告。
+限制：
+- 不要填入未提供的日期、地點、費用。
+- 不要寄出。
+- 不要顯示個人資料。
+- 不要自行新增活動安排。</code></pre>
+<figure><img src="assets/EP030/EP030_step05_notice_prompt.png" alt="Spark 已填入活動前通知草稿的提示" loading="lazy"></figure>
+<blockquote>圖說：日期、地點和費用都沒有提供，所以提示詞要求 Spark 使用【待填】，不能自己猜。</blockquote>
+<figure><img src="assets/EP030/EP030_step06_notice_draft.png" alt="Spark 產出的活動前通知草稿" loading="lazy"></figure>
+<blockquote>圖說：這一版只當內部草稿，老師補齊資料並確認內容後，才決定是否另行發布。</blockquote>
+<h3>通知草稿要看什麼</h3>
+<ul><li>日期和地點仍是【待填】。</li><li>有提醒工作人員再次核對飲食與過敏資料。</li><li>有報到與交通提醒，但沒有憑空增加集合時間或費用。</li><li>沒有姓名、電話或 Email。</li><li>沒有自動寄出或發布的動作。</li></ul>
+<hr>
+<h2>STEP 5｜把結果整理成交接卡</h2>
+<p>最後輸入：</p>
+<pre><code class="language-text">請把剛剛的活動報名檢查表、活動前確認項目與通知草稿整理成一張交接卡。
+只保留：總報名筆數、飲食需求、過敏提醒、交通需求、陪同需求、通知草稿位置、活動前仍需確認。
+請使用【待確認】標示資料不足的地方，不要自行猜測。不要寄出或發布任何資料。</code></pre>
+<figure><img src="assets/EP030/EP030_step07_handoff_prompt.png" alt="Spark 已填入交接卡整理提示" loading="lazy"></figure>
+<blockquote>圖說：交接卡只保留現場工作人員需要接手的欄位，不把整段對話直接轉交出去。</blockquote>
+<figure><img src="assets/EP030/EP030_step08_handoff_card.png" alt="Spark 產出的 EP030 活動交接卡" loading="lazy"></figure>
+<blockquote>圖說：交接卡整理出 4 筆報名、已知需求與仍要人工確認的內容；它是工作草稿，不是自動核准結果。</blockquote>
+<h3>交接卡應該留下什麼</h3>
+<pre><code class="language-text">【EP030 活動報名交接卡】
+
+總報名筆數：4 筆
+飲食需求：素食 1 筆；無特殊飲食 1 筆；其餘 2 筆【待確認】
+過敏提醒：花生過敏 1 筆；其餘 3 筆【待確認】
+交通需求：需停車資訊 1 筆；其餘 3 筆【待確認】
+陪同需求：需家長陪同 1 筆；其餘 3 筆【待確認】
+通知草稿位置：本次 Spark 對話中的「活動前通知草稿」區塊
+活動前仍需確認：飲食細節、過敏限制、停車資料、陪同人數，以及未提供的其他需求</code></pre>
+<hr>
+<h2>你今天真正學會的是什麼？</h2>
+<p>不是把所有事情交給 Spark 決定，而是把工作拆成四個小步驟：</p>
+<ol><li>先用安全的示範資料建立表格。</li><li>再把資料分成工作人員看得懂的確認類別。</li><li>把通知先留在草稿，不急著發出去。</li><li>最後做成一張方便交接的工作卡。</li></ol>
+<p>這種流程也可以用在課程報名、親子活動、工作坊或校內活動。但每次都要換成當次真正核對過的欄位，不能直接照抄範例。</p>
+<hr>
+<h2>完成前檢查</h2>
+<ul><li>[ ] 我使用的是示範資料或已去識別化的資料。</li><li>[ ] 我確認 Spark 沒有新增姓名、電話、Email 或其他個資。</li><li>[ ] 檢查表的筆數和已知需求都對得上。</li><li>[ ] 資料沒有提供的內容，都標成【待確認】或【待填】。</li><li>[ ] 我沒有把 Spark 的整理結果當成醫療、資格或活動安排的判定。</li><li>[ ] 日期、地點、費用等正式資訊已由老師或工作人員核對。</li><li>[ ] 通知目前仍是草稿，沒有自動寄出或發布。</li><li>[ ] 交接卡已保存到團隊指定的位置，並標明版本或日期。</li></ul>
+<h2>今天記住一句話</h2>
+<p><strong>Spark 可以幫我們把資料整理好，但最後要不要採用，仍由老師和工作人員確認。</strong></p></article>
+
+          <div class="lesson-next">
+            <div><small>下一集 · EP031</small><strong>用 Spark 設定族語文化新聞排程</strong></div>
+          <a href="./EP031.html">前往下一集<i data-lucide="arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer course-footer">
+    <div class="shell footer-bottom"><p>© CALUMAI · AI 族語備課小妙招</p><nav><a href="../">所有課程</a><a href="../../">CALUMAI 首頁</a></nav><p>EP030</p></div>
+  </footer>
+</body>
+</html>
