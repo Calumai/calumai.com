@@ -244,7 +244,9 @@
       return response.json();
     })
     .then((data) => {
-      episodes = Array.isArray(data) ? data : [];
+      episodes = Array.isArray(data)
+        ? data.filter((episode) => /^EP00[1-8]$/.test(String(episode.id || "")))
+        : [];
       episodes.sort((a, b) => String(a.id).localeCompare(String(b.id), "zh-Hant", { numeric: true }));
       updateCourseStats();
       updateLatestCard();
