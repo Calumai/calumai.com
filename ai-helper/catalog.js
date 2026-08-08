@@ -63,6 +63,17 @@
     return handoutName ? `./handouts/${encodeURIComponent(handoutName)}` : "./";
   };
 
+  const latestRegularEpisode = (items) => {
+    const regular = items
+      .map((episode) => {
+        const match = String(episode.id || "").match(/^EP(\d{3})$/);
+        return match ? { episode, number: Number(match[1]) } : null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.number - b.number);
+    return regular.length ? regular[regular.length - 1].episode : items.at(-1);
+  };
+
   const coverUrl = (episode) => {
     const file = String(episode.coverFile || "").trim();
     return file ? `./covers/${encodeURIComponent(file)}` : fallbackCover;
@@ -154,7 +165,7 @@
   };
 
   const updateLatestCard = () => {
-    const latest = episodes.at(-1);
+    const latest = latestRegularEpisode(episodes);
     if (!latest || !latestCard) return;
 
     const image = latestCard.querySelector("img");
