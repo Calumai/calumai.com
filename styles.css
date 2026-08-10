@@ -3568,31 +3568,28 @@ a {
 
 .mission-launch {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(420px, 1.2fr);
-  gap: clamp(34px, 5vw, 76px);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 24px;
   align-items: center;
-  margin-top: 56px;
+  margin-top: 32px;
   border: 1px solid var(--mission-line);
-  background: linear-gradient(135deg, rgba(31, 138, 147, 0.07), rgba(255, 255, 255, 0.96) 48%);
-  padding: clamp(28px, 4vw, 54px);
-  box-shadow: 0 22px 64px rgba(16, 23, 25, 0.07);
+  background: rgba(255, 255, 255, 0.94);
+  padding: 20px 24px;
+  box-shadow: 0 12px 36px rgba(16, 23, 25, 0.045);
 }
 
 .mission-launch-copy h2 {
-  max-width: 620px;
-  margin: 14px 0 0;
+  margin: 0;
   color: var(--mission-ink);
-  font-size: clamp(32px, 4vw, 54px);
-  line-height: 1.1;
-  letter-spacing: -0.035em;
+  font-size: 20px;
+  line-height: 1.35;
 }
 
-.mission-launch-copy > p:not(.mission-launch-label):not(.mission-launch-note) {
-  max-width: 620px;
-  margin: 20px 0 0;
+.mission-launch-copy p {
+  margin: 4px 0 0;
   color: var(--mission-muted);
-  font-size: 16px;
-  line-height: 1.8;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .mission-launch-label {
@@ -3601,45 +3598,22 @@ a {
   align-items: center;
   margin: 0;
   color: var(--mission-accent);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 900;
+  white-space: nowrap;
 }
 
 .mission-launch-label svg,
-.mission-launch-note svg,
-.mission-launch-actions svg,
-.mission-launch-preview span svg {
+.mission-launch-actions svg {
   width: 17px;
   height: 17px;
   flex: 0 0 auto;
 }
 
-.mission-launch-note {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  max-width: 620px;
-  margin: 22px 0 0;
-  border-left: 3px solid rgba(31, 138, 147, 0.34);
-  background: rgba(255, 255, 255, 0.72);
-  padding: 13px 15px;
-  color: var(--mission-green);
-  font-size: 14px;
-  font-weight: 750;
-  line-height: 1.65;
-}
-
-.mission-launch-note svg {
-  margin-top: 3px;
-  color: var(--mission-accent);
-}
-
 .mission-launch-actions {
   display: flex;
-  flex-wrap: wrap;
   gap: 12px;
   align-items: center;
-  margin-top: 26px;
 }
 
 .mission-launch-primary,
@@ -3655,56 +3629,22 @@ a {
 }
 
 .mission-launch-primary {
-  background: var(--mission-accent);
+  background: var(--mission-green);
   color: #ffffff;
 }
 
 .mission-launch-primary:hover {
-  background: var(--mission-green);
+  background: #174d3c;
 }
 
 .mission-launch-secondary {
-  border: 1px solid rgba(31, 138, 147, 0.24);
-  color: var(--mission-accent);
+  padding: 0 6px;
+  color: var(--mission-green);
 }
 
 .mission-launch-secondary:hover {
-  background: var(--mission-accent-soft);
-}
-
-.mission-launch-preview {
-  position: relative;
-  display: block;
-  border: 1px solid var(--mission-line);
-  background: #edf5f4;
-  overflow: hidden;
-  box-shadow: 0 20px 48px rgba(16, 23, 25, 0.12);
-}
-
-.mission-launch-preview img {
-  display: block;
-  width: 100%;
-  height: auto;
-  transition: transform 180ms ease;
-}
-
-.mission-launch-preview span {
-  position: absolute;
-  right: 14px;
-  bottom: 14px;
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  min-height: 40px;
-  background: rgba(16, 23, 25, 0.9);
-  padding: 0 14px;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.mission-launch-preview:hover img {
-  transform: scale(1.012);
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 .mission-latest-section {
@@ -4073,31 +4013,33 @@ a {
   }
 
   .mission-launch {
-    grid-template-columns: 1fr;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .mission-launch-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
   }
 }
 
 @media (max-width: 640px) {
   .mission-launch {
     width: calc(100% - 28px);
-    margin-top: 28px;
-    padding: 24px 20px;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 18px;
   }
 
-  .mission-launch-copy h2 {
-    font-size: 34px;
+  .mission-launch-actions {
+    grid-column: auto;
+    justify-content: stretch;
+    margin-top: 4px;
   }
 
-  .mission-launch-actions,
   .mission-launch-primary,
   .mission-launch-secondary {
-    width: 100%;
-  }
-
-  .mission-launch-preview span {
-    position: static;
-    justify-content: space-between;
-    min-height: 44px;
+    flex: 1 1 0;
   }
 
   .mission-latest-grid {
