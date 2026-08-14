@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <script>
+    if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
+      location.replace("https://" + location.host + location.pathname + location.search + location.hash);
+    }
+  </script>
+  <meta name="description" content="用教材提問：讓 AI 根據來源回答 教學講義：學會先確認來源，再用具體問題請 Gemini Notebook 整理教材，並透過引用回到原文核對答案。">
+  <meta name="theme-color" content="#f7f3ec">
+  <title>[預覽] EP073 用教材提問：讓 AI 根據來源回答｜講義｜CALUMAI</title>
+  <link rel="stylesheet" href="/styles.css?v=20260717-4">
+  <link rel="stylesheet" href="/ai-helper/ai-helper.css?v=20260808-1">
+  <script src="/assets/lucide.min.js" defer></script>
+  <script src="/app.js" defer></script>
+  <script src="/ai-helper/handout.js?v=20260808-1" defer></script>
+</head>
+<body class="course-site course-handout" data-episode="EP073">
+  <a class="skip-link" href="#lesson-content">跳到講義內容</a>
+
+  <header class="site-header course-header" data-header>
+    <a class="brand course-brand" href="/" aria-label="CALUMAI 首頁">
+      <img src="/assets/calumai-logo-mark.png" alt="" width="96" height="96">
+      <span>CALUMAI</span>
+    </a>
+    <button class="menu-toggle icon-button course-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle><i data-lucide="menu" aria-hidden="true"></i></button>
+    <nav class="primary-nav course-nav" id="primary-nav" aria-label="主要導覽" data-nav>
+      <a href="/games/">遊戲介紹</a>
+      <a href="/blog/">製作心得</a>
+      <a href="/ai-helper/" aria-current="page">備課小幫手</a>
+      <a class="nav-cta" href="/tools/">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+    </nav>
+  </header>
+
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+
+  <main class="lesson-main">
+    <section class="course-shell" style="padding-top:18px;">
+      <p class="course-eyebrow">PREVIEW ONLY</p>
+      <p class="lesson-lead" style="margin-top:6px;">這是發布前預覽頁，不會被搜尋引擎收錄。請確認標題、段落、表格與圖片都正常，再改成 published。</p>
+    </section>
+    <section class="lesson-hero">
+      <div class="course-shell">
+        <nav class="lesson-breadcrumb" aria-label="麵包屑">
+          <a href="/">CALUMAI</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <a href="/ai-helper/">備課小幫手</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <span>EP073 講義</span>
+        </nav>
+
+        <div class="lesson-hero-grid">
+          <div>
+            <p class="course-eyebrow">EP073 · NotebookLM / Gemini Book</p>
+            <h1>用教材提問：讓 AI 根據來源回答</h1>
+            <p class="lesson-lead">學會先確認來源，再用具體問題請 Gemini Notebook 整理教材，並透過引用回到原文核對答案。</p>
+            <div class="lesson-meta-row">
+              <span><i data-lucide="clock-3" aria-hidden="true"></i>約 3–5 分鐘</span>
+              <span><i data-lucide="signal-low" aria-hidden="true"></i>零基礎</span>
+              <span><i data-lucide="target" aria-hidden="true"></i>一次一招</span>
+            </div>
+          </div>
+          <figure class="lesson-cover-card">
+            <img src="covers/EP073.png" alt="用教材提問：讓 AI 根據來源回答 課程封面" onerror="this.onerror=null;this.src='../../assets/calumai-logo-mark.png';this.classList.add('is-fallback-cover');">
+            <figcaption class="lesson-cover-info"><small>本集任務</small><strong>學會先確認來源，再用具體問題請 Gemini Notebook 整理教材，並透過…</strong></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-content-section" id="lesson-content">
+      <div class="course-shell lesson-layout">
+        <aside class="lesson-sidebar" aria-label="講義工具">
+          <div class="lesson-side-card lesson-toc-card"><strong>本集導覽</strong><nav class="lesson-toc" data-lesson-toc></nav></div>
+          <div class="lesson-side-card">
+            <strong>學習進度</strong>
+            <button class="lesson-complete" type="button" aria-pressed="false" data-complete-lesson>標記本集已完成</button>
+            <div class="lesson-resource-list">
+              <a href="https://www.youtube.com/watch?v=bOV6D0D3qmE" target="_blank" rel="noopener noreferrer"><i data-lucide="youtube" aria-hidden="true"></i>觀看本集影片</a>
+              
+              <a href="javascript:window.print()"><i data-lucide="printer" aria-hidden="true"></i>列印講義</a>
+            </div>
+          </div>
+        </aside>
+
+        <div>
+          <article class="lesson-body" data-lesson-body><h1>EP073｜用教材提問：讓 AI 根據來源回答</h1>
+<h2>今天只做一件事</h2>
+<p>把一個模糊問題，改寫成 Gemini Notebook 能根據教材回答、老師也能回頭核對的問題。</p>
+<p>今天完成後，你會有：</p>
+<p><strong>一段可重複使用的教材提問格式，以及一份帶有引用的整理結果。</strong></p>
+<hr>
+<h2>為什麼「有放資料」還不夠？</h2>
+<p>如果只問：</p>
+<blockquote>這份教材怎麼教？</blockquote>
+<p>範圍太大，回答容易同時混入教學目標、活動、評量與其他建議，老師反而不知道先用哪一段。</p>
+<p>比較好用的問題會說清楚四件事：</p>
+<ol><li>使用哪些來源。</li><li>要處理哪一個教學主題。</li><li>要整理成什麼格式。</li><li>找不到資料時怎麼標示。</li></ol>
+<hr>
+<h2>今天的示範</h2>
+<p>筆記本裡已經放入一份老師核對過的「日常問候教材」。</p>
+<p>我們要請 Gemini Notebook 找出：</p>
+<ul><li>課堂可用的問候情境。</li><li>教材提供的活動線索。</li><li>每一點來自哪一份來源。</li></ul>
+<p>這一集不請 AI 自己翻譯族語，也不補寫教材沒有提供的句子。</p>
+<hr>
+<h2>開始前先準備</h2>
+<ol><li>打開上一集建立的筆記本。</li><li>確認左側至少有一份可用來源。</li><li>先在心裡決定今天只問一件事。</li></ol>
+<hr>
+<h1>STEP 1｜確認目前勾選的來源</h1>
+<p>在左側來源區，看清楚哪些資料有打勾。</p>
+<h3>畫面要看到</h3>
+<p>來源已完成載入，而且只有今天需要的資料被勾選。</p>
+<figure><img src="assets/EP073/01-source-ready.png" alt="確認目前使用的來源" loading="lazy"></figure>
+<h3>老師要做</h3>
+<p>如果同一本筆記本裡有不同單元，先取消不相關來源。今天做問候活動，就不要同時選進數字、歌謠或其他主題。</p>
+<h3>完成後確認</h3>
+<p>輸入框旁顯示的來源數量，和你預計使用的數量一致。</p>
+<hr>
+<h1>STEP 2｜先打開一份來源看原文</h1>
+<p>點選來源名稱，快速查看標題、內容與版本是不是正確。</p>
+<h3>畫面要看到</h3>
+<p>來源內容能正常開啟，文字不是空白，也不是錯誤版本。</p>
+<figure><img src="assets/EP073/02-open-source.png" alt="打開來源查看原始內容" loading="lazy"></figure>
+<h3>老師要做</h3>
+<p>先找一個等一下可以核對的段落，例如活動目的或情境說明。這樣回答出來時，不會只憑印象判斷。</p>
+<h3>完成後確認</h3>
+<p>你知道這份資料大概在哪一段說了什麼。</p>
+<hr>
+<h1>STEP 3｜先讀筆記本的來源摘要</h1>
+<p>回到對話區，看看工具根據來源顯示的摘要。</p>
+<h3>畫面要看到</h3>
+<p>摘要內容與剛才打開的來源主題一致。</p>
+<figure><img src="assets/EP073/03-chat-summary.png" alt="查看來源摘要" loading="lazy"></figure>
+<h3>老師要做</h3>
+<p>如果摘要已經認錯主題，先回來源區處理，不要在錯誤資料上繼續追問。</p>
+<h3>完成後確認</h3>
+<p>你能用一句話說出目前這本筆記本正在處理什麼。</p>
+<hr>
+<h1>STEP 4｜用四段式寫出問題</h1>
+<p>在對話輸入框貼入下面格式。</p>
+<h2>可直接複製的教材提問</h2>
+<blockquote>請只根據目前勾選的來源，整理「日常問候」課堂可使用的內容。  <br>請分成三欄：①教材明確提供的情境、②老師可以怎麼帶活動、③對應來源與引用。  <br>每一列只放一個重點，使用適合初學老師閱讀的白話。  <br>來源沒有提供的族語詞句、拼寫、發音或文化說明，請標示「來源未提供」，不要自行補寫。</blockquote>
+<h3>畫面要看到</h3>
+<p>完整問題已放入輸入框，不是只有「幫我整理」四個字。</p>
+<figure><img src="assets/EP073/04-write-question.png" alt="在對話區寫入完整問題" loading="lazy"></figure>
+<h3>完成後確認</h3>
+<p>送出前，快速圈出問題裡的「來源、任務、格式、缺資料處理」四部分。</p>
+<hr>
+<h1>STEP 5｜送出後先點引用</h1>
+<p>送出問題，等待回答完成。</p>
+<h3>畫面要看到</h3>
+<p>回答依照指定格式出現，重要段落旁有可點選的引用標記。</p>
+<figure><img src="assets/EP073/05-submit-question.png" alt="送出問題並查看回答" loading="lazy"></figure>
+<h3>老師要做</h3>
+<p>先抽查一到兩個引用：</p>
+<ol><li>點開引用。</li><li>看原文是否真的支持這句回答。</li><li>若只支持一半，就把問題問得更精準或自行修正文句。</li></ol>
+<h3>完成後確認</h3>
+<p>至少有一項回答已經回到原始資料核對，而不是只因文字看起來順就直接使用。</p>
+<hr>
+<h2>一個問題太大時，怎麼拆？</h2>
+<p>原本問題：</p>
+<blockquote>幫我做完整的問候教材。</blockquote>
+<p>可以拆成四次：</p>
+<ol><li>先列出來源中出現的問候情境。</li><li>再整理每個情境對應的教學目標。</li><li>再依指定年級設計一個活動流程。</li><li>最後整理成老師可用的講義草稿。</li></ol>
+<p>每次只做一層，錯誤比較容易看見，也比較容易修。</p>
+<hr>
+<h2>回答不理想時，不用整本重來</h2>
+<h3>回答太長</h3>
+<p>接著說：</p>
+<blockquote>請保留原本引用，把每一點縮成 40 字以內，只留下上課會用到的內容。</blockquote>
+<h3>回答混入別的單元</h3>
+<p>取消不相關來源，再說：</p>
+<blockquote>請重新回答，這次只使用目前勾選的兩份來源。</blockquote>
+<h3>回答沒有說明依據</h3>
+<p>改問：</p>
+<blockquote>請在每一點後標示來源名稱與引用位置。無法找到依據的句子請刪除。</blockquote>
+<h3>引用點開後對不上</h3>
+<p>不要硬用那一句。回到來源原文，重新問更小的問題，或由老師自己整理。</p>
+<hr>
+<h2>放進課堂前，再做一次轉換</h2>
+<p>Notebook 的回答是備課材料，不一定適合原封不動給學生看。</p>
+<p>老師可以把已核對的內容轉成：</p>
+<ul><li>課堂提問卡。</li><li>看圖說話活動順序。</li><li>教師備課摘要。</li><li>下一集要分級的學習單素材。</li></ul>
+<p>學生端只需要看到整理好的教材，不需要看到來源管理與提示文字。</p>
+<hr>
+<h2>完成前最後檢查</h2>
+<p>□ 我只勾選今天需要的來源。</p>
+<p>□ 我先看過至少一段原始內容。</p>
+<p>□ 問題有寫清楚來源、任務、格式與缺資料處理。</p>
+<p>□ 我至少點開一個引用核對。</p>
+<p>□ 我沒有把來源未提供的內容當成教材事實。</p>
+<p>□ 我留下最後使用的問題文字，之後可以重複修改。</p>
+<hr>
+<h2>今天記住一句話就好</h2>
+<p><strong>問得越具體，越容易知道答案能不能用。</strong></p>
+<hr>
+<h2>官方參考</h2>
+<ul><li><a href="https://support.google.com/notebooklm/answer/16179559?hl=zh-Hant" target="_blank" rel="noopener noreferrer">Google 說明：在筆記本中使用對話</a></li></ul>
+<p><strong>下一篇｜EP074 同一份教材做分級學習單</strong></p></article>
+
+          <div class="lesson-next">
+            <div><small>完成 EP073</small><strong>回到課程首頁，繼續下一個小任務。</strong></div>
+          <a href="/ai-helper/">回課程首頁<i data-lucide="arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer course-footer">
+    <div class="shell footer-bottom"><p>© CALUMAI · AI 族語備課小妙招</p><nav><a href="/ai-helper/">所有課程</a><a href="/">CALUMAI 首頁</a></nav><p>EP073</p></div>
+  </footer>
+</body>
+</html>

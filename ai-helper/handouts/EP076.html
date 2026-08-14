@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <script>
+    if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
+      location.replace("https://" + location.host + location.pathname + location.search + location.hash);
+    }
+  </script>
+  <meta name="description" content="生成簡報與教學文件 教學講義：把筆記本中的教材整理結果轉成簡報或教學文件，設定內容、長度與語言，再進行發布前檢查。">
+  <meta name="theme-color" content="#f7f3ec">
+  <title>EP076 生成簡報與教學文件｜講義｜CALUMAI</title>
+  <link rel="stylesheet" href="../../styles.css?v=20260717-4">
+  <link rel="stylesheet" href="../ai-helper.css?v=20260808-1">
+  <script src="../../assets/lucide.min.js" defer></script>
+  <script src="../../app.js" defer></script>
+  <script src="../handout.js?v=20260808-1" defer></script>
+</head>
+<body class="course-site course-handout" data-episode="EP076">
+  <a class="skip-link" href="#lesson-content">跳到講義內容</a>
+
+  <header class="site-header course-header" data-header>
+    <a class="brand course-brand" href="../../" aria-label="CALUMAI 首頁">
+      <img src="../../assets/calumai-logo-mark.png" alt="" width="96" height="96">
+      <span>CALUMAI</span>
+    </a>
+    <button class="menu-toggle icon-button course-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle><i data-lucide="menu" aria-hidden="true"></i></button>
+    <nav class="primary-nav course-nav" id="primary-nav" aria-label="主要導覽" data-nav>
+      <a href="../../games/">遊戲介紹</a>
+      <a href="../../blog/">製作心得</a>
+      <a href="../" aria-current="page">備課小幫手</a>
+      <a class="nav-cta" href="../../tools/">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+    </nav>
+  </header>
+
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+
+  <main class="lesson-main">
+    <section class="lesson-hero">
+      <div class="course-shell">
+        <nav class="lesson-breadcrumb" aria-label="麵包屑">
+          <a href="../../">CALUMAI</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <a href="../">備課小幫手</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <span>EP076 講義</span>
+        </nav>
+
+        <div class="lesson-hero-grid">
+          <div>
+            <p class="course-eyebrow">EP076 · NotebookLM / Gemini Book</p>
+            <h1>生成簡報與教學文件</h1>
+            <p class="lesson-lead">把筆記本中的教材整理結果轉成簡報或教學文件，設定內容、長度與語言，再進行發布前檢查。</p>
+            <div class="lesson-meta-row">
+              <span><i data-lucide="clock-3" aria-hidden="true"></i>約 3–5 分鐘</span>
+              <span><i data-lucide="signal-low" aria-hidden="true"></i>零基礎</span>
+              <span><i data-lucide="target" aria-hidden="true"></i>一次一招</span>
+            </div>
+          </div>
+          <figure class="lesson-cover-card">
+            <img src="../covers/EP076.png" alt="生成簡報與教學文件 課程封面" onerror="this.onerror=null;this.src='../../assets/calumai-logo-mark.png';this.classList.add('is-fallback-cover');">
+            <figcaption class="lesson-cover-info"><small>本集任務</small><strong>把筆記本中的教材整理結果轉成簡報或教學文件，設定內容、長度與語言，再進行發布前檢…</strong></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-content-section" id="lesson-content">
+      <div class="course-shell lesson-layout">
+        <aside class="lesson-sidebar" aria-label="講義工具">
+          <div class="lesson-side-card lesson-toc-card"><strong>本集導覽</strong><nav class="lesson-toc" data-lesson-toc></nav></div>
+          <div class="lesson-side-card">
+            <strong>學習進度</strong>
+            <button class="lesson-complete" type="button" aria-pressed="false" data-complete-lesson>標記本集已完成</button>
+            <div class="lesson-resource-list">
+              <a href="https://www.youtube.com/watch?v=rXTugGai1iU" target="_blank" rel="noopener noreferrer"><i data-lucide="youtube" aria-hidden="true"></i>觀看本集影片</a>
+              
+              <a href="javascript:window.print()"><i data-lucide="printer" aria-hidden="true"></i>列印講義</a>
+            </div>
+          </div>
+        </aside>
+
+        <div>
+          <article class="lesson-body" data-lesson-body><h1>EP076｜生成簡報與教學文件</h1>
+<h2>今天只做一件事</h2>
+<p>把上一集整理好的教材重點，先做成一份可以繼續修改的課堂簡報，再留下老師自己的教學文件。</p>
+<p>完成後會有兩個成果：</p>
+<ol><li>一份頁數不多、順序清楚的簡報草稿。</li><li>一份記錄每頁怎麼教的教師備課稿。</li></ol>
+<p>今天不是叫 AI 把課全部做完，而是先搭好一堂課的骨架。</p>
+<hr>
+<h2>先分清楚兩種成品</h2>
+<table><thead><tr><th>成品</th><th>誰會看</th><th>應該放什麼</th></tr></thead><tbody><tr><td>課堂簡報</td><td>學生</td><td>大字、少量重點、圖片或任務指示</td></tr><tr><td>教學文件</td><td>老師</td><td>目標、帶課說法、時間、材料、備註</td></tr></tbody></table>
+<p>如果把教師備註全塞進投影片，學生會看得很累；如果簡報只有漂亮圖片，老師上課時又找不到流程。兩份分開，反而更好用。</p>
+<hr>
+<h2>今天的示範</h2>
+<p>用「日常問候」的來源，建立 6 頁簡報：</p>
+<ol><li>課程主題。</li><li>看圖暖身。</li><li>聽老師示範。</li><li>兩人練習。</li><li>情境挑戰。</li><li>今天複習。</li></ol>
+<p>族語文字位置先放入老師已核對版本；沒有資料的頁面保留清楚的填寫位置。</p>
+<hr>
+<h2>開始前先準備</h2>
+<ol><li>一個來源範圍清楚的筆記本。</li><li>上一集已核對的教學重點。</li><li>預計上課時間，例如 40 分鐘。</li><li>先決定簡報最多幾頁。</li></ol>
+<hr>
+<h1>STEP 1｜先看目前整理結果能不能支撐一堂課</h1>
+<p>回到對話區，確認已有學習目標、活動順序與教材依據。</p>
+<h3>畫面要看到</h3>
+<p>對話結果中已經有可辨認的教學重點，不是空白筆記本。</p>
+<figure><img src="assets/EP076/01-studio.png" alt="確認可用的教材整理結果" loading="lazy"></figure>
+<h3>老師要做</h3>
+<p>先刪掉不打算放進這一堂課的內容。簡報只有 6 頁，就不要要求塞進整本教材。</p>
+<h3>完成後確認</h3>
+<p>你能先用六句話說完六頁要做什麼。</p>
+<hr>
+<h1>STEP 2｜在工作室選擇簡報</h1>
+<p>到右側工作室，選擇「簡報」或「投影片」功能。</p>
+<h3>畫面要看到</h3>
+<p>簡報建立入口已開啟。</p>
+<figure><img src="assets/EP076/02-slide-deck.png" alt="在工作室選擇簡報" loading="lazy"></figure>
+<h3>老師要做</h3>
+<p>如果畫面同時有報告、資訊圖表等選項，今天只選簡報。一次完成一個成果，比同時生成很多檔案更容易檢查。</p>
+<h3>完成後確認</h3>
+<p>你已進入簡報設定，不是在建立語音或影片摘要。</p>
+<hr>
+<h1>STEP 3｜把頁數、用途與結構寫清楚</h1>
+<h2>可直接複製的簡報焦點</h2>
+<blockquote>請根據目前勾選來源，製作一份給國小中年級使用的 6 頁課堂簡報草稿。  <br>順序為：課程主題、看圖暖身、老師示範、兩人練習、情境挑戰、今天複習。  <br>每頁只放一個主要任務，標題簡短，學生指示使用白話。  <br>族語詞句只使用來源中已提供的原文並保留引用；來源沒有提供時放入【老師填入已核對詞句】。  <br>不要自行加入文化圖紋、服飾說明或來源沒有的圖片敘述。  <br>請另外在每頁備註中寫出老師要說的重點與建議時間。</blockquote>
+<h3>畫面要看到</h3>
+<p>設定視窗裡能選擇簡報類型、長度或自訂焦點。</p>
+<figure><img src="assets/EP076/03-slide-settings.png" alt="設定簡報內容與長度" loading="lazy"></figure>
+<h3>老師要做</h3>
+<p>把「6 頁」「給誰看」「每頁做什麼」明確寫進去。不要只說「做一份好看的簡報」。</p>
+<h3>完成後確認</h3>
+<p>簡報焦點和今天的 40 分鐘課程對得上。</p>
+<hr>
+<h1>STEP 4｜選擇繁體中文，再檢查文字來源</h1>
+<p>在語言設定中選擇繁體中文或自己容易編修的語言。</p>
+<h3>畫面要看到</h3>
+<p>語言選項已開啟，並選到準備使用的語言。</p>
+<figure><img src="assets/EP076/04-language.png" alt="選擇簡報語言" loading="lazy"></figure>
+<h3>老師要做</h3>
+<p>語言設定只控制輸出說明，不代表工具能自動判定族語拼寫。族語內容仍以來源原文為準。</p>
+<h3>完成後確認</h3>
+<p>中文說明使用你要的書寫方式，族語位置也已預留。</p>
+<hr>
+<h1>STEP 5｜生成後，先檢查順序再看設計</h1>
+<p>按下生成，完成後逐頁查看。</p>
+<h3>畫面要看到</h3>
+<p>設定完成並可開始生成簡報。</p>
+<figure><img src="assets/EP076/05-generate.png" alt="送出簡報生成" loading="lazy"></figure>
+<h3>老師要做</h3>
+<p>第一輪只檢查：</p>
+<ol><li>六頁都有出現。</li><li>順序符合課堂節奏。</li><li>每頁只有一個主要任務。</li><li>沒有多出來源未提供的族語內容。</li></ol>
+<p>第二輪才檢查字級、圖片、留白與整體風格。</p>
+<h3>完成後確認</h3>
+<p>你能照著六頁順序，把這堂課從開始帶到結束。</p>
+<hr>
+<h2>再把簡報轉成教師備課文件</h2>
+<p>簡報確定順序後，回到對話區貼入：</p>
+<blockquote>請依照剛才 6 頁簡報的順序，整理一份教師備課稿。每一頁列出：教學目的、老師說明重點、學生要做的事、建議時間、需要準備的材料、課堂中要觀察的反應。請保留來源引用，族語詞句不足處以【老師填入】標示。</blockquote>
+<p>把結果存入自己的教案文件。這份教師版可以詳細，學生版簡報則維持簡潔。</p>
+<hr>
+<h2>一頁簡報的檢查方法</h2>
+<p>每頁問四題：</p>
+<ol><li>學生一眼知道現在要做什麼嗎？</li><li>字能在教室後方看清楚嗎？</li><li>圖片真的幫助理解，還是只是裝飾？</li><li>老師的詳細備註有沒有留在教師文件，而不是塞在畫面上？</li></ol>
+<hr>
+<h2>如果結果不理想</h2>
+<h3>簡報頁數太多</h3>
+<p>說：</p>
+<blockquote>請縮成 6 頁，合併重複內容，但保留原本的課程順序。</blockquote>
+<h3>每頁文字太滿</h3>
+<p>說：</p>
+<blockquote>每頁只保留一個標題、一個學生任務和最多三個短句；詳細說明移到教師備註。</blockquote>
+<h3>畫面出現不適合的文化元素</h3>
+<p>移除該圖，改用老師提供的真實照片、核准素材或簡單無文化指涉的情境圖。</p>
+<h3>族語文字有變動</h3>
+<p>直接從正式來源貼回已核對版本，不讓工具憑印象修字。</p>
+<hr>
+<h2>完成前最後檢查</h2>
+<p>□ 簡報和教師備課稿分開整理。</p>
+<p>□ 簡報頁數符合上課時間。</p>
+<p>□ 每頁只有一個主要任務。</p>
+<p>□ 學生指示簡短、能直接操作。</p>
+<p>□ 教師備課稿包含時間、材料與觀察重點。</p>
+<p>□ 族語內容已回到正式來源核對。</p>
+<p>□ 我會在實際上課前完整播放並試講一次。</p>
+<hr>
+<h2>今天記住一句話就好</h2>
+<p><strong>簡報帶學生往前走，教師文件幫老師知道下一步怎麼帶。</strong></p>
+<hr>
+<h2>官方參考</h2>
+<ul><li><a href="https://support.google.com/notebooklm/answer/16757456?hl=zh-Hant" target="_blank" rel="noopener noreferrer">Google 說明：建立簡報</a></li><li><a href="https://support.google.com/notebooklm/answer/16206563?hl=zh-Hant" target="_blank" rel="noopener noreferrer">Google 說明：工作室可建立的成果</a></li></ul>
+<p><strong>下一篇｜EP077 用心智圖整理教材與課程架構</strong></p></article>
+
+          <div class="lesson-next">
+            <div><small>下一集 · EP077</small><strong>用心智圖整理教材與課程架構</strong></div>
+          <a href="./EP077.html">前往下一集<i data-lucide="arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer course-footer">
+    <div class="shell footer-bottom"><p>© CALUMAI · AI 族語備課小妙招</p><nav><a href="../">所有課程</a><a href="../../">CALUMAI 首頁</a></nav><p>EP076</p></div>
+  </footer>
+</body>
+</html>

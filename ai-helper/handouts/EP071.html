@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <script>
+    if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
+      location.replace("https://" + location.host + location.pathname + location.search + location.hash);
+    }
+  </script>
+  <meta name="description" content="認識 Gemini Notebook：族語老師的備課神器 教學講義：先看懂 Gemini Notebook 的來源、對話與工作室三個區域，建立一套族語老師找得到資料、問得出問題、做得出成果…">
+  <meta name="theme-color" content="#f7f3ec">
+  <title>EP071 認識 Gemini Notebook：族語老師的備課神器｜講義｜CALUMAI</title>
+  <link rel="stylesheet" href="../../styles.css?v=20260717-4">
+  <link rel="stylesheet" href="../ai-helper.css?v=20260808-1">
+  <script src="../../assets/lucide.min.js" defer></script>
+  <script src="../../app.js" defer></script>
+  <script src="../handout.js?v=20260808-1" defer></script>
+</head>
+<body class="course-site course-handout" data-episode="EP071">
+  <a class="skip-link" href="#lesson-content">跳到講義內容</a>
+
+  <header class="site-header course-header" data-header>
+    <a class="brand course-brand" href="../../" aria-label="CALUMAI 首頁">
+      <img src="../../assets/calumai-logo-mark.png" alt="" width="96" height="96">
+      <span>CALUMAI</span>
+    </a>
+    <button class="menu-toggle icon-button course-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle><i data-lucide="menu" aria-hidden="true"></i></button>
+    <nav class="primary-nav course-nav" id="primary-nav" aria-label="主要導覽" data-nav>
+      <a href="../../games/">遊戲介紹</a>
+      <a href="../../blog/">製作心得</a>
+      <a href="../" aria-current="page">備課小幫手</a>
+      <a class="nav-cta" href="../../tools/">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+    </nav>
+  </header>
+
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+
+  <main class="lesson-main">
+    <section class="lesson-hero">
+      <div class="course-shell">
+        <nav class="lesson-breadcrumb" aria-label="麵包屑">
+          <a href="../../">CALUMAI</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <a href="../">備課小幫手</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <span>EP071 講義</span>
+        </nav>
+
+        <div class="lesson-hero-grid">
+          <div>
+            <p class="course-eyebrow">EP071 · NotebookLM / Gemini Book</p>
+            <h1>認識 Gemini Notebook：族語老師的備課神器</h1>
+            <p class="lesson-lead">先看懂 Gemini Notebook 的來源、對話與工作室三個區域，建立一套族語老師找得到資料、問得出問題、做得出成果的備課方式。</p>
+            <div class="lesson-meta-row">
+              <span><i data-lucide="clock-3" aria-hidden="true"></i>約 3–5 分鐘</span>
+              <span><i data-lucide="signal-low" aria-hidden="true"></i>零基礎</span>
+              <span><i data-lucide="target" aria-hidden="true"></i>一次一招</span>
+            </div>
+          </div>
+          <figure class="lesson-cover-card">
+            <img src="../covers/EP071.png" alt="認識 Gemini Notebook：族語老師的備課神器 課程封面" onerror="this.onerror=null;this.src='../../assets/calumai-logo-mark.png';this.classList.add('is-fallback-cover');">
+            <figcaption class="lesson-cover-info"><small>本集任務</small><strong>先看懂 Gemini Notebook 的來源、對話與工作室三個區域，建立一套族…</strong></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-content-section" id="lesson-content">
+      <div class="course-shell lesson-layout">
+        <aside class="lesson-sidebar" aria-label="講義工具">
+          <div class="lesson-side-card lesson-toc-card"><strong>本集導覽</strong><nav class="lesson-toc" data-lesson-toc></nav></div>
+          <div class="lesson-side-card">
+            <strong>學習進度</strong>
+            <button class="lesson-complete" type="button" aria-pressed="false" data-complete-lesson>標記本集已完成</button>
+            <div class="lesson-resource-list">
+              <a href="https://www.youtube.com/watch?v=nyd1lLpEimc" target="_blank" rel="noopener noreferrer"><i data-lucide="youtube" aria-hidden="true"></i>觀看本集影片</a>
+              
+              <a href="javascript:window.print()"><i data-lucide="printer" aria-hidden="true"></i>列印講義</a>
+            </div>
+          </div>
+        </aside>
+
+        <div>
+          <article class="lesson-body" data-lesson-body><h1>EP071｜認識 Gemini Notebook：族語老師的備課神器</h1>
+<h2>今天只做一件事</h2>
+<p>先不要急著把整學期教材全部丟進去。</p>
+<p>這一集只要看懂 Gemini Notebook 的三個工作區：</p>
+<p><strong>來源、對話、工作室。</strong></p>
+<p>看完之後，你會知道資料放哪裡、問題在哪裡問，以及學習卡、簡報、心智圖等成果要去哪裡製作。</p>
+<blockquote>Google 已把 NotebookLM 更名為 Gemini Notebook。不同帳號的介面可能仍看到 NotebookLM 名稱，但本系列說的是同一項工具。</blockquote>
+<hr>
+<h2>為什麼族語老師會需要它？</h2>
+<p>備課時，我們常同時打開詞表、講義、簡報、教案和網站。資料一多，最花時間的不是「沒有資料」，而是找不到哪一份才是現在要用的版本。</p>
+<p>Gemini Notebook 的用法可以先想成：</p>
+<p><strong>把一個教學主題需要的資料放進同一本筆記本，再請工具只根據這些資料協助整理。</strong></p>
+<p>例如要準備「日常問候」單元，可以把已核定詞表、老師自己的教案與課堂活動說明放在同一本筆記本裡。之後詢問時，回答旁邊還能回看引用來源，比在一般聊天視窗裡四處找資料容易得多。</p>
+<hr>
+<h2>今天做完會拿到什麼？</h2>
+<p>今天不做正式教材，只完成一張工作區導覽卡：</p>
+<table><thead><tr><th>工作區</th><th>放什麼／做什麼</th><th>今天先記住</th></tr></thead><tbody><tr><td>來源</td><td>PDF、文件、網站、音訊或貼上的文字</td><td>這是回答的依據</td></tr><tr><td>對話</td><td>輸入問題、查看回答與引用</td><td>在這裡整理教材</td></tr><tr><td>工作室</td><td>產生語音摘要、簡報、心智圖、學習卡、測驗等</td><td>在這裡把資料變成成果</td></tr></tbody></table>
+<hr>
+<h2>開始前先準備</h2>
+<ol><li>一個可以登入 Google 的瀏覽器。</li><li>一份可以拿來練習、沒有學生個資的教材檔。</li><li>先決定一個小主題，例如「日常問候」或「數字練習」。</li></ol>
+<p>第一次只用一個主題就好。不同單元先不要混在一起，等熟悉後再慢慢增加。</p>
+<hr>
+<h1>STEP 1｜打開 Gemini Notebook</h1>
+<p>進入 Gemini Notebook 後，先停在首頁或筆記本清單，不要急著上傳資料。</p>
+<h3>畫面要看到</h3>
+<p>畫面上可以建立新筆記本，也能看到以前建立過的筆記本。</p>
+<figure><img src="assets/EP071/01-tool-home.png" alt="Gemini Notebook 首頁與筆記本入口" loading="lazy"></figure>
+<h3>老師要做</h3>
+<p>先確認自己登入的是準備教材用的 Google 帳號，再觀察頁面上建立筆記本的位置。</p>
+<h3>完成後確認</h3>
+<p>你能指出「建立筆記本」在哪裡，就可以繼續。</p>
+<hr>
+<h1>STEP 2｜認識左邊的「來源」</h1>
+<p>打開一個練習筆記本後，先看左側。</p>
+<p>來源區就是這本筆記本的資料櫃。之後加入的 PDF、Google 文件、網站或貼上的文字，都會列在這裡。</p>
+<h3>畫面要看到</h3>
+<p>左側有來源清單，以及新增來源的入口。</p>
+<figure><img src="assets/EP071/02-source-panel.png" alt="Gemini Notebook 的來源區" loading="lazy"></figure>
+<h3>老師要做</h3>
+<p>記住一個判斷方法：</p>
+<p><strong>回答怪怪的時候，先回來源區檢查目前到底勾選了哪些資料。</strong></p>
+<h3>完成後確認</h3>
+<p>你知道來源區不是存放最後講義，而是存放「AI 回答時要依據的資料」。</p>
+<hr>
+<h1>STEP 3｜認識中間的「對話」</h1>
+<p>中間是和筆記本提問的地方。</p>
+<p>來源準備好後，可以在這裡請它摘要、比較、整理成表格，或找出某一段內容。回答內若有引用標記，可以點開回到原始來源核對。</p>
+<h3>畫面要看到</h3>
+<p>中間有輸入問題的位置，以及根據來源產生的回答。</p>
+<figure><img src="assets/EP071/03-chat-panel.png" alt="Gemini Notebook 的對話區" loading="lazy"></figure>
+<h3>老師要做</h3>
+<p>先學會問一個範圍很小的問題，例如：「這份教材分成哪三個部分？」不要一開始就要求完成整套課程。</p>
+<h3>完成後確認</h3>
+<p>你知道問題要在中間輸入，而且回答仍要回到來源核對。</p>
+<hr>
+<h1>STEP 4｜認識右邊的「工作室」</h1>
+<p>右側工作室是把來源加工成其他學習形式的地方。</p>
+<p>不同帳號與版本可能看到語音摘要、簡報、心智圖、報告、學習卡、測驗、資訊圖表或資料表等功能。</p>
+<h3>畫面要看到</h3>
+<p>右側有一組可以選擇的成果類型。</p>
+<figure><img src="assets/EP071/04-studio-panel.png" alt="Gemini Notebook 的工作室" loading="lazy"></figure>
+<h3>老師要做</h3>
+<p>今天先不要全部按。只要找到「工作室」，知道後面的課程會從這裡製作成果即可。</p>
+<h3>完成後確認</h3>
+<p>你能說出來源、對話、工作室三區的用途。</p>
+<hr>
+<h1>STEP 5｜回到筆記本清單，建立整理習慣</h1>
+<p>一個單元建立一本筆記本，名稱要讓三個月後的自己也看得懂。</p>
+<h3>建議命名</h3>
+<p><code>年級或班級_主題_用途_版本</code></p>
+<p>例如：</p>
+<p><code>國小中年級_日常問候_備課資料_V1</code></p>
+<h3>畫面要看到</h3>
+<p>筆記本清單中的名稱能清楚分辨，不是每一本都叫「未命名筆記本」。</p>
+<figure><img src="assets/EP071/05-notebook-list.png" alt="Gemini Notebook 的筆記本清單" loading="lazy"></figure>
+<h3>完成後確認</h3>
+<p>你知道哪一本對應哪個教學單元，也知道資料要從哪裡再打開。</p>
+<hr>
+<h2>可直接複製的第一次測試文字</h2>
+<p>把一份練習資料加入後，可以先問：</p>
+<blockquote>請只根據目前勾選的來源，用三點告訴我這份教材的主題、適用對象，以及可以設計成哪一個小型課堂活動。每一點都標出引用依據；來源沒有寫到的內容請直接說沒有資料。</blockquote>
+<p>這段不是要它替老師決定課程，而是測試：</p>
+<ol><li>問題有沒有送到對話區。</li><li>回答有沒有根據來源。</li><li>引用能不能回到原文。</li></ol>
+<hr>
+<h2>放回族語備課會怎麼用？</h2>
+<p>以「日常問候」為例，可以把一本筆記本分工成：</p>
+<ul><li>來源：正式詞表、核定教材、老師教案。</li><li>對話：找出本課重點、整理活動順序、比較兩份版本。</li><li>工作室：做成課堂簡報、學習卡或複習測驗。</li></ul>
+<p>學生不用進入這個工作區。老師把整理好的成果帶進課堂即可。</p>
+<hr>
+<h2>如果畫面和講義不同</h2>
+<h3>找不到 Gemini Notebook</h3>
+<p>可以先從 Google 應用程式選單尋找，或直接開啟 Notebook 網站。部分帳號仍可能顯示 NotebookLM 名稱。</p>
+<h3>看不到某個工作室功能</h3>
+<p>帳號、地區與方案可能讓功能不同。先完成來源與對話練習，不需要卡在某一顆按鈕。</p>
+<h3>回答內容太散</h3>
+<p>先檢查來源是否混入不同主題，再把問題縮小成一件事。</p>
+<hr>
+<h2>完成前最後檢查</h2>
+<p>□ 我已經找到 Gemini Notebook。</p>
+<p>□ 我知道左邊是來源、中間是對話、右邊是工作室。</p>
+<p>□ 我準備的是沒有學生個資的練習資料。</p>
+<p>□ 我知道回答可以點引用回到原文。</p>
+<p>□ 我已經想好第一本筆記本的清楚名稱。</p>
+<hr>
+<h2>今天記住一句話就好</h2>
+<p><strong>來源放對地方，問題才有可靠的起點。</strong></p>
+<hr>
+<h2>官方參考</h2>
+<ul><li><a href="https://blog.google/innovation-and-ai/products/gemini-notebook/notebooklm-gemini-notebook/" target="_blank" rel="noopener noreferrer">Google：NotebookLM 更名為 Gemini Notebook</a></li><li><a href="https://support.google.com/notebooklm/answer/16164461?hl=zh-Hant" target="_blank" rel="noopener noreferrer">Google 說明：認識 NotebookLM／Gemini Notebook</a></li></ul>
+<p><strong>下一篇｜EP072 建立筆記本：認識四種教材來源</strong></p></article>
+
+          <div class="lesson-next">
+            <div><small>下一集 · EP072</small><strong>建立筆記本：認識四種教材來源</strong></div>
+          <a href="./EP072.html">前往下一集<i data-lucide="arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer course-footer">
+    <div class="shell footer-bottom"><p>© CALUMAI · AI 族語備課小妙招</p><nav><a href="../">所有課程</a><a href="../../">CALUMAI 首頁</a></nav><p>EP071</p></div>
+  </footer>
+</body>
+</html>
