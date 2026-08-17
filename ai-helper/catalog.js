@@ -33,8 +33,15 @@
 
   const cleanSummary = (summary = "") => summary.replace(/\s+/g, " ").trim();
 
-  const renderCard = (episode, index) => {
-    const isLatest = index === episodes.length - 1;
+  const getLatestEpisode = () => episodes.reduce((latest, episode) => {
+    if (!latest) return episode;
+    const latestTime = Date.parse(latest.publishedAt || "") || 0;
+    const episodeTime = Date.parse(episode.publishedAt || "") || 0;
+    return episodeTime >= latestTime ? episode : latest;
+  }, null);
+
+  const renderCard = (episode) => {
+    const isLatest = episode.id === getLatestEpisode()?.id;
     const tag = getToolTag(episode.title);
     const handoutName = (episode.handoutFile || "").replace(/\.md$/i, ".html");
     const hasVideo = Boolean(episode.embedUrl);
@@ -51,6 +58,11 @@
           <i data-lucide="play"></i>觀看本集
         </button>`
       : `<span class="episode-watch episode-watch-unavailable">影片尚未上架</span>`;
+    const subtitleAction = episode.srtFile
+      ? `<a class="episode-link" href="./captions/${escapeHtml(episode.srtFile)}" download>
+          <i data-lucide="captions"></i>字幕
+        </a>`
+      : "";
 
     return `
       <article class="episode-card" data-search-text="${escapeHtml(`${episode.id} ${episode.title} ${episode.summary} ${tag}`.toLowerCase())}">
@@ -67,9 +79,7 @@
             <a class="episode-link" href="./handouts/${escapeHtml(handoutName)}">
               <i data-lucide="book-open"></i>閱讀講義
             </a>
-            <a class="episode-link" href="./captions/${escapeHtml(episode.srtFile)}" download>
-              <i data-lucide="captions"></i>字幕
-            </a>
+            ${subtitleAction}
           </div>
         </div>
       </article>`;
@@ -81,12 +91,12 @@
       return;
     }
 
-    episodeGrid.innerHTML = items.map((episode) => renderCard(episode, episodes.indexOf(episode))).join("");
+    episodeGrid.innerHTML = items.map((episode) => renderCard(episode)).join("");
     window.lucide?.createIcons();
   };
 
   const updateLatestCard = () => {
-    const latest = episodes.at(-1);
+    const latest = getLatestEpisode();
     if (!latest || !latestCard) return;
 
     const image = latestCard.querySelector("img");
