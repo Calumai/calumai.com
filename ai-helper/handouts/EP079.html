@@ -13,10 +13,10 @@
   <meta name="theme-color" content="#f7f3ec">
   <title>EP079 Gemini 可以去除浮水印了！｜講義｜CALUMAI</title>
   <link rel="stylesheet" href="../../styles.css?v=20260717-4">
-  <link rel="stylesheet" href="../ai-helper.css?v=20260720-1">
+  <link rel="stylesheet" href="../ai-helper.css?v=20260817-1">
   <script src="../../assets/lucide.min.js" defer></script>
   <script src="../../app.js" defer></script>
-  <script src="../handout.js?v=20260720-1" defer></script>
+  <script src="../handout.js?v=20260817-1" defer></script>
 </head>
 <body class="course-site course-handout" data-episode="EP079">
   <a class="skip-link" href="#lesson-content">跳到講義內容</a>
@@ -81,6 +81,9 @@
         </aside>
 
         <div>
+          <div class="lesson-inline-video">
+            <iframe src="https://www.youtube.com/embed/JwFywG0s1O4" title="EP079 Gemini 可以去除浮水印了！ 教學影片" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          </div>
           <article class="lesson-body" data-lesson-body><h1>EP079｜Gemini 可以去除浮水印了！</h1>
 <h2>今天只做一件事</h2>
 <p>把 Gemini 的「媒體浮水印」從<strong>開啟</strong>改成<strong>關閉</strong>，再重新生成一張圖片，確認新圖片不再顯示 Gemini 的可見浮水印。</p>
@@ -94,12 +97,12 @@
 <hr>
 <h2>STEP 1｜先看原本生成的圖片</h2>
 <p>影片一開始，畫面上已經有一張 Gemini 生成的飛機圖片。這張圖是等等要比較的「設定變更前」版本。</p>
-<figure><img src="/assets/EP079/01-before.png" alt="設定變更前的 Gemini 生成圖片" loading="lazy"></figure>
+<figure><img src="assets/EP079/01-before.png" alt="設定變更前的 Gemini 生成圖片" loading="lazy"></figure>
 <p>先不用下載，也不用修改提示文字。今天要測試的是設定，所以前後兩次最好使用同一段提示文字。</p>
 <hr>
 <h2>STEP 2｜打開左下角的帳號選單</h2>
 <p>在 Gemini 畫面左下角，點自己的帳號名稱或頭像，打開選單。</p>
-<figure><img src="/assets/EP079/02-open-settings.png" alt="打開 Gemini 左下角帳號選單" loading="lazy"></figure>
+<figure><img src="assets/EP079/02-open-settings.png" alt="打開 Gemini 左下角帳號選單" loading="lazy"></figure>
 <p>選單中如果看得到「媒體浮水印」，就可以繼續下一步。</p>
 <h3>沒看到怎麼辦？</h3>
 <p>先重新整理頁面，再確認自己使用的是正確帳號。這項功能可能分批開放；若選單仍沒有「媒體浮水印」，先不要亂改其他設定，等帳號取得功能後再操作。</p>
@@ -108,19 +111,19 @@
 <p>把游標移到「媒體浮水印」，右側會出現兩個選項：</p>
 <ul><li>開啟</li><li>關閉</li></ul>
 <p>影片中的帳號原本勾選的是「開啟」。</p>
-<figure><img src="/assets/EP079/03-watermark-menu.png" alt="媒體浮水印原本設為開啟" loading="lazy"></figure>
+<figure><img src="assets/EP079/03-watermark-menu.png" alt="媒體浮水印原本設為開啟" loading="lazy"></figure>
 <p>這個選項控制的是 Gemini 生成媒體上<strong>看得到的 Gemini 浮水印</strong>。</p>
 <hr>
 <h2>STEP 4｜選擇「關閉」</h2>
 <p>點一下「關閉」。看到勾選記號移到「關閉」，才算設定完成。</p>
-<figure><img src="/assets/EP079/04-watermark-off.png" alt="將媒體浮水印切換為關閉" loading="lazy"></figure>
+<figure><img src="assets/EP079/04-watermark-off.png" alt="將媒體浮水印切換為關閉" loading="lazy"></figure>
 <p>設定改好後，不需要另外找儲存按鈕。回到對話畫面，準備重新生成圖片。</p>
 <h3>先記住</h3>
 <p>這個設定不會回頭修改已經生成的舊圖片。要看到差異，需要在關閉後<strong>重新生成一張新圖片</strong>。</p>
 <hr>
 <h2>STEP 5｜用同一段提示文字再生成一次</h2>
 <p>影片中把原本的飛機提示文字再送出一次，用相同內容比較設定前後的結果。</p>
-<figure><img src="/assets/EP079/05-send-again.png" alt="使用相同提示文字重新生成圖片" loading="lazy"></figure>
+<figure><img src="assets/EP079/05-send-again.png" alt="使用相同提示文字重新生成圖片" loading="lazy"></figure>
 <p>老師練習時，也可以改用下面這段和族語課堂較接近的範例。</p>
 <h2>可直接複製的提示文字</h2>
 <pre><code class="language-text">請生成一張適合國小族語課堂使用的情境插圖。
@@ -144,14 +147,14 @@
 <hr>
 <h2>STEP 6｜檢查新生成的圖片</h2>
 <p>等待新圖片完成後，先看圖片角落是否還有 Gemini 的可見浮水印。</p>
-<figure><img src="/assets/EP079/06-clean-result.png" alt="關閉設定後重新生成的圖片" loading="lazy"></figure>
+<figure><img src="assets/EP079/06-clean-result.png" alt="關閉設定後重新生成的圖片" loading="lazy"></figure>
 <p>接著再檢查圖片本身：</p>
 <ul><li>人物、動作和場景是否符合提示文字。</li><li>圖片裡有沒有亂碼或不需要的文字。</li><li>有沒有校名、Logo、學生資料或未要求的文化元素。</li><li>留白位置是否足夠放教材文字。</li></ul>
 <p>浮水印消失，只代表畫面比較乾淨，<strong>不代表圖片內容一定適合直接上課</strong>。</p>
 <hr>
 <h2>STEP 7｜再確認設定真的關閉</h2>
 <p>最後再打開一次左下角帳號選單，進入「媒體浮水印」，確認勾選記號仍在「關閉」。</p>
-<figure><img src="/assets/EP079/07-confirm-off.png" alt="再次確認媒體浮水印維持關閉" loading="lazy"></figure>
+<figure><img src="assets/EP079/07-confirm-off.png" alt="再次確認媒體浮水印維持關閉" loading="lazy"></figure>
 <p>如果下次又看到可見浮水印，也可以先回到這裡確認設定有沒有改變。</p>
 <hr>
 <h2>開啟與關閉有什麼差別？</h2>
