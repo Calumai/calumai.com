@@ -465,6 +465,16 @@
     "managedBy": "blog-content"
   },
   {
+    "id": "EP079",
+    "title": "Gemini 可以去除浮水印了！",
+    "summary": "打開 Gemini 的媒體浮水印設定，從「開啟」切換成「關閉」，再用同一段提示文字重新生成圖片，確認新圖片不再顯示可見的 Gemini 浮水印。",
+    "embedUrl": "https://www.youtube.com/embed/JwFywG0s1O4",
+    "srtFile": null,
+    "handoutFile": "EP079.md",
+    "coverFile": "EP079.png",
+    "publishedAt": "2026-08-17T15:42:03.323Z"
+  },
+  {
     "id": "SP001",
     "contentType": "handout",
     "contentLabel": "圖文講義",

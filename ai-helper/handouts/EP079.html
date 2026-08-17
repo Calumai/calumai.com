@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <script>
+    if (location.protocol === "http:" && !["localhost", "127.0.0.1"].includes(location.hostname)) {
+      location.replace("https://" + location.host + location.pathname + location.search + location.hash);
+    }
+  </script>
+  <meta name="description" content="Gemini 可以去除浮水印了！ 教學講義：打開 Gemini 的媒體浮水印設定，從「開啟」切換成「關閉」，再用同一段提示文字重新生成圖片，確認新圖片不再顯示可見的…">
+  <meta name="theme-color" content="#f7f3ec">
+  <title>EP079 Gemini 可以去除浮水印了！｜講義｜CALUMAI</title>
+  <link rel="stylesheet" href="../../styles.css?v=20260717-4">
+  <link rel="stylesheet" href="../ai-helper.css?v=20260720-1">
+  <script src="../../assets/lucide.min.js" defer></script>
+  <script src="../../app.js" defer></script>
+  <script src="../handout.js?v=20260720-1" defer></script>
+</head>
+<body class="course-site course-handout" data-episode="EP079">
+  <a class="skip-link" href="#lesson-content">跳到講義內容</a>
+
+  <header class="site-header course-header" data-header>
+    <a class="brand course-brand" href="../../" aria-label="CALUMAI 首頁">
+      <img src="../../assets/calumai-logo-mark.png" alt="" width="96" height="96">
+      <span>CALUMAI</span>
+    </a>
+    <button class="menu-toggle icon-button course-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="開啟選單" data-menu-toggle><i data-lucide="menu" aria-hidden="true"></i></button>
+    <nav class="primary-nav course-nav" id="primary-nav" aria-label="主要導覽" data-nav>
+      <a href="../../games/">遊戲介紹</a>
+      <a href="../../blog/">製作心得</a>
+      <a href="../" aria-current="page">備課小幫手</a>
+      <a class="nav-cta" href="../../tools/">小工具<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+    </nav>
+  </header>
+
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+
+  <main class="lesson-main">
+    <section class="lesson-hero">
+      <div class="course-shell">
+        <nav class="lesson-breadcrumb" aria-label="麵包屑">
+          <a href="../../">CALUMAI</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <a href="../">備課小幫手</a><i data-lucide="chevron-right" aria-hidden="true"></i>
+          <span>EP079 講義</span>
+        </nav>
+
+        <div class="lesson-hero-grid">
+          <div>
+            <p class="course-eyebrow">EP079 · Gemini</p>
+            <h1>Gemini 可以去除浮水印了！</h1>
+            <p class="lesson-lead">打開 Gemini 的媒體浮水印設定，從「開啟」切換成「關閉」，再用同一段提示文字重新生成圖片，確認新圖片不再顯示可見的 Gemini 浮水印。</p>
+            <div class="lesson-meta-row">
+              <span><i data-lucide="clock-3" aria-hidden="true"></i>約 3–5 分鐘</span>
+              <span><i data-lucide="signal-low" aria-hidden="true"></i>零基礎</span>
+              <span><i data-lucide="target" aria-hidden="true"></i>一次一招</span>
+            </div>
+          </div>
+          <figure class="lesson-cover-card">
+            <img src="../covers/EP079.png" alt="Gemini 可以去除浮水印了！ 課程封面">
+            <figcaption class="lesson-cover-info"><small>本集任務</small><strong>打開 Gemini 的媒體浮水印設定，從「開啟」切換成「關閉」，再用同一段提示文…</strong></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-content-section" id="lesson-content">
+      <div class="course-shell lesson-layout">
+        <aside class="lesson-sidebar" aria-label="講義工具">
+          <div class="lesson-side-card lesson-toc-card"><strong>本集導覽</strong><nav class="lesson-toc" data-lesson-toc></nav></div>
+          <div class="lesson-side-card">
+            <strong>學習進度</strong>
+            <button class="lesson-complete" type="button" aria-pressed="false" data-complete-lesson>標記本集已完成</button>
+            <div class="lesson-resource-list">
+              <a href="https://www.youtube.com/watch?v=JwFywG0s1O4" target="_blank" rel="noopener noreferrer"><i data-lucide="youtube" aria-hidden="true"></i>觀看本集影片</a>
+              
+              <a href="javascript:window.print()"><i data-lucide="printer" aria-hidden="true"></i>列印講義</a>
+            </div>
+          </div>
+        </aside>
+
+        <div>
+          <article class="lesson-body" data-lesson-body><h1>EP079｜Gemini 可以去除浮水印了！</h1>
+<h2>今天只做一件事</h2>
+<p>把 Gemini 的「媒體浮水印」從<strong>開啟</strong>改成<strong>關閉</strong>，再重新生成一張圖片，確認新圖片不再顯示 Gemini 的可見浮水印。</p>
+<p>完成後，你會知道：</p>
+<ol><li>「媒體浮水印」設定在哪裡。</li><li>怎麼把它關閉。</li><li>為什麼舊圖片不會自動改變。</li><li>關閉可見浮水印後，圖片仍可能保留哪些 AI 標記。</li></ol>
+<blockquote>本集處理的是 Gemini 自己提供的「媒體浮水印」設定，不是教你移除別人的簽名、品牌標誌或版權浮水印。</blockquote>
+<hr>
+<h2>開始前先準備</h2>
+<ul><li>登入可以使用 Gemini 生圖功能的 Google 帳號。</li><li>準備一段不含學生姓名、照片或其他個資的生圖提示文字。</li><li>如果剛才已經生成過圖片，可以保留在畫面上，等等用來比較開啟與關閉後的差異。</li></ul>
+<p>不同帳號、地區或版本看到的功能可能不完全相同。本講義畫面記錄於 <strong>2026 年 8 月 16 日</strong>。</p>
+<hr>
+<h2>STEP 1｜先看原本生成的圖片</h2>
+<p>影片一開始，畫面上已經有一張 Gemini 生成的飛機圖片。這張圖是等等要比較的「設定變更前」版本。</p>
+<figure><img src="/assets/EP079/01-before.png" alt="設定變更前的 Gemini 生成圖片" loading="lazy"></figure>
+<p>先不用下載，也不用修改提示文字。今天要測試的是設定，所以前後兩次最好使用同一段提示文字。</p>
+<hr>
+<h2>STEP 2｜打開左下角的帳號選單</h2>
+<p>在 Gemini 畫面左下角，點自己的帳號名稱或頭像，打開選單。</p>
+<figure><img src="/assets/EP079/02-open-settings.png" alt="打開 Gemini 左下角帳號選單" loading="lazy"></figure>
+<p>選單中如果看得到「媒體浮水印」，就可以繼續下一步。</p>
+<h3>沒看到怎麼辦？</h3>
+<p>先重新整理頁面，再確認自己使用的是正確帳號。這項功能可能分批開放；若選單仍沒有「媒體浮水印」，先不要亂改其他設定，等帳號取得功能後再操作。</p>
+<hr>
+<h2>STEP 3｜打開「媒體浮水印」</h2>
+<p>把游標移到「媒體浮水印」，右側會出現兩個選項：</p>
+<ul><li>開啟</li><li>關閉</li></ul>
+<p>影片中的帳號原本勾選的是「開啟」。</p>
+<figure><img src="/assets/EP079/03-watermark-menu.png" alt="媒體浮水印原本設為開啟" loading="lazy"></figure>
+<p>這個選項控制的是 Gemini 生成媒體上<strong>看得到的 Gemini 浮水印</strong>。</p>
+<hr>
+<h2>STEP 4｜選擇「關閉」</h2>
+<p>點一下「關閉」。看到勾選記號移到「關閉」，才算設定完成。</p>
+<figure><img src="/assets/EP079/04-watermark-off.png" alt="將媒體浮水印切換為關閉" loading="lazy"></figure>
+<p>設定改好後，不需要另外找儲存按鈕。回到對話畫面，準備重新生成圖片。</p>
+<h3>先記住</h3>
+<p>這個設定不會回頭修改已經生成的舊圖片。要看到差異，需要在關閉後<strong>重新生成一張新圖片</strong>。</p>
+<hr>
+<h2>STEP 5｜用同一段提示文字再生成一次</h2>
+<p>影片中把原本的飛機提示文字再送出一次，用相同內容比較設定前後的結果。</p>
+<figure><img src="/assets/EP079/05-send-again.png" alt="使用相同提示文字重新生成圖片" loading="lazy"></figure>
+<p>老師練習時，也可以改用下面這段和族語課堂較接近的範例。</p>
+<h2>可直接複製的提示文字</h2>
+<pre><code class="language-text">請生成一張適合國小族語課堂使用的情境插圖。
+
+圖片用途：
+給學生進行「日常問候」的看圖說話暖身活動。
+
+畫面內容：
+白天的教室門口，兩位學生見面後自然揮手問候。
+人物動作清楚，背景只保留教室門、窗戶和少量校園元素。
+
+風格：
+溫暖、清楚、構圖簡單，適合放進國小教材。
+
+限制：
+- 圖片中不要出現任何文字。
+- 不要出現真實校名、Logo、水印或學生個資。
+- 不要自行加入文化服飾或文化圖紋。
+- 保留右側留白，方便老師後續加入教材文字。</code></pre>
+<p>如果你要精確比較設定差異，就讓開啟與關閉兩次都使用同一段提示文字，不要同時更換畫面內容或風格。</p>
+<hr>
+<h2>STEP 6｜檢查新生成的圖片</h2>
+<p>等待新圖片完成後，先看圖片角落是否還有 Gemini 的可見浮水印。</p>
+<figure><img src="/assets/EP079/06-clean-result.png" alt="關閉設定後重新生成的圖片" loading="lazy"></figure>
+<p>接著再檢查圖片本身：</p>
+<ul><li>人物、動作和場景是否符合提示文字。</li><li>圖片裡有沒有亂碼或不需要的文字。</li><li>有沒有校名、Logo、學生資料或未要求的文化元素。</li><li>留白位置是否足夠放教材文字。</li></ul>
+<p>浮水印消失，只代表畫面比較乾淨，<strong>不代表圖片內容一定適合直接上課</strong>。</p>
+<hr>
+<h2>STEP 7｜再確認設定真的關閉</h2>
+<p>最後再打開一次左下角帳號選單，進入「媒體浮水印」，確認勾選記號仍在「關閉」。</p>
+<figure><img src="/assets/EP079/07-confirm-off.png" alt="再次確認媒體浮水印維持關閉" loading="lazy"></figure>
+<p>如果下次又看到可見浮水印，也可以先回到這裡確認設定有沒有改變。</p>
+<hr>
+<h2>開啟與關閉有什麼差別？</h2>
+<table><thead><tr><th>項目</th><th>開啟</th><th>關閉</th></tr></thead><tbody><tr><td>新生成媒體的可見 Gemini 浮水印</td><td>可能顯示</td><td>不顯示</td></tr><tr><td>已經生成的舊圖片</td><td>不會改變</td><td>不會自動去除</td></tr><tr><td>圖片內容是否正確</td><td>仍需檢查</td><td>仍需檢查</td></tr><tr><td>使用權與來源紀錄</td><td>仍需確認</td><td>仍需確認</td></tr><tr><td>隱形 SynthID 等 AI 標記</td><td>可能保留</td><td>仍可能保留</td></tr></tbody></table>
+<p>Google 說明指出，Gemini 生成或編輯的媒體可能包含不可見的 SynthID。也就是說，關閉畫面上的可見浮水印，不等於抹除所有 AI 生成資訊。</p>
+<hr>
+<h2>常見問題</h2>
+<h3>我按了「關閉」，舊圖片的浮水印怎麼還在？</h3>
+<p>正常。設定只會影響之後新生成的媒體。請用原提示文字重新生成，再檢查新圖片。</p>
+<h3>選單裡沒有「媒體浮水印」</h3>
+<p>先重新整理、重新登入並確認帳號。若還是沒有，可能是功能尚未開放到這個帳號、地區或方案。</p>
+<h3>關閉後，圖片仍被辨識為 AI 生成，正常嗎？</h3>
+<p>正常。可見浮水印與不可見的 SynthID 是不同的標記。關閉前者，不代表後者一定消失。</p>
+<h3>可以用這個功能移除網路圖片上的浮水印嗎？</h3>
+<p>不可以。本集只操作 Gemini 自己提供的生成設定。別人的簽名、攝影浮水印、品牌標誌與版權資訊都不應擅自移除。</p>
+<hr>
+<h2>放進教材前再做一次</h2>
+<ol><li>下載新生成的圖片。</li><li>用清楚的檔名保存，例如 <code>EP079_日常問候_無可見浮水印_v1.png</code>。</li><li>把最後使用的提示文字一起保存。</li><li>在簡報或排版工具加入已核對的教材文字。</li><li>正式發布前，重新看一次圖片內容、來源與使用權。</li></ol>
+<p>適當時仍應標示圖片由 AI 協助生成，不要因為畫面上沒有標記，就把 AI 圖片當成真實照片或真人作品。</p>
+<hr>
+<h2>完成前最後檢查</h2>
+<p>□ 我已經把「媒體浮水印」切換成「關閉」。</p>
+<p>□ 我是在關閉設定後重新生成新圖片，不是只看舊圖。</p>
+<p>□ 新圖片沒有顯示 Gemini 的可見浮水印。</p>
+<p>□ 圖片內容符合這次的教材用途。</p>
+<p>□ 圖中沒有亂碼、學生個資或未要求的文化元素。</p>
+<p>□ 我保存了圖片、提示文字和版本名稱。</p>
+<p>□ 我知道關閉可見浮水印，不代表不可見的 AI 標記一定消失。</p>
+<hr>
+<h2>今天記住一句話就好</h2>
+<p><strong>先關閉媒體浮水印，再重新生成；舊圖片不會自己改變。</strong></p>
+<hr>
+<h2>參考資料</h2>
+<ul><li><a href="https://support.google.com/gemini/answer/16722517?hl=zh-Hant" target="_blank" rel="noopener noreferrer">Google 說明：驗證 AI 生成的圖像、影片和音訊</a></li></ul>
+<blockquote>操作畫面記錄於 2026 年 8 月 16 日。Gemini 的介面、功能名稱與開放範圍可能隨帳號、地區或方案調整。</blockquote>
+<hr>
+<p><strong>下一篇｜EP080 建立自己的族語字典資料庫</strong></p></article>
+
+          <div class="lesson-next">
+            <div><small>完成 EP079</small><strong>回到課程首頁，繼續下一個小任務。</strong></div>
+          <a href="../">回課程首頁<i data-lucide="arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer course-footer">
+    <div class="shell footer-bottom"><p>© CALUMAI · AI 族語備課小妙招</p><nav><a href="../">所有課程</a><a href="../../">CALUMAI 首頁</a></nav><p>EP079</p></div>
+  </footer>
+</body>
+</html>

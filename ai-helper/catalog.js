@@ -15,14 +15,6 @@
   const dialogClose = dialog?.querySelector("[data-dialog-close]");
 
   let episodes = [];
-  const fallbackCover = "../assets/calumai-logo-mark.png";
-  const tracks = [
-    { id: "intro", label: "導論", description: "先建立 AI 備課的基本觀念與安全感。" },
-    { id: "chatgpt", label: "ChatGPT", description: "練習把備課、活動、學習單交給 ChatGPT 協助。" },
-    { id: "gemini", label: "Gemini", description: "用 Gemini 做教材整理、活動發想與 Google 生態系備課。" },
-    { id: "notebooklm", label: "NotebookLM / Gemini Book", description: "把講義、文本與資料整理成可查詢的備課筆記。" },
-    { id: "other", label: "其他", description: "尚未歸到固定路線的 AI100 內容。" }
-  ];
 
   const escapeHtml = (value = "") => String(value)
     .replaceAll("&", "&amp;")
@@ -31,90 +23,38 @@
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 
-  const getTrack = (episode = {}) => {
-    const raw = String(episode.track || "").trim().toLowerCase();
-    const found = tracks.find((track) => track.id === raw);
-    if (found) return found;
-
-    const text = `${episode.title || ""} ${episode.summary || ""}`.toLowerCase();
-    if (text.includes("notebook") || text.includes("gemini book")) return tracks.find((track) => track.id === "notebooklm");
-    if (text.includes("gemini")) return tracks.find((track) => track.id === "gemini");
-    if (text.includes("chatgpt") || text.includes("chat gpt")) return tracks.find((track) => track.id === "chatgpt");
-    return tracks.find((track) => track.id === "intro");
-  };
-
-  const getToolTag = (episodeOrTitle = "") => {
-    if (typeof episodeOrTitle === "object" && episodeOrTitle) {
-      return episodeOrTitle.trackLabel || getTrack(episodeOrTitle).label;
-    }
-
-    const text = String(episodeOrTitle).toLowerCase();
+  const getToolTag = (title = "") => {
+    const text = title.toLowerCase();
     if (text.includes("notebook")) return "NotebookLM";
     if (text.includes("gemini")) return "Gemini";
     if (text.includes("chatgpt")) return "ChatGPT";
-    return "導論";
+    return "AI 入門";
   };
 
-  const hasVideo = (episode) => Boolean(episode?.embedUrl) && episode?.contentType !== "handout";
   const cleanSummary = (summary = "") => summary.replace(/\s+/g, " ").trim();
-
-  const handoutUrl = (episode) => {
-    const handoutName = (episode.handoutFile || "").replace(/\.md$/i, ".html");
-    return handoutName ? `./handouts/${encodeURIComponent(handoutName)}` : "./";
-  };
-
-  const latestRegularEpisode = (items) => {
-    const regular = items
-      .map((episode) => {
-        const match = String(episode.id || "").match(/^EP(\d{3})$/);
-        return match ? { episode, number: Number(match[1]) } : null;
-      })
-      .filter(Boolean)
-      .sort((a, b) => a.number - b.number);
-    return regular.length ? regular[regular.length - 1].episode : items.at(-1);
-  };
-
-  const coverUrl = (episode) => {
-    const file = String(episode.coverFile || "").trim();
-    return file ? `./covers/${encodeURIComponent(file)}` : fallbackCover;
-  };
-
-  const fallbackImage = (image) => {
-    if (!image || image.dataset.fallbackReady === "true") return;
-    image.dataset.fallbackReady = "true";
-    image.addEventListener("error", () => {
-      if (image.src.endsWith("/assets/calumai-logo-mark.png")) return;
-      image.src = fallbackCover;
-      image.classList.add("is-fallback-cover");
-    });
-  };
 
   const renderCard = (episode, index) => {
     const isLatest = index === episodes.length - 1;
-    const tag = getToolTag(episode);
-    const videoLesson = hasVideo(episode);
-    const contentKind = episode.contentLabel || (videoLesson ? "影片課程" : "圖文講義");
-    const searchText = `${episode.id} ${episode.title} ${episode.summary} ${tag} ${contentKind}`.toLowerCase();
-    const cover = `
-          <img src="${escapeHtml(coverUrl(episode))}" alt="${escapeHtml(episode.title)} 封面" loading="lazy">
-          <span class="episode-play${videoLesson ? "" : " episode-read"}" aria-hidden="true"><i data-lucide="${videoLesson ? "play" : "book-open"}"></i></span>`;
-    const coverLink = videoLesson
-      ? `<button class="episode-cover-button" type="button" data-play-episode="${escapeHtml(episode.id)}" aria-label="播放 ${escapeHtml(episode.title)}">${cover}</button>`
-      : `<a class="episode-cover-button" href="${escapeHtml(handoutUrl(episode))}" aria-label="閱讀 ${escapeHtml(episode.title)}">${cover}</a>`;
-    const watchAction = videoLesson
+    const tag = getToolTag(episode.title);
+    const handoutName = (episode.handoutFile || "").replace(/\.md$/i, ".html");
+    const hasVideo = Boolean(episode.embedUrl);
+    const cover = hasVideo
+      ? `<button class="episode-cover-button" type="button" data-play-episode="${escapeHtml(episode.id)}" aria-label="播放 ${escapeHtml(episode.title)}">
+          <img src="./covers/${escapeHtml(episode.coverFile)}" alt="${escapeHtml(episode.title)} 封面" loading="lazy">
+          <span class="episode-play" aria-hidden="true"><i data-lucide="play"></i></span>
+        </button>`
+      : `<div class="episode-cover-button episode-cover-button-static">
+          <img src="./covers/${escapeHtml(episode.coverFile)}" alt="${escapeHtml(episode.title)} 封面" loading="lazy">
+        </div>`;
+    const videoAction = hasVideo
       ? `<button class="episode-watch" type="button" data-play-episode="${escapeHtml(episode.id)}">
-              <i data-lucide="play"></i>觀看影片
-            </button>`
-      : "";
-    const captionAction = episode.srtFile
-      ? `<a class="episode-link" href="./captions/${escapeHtml(episode.srtFile)}" download>
-              <i data-lucide="captions"></i>字幕
-            </a>`
-      : "";
+          <i data-lucide="play"></i>觀看本集
+        </button>`
+      : `<span class="episode-watch episode-watch-unavailable">影片尚未上架</span>`;
 
     return `
-      <article class="episode-card" data-search-text="${escapeHtml(searchText)}">
-        ${coverLink}
+      <article class="episode-card" data-search-text="${escapeHtml(`${episode.id} ${episode.title} ${episode.summary} ${tag}`.toLowerCase())}">
+        ${cover}
         <div class="episode-card-body">
           <div class="episode-meta">
             <span class="episode-number">${escapeHtml(episode.id)}${isLatest ? " · 最新" : ""}</span>
@@ -123,11 +63,13 @@
           <h3>${escapeHtml(episode.title)}</h3>
           <p class="episode-summary">${escapeHtml(cleanSummary(episode.summary))}</p>
           <div class="episode-actions">
-            ${watchAction}
-            <a class="episode-link" href="${escapeHtml(handoutUrl(episode))}">
+            ${videoAction}
+            <a class="episode-link" href="./handouts/${escapeHtml(handoutName)}">
               <i data-lucide="book-open"></i>閱讀講義
             </a>
-            ${captionAction}
+            <a class="episode-link" href="./captions/${escapeHtml(episode.srtFile)}" download>
+              <i data-lucide="captions"></i>字幕
+            </a>
           </div>
         </div>
       </article>`;
@@ -135,37 +77,16 @@
 
   const renderEpisodes = (items) => {
     if (!items.length) {
-      episodeGrid.innerHTML = '<div class="course-empty">目前找不到符合條件的 AI-100 內容。</div>';
+      episodeGrid.innerHTML = '<div class="course-empty">找不到符合的課程，換一個關鍵字試試看。</div>';
       return;
     }
 
-    const sections = tracks.map((track) => {
-      const trackItems = items.filter((episode) => getTrack(episode).id === track.id);
-      if (!trackItems.length) return "";
-
-      return `
-        <section class="episode-track-section" id="track-${escapeHtml(track.id)}">
-          <div class="episode-track-head">
-            <div>
-              <p class="course-eyebrow">${escapeHtml(track.label)}</p>
-              <h3>${escapeHtml(track.label)} 路線</h3>
-              <p>${escapeHtml(track.description)}</p>
-            </div>
-            <span class="episode-track-count">${trackItems.length} 篇</span>
-          </div>
-          <div class="episode-grid">
-            ${trackItems.map((episode) => renderCard(episode, episodes.indexOf(episode))).join("")}
-          </div>
-        </section>`;
-    }).join("");
-
-    episodeGrid.innerHTML = sections;
-    episodeGrid.querySelectorAll("img").forEach(fallbackImage);
+    episodeGrid.innerHTML = items.map((episode) => renderCard(episode, episodes.indexOf(episode))).join("");
     window.lucide?.createIcons();
   };
 
   const updateLatestCard = () => {
-    const latest = latestRegularEpisode(episodes);
+    const latest = episodes.at(-1);
     if (!latest || !latestCard) return;
 
     const image = latestCard.querySelector("img");
@@ -175,14 +96,13 @@
     const playButton = latestCard.querySelector("[data-play-episode]");
 
     if (image) {
-      fallbackImage(image);
-      image.src = coverUrl(latest);
+      image.src = `./covers/${latest.coverFile}`;
       image.alt = `${latest.title} 封面`;
     }
     if (number) number.textContent = latest.id;
     if (title) title.textContent = latest.title;
     if (summary) summary.textContent = cleanSummary(latest.summary);
-    if (playButton && hasVideo(latest)) playButton.dataset.playEpisode = latest.id;
+    if (playButton) playButton.dataset.playEpisode = latest.id;
   };
 
   const updateCourseStats = () => {
@@ -196,12 +116,15 @@
     }
 
     const first = episodes[0];
-    if (first && firstLessonLink) firstLessonLink.href = handoutUrl(first);
+    if (first && firstLessonLink) {
+      const handoutName = (first.handoutFile || "").replace(/\.md$/i, ".html");
+      firstLessonLink.href = `./handouts/${handoutName}`;
+    }
   };
 
   const openVideo = (episodeId) => {
     const episode = episodes.find((item) => item.id === episodeId);
-    if (!episode || !hasVideo(episode) || !dialog || !dialogFrame) return;
+    if (!episode || !episode.embedUrl || !dialog || !dialogFrame) return;
 
     dialogTitle.textContent = `${episode.id}｜${episode.title}`;
     const separator = episode.embedUrl.includes("?") ? "&" : "?";
@@ -234,7 +157,7 @@
   searchInput?.addEventListener("input", () => {
     const keyword = searchInput.value.trim().toLowerCase();
     const filtered = keyword
-      ? episodes.filter((episode) => `${episode.id} ${episode.title} ${episode.summary} ${getToolTag(episode)} ${episode.track || ""} ${episode.contentLabel || ""}`.toLowerCase().includes(keyword))
+      ? episodes.filter((episode) => `${episode.id} ${episode.title} ${episode.summary} ${getToolTag(episode.title)}`.toLowerCase().includes(keyword))
       : episodes;
     renderEpisodes(filtered);
   });
@@ -263,6 +186,6 @@
     })
     .catch((error) => {
       console.error("Unable to load episodes", error);
-      episodeGrid.innerHTML = '<div class="course-empty">AI-100 內容暫時載入失敗，請稍後再試。</div>';
+      episodeGrid.innerHTML = '<div class="course-empty">課程清單暫時載入失敗，請重新整理頁面。</div>';
     });
 })();
