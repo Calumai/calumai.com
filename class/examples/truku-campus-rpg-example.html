@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>太魯閣族語校園大冒險 Truku RPG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+TC:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #1a1a24;
+            color: #ffffff;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .font-pixel {
+            font-family: 'DotGothic16', monospace;
+        }
+
+        /* 經典 NES / Pixel UI 樣式 */
+        .pixel-box {
+            background-color: #2a2d3d;
+            border: 4px solid #fff;
+            box-shadow: 0 0 0 4px #000, 0 8px 0 0 rgba(0,0,0,0.5);
+            border-radius: 4px;
+        }
+
+        .pixel-btn {
+            background: #3b82f6;
+            border: 3px solid #ffffff;
+            box-shadow: inset -3px -3px 0px 0px #1d4ed8, 0 4px 0 #000;
+            transition: all 0.05s ease;
+        }
+
+        .pixel-btn:active {
+            transform: translateY(2px);
+            box-shadow: inset -3px -3px 0px 0px #1d4ed8, 0 2px 0 #000;
+        }
+
+        /* Canvas 防模糊 */
+        canvas {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        /* 自訂滾動條 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 bg-slate-950 text-slate-100">
+
+    <!-- 頂部標題與狀態列 -->
+    <header class="w-full max-w-4xl flex flex-wrap justify-between items-center bg-slate-900 border-2 border-slate-700 p-3 rounded-xl mb-2 shadow-lg gap-2">
+        <div class="flex items-center gap-3">
+            <div class="bg-amber-600 text-white p-2.5 rounded-lg border border-amber-400 font-black text-lg sm:text-xl flex items-center gap-2">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>太魯閣族語大冒險</span>
+            </div>
+            <div class="text-xs sm:text-sm text-slate-300 hidden md:block">
+                <span class="text-amber-400 font-bold">Truku Classroom RPG</span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+            <!-- 任務進度 -->
+            <div class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-2">
+                <i class="fa-solid fa-scroll text-amber-400"></i>
+                <span>稱號: <strong id="player-title" class="text-amber-300">族語新手</strong></span>
+            </div>
+            <!-- 單詞庫按鈕 -->
+            <button onclick="toggleWordDeck()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg font-bold border border-indigo-400 flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-book-bookmark"></i>
+                <span>字卡庫 (<span id="card-count">0</span>/12)</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- 主遊戲容器 -->
+    <main class="w-full max-w-4xl relative flex flex-col items-center">
+        <!-- Canvas 遊戲地圖畫面 -->
+        <div class="relative w-full overflow-hidden rounded-xl border-4 border-amber-600 bg-slate-900 shadow-2xl flex justify-center items-center">
+            <canvas id="gameCanvas" width="800" height="480" class="w-full h-auto max-h-[70vh] block bg-black"></canvas>
+            
+            <!-- 地圖名稱與區域指示 -->
+            <div id="map-name-badge" class="absolute top-3 left-3 bg-black/80 text-amber-300 px-3 py-1 rounded-md text-xs sm:text-sm font-bold border border-amber-500/50 flex items-center gap-2">
+                <i class="fa-solid fa-location-dot"></i> <span id="map-name-text">太魯閣族語教室</span>
+            </div>
+
+            <!-- 操作輔助浮示 -->
+            <div class="absolute top-3 right-3 bg-black/80 text-slate-300 px-2.5 py-1 rounded-md text-xs hidden sm:flex items-center gap-2 border border-slate-700">
+                <span>[WASD/方向鍵] 移動</span> | <span>[Space/E] 互動</span>
+            </div>
+
+            <!-- 移動控制器 (手機/觸控專用) -->
+            <div class="absolute bottom-3 left-3 md:hidden flex flex-col items-center gap-1 opacity-80 hover:opacity-100 transition">
+                <button ontouchstart="handleTouchStart('up')" ontouchend="handleTouchEnd('up')" class="w-10 h-10 bg-slate-800 text-white rounded-lg border border-slate-600 active:bg-amber-600"><i class="fa-solid fa-arrow-up"></i></button>
+                <div class="flex gap-4">
+                    <button ontouchstart="handleTouchStart('left')" ontouchend="handleTouchEnd('left')" class="w-10 h-10 bg-slate-800 text-white rounded-lg border border-slate-600 active:bg-amber-600"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button ontouchstart="handleTouchStart('right')" ontouchend="handleTouchEnd('right')" class="w-10 h-10 bg-slate-800 text-white rounded-lg border border-slate-600 active:bg-amber-600"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <button ontouchstart="handleTouchStart('down')" ontouchend="handleTouchEnd('down')" class="w-10 h-10 bg-slate-800 text-white rounded-lg border border-slate-600 active:bg-amber-600"><i class="fa-solid fa-arrow-down"></i></button>
+            </div>
+
+            <!-- 觸控互動按鈕 (手機專用) -->
+            <div class="absolute bottom-4 right-4 md:hidden">
+                <button onclick="interactAction()" class="w-14 h-14 bg-amber-500 active:bg-amber-600 text-slate-950 font-black rounded-full border-2 border-white shadow-lg text-lg flex items-center justify-center">
+                    互動
+                </button>
+            </div>
+        </div>
+
+        <!-- 任務指引面板 -->
+        <div class="w-full bg-slate-900 border-2 border-slate-800 rounded-xl p-3 mt-2 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs sm:text-sm">
+            <div class="flex items-center gap-2 text-amber-400">
+                <i class="fa-solid fa-bullhorn text-base"></i>
+                <span class="font-bold">當前任務：</span>
+                <span id="current-quest-desc" class="text-slate-200">去和前方的 Mtgsa (老師) 對話，開始族語課吧！</span>
+            </div>
+            <div class="text-slate-400 flex items-center gap-3">
+                <span id="quest-step-badge" class="bg-amber-950 text-amber-300 px-2 py-0.5 rounded border border-amber-800 text-xs">任務 1/4</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- 對話與族語選擇題 Modal -->
+    <div id="dialogue-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6">
+        <div class="w-full max-w-2xl bg-slate-900 border-4 border-amber-500 rounded-2xl p-4 sm:p-6 shadow-2xl relative flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+            
+            <!-- NPC 資訊頭像 -->
+            <div class="flex items-center gap-4 border-b border-slate-800 pb-3">
+                <div id="npc-avatar" class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-amber-600 border-2 border-white flex items-center justify-center text-2xl sm:text-3xl text-white shadow-md">
+                    👨‍🏫
+                </div>
+                <div>
+                    <h3 id="npc-name" class="text-lg sm:text-xl font-black text-amber-400">Mtgsa (老師)</h3>
+                    <p id="npc-role" class="text-xs sm:text-sm text-slate-400">太魯閣族語教師</p>
+                </div>
+            </div>
+
+            <!-- 族語對話題幹 -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-amber-500/30 flex flex-col gap-1.5">
+                <p id="dialogue-truku" class="text-xl sm:text-2xl font-bold text-amber-300 font-pixel tracking-wide leading-relaxed">
+                    Miyah ka mtgsa da!
+                </p>
+                <p id="dialogue-phonetic" class="text-xs sm:text-sm text-indigo-300 italic">
+                    [ 讀音指引：Miyah ka mtgsa da ]
+                </p>
+            </div>
+
+            <!-- 提示引導與測驗區 -->
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-amber-400">
+                    <i class="fa-solid fa-circle-question text-base"></i>
+                    <span>這句族語是什麼意思呢？請選擇正確的中文翻譯：</span>
+                </div>
+
+                <!-- 動態選項區 -->
+                <div id="dialogue-options-grid" class="flex flex-col gap-2 my-1">
+                    <!-- 由 JavaScript 動態注入選項按鈕 -->
+                </div>
+
+                <!-- 反饋提示區 -->
+                <div id="dialogue-feedback" class="hidden p-2.5 rounded-lg text-center font-bold text-xs sm:text-sm"></div>
+
+                <!-- 解答確認 -->
+                <div id="dialogue-zh" class="hidden text-sm sm:text-base text-amber-200 bg-amber-950/40 p-3 rounded-lg border border-amber-800/60 font-bold">
+                    💡 正確翻譯：老師來了！
+                </div>
+            </div>
+
+            <!-- 下一句按鈕 (答對後開啟) -->
+            <div class="flex justify-end pt-1 border-t border-slate-800">
+                <button id="dialogue-next-btn" onclick="nextDialogue()" class="hidden w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-2.5 rounded-xl border-2 border-white shadow-md transition flex items-center justify-center gap-2">
+                    <span>繼續對話</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 測驗與挑戰 Modal (拼寫 / 詞序重組 / 情境問答) -->
+    <div id="quiz-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6">
+        <div class="w-full max-w-2xl bg-slate-900 border-4 border-indigo-500 rounded-2xl p-5 sm:p-6 shadow-2xl relative flex flex-col gap-4">
+            
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <span id="quiz-type-icon" class="bg-indigo-600 text-white p-2 rounded-lg text-lg"><i class="fa-solid fa-brain"></i></span>
+                    <h3 id="quiz-title" class="text-lg sm:text-xl font-black text-indigo-300">族語挑戰考驗</h3>
+                </div>
+                <span id="quiz-badge" class="bg-indigo-950 text-indigo-300 px-3 py-1 rounded-full text-xs border border-indigo-700 font-bold">考驗模式</span>
+            </div>
+
+            <!-- 題目描述 -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                <p id="quiz-prompt" class="text-base sm:text-lg text-slate-100 font-bold mb-2">請完成以下挑戰：</p>
+                <div id="quiz-extra-box" class="hidden my-2 p-3 bg-indigo-950/50 rounded-lg border border-indigo-800/50 text-amber-300 text-sm"></div>
+            </div>
+
+            <!-- 答題互動區 -->
+            <div id="quiz-interactive-area" class="min-h-[140px] flex flex-col justify-center gap-3">
+                <!-- 內容由 JavaScript 動態生成 -->
+            </div>
+
+            <!-- 結果反饋與按鈕 -->
+            <div id="quiz-feedback" class="hidden p-3 rounded-lg text-center font-bold text-sm sm:text-base"></div>
+
+            <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+                <button id="quiz-submit-btn" onclick="submitQuizAnswer()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-2.5 rounded-xl border-2 border-indigo-300 shadow-md">
+                    送出答案
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 單字庫與圖鑑 Modal -->
+    <div id="deck-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6">
+        <div class="w-full max-w-3xl bg-slate-900 border-4 border-amber-500 rounded-2xl p-5 sm:p-6 shadow-2xl relative flex flex-col max-h-[85vh]">
+            
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-book-open text-amber-400 text-2xl"></i>
+                    <div>
+                        <h3 class="text-xl font-black text-amber-400">太魯閣族語單詞手冊</h3>
+                        <p class="text-xs text-slate-400">112年情境族語：上課用語與生活例句</p>
+                    </div>
+                </div>
+                <button onclick="toggleWordDeck()" class="text-slate-400 hover:text-white text-2xl px-2">&times;</button>
+            </div>
+
+            <div id="word-cards-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-y-auto pr-1">
+                <!-- 動態注入單字卡 -->
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
+                <span>提示：探索校園與 NPC 對話可解鎖更多字卡</span>
+                <button onclick="toggleWordDeck()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-bold">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 頁尾聲明 -->
+    <footer class="w-full max-w-4xl text-center text-xs text-slate-500 py-2">
+        <p>族語 E 樂園教材改編 ｜ 財團法人原住民族語言研究發展基金會 © 太魯閣語學習 RPG 專案</p>
+    </footer>
+
+    <!-- 遊戲邏輯腳本 -->
+    <script>
+        // ==========================================
+        // 1. 遊戲資料庫 (完整對話與單詞)
+        // ==========================================
+        const VOCABULARY_LIST = [
+            { id: 'v1', truku: 'Ngangut', zh: '廁所', ex: 'mha ku ngangut han. (我要去廁所。)', category: '校園設施' },
+            { id: 'v2', truku: 'Mluqih', zh: '受傷', ex: 'Mluqih baga mu. (我的手受傷了。)', category: '健康身體' },
+            { id: 'v3', truku: 'Qsuqi', zh: '遲到', ex: 'qsuqi ku dhuq da! (抱歉，我遲到了!)', category: '課堂用語' },
+            { id: 'v4', truku: 'mcilux', zh: '發燒', ex: 'Mnarux tunux na, mcilux. (她發燒頭痛。)', category: '健康身體' },
+            { id: 'v5', truku: 'Glu', zh: '喉嚨', ex: 'mnarux glu na ka Rudaw. (Rudaw喉嚨痛。)', category: '健康身體' },
+            { id: 'v6', truku: 'Buyas', zh: '肚子', ex: 'mnarux buyas mu. (我肚子痛。)', category: '健康身體' },
+            { id: 'v7', truku: 'mnarux', zh: '痛 / 生病', ex: 'mnarux tunux mu. (我頭好痛。)', category: '健康身體' },
+            { id: 'v8', truku: 'tkuni', zh: '暈', ex: 'Tkuni bi ka tunux mu. (我頭好暈。)', category: '健康身體' },
+            { id: 'v9', truku: 'Knrikit', zh: '趴著', ex: 'Usa sangay knrikit ka isu. (你趴著休息。)', category: '課堂動作' },
+            { id: 'v10', truku: 'Tgrima jiyax iyax sngayan', zh: '星期五', ex: 'Tgrima jiyax iyax sngayan ka sayang. (今天星期五。)', category: '時間日期' },
+            { id: 'v11', truku: 'Tgtru jiyax iyax sngayan', zh: '星期三', ex: 'Tgtru jiyax iyax sngayan ka saman. (明天星期三。)', category: '時間日期' },
+            { id: 'v12', truku: 'Jiyax sngayan', zh: '星期日 / 放假日', ex: 'Jiyax sngayan ka saman. (明天是星期日。)', category: '時間日期' }
+        ];
+
+        // 劇情解鎖記錄
+        let unlockedCards = new Set(['v1', 'v3', 'v6', 'v10']);
+
+        // ==========================================
+        // 2. 遊戲狀態與地圖系統
+        // ==========================================
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let currentMap = 'classroom'; // 'classroom', 'clinic', 'outdoors'
+        let player = {
+            x: 400,
+            y: 360,
+            width: 32,
+            height: 32,
+            speed: 4,
+            dir: 'up',
+            animFrame: 0
+        };
+
+        const keyState = {};
+
+        // 任務狀態進度
+        let questStep = 1; // 1: 遲到與課堂禮貌, 2: 健康請假診斷, 3: 時間與週末約定, 4: 族語大擂台
+        let currentDialogueList = [];
+        let dialogueIndex = 0;
+        let currentCorrectZh = '';
+        let dialogueAnswered = false;
+
+        // 地圖上的 NPC 及 寶箱物件
+        const MAP_DATA = {
+            classroom: {
+                name: '太魯閣族語教室',
+                bg: '#2d3748',
+                entities: [
+                    { id: 'teacher', type: 'npc', name: 'Mtgsa (老師)', avatar: '👩‍🏫', x: 400, y: 120, width: 36, height: 36, color: '#f59e0b' },
+                    { id: 'desk_late', type: 'object', name: '座位', avatar: '🪑', x: 280, y: 320, width: 30, height: 30 },
+                    { id: 'chest_class', type: 'chest', name: '課堂寶箱', avatar: '🧰', x: 120, y: 100, width: 32, height: 32, solved: false },
+                    { id: 'door_clinic', type: 'door', name: '前往保健室與走廊', targetMap: 'clinic', targetX: 100, targetY: 400, x: 740, y: 220, width: 40, height: 60 }
+                ]
+            },
+            clinic: {
+                name: '保健室與走廊洗手台',
+                bg: '#1e293b',
+                entities: [
+                    { id: 'iwal', type: 'npc', name: 'Iwal (同學)', avatar: '👧', x: 220, y: 180, width: 36, height: 36, color: '#ec4899' },
+                    { id: 'rudaw', type: 'npc', name: 'Rudaw (同學)', avatar: '👦', x: 580, y: 180, width: 36, height: 36, color: '#3b82f6' },
+                    { id: 'sink', type: 'object', name: '洗手台 (trima baga)', avatar: '🚰', x: 400, y: 100, width: 36, height: 36 },
+                    { id: 'chest_health', type: 'chest', name: '健康急救箱', avatar: '🩹', x: 700, y: 120, width: 32, height: 32, solved: false },
+                    { id: 'door_class', type: 'door', name: '返回教室', targetMap: 'classroom', targetX: 680, targetY: 230, x: 50, y: 400, width: 40, height: 60 },
+                    { id: 'door_outdoor', type: 'door', name: '前往校園廣場', targetMap: 'outdoors', targetX: 100, targetY: 380, x: 740, y: 400, width: 40, height: 60 }
+                ]
+            },
+            outdoors: {
+                name: '校園廣場與河邊/教會',
+                bg: '#064e3b',
+                entities: [
+                    { id: 'kumu', type: 'npc', name: 'Kumu (好友)', avatar: '🧑', x: 450, y: 220, width: 36, height: 36, color: '#10b981' },
+                    { id: 'river', type: 'object', name: '河邊 (Yayung)', avatar: '🌊', x: 650, y: 100, width: 100, height: 50 },
+                    { id: 'church', type: 'object', name: '教會 (Pnrhulan)', avatar: '⛪', x: 200, y: 100, width: 80, height: 60 },
+                    { id: 'chest_master', type: 'chest', name: '族語終極寶箱', avatar: '👑', x: 450, y: 100, width: 36, height: 36, solved: false },
+                    { id: 'door_clinic', type: 'door', name: '返回走廊', targetMap: 'clinic', targetX: 680, targetY: 380, x: 50, y: 380, width: 40, height: 60 }
+                ]
+            }
+        };
+
+        // ==========================================
+        // 3. 鍵盤與觸控事件監聽
+        // ==========================================
+        window.addEventListener('keydown', (e) => {
+            keyState[e.key.toLowerCase()] = true;
+            if (e.key === ' ' || e.key.toLowerCase() === 'e') {
+                interactAction();
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keyState[e.key.toLowerCase()] = false;
+        });
+
+        function handleTouchStart(dir) {
+            keyState[dir] = true;
+        }
+
+        function handleTouchEnd(dir) {
+            keyState[dir] = false;
+        }
+
+        // ==========================================
+        // 4. 遊戲主繪製與更新迴圈
+        // ==========================================
+        function updatePlayer() {
+            let dx = 0;
+            let dy = 0;
+
+            if (keyState['arrowup'] || keyState['w'] || keyState['up']) { dy -= player.speed; player.dir = 'up'; }
+            if (keyState['arrowdown'] || keyState['s'] || keyState['down']) { dy += player.speed; player.dir = 'down'; }
+            if (keyState['arrowleft'] || keyState['a'] || keyState['left']) { dx -= player.speed; player.dir = 'left'; }
+            if (keyState['arrowright'] || keyState['d'] || keyState['right']) { dx += player.speed; player.dir = 'right'; }
+
+            if (dx !== 0 || dy !== 0) {
+                player.x = Math.max(20, Math.min(canvas.width - 20, player.x + dx));
+                player.y = Math.max(20, Math.min(canvas.height - 20, player.y + dy));
+                player.animFrame += 0.2;
+            }
+        }
+
+        function drawMap() {
+            const map = MAP_DATA[currentMap];
+            ctx.fillStyle = map.bg;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 繪製地圖網格紋理
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+
+            // 繪製實體/NPC
+            map.entities.forEach(ent => {
+                // 實體陰影
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.beginPath();
+                ctx.ellipse(ent.x + ent.width/2, ent.y + ent.height - 4, ent.width/2, 6, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 實體 Icon
+                ctx.font = '28px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(ent.avatar, ent.x + ent.width/2, ent.y + ent.height/2);
+
+                // NPC / 物件名字標籤
+                if (ent.type === 'npc' || ent.type === 'chest' || ent.type === 'door') {
+                    ctx.font = 'bold 12px Noto Sans TC';
+                    ctx.fillStyle = ent.solved ? '#9ca3af' : '#fbbf24';
+                    ctx.fillText(ent.name, ent.x + ent.width/2, ent.y - 10);
+                }
+            });
+
+            // 繪製玩家陰影
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.beginPath();
+            ctx.ellipse(player.x, player.y + 12, 12, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 玩家圖示
+            ctx.font = '32px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            let playerEmoji = '🎒'; // 學生背書包
+            ctx.fillText(playerEmoji, player.x, player.y);
+
+            // 玩家互動範圍圈或引導提示
+            const nearEntity = getNearestEntity();
+            if (nearEntity) {
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(nearEntity.x + nearEntity.width/2, nearEntity.y + nearEntity.height/2, 28, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // 提示 [按 E 互動]
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 12px DotGothic16';
+                ctx.fillText('按 E / 點擊 互動', nearEntity.x + nearEntity.width/2, nearEntity.y - 26);
+            }
+        }
+
+        function gameLoop() {
+            updatePlayer();
+            drawMap();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ==========================================
+        // 5. 互動與劇情控制引擎
+        // ==========================================
+        function getNearestEntity() {
+            const map = MAP_DATA[currentMap];
+            for (let ent of map.entities) {
+                const dist = Math.hypot((player.x - (ent.x + ent.width/2)), (player.y - (ent.y + ent.height/2)));
+                if (dist < 48) return ent;
+            }
+            return null;
+        }
+
+        function interactAction() {
+            const ent = getNearestEntity();
+            if (!ent) return;
+
+            if (ent.type === 'door') {
+                // 切換地圖
+                currentMap = ent.targetMap;
+                player.x = ent.targetX;
+                player.y = ent.targetY;
+                document.getElementById('map-name-text').innerText = MAP_DATA[currentMap].name;
+                return;
+            }
+
+            if (ent.id === 'teacher') {
+                triggerTeacherDialogue();
+            } else if (ent.id === 'iwal') {
+                triggerIwalDialogue();
+            } else if (ent.id === 'rudaw') {
+                triggerRudawDialogue();
+            } else if (ent.id === 'kumu') {
+                triggerKumuDialogue();
+            } else if (ent.type === 'chest') {
+                triggerChestQuiz(ent);
+            } else if (ent.id === 'sink') {
+                startModalDialogue({
+                    name: '走廊洗手台',
+                    avatar: '🚰',
+                    role: '衛生設施',
+                    truku: 'Tduwa ku musa trima baga hug?',
+                    phonetic: 'Tduwa ku musa trima baga hug?',
+                    zh: '我可以去洗手嗎？',
+                    choices: ['我可以去洗手嗎？', '我可以去廁所嗎？', '我可以去喝水嗎？']
+                });
+            }
+        }
+
+        // --- 劇情對話觸發器 (含選項題目) ---
+        function triggerTeacherDialogue() {
+            if (questStep === 1) {
+                openDialogueSequence([
+                    { 
+                        name: 'Mtgsa (老師)', avatar: '👩‍🏫', role: '太魯閣語老師', 
+                        truku: 'Miyah ka mtgsa da!', phonetic: 'Miyah ka mtgsa da!', zh: '老師來了！',
+                        choices: ['老師來了！', '同學早安！', '快要下課了！']
+                    },
+                    { 
+                        name: 'Mtgsa (老師)', avatar: '👩‍🏫', role: '太魯閣語老師', 
+                        truku: 'Iya rawa duri ha, Usa tluung tleegan nhari hiya.', phonetic: 'Iya rawa duri ha, Usa tluung tleegan nhari hiya.', zh: '不要再玩了，快坐在座位上。',
+                        choices: ['不要再玩了，快坐在座位上。', '大家一起去外面打球吧！', '快把課本收起來。']
+                    },
+                    { 
+                        name: '學生 (你)', avatar: '🎒', role: '請假與禮貌', 
+                        truku: 'Ini ta kla, qsuqi ku dhuq da!', phonetic: 'Ini ta kla, qsuqi ku dhuq da!', zh: '抱歉，我遲到了！',
+                        choices: ['抱歉，我遲到了！', '老師好，我肚子好痛！', '請問今天星期幾？']
+                    },
+                    { 
+                        name: 'Mtgsa (老師)', avatar: '👩‍🏫', role: '太魯閣語老師', 
+                        truku: 'Iyah mtmay nhari.', phonetic: 'Iyah mtmay nhari.', zh: '快進來。',
+                        choices: ['快進來。', '快點去洗手。', '請回座位休息。']
+                    }
+                ], () => {
+                    updateQuest(2, '前往保健室，關心肚子痛與發燒請假的同學 (Iwal & Rudaw)');
+                    unlockCard('v3');
+                });
+            } else {
+                openDialogueSequence([
+                    { 
+                        name: 'Mtgsa (老師)', avatar: '👩‍🏫', role: '太魯閣語老師', 
+                        truku: 'Tgpiya jiyax iyax sngayan ka sayang hug?', phonetic: 'Tgpiya jiyax iyax sngayan ka sayang hug?', zh: '今天星期幾呢？',
+                        choices: ['今天星期幾呢？', '明天早上你要做什麼？', '你準備好了嗎？']
+                    },
+                    { 
+                        name: 'Mtgsa (老師)', avatar: '👩‍🏫', role: '太魯閣語老師', 
+                        truku: 'Tgrima jiyax iyax sngayan ka sayang!', phonetic: 'Tgrima jiyax iyax sngayan ka sayang!', zh: '今天星期五，加油好好學習！',
+                        choices: ['今天星期五，加油好好學習！', '今天星期三，下午去玩球！', '今天星期日，去教會禮拜！']
+                    }
+                ]);
+            }
+        }
+
+        function triggerIwalDialogue() {
+            openDialogueSequence([
+                { 
+                    name: 'Iwal (同學)', avatar: '👧', role: '保健室請假中', 
+                    truku: 'Mtgsa, mnarux buyas mu, mha ku ngangut han.', phonetic: 'Mtgsa, mnarux buyas mu, mha ku ngangut han.', zh: '老師，我肚子痛，要去廁所。',
+                    choices: ['老師，我肚子痛，要去廁所。', '老師，我頭好暈，要去保健室。', '老師，我喉嚨痛，今天想請假。']
+                },
+                { 
+                    name: 'Mtgsa (老師)', avatar: '👩‍🏫', role: '太魯閣語老師', 
+                    truku: 'Tduwa o, usa nhari.', phonetic: 'Tduwa o, usa nhari.', zh: '好，快一點去。',
+                    choices: ['好，快一點去。', '不行，快要下課了。', '好，回家路上小心。']
+                },
+                { 
+                    name: 'Iwal (同學)', avatar: '👧', role: '身體不適', 
+                    truku: 'Mnarux tunux na da. / mcilux.', phonetic: 'Mnarux tunux na da / mcilux', zh: '她發燒而且頭痛。',
+                    choices: ['她發燒而且頭痛。', '她手受傷流血。', '她要去河邊玩。']
+                }
+            ], () => {
+                unlockCard('v4');
+                unlockCard('v6');
+                if (questStep === 2) {
+                    updateQuest(3, '去廣場尋找 Kumu，討論週末約定與星期幾！');
+                }
+            });
+        }
+
+        function triggerRudawDialogue() {
+            openDialogueSequence([
+                { 
+                    name: 'Rudaw (同學)', avatar: '👦', role: '喉嚨不適', 
+                    truku: 'Mtgsa, mnarux glu na ka Rudaw, ga msangay ka sayang.', phonetic: 'Mtgsa, mnarux glu na ka Rudaw...', zh: '老師，Rudaw 喉嚨痛，今天請假。',
+                    choices: ['老師，Rudaw 喉嚨痛，今天請假。', '老師，Rudaw 肚子痛，在廁所。', '老師，Rudaw 遲到了，快進來。']
+                },
+                { 
+                    name: '校警/護理師', avatar: '🩺', role: '保健指引', 
+                    truku: 'Usa sangay knrikit ka isu.', phonetic: 'Usa sangay knrikit ka isu.', zh: '你趴著休息一下吧。',
+                    choices: ['你趴著休息一下吧。', '你快去洗手洗臉。', '我們明天去教會吧。']
+                }
+            ], () => {
+                unlockCard('v5');
+                unlockCard('v8');
+                unlockCard('v9');
+            });
+        }
+
+        function triggerKumuDialogue() {
+            openDialogueSequence([
+                { 
+                    name: 'Kumu (好友)', avatar: '🧑', role: '部落夥伴', 
+                    truku: 'Tgpiya jiyax iyax sngayan ka sayang hug?', phonetic: 'Tgpiya jiyax iyax sngayan ka sayang hug?', zh: '今天星期幾？',
+                    choices: ['今天星期幾？', '明天早上你要做什麼？', '你怎麼了嗎？']
+                },
+                { 
+                    name: 'Kumu (好友)', avatar: '🧑', role: '部落夥伴', 
+                    truku: 'Tgrima jiyax iyax sngayan ka sayang, jiyax sngayan ka saman, seupu ta mrawa ngangut kana ha!', phonetic: 'Tgrima jiyax iyax sngayan ka sayang...', zh: '今天星期五，明天放假，一起出去玩吧！',
+                    choices: ['今天星期五，明天放假，一起出去玩吧！', '今天星期三，明天下午一起去打球吧！', '今天星期日，我要跟媽媽去教會！']
+                },
+                { 
+                    name: '學生 (你)', avatar: '🎒', role: '開心答應', 
+                    truku: 'Duwa o! Jita yayung hiya.', phonetic: 'Duwa o! Jita yayung hiya.', zh: '好啊！我們去河邊。',
+                    choices: ['好啊！我們去河邊。', '不行，我要去看醫生。', '好啊！我們去廁所。']
+                },
+                { 
+                    name: 'Kumu (好友)', avatar: '🧑', role: '禮拜計畫', 
+                    truku: 'Jiyax sngayan ka saman, mowsa ku Pnrhulan tuhuy bubu mu.', phonetic: 'Jiyax sngayan ka saman, mowsa ku Pnrhulan tuhuy bubu mu.', zh: '明天是星期日，我要和媽媽去教會。',
+                    choices: ['明天是星期日，我要和媽媽去教會。', '明天是星期三，我要去球場玩球。', '明天是星期五，我要去學校上課。']
+                }
+            ], () => {
+                unlockCard('v10');
+                unlockCard('v11');
+                unlockCard('v12');
+                if (questStep === 3) {
+                    updateQuest(4, '前往各區域開啟【寶箱】，挑戰族語拼寫與詞序排列擂台！');
+                }
+            });
+        }
+
+        // ==========================================
+        // 6. 對話 Modal & 族語翻譯題目選擇 Logic
+        // ==========================================
+        function openDialogueSequence(dialogues, onComplete) {
+            currentDialogueList = dialogues;
+            dialogueIndex = 0;
+            document.getElementById('dialogue-modal').classList.remove('hidden');
+            document.getElementById('dialogue-modal').onDialogueComplete = onComplete;
+            showDialogueStep();
+        }
+
+        function showDialogueStep() {
+            const current = currentDialogueList[dialogueIndex];
+            dialogueAnswered = false;
+            currentCorrectZh = current.zh;
+
+            document.getElementById('npc-name').innerText = current.name;
+            document.getElementById('npc-role').innerText = current.role;
+            document.getElementById('npc-avatar').innerText = current.avatar;
+            document.getElementById('dialogue-truku').innerText = current.truku;
+            document.getElementById('dialogue-phonetic').innerText = `[ 讀音：${current.phonetic} ]`;
+            
+            // 重置反饋與解答
+            const feedback = document.getElementById('dialogue-feedback');
+            feedback.className = "hidden p-2.5 rounded-lg text-center font-bold text-xs sm:text-sm";
+            feedback.innerText = '';
+
+            const zhBox = document.getElementById('dialogue-zh');
+            zhBox.classList.add('hidden');
+            zhBox.innerText = `💡 正確翻譯：${current.zh}`;
+
+            document.getElementById('dialogue-next-btn').classList.add('hidden');
+
+            // 隨機打散選項順序
+            let choices = [...current.choices];
+            choices.sort(() => Math.random() - 0.5);
+
+            const optionsContainer = document.getElementById('dialogue-options-grid');
+            optionsContainer.innerHTML = choices.map((c, idx) => `
+                <button onclick="checkDialogueChoice('${c.replace(/'/g, "\\'")}', this)" 
+                        class="dialogue-choice-btn w-full bg-slate-800 hover:bg-slate-700 text-slate-100 p-3 rounded-xl border-2 border-slate-700 text-left font-bold text-sm sm:text-base transition flex items-center gap-3">
+                    <span class="w-7 h-7 rounded-full bg-slate-700 text-amber-300 font-pixel flex items-center justify-center shrink-0 border border-slate-500">${String.fromCharCode(65 + idx)}</span>
+                    <span>${c}</span>
+                </button>
+            `).join('');
+        }
+
+        function checkDialogueChoice(selectedChoice, btnEl) {
+            if (dialogueAnswered) return;
+
+            const feedback = document.getElementById('dialogue-feedback');
+            feedback.classList.remove('hidden');
+
+            if (selectedChoice === currentCorrectZh) {
+                dialogueAnswered = true;
+                
+                // 標示答對按鈕
+                btnEl.className = "dialogue-choice-btn w-full bg-emerald-900/80 border-2 border-emerald-400 text-emerald-200 p-3 rounded-xl font-bold text-sm sm:text-base text-left flex items-center gap-3 shadow-lg";
+                
+                // 停用其他按鈕
+                document.querySelectorAll('.dialogue-choice-btn').forEach(b => {
+                    if (b !== btnEl) {
+                        b.disabled = true;
+                        b.classList.add('opacity-40');
+                    }
+                });
+
+                feedback.className = "p-2.5 rounded-lg text-center font-bold text-xs sm:text-sm bg-emerald-950 text-emerald-300 border border-emerald-600";
+                feedback.innerText = '🎉 答對了！理解完全正確！';
+
+                document.getElementById('dialogue-zh').classList.remove('hidden');
+                document.getElementById('dialogue-next-btn').classList.remove('hidden');
+            } else {
+                btnEl.disabled = true;
+                btnEl.className = "dialogue-choice-btn w-full bg-rose-950/80 border-2 border-rose-600 text-rose-300 p-3 rounded-xl font-bold text-sm sm:text-base text-left opacity-60 flex items-center gap-3";
+
+                feedback.className = "p-2.5 rounded-lg text-center font-bold text-xs sm:text-sm bg-rose-950 text-rose-300 border border-rose-600";
+                feedback.innerText = '❌ 答錯囉！再試試別的選項！';
+            }
+        }
+
+        function startModalDialogue(singleObj) {
+            openDialogueSequence([singleObj]);
+        }
+
+        function nextDialogue() {
+            dialogueIndex++;
+            if (dialogueIndex < currentDialogueList.length) {
+                showDialogueStep();
+            } else {
+                document.getElementById('dialogue-modal').classList.add('hidden');
+                const onComplete = document.getElementById('dialogue-modal').onDialogueComplete;
+                if (onComplete) onComplete();
+            }
+        }
+
+        // ==========================================
+        // 7. 寶箱與三大考驗系統 (拼寫/語序/情境)
+        // ==========================================
+        let currentQuizAnswer = null;
+        let activeChestEntity = null;
+
+        function triggerChestQuiz(chestEnt) {
+            if (chestEnt.solved) {
+                startModalDialogue({
+                    name: chestEnt.name,
+                    avatar: '✨',
+                    role: '已解開寶箱',
+                    truku: 'Klaun su kana da! Malu bi!',
+                    phonetic: 'Klaun su kana da! Malu bi!',
+                    zh: '你已經掌握了這個寶箱的族語智慧！太棒了！',
+                    choices: ['你已經掌握了這個寶箱的族語智慧！太棒了！', '請重新開啟寶箱。', '明天再去學校吧。']
+                });
+                return;
+            }
+
+            activeChestEntity = chestEnt;
+            const modal = document.getElementById('quiz-modal');
+            modal.classList.remove('hidden');
+
+            const interactiveArea = document.getElementById('quiz-interactive-area');
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.add('hidden');
+
+            if (chestEnt.id === 'chest_class') {
+                // 考驗一：詞序重組測驗 (Unscramble)
+                document.getElementById('quiz-title').innerText = '課堂語序重組擂台';
+                document.getElementById('quiz-prompt').innerText = '請將下列打散的太魯閣語單詞，排列出正確句意：「抱歉，我遲到了！」';
+                
+                const words = ['qsuqi', 'Ini', 'dhuq', 'ta kla,', 'ku', 'da!'];
+                const correctOrder = 'Ini ta kla, qsuqi ku dhuq da!';
+                currentQuizAnswer = correctOrder;
+
+                interactiveArea.innerHTML = `
+                    <div class="text-xs text-slate-400 mb-1">點擊單詞依序加入下方組合框：</div>
+                    <div id="word-pool" class="flex flex-wrap gap-2 mb-3">
+                        ${words.map(w => `<button onclick="addWordToAnswer('${w}', this)" class="bg-indigo-800 hover:bg-indigo-700 text-white px-3 py-1.5 rounded border border-indigo-500 font-bold text-sm">${w}</button>`).join('')}
+                    </div>
+                    <div id="assembled-box" class="min-h-[48px] bg-slate-950 p-3 rounded-lg border-2 border-dashed border-indigo-600 flex flex-wrap gap-2 items-center text-amber-300 font-bold">
+                    </div>
+                    <button onclick="resetWordAssembly()" class="text-xs text-slate-400 hover:text-white underline mt-1 text-right">重新排列</button>
+                `;
+            } else if (chestEnt.id === 'chest_health') {
+                // 考驗二：健康單詞匹配
+                document.getElementById('quiz-title').innerText = '保健診斷單詞測驗';
+                document.getElementById('quiz-prompt').innerText = '太魯閣語「mnarux buyas」是指身體哪裡不舒服？';
+                
+                currentQuizAnswer = '肚子痛';
+                const options = ['頭痛', '肚子痛', '喉嚨痛', '腳受傷'];
+
+                interactiveArea.innerHTML = `
+                    <div class="grid grid-cols-2 gap-3 mt-2">
+                        ${options.map(opt => `
+                            <button onclick="selectChoice('${opt}', this)" class="choice-btn bg-slate-800 hover:bg-slate-700 text-slate-100 p-3 rounded-xl border border-slate-600 font-bold text-sm text-center">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (chestEnt.id === 'chest_master') {
+                // 考驗三：情境問答 (星期與地點)
+                document.getElementById('quiz-title').innerText = '星期與約會終極考驗';
+                document.getElementById('quiz-prompt').innerText = '若同學問你：「Tgpiya jiyax iyax sngayan ka saman? (明天星期幾?)」，回答明天是「星期三」該怎麼說？';
+                
+                currentQuizAnswer = 'Tgtru jiyax iyax sngayan ka saman';
+                const choices = [
+                    { t: 'Tgrima jiyax iyax sngayan ka saman', z: '明天星期五' },
+                    { t: 'Tgtru jiyax iyax sngayan ka saman', z: '明天星期三' },
+                    { t: 'Jiyax sngayan ka saman', z: '明天星期日' }
+                ];
+
+                interactiveArea.innerHTML = `
+                    <div class="flex flex-col gap-2">
+                        ${choices.map(c => `
+                            <button onclick="selectChoice('${c.t}', this)" class="choice-btn bg-slate-800 hover:bg-slate-700 text-left p-3 rounded-xl border border-slate-600 font-bold text-sm flex justify-between items-center">
+                                <span class="text-amber-300">${c.t}</span>
+                                <span class="text-xs text-slate-400">(${c.z})</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        let assembledWords = [];
+        function addWordToAnswer(word, btnEl) {
+            assembledWords.push(word);
+            btnEl.disabled = true;
+            btnEl.classList.add('opacity-40');
+            renderAssembledWords();
+        }
+
+        function resetWordAssembly() {
+            assembledWords = [];
+            const pool = document.getElementById('word-pool');
+            if (pool) {
+                Array.from(pool.children).forEach(btn => {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-40');
+                });
+            }
+            renderAssembledWords();
+        }
+
+        function renderAssembledWords() {
+            const box = document.getElementById('assembled-box');
+            if (box) {
+                box.innerHTML = assembledWords.map(w => `<span class="bg-indigo-900 text-amber-300 px-2.5 py-1 rounded border border-indigo-500">${w}</span>`).join(' ');
+            }
+        }
+
+        let selectedUserChoice = null;
+        function selectChoice(val, btnEl) {
+            selectedUserChoice = val;
+            document.querySelectorAll('.choice-btn').forEach(b => {
+                b.classList.remove('border-amber-400', 'bg-amber-950/60');
+                b.classList.add('bg-slate-800');
+            });
+            btnEl.classList.add('border-amber-400', 'bg-amber-950/60');
+        }
+
+        function submitQuizAnswer() {
+            let isCorrect = false;
+
+            if (activeChestEntity.id === 'chest_class') {
+                const userSentence = assembledWords.join(' ');
+                isCorrect = (userSentence === currentQuizAnswer);
+            } else {
+                isCorrect = (selectedUserChoice === currentQuizAnswer);
+            }
+
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.remove('hidden');
+
+            if (isCorrect) {
+                feedback.className = "p-3 rounded-lg text-center font-bold text-sm bg-emerald-950 text-emerald-300 border border-emerald-600";
+                feedback.innerText = '🎉 答對了！太魯閣語能力大提升！解鎖寶箱知識！';
+                
+                activeChestEntity.solved = true;
+                VOCABULARY_LIST.forEach(v => unlockedCards.add(v.id));
+                updateCardCount();
+
+                setTimeout(() => {
+                    document.getElementById('quiz-modal').classList.add('hidden');
+                    checkVictoryCondition();
+                }, 1500);
+            } else {
+                feedback.className = "p-3 rounded-lg text-center font-bold text-sm bg-rose-950 text-rose-300 border border-rose-600";
+                feedback.innerText = '❌ 再試一次看看喔！可開啟字卡庫查看拼音對照！';
+            }
+        }
+
+        // ==========================================
+        // 8. 任務系統與字卡庫 (Vocabulary Deck)
+        // ==========================================
+        function updateQuest(step, desc) {
+            questStep = step;
+            document.getElementById('current-quest-desc').innerText = desc;
+            document.getElementById('quest-step-badge').innerText = `任務 ${step}/4`;
+
+            if (step === 2) document.getElementById('player-title').innerText = '族語學徒';
+            if (step === 3) document.getElementById('player-title').innerText = '族語小達人';
+            if (step === 4) document.getElementById('player-title').innerText = '太魯閣語大師';
+        }
+
+        function unlockCard(id) {
+            unlockedCards.add(id);
+            updateCardCount();
+        }
+
+        function updateCardCount() {
+            document.getElementById('card-count').innerText = unlockedCards.size;
+        }
+
+        function toggleWordDeck() {
+            const modal = document.getElementById('deck-modal');
+            const container = document.getElementById('word-cards-container');
+
+            if (modal.classList.contains('hidden')) {
+                // 渲染單字卡
+                container.innerHTML = VOCABULARY_LIST.map(item => {
+                    const isUnlocked = unlockedCards.has(item.id);
+                    return `
+                        <div class="p-3 rounded-xl border ${isUnlocked ? 'bg-slate-800 border-amber-500/50' : 'bg-slate-950 border-slate-800 opacity-60'} flex justify-between items-center">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">${item.category}</span>
+                                    <h4 class="font-bold text-amber-300 text-lg">${isUnlocked ? item.truku : '???'}</h4>
+                                </div>
+                                <p class="text-sm text-slate-200 mt-1">${isUnlocked ? item.zh : '探索校園解鎖'}</p>
+                                <p class="text-xs text-slate-400 italic mt-0.5">${isUnlocked ? item.ex : ''}</p>
+                            </div>
+                            <div>
+                                ${isUnlocked ? '<i class="fa-solid fa-check text-emerald-400"></i>' : '<i class="fa-solid fa-lock text-slate-600"></i>'}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function checkVictoryCondition() {
+            const allChestSolved = MAP_DATA.classroom.entities.find(e => e.id==='chest_class').solved &&
+                                   MAP_DATA.clinic.entities.find(e => e.id==='chest_health').solved &&
+                                   MAP_DATA.outdoors.entities.find(e => e.id==='chest_master').solved;
+            if (allChestSolved) {
+                startModalDialogue({
+                    name: '通關榮譽',
+                    avatar: '🏆',
+                    role: '族語大師',
+                    truku: 'Malu bi! Malu bi su balay!',
+                    phonetic: 'Malu bi! Malu bi su balay!',
+                    zh: '恭喜你通關了「太魯閣族語校園大冒險」！你已經完全掌握了所有課堂與生活族語！',
+                    choices: ['恭喜你通關了「太魯閣族語校園大冒險」！你已經完全掌握了所有課堂與生活族語！', '重新開始冒險。', '退出遊戲。']
+                });
+            }
+        }
+
+        // ==========================================
+        // 9. 初始化啟動
+        // ==========================================
+        window.onload = () => {
+            updateCardCount();
+            gameLoop();
+        };
+    </script>
+</body>
+</html>
