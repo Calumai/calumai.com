@@ -58,4 +58,46 @@ const ESCAPE_PROMPT=`請依據來源文件中的太魯閣語「上課用語」�
 請確保所有族語拼音完全符合來源文件，繁體中文字體排版清晰美觀。若來源文件沒有提供某個答案、翻譯或單詞，請標示「來源未提供」，不可自行創造、改寫或猜測。
 
 輸出每一頁時，請另外標註：使用到的來源頁碼或位置、這一頁的學習目標、教師講解重點，以及學生答錯時的提示。請嚴格區分「來源語言資料」與「RPG 故事設定」。`;
-const id=(location.pathname.match(/lesson-(\d+)/)||[])[1]||'01';const d=DATA[id]||DATA['01'];const root=document.querySelector('#lesson');document.title=`第 ${id} 堂｜${d.title}｜CALUMAI`;const ppt=`/class/ppt/lesson-${id}.pptx`;let slideHtml='';for(let i=1;i<=8;i++){const n=String(i).padStart(2,'0');slideHtml+=`<figure class="slide-frame"><img loading="lazy" src="/class/ppt-preview/${id}/slide-${n}.png" alt="第 ${id} 堂 PPT 第 ${i} 張"><figcaption>第 ${i} 張</figcaption></figure>`}let promptHtml=(id==='01'?[...d.prompts,FULL_PROMPT,ESCAPE_PROMPT]:d.prompts).map((p,i)=>`<div class="prompt-block"><div class="prompt-label">提示詞 ${i+1}</div><textarea readonly id="prompt-${i}">${p}</textarea><button class="copy-btn" data-copy="prompt-${i}">複製提示詞</button></div>`).join('');const opening=id==='01'?'<section class="teaching-intro lesson-card"><h2>為什麼先談遊戲教學？</h2><p>遊戲教學不是把課堂變成單純玩遊戲，而是把學習目標、練習、回饋與成長設計成學生願意參與的任務流程。</p><h3>遊戲教學的好處</h3><ul><li>提高參與動機與持續練習意願</li><li>把語言放進有意義的情境</li><li>提供立即回饋、重試與可見的成長</li><li>促進合作、表達與成果展示</li></ul><h3>為什麼選 RPG？</h3><p>RPG 能把角色、任務、關卡、能力值與回饋串成一條成長路線，適合將 PDF 中的上課用語放進連續情境。</p><h3>除了 RPG 還能做什麼？</h3><p>同一份教材也可以做成卡牌配對、密室逃脫、模擬經營、偵探解謎、闖關問答、合作任務或故事分支。選擇形式時，要看學習目標、課堂時間、學生人數與教師準備成本。</p></section>':'';root.innerHTML=`<section class="lesson-hero" style="border-left-color:${d.accent}"><p class="eyebrow" style="color:${d.accent}">第 ${id} 堂 / ${d.tag}</p><h1>${d.title}</h1><p class="lede">${d.lede}</p><div class="back-row"><a href="#slides">先看 PPT 預覽</a><a class="secondary" href="#prompts">複製提示詞</a></div></section>${opening}<section class="lesson-grid" id="handout"><article class="lesson-card"><h2>課堂目標</h2><ul>${d.goals.map(x=>`<li>${x}</li>`).join('')}</ul><h3>今天的作品</h3><p>${d.output}</p></article><article class="lesson-card"><h2>講義：操作流程</h2><ol>${d.steps.map(x=>`<li>${x}</li>`).join('')}</ol><h3>課堂實作</h3><p>${d.practice}</p></article></section><section class="slides-section" id="slides"><h2>PPT 線上預覽</h2><p class="lede">先逐張預覽投影片；如果要保留原始檔，再從下方開啟 PPT。</p><div class="slide-grid">${slideHtml}</div><p><a class="download-secondary" href="${ppt}">需要時下載原始 PPT</a></p></section><section class="prompts" id="prompts"><h2>可複製提示詞</h2><p class="lede">把需要的提示詞複製到 NotebookLM、Gemini 或 Google Vids，再替換【】中的內容。</p>${promptHtml}</section><section class="lesson-card supplement-note"><b>補充資源</b><p><a href="https://aihandout-lexjxdgq.manus.space/" target="_blank" rel="noopener">開啟 AI Handout 補充網站 ↗</a></p><p>可把本堂課產出的教材、提示詞與教學流程，延伸整理成可分享的教學手冊。</p></section><section class="lesson-card source-note"><b>來源與提醒</b><p>${d.source}</p><p>AI 產出一定要人工檢查；語言、教材、學生資料與公開發布內容，請由教師確認。</p></section>`;document.querySelectorAll('[data-copy]').forEach(btn=>btn.addEventListener('click',async()=>{const t=document.getElementById(btn.dataset.copy);await navigator.clipboard.writeText(t.value);btn.textContent='已複製';btn.classList.add('copied');setTimeout(()=>{btn.textContent='複製提示詞';btn.classList.remove('copied')},1600)}));
+const ADVANCED_RPG_PROMPT=`你是一位頂尖的網頁遊戲開發者與數位語言教學設計師。請將我提供的原住民族語教材製作成一款單一 HTML 檔案的 2D 像素風格校園冒險 RPG 遊戲。
+
+【RPG 定義】
+RPG 是讓學習者扮演角色，在故事情境中完成任務，透過挑戰、回饋與角色成長學會教材。遊戲故事可以創作，但族語、中文翻譯與學習資料只能使用來源文件確認的內容。
+
+【技術要求】
+1. 輸出完整且可直接運行的 <!DOCTYPE html> 程式碼。
+2. 所有 HTML、Tailwind CSS CDN、FontAwesome、Canvas 繪圖與 JavaScript 遊戲引擎整合在同一個 HTML 檔案。
+3. 使用 HTML5 Canvas 渲染 2D 像素風格地圖，包含族語教室、保健室與走廊洗手台、校園廣場與河邊或教會等可切換場景。
+4. 支援 WASD、方向鍵、手機觸控方向鈕，以及 E 鍵或點擊互動。
+5. 使用深色 8-bit / NES 風格介面，並保持繁體中文清楚易讀；本遊戲採靜音圖文模式。
+
+【遊戲玩法】
+1. 玩家與老師、同學、好友 NPC 互動時，顯示族語原文、讀音指引與 3 個中文選項；1 個正確、2 個合理干擾。
+2. 答對顯示綠色回饋、正式中文翻譯與繼續對話；答錯顯示紅色提示並允許重試。
+3. 放置三個互動寶箱：詞序重組、單詞配對、日期星期與活動情境問答。
+4. 導覽列提供字卡圖鑑庫，逐步解鎖單詞、中文意思、例句與分類標籤。
+5. 設計角色血量、經驗值、星星或徽章，但獎勵不能取代學習目標。
+
+【教材資料】
+請只使用我附上的來源文件與以下已確認資料，並將所有族語拼音、中文翻譯與例句回到來源核對。若來源沒有提供，請標示「來源未提供」，不可自行創造、改寫或猜測。
+
+課堂禮貌：
+- Miyah ka mtgsa da!（老師來了！）
+- Iya rawa duri ha, Usa tluung tleegan nhari hiya.（不要再玩了，快坐在座位上。）
+- Ini ta kla, qsuqi ku dhuq da!（抱歉，我遲到了！）
+- Iyah mtmay nhari.（快進來。）
+
+健康與請假：
+- Mtgsa, mnarux buyas mu, mha ku ngangut han.（老師，我肚子痛，要去廁所。）
+- Mnarux tunux na da. / mcilux.（發燒而且頭痛。）
+- Mtgsa, mnarux glu na ka Rudaw, ga msangay ka sayang.（老師，Rudaw 喉嚨痛，今天請假。）
+
+日期與週末行程：
+- Tgpiya jiyax iyax sngayan ka sayang hug?（今天星期幾？）
+- Tgrima jiyax iyax sngayan ka sayang!（今天星期五！）
+- Jiyax sngayan ka saman, mowsa ku Pnrhulan tuhuy bubu mu.（明天是星期日，我要和媽媽去教會。）
+
+單詞庫：Ngangut（廁所）、Mluqih（受傷）、Qsuqi（遲到）、mcilux（發燒）、Glu（喉嚨）、Buyas（肚子）、mnarux（痛／生病）、tkuni（暈）、Knrikit（趴著）、Tgrima jiyax iyax sngayan（星期五）、Tgtru jiyax iyax sngayan（星期三）、Jiyax sngayan（星期日／放假日）。
+
+【輸出前檢查】
+請檢查每一個題目、選項、答案、NPC 對話、字卡與翻譯是否有來源依據；列出使用到的來源位置、仍需族語教師確認的內容、可能錯誤與測試方式。最後只輸出完整可運行的 <!DOCTYPE html> 程式碼，不要輸出 Markdown 說明文字。`;
+const id=(location.pathname.match(/lesson-(\d+)/)||[])[1]||'01';const d=DATA[id]||DATA['01'];const root=document.querySelector('#lesson');document.title=`第 ${id} 堂｜${d.title}｜CALUMAI`;const ppt=`/class/ppt/lesson-${id}.pptx`;let slideHtml='';for(let i=1;i<=8;i++){const n=String(i).padStart(2,'0');slideHtml+=`<figure class="slide-frame"><img loading="lazy" src="/class/ppt-preview/${id}/slide-${n}.png" alt="第 ${id} 堂 PPT 第 ${i} 張"><figcaption>第 ${i} 張</figcaption></figure>`}let promptHtml=(id==='01'?[...d.prompts,FULL_PROMPT,ESCAPE_PROMPT,ADVANCED_RPG_PROMPT]:d.prompts).map((p,i)=>`<div class="prompt-block"><div class="prompt-label">提示詞 ${i+1}</div><textarea readonly id="prompt-${i}">${p}</textarea><button class="copy-btn" data-copy="prompt-${i}">複製提示詞</button></div>`).join('');const opening=id==='01'?'<section class="teaching-intro lesson-card"><h2>為什麼先談遊戲教學？</h2><p>遊戲教學不是把課堂變成單純玩遊戲，而是把學習目標、練習、回饋與成長設計成學生願意參與的任務流程。</p><h3>遊戲教學的好處</h3><ul><li>提高參與動機與持續練習意願</li><li>把語言放進有意義的情境</li><li>提供立即回饋、重試與可見的成長</li><li>促進合作、表達與成果展示</li></ul><h3>為什麼選 RPG？</h3><p>RPG 能把角色、任務、關卡、能力值與回饋串成一條成長路線，適合將 PDF 中的上課用語放進連續情境。</p><h3>除了 RPG 還能做什麼？</h3><p>同一份教材也可以做成卡牌配對、密室逃脫、模擬經營、偵探解謎、闖關問答、合作任務或故事分支。選擇形式時，要看學習目標、課堂時間、學生人數與教師準備成本。</p></section>':'';root.innerHTML=`<section class="lesson-hero" style="border-left-color:${d.accent}"><p class="eyebrow" style="color:${d.accent}">第 ${id} 堂 / ${d.tag}</p><h1>${d.title}</h1><p class="lede">${d.lede}</p><div class="back-row"><a href="#slides">先看 PPT 預覽</a><a class="secondary" href="#prompts">複製提示詞</a></div></section>${opening}<section class="lesson-grid" id="handout"><article class="lesson-card"><h2>課堂目標</h2><ul>${d.goals.map(x=>`<li>${x}</li>`).join('')}</ul><h3>今天的作品</h3><p>${d.output}</p></article><article class="lesson-card"><h2>講義：操作流程</h2><ol>${d.steps.map(x=>`<li>${x}</li>`).join('')}</ol><h3>課堂實作</h3><p>${d.practice}</p></article></section><section class="slides-section" id="slides"><h2>PPT 線上預覽</h2><p class="lede">先逐張預覽投影片；如果要保留原始檔，再從下方開啟 PPT。</p><div class="slide-grid">${slideHtml}</div><p><a class="download-secondary" href="${ppt}">需要時下載原始 PPT</a></p></section><section class="prompts" id="prompts"><h2>可複製提示詞</h2><p class="lede">把需要的提示詞複製到 NotebookLM、Gemini 或 Google Vids，再替換【】中的內容。</p>${promptHtml}</section><section class="lesson-card supplement-note"><b>補充資源</b><p><a href="https://aihandout-lexjxdgq.manus.space/" target="_blank" rel="noopener">開啟 AI Handout 補充網站 ↗</a></p><p>可把本堂課產出的教材、提示詞與教學流程，延伸整理成可分享的教學手冊。</p></section><section class="lesson-card source-note"><b>來源與提醒</b><p>${d.source}</p><p>AI 產出一定要人工檢查；語言、教材、學生資料與公開發布內容，請由教師確認。</p></section>`;document.querySelectorAll('[data-copy]').forEach(btn=>btn.addEventListener('click',async()=>{const t=document.getElementById(btn.dataset.copy);await navigator.clipboard.writeText(t.value);btn.textContent='已複製';btn.classList.add('copied');setTimeout(()=>{btn.textContent='複製提示詞';btn.classList.remove('copied')},1600)}));
