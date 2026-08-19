@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>第 3 堂｜GAS 測驗成績系統 Starter</title>
+  <style>
+    :root{--ink:#121b2b;--muted:#5d6b80;--blue:#3d8dff;--bg:#f3f6fa}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,"Noto Sans TC",sans-serif;line-height:1.65}main{width:min(1050px,calc(100% - 28px));margin:34px auto 80px}.hero,.block{background:#fff;border:1px solid #dce4ee;border-radius:22px;padding:clamp(22px,5vw,42px);margin-bottom:18px}.eyebrow{color:var(--blue);font-weight:900;letter-spacing:.08em}h1{font-size:clamp(2rem,6vw,4rem);line-height:1.08;margin:.15em 0}h2{margin-top:0}.lead{font-size:1.1rem;color:var(--muted)}.links,.head{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}a,button{display:inline-block;border:0;border-radius:12px;padding:12px 16px;background:var(--blue);color:#fff;text-decoration:none;font:inherit;font-weight:900;cursor:pointer}a.secondary{background:#e5edf8;color:var(--ink)}pre{margin:14px 0 0;max-height:520px;overflow:auto;background:#101827;color:#e7eefb;padding:20px;border-radius:14px;white-space:pre;font:14px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}.note{padding:14px 16px;background:#eaf3ff;border-left:5px solid var(--blue);border-radius:10px}.status{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero"><p class="eyebrow">LESSON 03 / STARTER</p><h1>GAS 測驗成績系統</h1><p class="lead">先玩公開預覽，再把 Code.gs 與 Index.html 複製到綁定 Google 試算表的 Apps Script 專案。</p><div class="links"><a href="/class/examples/lesson-03-gas-quiz-preview.html">開啟測驗流程預覽</a><a class="secondary" href="/class/lesson-03.html">回第 3 堂講義</a></div></section>
+    <section class="block"><h2>使用順序</h2><ol><li>建立 Google 試算表，從「擴充功能」開啟 Apps Script。</li><li>把下方第一段貼進 <strong>Code.gs</strong>。</li><li>新增 HTML 檔案並命名為 <strong>Index</strong>，貼入第二段。</li><li>完成授權，部署為網頁應用程式。</li><li>用另一個帳號或裝置測試正式網址。</li></ol><p class="note">公開預覽只模擬成功畫面，不會寫入任何試算表；真正的寫入功能必須在你的 Apps Script 專案中執行。</p></section>
+    <section class="block"><div class="head"><div><h2>Code.gs</h2><span class="status" id="status-code">讀取中…</span></div><button data-copy="code">複製 Code.gs</button></div><pre id="code">正在讀取程式碼…</pre></section>
+    <section class="block"><div class="head"><div><h2>Index.html</h2><span class="status" id="status-index">讀取中…</span></div><button data-copy="index">複製 Index.html</button></div><pre id="index">正在讀取程式碼…</pre></section>
+  </main>
+  <script>
+    const files={code:'/class/examples/lesson-03-gas/Code.gs.txt',index:'/class/examples/lesson-03-gas/Index.html.txt'};
+    Object.entries(files).forEach(([id,url])=>fetch(url).then(r=>{if(!r.ok)throw new Error('讀取失敗');return r.text()}).then(t=>{document.getElementById(id).textContent=t;document.getElementById('status-'+id).textContent='已載入'}).catch(()=>{document.getElementById(id).textContent='程式碼讀取失敗，請重新整理頁面。';document.getElementById('status-'+id).textContent='載入失敗'}));
+    document.querySelectorAll('[data-copy]').forEach(btn=>btn.addEventListener('click',async()=>{const id=btn.dataset.copy;await navigator.clipboard.writeText(document.getElementById(id).textContent);const old=btn.textContent;btn.textContent='已複製';setTimeout(()=>btn.textContent=old,1400)}));
+  </script>
+</body>
+</html>

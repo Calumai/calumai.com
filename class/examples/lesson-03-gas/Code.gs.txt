@@ -1,0 +1,64 @@
+const SHEET_NAME = '測驗紀錄';
+const HEADERS = ['提交時間', '姓名', '班級', '座號', '測驗名稱', '答對題數', '總題數', '百分比', '作答內容'];
+
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile('Index')
+    .setTitle('學生測驗');
+}
+
+function saveQuizResult(payload) {
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('沒有收到作答資料，請重新整理後再試一次。');
+  }
+
+  const name = cleanText_(payload.name, 40);
+  const className = cleanText_(payload.className, 30);
+  const seat = cleanText_(payload.seat, 12);
+  const quizTitle = cleanText_(payload.quizTitle, 80);
+  const score = Number(payload.score);
+  const total = Number(payload.total);
+
+  if (!name || !className || !seat) {
+    throw new Error('姓名、班級與座號都必須填寫。');
+  }
+  if (!Number.isFinite(score) || !Number.isFinite(total) || total <= 0 || score < 0 || score > total) {
+    throw new Error('分數資料不正確，請重新完成測驗。');
+  }
+
+  const percent = Math.round((score / total) * 100);
+  const answersJson = JSON.stringify(Array.isArray(payload.answers) ? payload.answers : []);
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  if (!spreadsheet) {
+    throw new Error('找不到綁定的 Google 試算表。');
+  }
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    let sheet = spreadsheet.getSheetByName(SHEET_NAME);
+    if (!sheet) sheet = spreadsheet.insertSheet(SHEET_NAME);
+    if (sheet.getLastRow() === 0) sheet.appendRow(HEADERS);
+
+    sheet.appendRow([
+      new Date(),
+      name,
+      className,
+      seat,
+      quizTitle,
+      score,
+      total,
+      percent,
+      answersJson
+    ]);
+  } finally {
+    lock.releaseLock();
+  }
+
+  return { success: true, message: '成績已送出', percent: percent };
+}
+
+function cleanText_(value, maxLength) {
+  let text = String(value == null ? '' : value).trim().slice(0, maxLength);
+  if (/^[=+\-@]/.test(text)) text = "'" + text;
+  return text;
+}

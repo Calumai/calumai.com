@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>學生測驗</title>
+  <style>
+    :root{--ink:#152033;--muted:#627086;--blue:#3d8dff;--good:#16805d;--bad:#c53c45;--bg:#f3f6fa}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,"Noto Sans TC",sans-serif;color:var(--ink);line-height:1.55}.app{width:min(760px,calc(100% - 28px));margin:24px auto}.card{background:#fff;border:1px solid #dce4ee;border-radius:22px;padding:clamp(22px,5vw,42px);box-shadow:0 18px 50px rgba(21,32,51,.08)}h1{font-size:clamp(2rem,7vw,3.4rem);line-height:1.08;margin:0 0 12px}h2{font-size:clamp(1.45rem,5vw,2.1rem);line-height:1.25}.lead{color:var(--muted)}.grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}label{display:block;font-weight:800;margin:14px 0 6px}input{width:100%;font:inherit;padding:13px 14px;border:1px solid #cbd5e1;border-radius:11px}button{border:0;border-radius:12px;padding:14px 20px;font:inherit;font-weight:900;cursor:pointer;background:var(--blue);color:#fff}button.secondary{background:#e7edf5;color:var(--ink)}button:disabled{opacity:.55}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.meta{display:flex;justify-content:space-between;color:var(--muted);font-weight:800}.progress{height:10px;background:#e5eaf1;border-radius:99px;overflow:hidden;margin:8px 0 26px}.progress i{display:block;height:100%;background:var(--blue)}.options{display:grid;gap:11px}.option{background:#f8fafc;color:var(--ink);border:2px solid #dbe3ed;text-align:left}.option.correct{border-color:var(--good);background:#e7f7f0}.option.wrong{border-color:var(--bad);background:#fff0f1}.feedback,.sendState{margin-top:16px;padding:14px 16px;border-radius:12px;background:#eef3f8}.score{font-size:clamp(3rem,14vw,6rem);font-weight:950;color:var(--blue);line-height:1;margin:16px 0}.hidden{display:none!important}@media(max-width:580px){.grid{grid-template-columns:1fr}.actions button{width:100%}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="card" id="startView"><h1 id="title"></h1><p class="lead">完成測驗後，將姓名、班級、座號與結果送到老師的 Google 試算表。</p><div class="grid"><div><label for="name">姓名或暱稱</label><input id="name" maxlength="40"></div><div><label for="className">班級</label><input id="className" maxlength="30" placeholder="七年一班"></div><div><label for="seat">座號</label><input id="seat" maxlength="12" inputmode="numeric"></div></div><div class="actions"><button id="startBtn">開始測驗</button></div></section>
+    <section class="card hidden" id="quizView"><div class="meta"><span id="count"></span><span id="scoreNow"></span></div><div class="progress"><i id="bar"></i></div><h2 id="question"></h2><div class="options" id="options"></div><div class="feedback hidden" id="feedback"></div><div class="actions"><button class="hidden" id="nextBtn">下一題</button></div></section>
+    <section class="card hidden" id="resultView"><h2>完成測驗</h2><div class="score" id="finalScore"></div><p class="lead" id="resultText"></p><div class="actions"><button id="sendBtn">送出成績</button><button class="secondary" id="restartBtn">重新挑戰</button></div><div class="sendState hidden" id="sendState" role="status" aria-live="polite"></div></section>
+  </main>
+  <script>
+    // 修改測驗名稱與題庫時，保留資料欄位名稱。
+    const QUIZ_INFO={title:'AI 教學工具小測驗'};
+    const QUIZ_DATA=[
+      {question:'第一版測驗最重要的是？',options:['動畫很多','流程完整可用','先做登入','一次放五十題'],answer:1,explanation:'先完成可用流程，再逐步增加功能。'},
+      {question:'題目最適合集中放在哪裡？',options:['QUIZ_DATA','網址列','CSS 顏色','瀏覽器書籤'],answer:0,explanation:'集中題庫資料比較容易替換教材。'},
+      {question:'答錯後最有幫助的回饋是？',options:['只顯示叉叉','提供答案與解析','直接關閉','不說原因'],answer:1,explanation:'解析能幫助學生理解錯誤原因。'},
+      {question:'新增功能時比較穩定的做法是？',options:['一次改十項','一次改一項並測試','刪除舊版','不測試'],answer:1,explanation:'小步修改比較容易除錯與復原。'},
+      {question:'作品完成前還需要什麼？',options:['只由作者看過','請別人實際測試','增加裝飾','隱藏操作說明'],answer:1,explanation:'另一位使用者的真人測試能發現操作問題。'}
+    ];
+    const $=id=>document.getElementById(id);const views=['startView','quizView','resultView'];let state={index:0,score:0,locked:false,answers:[],sent:false};$('title').textContent=QUIZ_INFO.title;
+    function show(id){views.forEach(v=>$(v).classList.toggle('hidden',v!==id));window.scrollTo({top:0,behavior:'smooth'})}
+    function start(){if(!$('name').value.trim()||!$('className').value.trim()||!$('seat').value.trim()){alert('請填寫姓名、班級與座號。');return}state={index:0,score:0,locked:false,answers:[],sent:false};show('quizView');render()}
+    function render(){const q=QUIZ_DATA[state.index];state.locked=false;$('count').textContent=`第 ${state.index+1} / ${QUIZ_DATA.length} 題`;$('scoreNow').textContent=`目前 ${state.score} 分`;$('bar').style.width=`${(state.index+1)/QUIZ_DATA.length*100}%`;$('question').textContent=q.question;$('feedback').classList.add('hidden');$('nextBtn').classList.add('hidden');$('options').innerHTML='';q.options.forEach((text,i)=>{const b=document.createElement('button');b.className='option';b.textContent=`${String.fromCharCode(65+i)}. ${text}`;b.onclick=()=>answer(i,b);$('options').appendChild(b)})}
+    function answer(choice,button){if(state.locked)return;state.locked=true;const q=QUIZ_DATA[state.index];const ok=choice===q.answer;if(ok)state.score++;state.answers.push({question:q.question,choice:q.options[choice],correct:q.options[q.answer],isCorrect:ok});[...$('options').children].forEach((b,i)=>{b.disabled=true;if(i===q.answer)b.classList.add('correct')});if(!ok)button.classList.add('wrong');$('feedback').textContent=`${ok?'答對了！':'再看一次。'} ${q.explanation}`;$('feedback').classList.remove('hidden');$('scoreNow').textContent=`目前 ${state.score} 分`;$('nextBtn').textContent=state.index===QUIZ_DATA.length-1?'查看結果':'下一題';$('nextBtn').classList.remove('hidden')}
+    function next(){if(state.index<QUIZ_DATA.length-1){state.index++;render()}else finish()}
+    function finish(){const percent=Math.round(state.score/QUIZ_DATA.length*100);$('finalScore').textContent=`${percent}%`;$('resultText').textContent=`答對 ${state.score} / ${QUIZ_DATA.length} 題。確認資料後送出給老師。`;$('sendBtn').disabled=false;$('sendBtn').textContent='送出成績';$('sendState').classList.add('hidden');show('resultView')}
+    function send(){if(state.sent)return;const button=$('sendBtn');button.disabled=true;button.textContent='傳送中…';const payload={name:$('name').value.trim(),className:$('className').value.trim(),seat:$('seat').value.trim(),quizTitle:QUIZ_INFO.title,score:state.score,total:QUIZ_DATA.length,answers:state.answers};const success=result=>{state.sent=true;button.textContent='已送出';$('sendState').textContent=result&&result.message?result.message:'成績已送出';$('sendState').classList.remove('hidden')};const failure=error=>{button.disabled=false;button.textContent='重新送出';$('sendState').textContent=`傳送失敗：${error&&error.message?error.message:'請稍後再試'}`;$('sendState').classList.remove('hidden')};if(window.google&&google.script&&google.script.run){google.script.run.withSuccessHandler(success).withFailureHandler(failure).saveQuizResult(payload)}else{setTimeout(()=>success({message:'公開預覽模式：流程成功，但不會寫入試算表。'}),500)}}
+    $('startBtn').onclick=start;$('nextBtn').onclick=next;$('sendBtn').onclick=send;$('restartBtn').onclick=()=>show('startView');
+  </script>
+</body>
+</html>
