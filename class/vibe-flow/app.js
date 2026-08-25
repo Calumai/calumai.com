@@ -11,6 +11,7 @@
   const MAX_HISTORY = 60;
   const MIN_ZOOM = 0.25;
   const MAX_ZOOM = 2.4;
+  const EXAMPLE_TOPIC = "用 Vibe Coding 做一個族語單詞測驗網站";
 
   const NODE_META = {
     start: {
@@ -52,7 +53,7 @@
 
   const TYPE_KEYS = Object.keys(NODE_META);
   const TOPIC_IDEAS = [
-    "做一個族語單字配對遊戲",
+    "做一個族語單詞測驗網站",
     "做一個學生點名與分組工具",
     "做一個文化地圖導覽頁",
     "做一個情境對話練習器",
@@ -379,7 +380,7 @@
     closeDialog(elements.welcomeDialog);
 
     if (action === "example") {
-      applyExample(topic || "用 Vibe Coding 做一個課堂小工具", false);
+      applyExample(topic || EXAMPLE_TOPIC, false);
     } else {
       state.topic = topic;
       elements.topicInput.value = topic;
@@ -657,7 +658,7 @@
         return;
       }
     }
-    applyExample("用 Vibe Coding 做一個課堂小工具", !fromWelcome);
+    applyExample(EXAMPLE_TOPIC, !fromWelcome);
   }
 
   function applyExample(topic, rememberCurrent) {
@@ -679,7 +680,7 @@
     requestAnimationFrame(function () {
       fitToBoard(false);
     });
-    showToast("已載入 Vibe Coding 流程範例，可直接改成自己的內容。");
+    showToast("已載入族語單詞測驗網站範例，可直接改成自己的內容。");
   }
 
   function createExampleBoard(topic) {
@@ -693,48 +694,48 @@
         {
           id: ids[0],
           type: "start",
-          label: "找到一個真實問題",
-          detail: "先決定要幫誰、改善什麼情境",
+          label: "準備族語單詞題庫",
+          detail: "選一個語別，先準備 10 個要練習的單詞",
           x: 0,
           y: 0,
         },
         {
           id: ids[1],
           type: "process",
-          label: "描述最小可用版本",
-          detail: "只留下今晚一定要完成的功能",
+          label: "整理題目與正確答案",
+          detail: "每題包含族語、華語意思、選項與答案",
           x: 320,
           y: 0,
         },
         {
           id: ids[2],
           type: "process",
-          label: "請 AI 產生第一版",
-          detail: "說清楚畫面、操作與成功條件",
+          label: "請 AI 製作測驗頁面",
+          detail: "說清楚答題回饋、計分與重新挑戰功能",
           x: 640,
           y: 0,
         },
         {
           id: ids[3],
           type: "decision",
-          label: "實際操作順利嗎？",
-          detail: "用使用者的角度測試",
+          label: "題目與計分都正確嗎？",
+          detail: "從第一題做到完成頁，逐題核對答案與總分",
           x: 970,
           y: 0,
         },
         {
           id: ids[4],
           type: "process",
-          label: "說明問題並調整",
-          detail: "一次只修一個最明確的問題",
+          label: "說明錯誤並請 AI 修正",
+          detail: "貼上錯誤現象，一次只修一個問題",
           x: 970,
           y: 250,
         },
         {
           id: ids[5],
           type: "result",
-          label: "分享可操作的作品",
-          detail: "請同學試用並收集下一輪回饋",
+          label: "發布族語單詞測驗網站",
+          detail: "請同學作答，收集太難或看不懂的題目",
           x: 1300,
           y: 0,
         },
