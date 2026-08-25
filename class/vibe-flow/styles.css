@@ -1098,6 +1098,96 @@ body[data-mode="connect"] .flow-node {
   font-size: 24px;
 }
 
+.share-dialog {
+  width: min(580px, calc(100vw - 28px));
+}
+
+.share-dialog h2 {
+  font-size: clamp(25px, 4vw, 32px);
+}
+
+.public-notice {
+  padding: 14px 16px;
+  border: 1px solid #e8b29e;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: #6f2b17;
+}
+
+.public-notice strong {
+  display: block;
+  font-size: 14px;
+}
+
+.public-notice p {
+  max-width: none;
+  margin: 4px 0 0;
+  color: #6f2b17;
+  font-size: 12px;
+}
+
+.share-summary {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #f8f7f3;
+}
+
+.share-summary > div {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.share-summary dt {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.share-summary dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.share-status {
+  min-height: 22px;
+  max-width: none !important;
+  margin: -4px 0 0 !important;
+  color: var(--muted-strong) !important;
+  font-size: 12px;
+}
+
+.share-status.is-error {
+  color: var(--danger) !important;
+  font-weight: 700;
+}
+
+.share-status.is-success {
+  color: var(--focus) !important;
+  font-weight: 750;
+}
+
+.share-success-actions {
+  margin-top: -8px;
+}
+
+.share-success-actions .button {
+  width: 100%;
+  text-decoration: none;
+}
+
+.share-remove-button {
+  margin-right: auto;
+  padding: 0 8px;
+}
+
 .dialog p {
   max-width: 50ch;
   margin: -5px 0 2px;
@@ -1413,6 +1503,7 @@ body[data-mode="connect"] .flow-node {
   }
 
   .topbar-actions .button-dark,
+  #shareButton,
   .more-menu {
     flex: 1 1 0;
   }

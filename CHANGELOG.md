@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- 在 `/class/vibe-flow/` 加入完全公開的作品分享流程，並新增 `/class/vibe-flow/gallery/` 作品牆；公開 API 僅使用獨立的 `/api/vibe-flow/*` 路由。
 - 在 `/class/` 新增 Vibe Coding 流程白板入口，白板使用獨立 `/class/vibe-flow/` 路由，不取代原有 12 堂課程內容。
 - 依使用者回饋將首頁新工具公告縮成精簡通知列，並將首頁工具數量修正為 5。
 - 首頁新增「族語教學提示詞工具」上線公告，提供工具畫面、用途提醒、開始使用與情境示範入口。

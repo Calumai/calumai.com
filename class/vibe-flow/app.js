@@ -3,6 +3,10 @@
 
   const SVG_NS = "http://www.w3.org/2000/svg";
   const STORAGE_KEY = "vibe-coding-flow-whiteboard-v1";
+  const SHARE_IDENTITY_KEY = "vibe-coding-flow-share-identity-v1";
+  const CLIENT_ID_KEY = "vibe-coding-flow-client-id-v1";
+  const BOARD_API_PATH = "/api/vibe-flow/boards";
+  const API_TIMEOUT_MS = 12000;
   const FILE_VERSION = 1;
   const MAX_HISTORY = 60;
   const MIN_ZOOM = 0.25;
@@ -81,6 +85,9 @@
   let restoredFromStorage = false;
   let previewWasManuallyToggled = false;
   let lastTap = null;
+  let shareIdentity = null;
+  let pendingShareIdentity = null;
+  let volatileClientId = null;
   const activePointers = new Map();
 
   const elements = {};
@@ -91,6 +98,7 @@
     cacheElements();
     bindEvents();
     restoredFromStorage = restoreLocalBoard();
+    shareIdentity = restoreShareIdentity();
     setMode("select");
     renderAll();
 
@@ -119,10 +127,12 @@
     const ids = [
       "topicInput",
       "classHomeLink",
+      "galleryLink",
       "undoButton",
       "redoButton",
       "previewToggleButton",
       "presentButton",
+      "shareButton",
       "exportPngButton",
       "exportSvgButton",
       "exportJsonButton",
@@ -167,6 +177,17 @@
       "edgeDialog",
       "edgeForm",
       "edgeLabelInput",
+      "shareDialog",
+      "shareForm",
+      "shareTopic",
+      "shareNodeCount",
+      "shareEdgeCount",
+      "authorNameInput",
+      "shareStatus",
+      "shareSuccessActions",
+      "viewSharedBoardLink",
+      "submitShareButton",
+      "removeSharedBoardButton",
       "presentationDialog",
       "presentationTitle",
       "presentationSvg",
@@ -233,6 +254,7 @@
     });
 
     elements.presentButton.addEventListener("click", openPresentation);
+    elements.shareButton.addEventListener("click", openShareDialog);
     elements.previewPresentButton.addEventListener("click", openPresentation);
     elements.closePresentationButton.addEventListener("click", closePresentation);
     elements.fullscreenButton.addEventListener("click", enterFullscreen);
@@ -261,6 +283,8 @@
     elements.ideaButton.addEventListener("click", suggestTopic);
     elements.nodeForm.addEventListener("submit", saveNodeEdit);
     elements.edgeForm.addEventListener("submit", saveEdgeEdit);
+    elements.shareForm.addEventListener("submit", submitShare);
+    elements.removeSharedBoardButton.addEventListener("click", removeSharedBoard);
 
     elements.dialogCloseButtons.forEach(function (button) {
       button.addEventListener("click", function () {
@@ -2661,6 +2685,303 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&apos;");
+  }
+
+  function openShareDialog() {
+    if (window.location.protocol === "file:") {
+      showToast("離線版可以繼續編輯，公開分享請使用 calumai.com 上線版。", true);
+      return;
+    }
+    if (state.nodes.length === 0) {
+      showToast("請先新增至少一個節點再分享。", true);
+      return;
+    }
+    if (!state.topic.trim()) {
+      showToast("請先為流程填寫一個主題。", true);
+      elements.topicInput.focus();
+      return;
+    }
+
+    elements.shareTopic.textContent = displayTopic();
+    elements.shareNodeCount.textContent = String(state.nodes.length);
+    elements.shareEdgeCount.textContent = String(state.edges.length);
+    elements.shareStatus.textContent = shareIdentity
+      ? "再次分享會更新你先前公開的這份作品。"
+      : "這是公開頁面，送出前請再確認內容沒有個人資料。";
+    elements.shareStatus.className = "share-status";
+    elements.shareSuccessActions.hidden = true;
+    elements.removeSharedBoardButton.hidden = !shareIdentity;
+    elements.removeSharedBoardButton.disabled = false;
+    elements.submitShareButton.disabled = false;
+    elements.submitShareButton.textContent = shareIdentity ? "更新公開作品" : "公開分享";
+    openDialog(elements.shareDialog);
+    window.setTimeout(function () {
+      elements.authorNameInput.focus();
+    }, 0);
+  }
+
+  async function submitShare(event) {
+    event.preventDefault();
+    const authorName = elements.authorNameInput.value.trim().slice(0, 24);
+    if (!authorName) {
+      elements.authorNameInput.setCustomValidity("請填寫公開暱稱。");
+      elements.authorNameInput.reportValidity();
+      return;
+    }
+    elements.authorNameInput.setCustomValidity("");
+    if (state.nodes.length === 0 || !state.topic.trim()) {
+      setShareStatus("流程缺少主題或節點，請關閉視窗後補齊。", "error");
+      return;
+    }
+
+    elements.submitShareButton.disabled = true;
+    elements.submitShareButton.textContent = "正在分享...";
+    elements.shareSuccessActions.hidden = true;
+    setShareStatus("正在安全傳送作品，請不要關閉頁面。", "");
+
+    try {
+      const clientId = getClientId();
+      let result;
+      if (shareIdentity) {
+        result = await requestBoardApi(
+          BOARD_API_PATH + "/" + encodeURIComponent(shareIdentity.boardId),
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Vibe-Client": clientId,
+              "X-Vibe-Edit-Token": shareIdentity.editToken,
+            },
+            body: JSON.stringify(createSharePayload(authorName, false)),
+          }
+        );
+      } else {
+        if (!pendingShareIdentity) {
+          pendingShareIdentity = createShareIdentity();
+        }
+        result = await requestBoardApi(BOARD_API_PATH, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Vibe-Client": clientId,
+          },
+          body: JSON.stringify(createSharePayload(authorName, true)),
+        });
+        shareIdentity = pendingShareIdentity;
+        persistShareIdentity(shareIdentity);
+        pendingShareIdentity = null;
+      }
+
+      const boardId =
+        result && result.board && result.board.id
+          ? String(result.board.id)
+          : shareIdentity.boardId;
+      elements.viewSharedBoardLink.href = "gallery/?board=" + encodeURIComponent(boardId);
+      elements.shareSuccessActions.hidden = false;
+      elements.submitShareButton.textContent = "再次更新";
+      setShareStatus("分享成功。作品已出現在公開作品牆。", "success");
+      showToast("作品已分享到公開作品牆。");
+    } catch (error) {
+      const message = error && error.message ? error.message : "分享失敗，請稍後再試。";
+      setShareStatus(message, "error");
+      elements.submitShareButton.textContent = shareIdentity ? "重新更新" : "重新分享";
+    } finally {
+      elements.submitShareButton.disabled = false;
+    }
+  }
+
+  async function removeSharedBoard() {
+    if (!shareIdentity) {
+      return;
+    }
+    const confirmed = window.confirm(
+      "確定要把這份作品從公開作品牆移除嗎？你的本機白板會完整保留。"
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    elements.removeSharedBoardButton.disabled = true;
+    elements.submitShareButton.disabled = true;
+    setShareStatus("正在從公開作品牆移除，白板內容會保留在這台裝置。", "");
+    try {
+      await requestBoardApi(
+        BOARD_API_PATH + "/" + encodeURIComponent(shareIdentity.boardId),
+        {
+          method: "DELETE",
+          headers: {
+            "X-Vibe-Client": getClientId(),
+            "X-Vibe-Edit-Token": shareIdentity.editToken,
+          },
+        }
+      );
+      shareIdentity = null;
+      pendingShareIdentity = null;
+      clearShareIdentity();
+      elements.removeSharedBoardButton.hidden = true;
+      elements.shareSuccessActions.hidden = true;
+      elements.submitShareButton.textContent = "重新公開分享";
+      setShareStatus("已從作品牆移除。本機白板仍然完整保留。", "success");
+      showToast("作品已從公開作品牆移除，白板仍保留。");
+    } catch (error) {
+      setShareStatus(error.message || "移除失敗，請稍後再試。", "error");
+    } finally {
+      elements.removeSharedBoardButton.disabled = false;
+      elements.submitShareButton.disabled = false;
+    }
+  }
+
+  function createSharePayload(authorName, includeIdentity) {
+    const payload = {
+      author_name: authorName,
+      topic: state.topic.trim().slice(0, 80),
+      nodes: cloneData(state.nodes),
+      edges: cloneData(state.edges),
+    };
+    if (includeIdentity) {
+      payload.board_id = pendingShareIdentity.boardId;
+      payload.edit_token = pendingShareIdentity.editToken;
+    }
+    return payload;
+  }
+
+  async function requestBoardApi(path, options) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(function () {
+      controller.abort();
+    }, API_TIMEOUT_MS);
+    try {
+      const response = await fetch(path, Object.assign({}, options, { signal: controller.signal }));
+      let body = null;
+      try {
+        body = await response.json();
+      } catch (error) {
+        body = null;
+      }
+      if (!response.ok || !body || body.ok === false) {
+        const apiMessage =
+          body && body.error && typeof body.error.message === "string"
+            ? body.error.message
+            : "伺服器暫時無法接受作品（HTTP " + response.status + "）。";
+        throw new Error(apiMessage);
+      }
+      return body;
+    } catch (error) {
+      if (error && error.name === "AbortError") {
+        throw new Error("分享逾時，請確認網路後重新傳送。");
+      }
+      if (error instanceof TypeError) {
+        throw new Error("無法連上作品牆，請確認網路後重新傳送。");
+      }
+      throw error;
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+
+  function createShareIdentity() {
+    return {
+      boardId: "vb_" + createSecureRandomBase64Url(16),
+      editToken: "ve_" + createSecureRandomBase64Url(32),
+    };
+  }
+
+  function createUuid() {
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+      return window.crypto.randomUUID();
+    }
+    if (!window.crypto || typeof window.crypto.getRandomValues !== "function") {
+      throw new Error("這個瀏覽器不支援安全分享，請改用最新版瀏覽器。");
+    }
+    const bytes = new Uint8Array(16);
+    window.crypto.getRandomValues(bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = Array.from(bytes, function (value) {
+      return value.toString(16).padStart(2, "0");
+    }).join("");
+    return [hex.slice(0, 8), hex.slice(8, 12), hex.slice(12, 16), hex.slice(16, 20), hex.slice(20)].join("-");
+  }
+
+  function createSecureRandomBase64Url(byteLength) {
+    if (!window.crypto || typeof window.crypto.getRandomValues !== "function") {
+      throw new Error("這個瀏覽器不支援安全分享，請改用最新版瀏覽器。");
+    }
+    const bytes = new Uint8Array(byteLength);
+    window.crypto.getRandomValues(bytes);
+    let binary = "";
+    bytes.forEach(function (value) {
+      binary += String.fromCharCode(value);
+    });
+    return window.btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+  }
+
+  function restoreShareIdentity() {
+    try {
+      const raw = window.localStorage.getItem(SHARE_IDENTITY_KEY);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw);
+      if (
+        !parsed ||
+        typeof parsed.boardId !== "string" ||
+        typeof parsed.editToken !== "string" ||
+        !/^vb_[A-Za-z0-9_-]{22}$/u.test(parsed.boardId) ||
+        !/^ve_[A-Za-z0-9_-]{43}$/u.test(parsed.editToken)
+      ) {
+        return null;
+      }
+      return { boardId: parsed.boardId, editToken: parsed.editToken };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function persistShareIdentity(identity) {
+    try {
+      window.localStorage.setItem(
+        SHARE_IDENTITY_KEY,
+        JSON.stringify({ boardId: identity.boardId, editToken: identity.editToken })
+      );
+    } catch (error) {
+      showToast("作品已分享，但這個瀏覽器無法保存更新權限。請勿清除頁面資料。", true);
+    }
+  }
+
+  function clearShareIdentity() {
+    try {
+      window.localStorage.removeItem(SHARE_IDENTITY_KEY);
+    } catch (error) {
+      // The in-memory identity is still cleared for this session.
+    }
+  }
+
+  function getClientId() {
+    if (volatileClientId) {
+      return volatileClientId;
+    }
+    try {
+      const existing = window.localStorage.getItem(CLIENT_ID_KEY);
+      if (existing && /^[0-9a-f-]{36}$/iu.test(existing)) {
+        volatileClientId = existing;
+        return volatileClientId;
+      }
+      volatileClientId = createUuid();
+      window.localStorage.setItem(CLIENT_ID_KEY, volatileClientId);
+      return volatileClientId;
+    } catch (error) {
+      volatileClientId = createUuid();
+      return volatileClientId;
+    }
+  }
+
+  function setShareStatus(message, kind) {
+    elements.shareStatus.textContent = message;
+    elements.shareStatus.className = "share-status";
+    if (kind) {
+      elements.shareStatus.classList.add("is-" + kind);
+    }
   }
 
   function openPresentation() {

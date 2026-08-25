@@ -41,6 +41,7 @@
 
       <div class="topbar-actions" aria-label="白板操作">
         <a id="classHomeLink" class="class-home-link" href="/class/" hidden>回課程中心</a>
+        <a id="galleryLink" class="class-home-link" href="gallery/">看作品牆</a>
         <button id="undoButton" class="button button-quiet" type="button" disabled>
           復原
         </button>
@@ -53,8 +54,11 @@
         <button id="presentButton" class="button button-dark" type="button">
           展示
         </button>
+        <button id="shareButton" class="button button-accent" type="button">
+          分享作品
+        </button>
         <details class="more-menu">
-          <summary class="button button-accent">下載</summary>
+          <summary class="button button-outline">下載</summary>
           <div class="more-menu-popover" role="menu" aria-label="下載與備份">
             <button id="exportPngButton" type="button" role="menuitem">下載 PNG 圖片</button>
             <button id="exportSvgButton" type="button" role="menuitem">下載 SVG 圖片</button>
@@ -305,6 +309,53 @@
         <div class="dialog-actions">
           <button class="button button-quiet" type="button" data-close-dialog="edgeDialog">取消</button>
           <button class="button button-accent" type="submit" value="save">儲存標籤</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="shareDialog" class="dialog share-dialog" aria-labelledby="shareDialogTitle">
+      <form id="shareForm" method="dialog">
+        <div class="dialog-heading-row">
+          <div>
+            <span class="dialog-kicker">公開作品牆</span>
+            <h2 id="shareDialogTitle">讓大家看見這份流程</h2>
+          </div>
+          <button class="dialog-close" type="button" data-close-dialog="shareDialog" aria-label="關閉">關閉</button>
+        </div>
+        <div class="public-notice" role="note">
+          <strong>分享後任何人都能查看</strong>
+          <p>請只填暱稱，不要輸入真實姓名、學校、電話、地址或其他個人資料。</p>
+        </div>
+        <dl class="share-summary" aria-label="準備分享的作品摘要">
+          <div>
+            <dt>主題</dt>
+            <dd id="shareTopic">尚未命名的流程</dd>
+          </div>
+          <div>
+            <dt>內容</dt>
+            <dd><span id="shareNodeCount">0</span> 個節點，<span id="shareEdgeCount">0</span> 條連線</dd>
+          </div>
+        </dl>
+        <label class="dialog-field" for="authorNameInput">
+          <span>公開暱稱</span>
+          <input
+            id="authorNameInput"
+            type="text"
+            minlength="1"
+            maxlength="24"
+            autocomplete="nickname"
+            placeholder="例如：流程小隊 3 號"
+            required
+          />
+        </label>
+        <p id="shareStatus" class="share-status" role="status" aria-live="polite"></p>
+        <div id="shareSuccessActions" class="share-success-actions" hidden>
+          <a id="viewSharedBoardLink" class="button button-outline" href="gallery/">到作品牆查看</a>
+        </div>
+        <div class="dialog-actions">
+          <button id="removeSharedBoardButton" class="text-button text-button-danger share-remove-button" type="button" hidden>從作品牆移除</button>
+          <button class="button button-quiet" type="button" data-close-dialog="shareDialog">取消</button>
+          <button id="submitShareButton" class="button button-accent" type="submit">公開分享</button>
         </div>
       </form>
     </dialog>

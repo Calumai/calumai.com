@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f6f2" />
+    <title>流程作品牆｜Vibe Coding</title>
+    <meta name="description" content="查看同學公開分享的 Vibe Coding 流程作品。" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231e2421'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-family='Arial,sans-serif' font-size='28' font-weight='800' fill='%23fffefa'%3EVC%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="gallery.css" />
+    <script defer src="gallery.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#galleryGrid">跳到作品列表</a>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="回到流程白板">
+        <span class="brand-mark" aria-hidden="true">VC</span>
+        <span><strong>流程作品牆</strong><small>看看大家怎麼把想法變成步驟</small></span>
+      </a>
+      <nav aria-label="主要導覽">
+        <a class="quiet-link" href="/class/">課程中心</a>
+        <a class="button button-accent" href="../">畫我的流程</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="pageTitle">
+        <div>
+          <span class="eyebrow">VIBE CODING CLASS</span>
+          <h1 id="pageTitle">每個想法，都有自己的路線</h1>
+          <p>這裡收集同學主動公開的流程圖。點一張作品卡，就能用唯讀模式看完整步驟。</p>
+        </div>
+        <aside class="public-note" aria-label="公開內容提醒">
+          <strong>這是完全公開的作品牆</strong>
+          <p>作品與暱稱任何人都能查看。請勿在流程中填入真實姓名或其他個人資料。</p>
+        </aside>
+      </section>
+
+      <section class="gallery-section" aria-labelledby="galleryTitle">
+        <div class="gallery-heading">
+          <div>
+            <span class="section-label">公開作品</span>
+            <h2 id="galleryTitle"><span id="visibleCount">0</span> 份流程正在展出</h2>
+          </div>
+          <div class="gallery-controls">
+            <label class="search-field" for="searchInput">
+              <span>搜尋</span>
+              <input id="searchInput" type="search" placeholder="搜尋主題或暱稱" autocomplete="off" />
+            </label>
+            <button id="refreshButton" class="button button-outline" type="button">重新整理</button>
+          </div>
+        </div>
+
+        <div id="loadingState" class="state-panel" role="status">
+          <span class="spinner" aria-hidden="true"></span>
+          <strong>正在整理作品牆</strong>
+          <p>馬上就能看到大家的流程。</p>
+        </div>
+
+        <div id="errorState" class="state-panel state-error" role="alert" hidden>
+          <strong>作品牆暫時沒有載入</strong>
+          <p id="errorMessage">請確認網路後再試一次。</p>
+          <button id="retryButton" class="button button-dark" type="button">重新載入</button>
+        </div>
+
+        <div id="emptyState" class="state-panel" hidden>
+          <span class="empty-mark" aria-hidden="true">＋</span>
+          <strong id="emptyTitle">還沒有公開作品</strong>
+          <p id="emptyMessage">成為第一個把流程分享到這裡的人吧。</p>
+          <a class="button button-accent" href="../">開始畫流程</a>
+        </div>
+
+        <div id="galleryGrid" class="gallery-grid" aria-live="polite"></div>
+        <div class="load-more-row">
+          <button id="loadMoreButton" class="button button-outline" type="button" hidden>載入更多作品</button>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="boardDialog" class="board-dialog" aria-labelledby="dialogTopic">
+      <div class="dialog-shell">
+        <header class="dialog-header">
+          <div>
+            <span id="dialogAuthor" class="section-label">公開作品</span>
+            <h2 id="dialogTopic">讀取作品中</h2>
+            <p id="dialogMeta"></p>
+          </div>
+          <button id="closeDialogButton" class="button button-dark" type="button">關閉</button>
+        </header>
+        <div id="detailLoading" class="detail-state" role="status">正在載入完整流程...</div>
+        <div id="detailError" class="detail-state detail-error" role="alert" hidden></div>
+        <svg
+          id="detailSvg"
+          role="img"
+          aria-label="唯讀流程圖"
+          xmlns="http://www.w3.org/2000/svg"
+          hidden
+        ></svg>
+      </div>
+    </dialog>
+  </body>
+</html>
