@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7f6f2" />
+    <title>Vibe Coding 流程白板</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231e2421'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-family='Arial,sans-serif' font-size='28' font-weight='800' fill='%23fffefa'%3EVC%3C/text%3E%3C/svg%3E"
+    />
+    <meta
+      name="description"
+      content="一個可離線使用的互動流程白板，讓學生把主題畫成流程圖並立即預覽。"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#boardSvg">跳到白板</a>
+
+    <header class="topbar">
+      <div class="brand-block" aria-label="Vibe Coding 流程白板">
+        <span class="brand-mark" aria-hidden="true">VC</span>
+        <span class="brand-copy">
+          <strong>流程白板</strong>
+          <small>把想法變成看得見的步驟</small>
+        </span>
+      </div>
+
+      <label class="topic-control" for="topicInput">
+        <span>我的主題</span>
+        <input
+          id="topicInput"
+          type="text"
+          maxlength="80"
+          autocomplete="off"
+          placeholder="例如：做一個族語單字配對遊戲"
+        />
+      </label>
+
+      <div class="topbar-actions" aria-label="白板操作">
+        <a id="classHomeLink" class="class-home-link" href="/class/" hidden>回課程中心</a>
+        <button id="undoButton" class="button button-quiet" type="button" disabled>
+          復原
+        </button>
+        <button id="redoButton" class="button button-quiet" type="button" disabled>
+          重做
+        </button>
+        <button id="previewToggleButton" class="button button-quiet" type="button" aria-expanded="true">
+          即時預覽
+        </button>
+        <button id="presentButton" class="button button-dark" type="button">
+          展示
+        </button>
+        <details class="more-menu">
+          <summary class="button button-accent">下載</summary>
+          <div class="more-menu-popover" role="menu" aria-label="下載與備份">
+            <button id="exportPngButton" type="button" role="menuitem">下載 PNG 圖片</button>
+            <button id="exportSvgButton" type="button" role="menuitem">下載 SVG 圖片</button>
+            <button id="exportJsonButton" type="button" role="menuitem">下載 JSON 備份</button>
+            <button id="importJsonButton" type="button" role="menuitem">載入 JSON 備份</button>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="tool-panel" aria-label="白板工具">
+        <section class="tool-group node-palette" aria-labelledby="nodePaletteTitle">
+          <div class="section-heading">
+            <h2 id="nodePaletteTitle">新增節點</h2>
+            <span>點一下就加入</span>
+          </div>
+          <div class="node-button-grid">
+            <button class="node-button" type="button" data-add-node="start">
+              <span class="node-swatch swatch-start" aria-hidden="true"></span>
+              <span><strong>開始</strong><small>起點</small></span>
+            </button>
+            <button class="node-button" type="button" data-add-node="process">
+              <span class="node-swatch swatch-process" aria-hidden="true"></span>
+              <span><strong>步驟</strong><small>要做的事</small></span>
+            </button>
+            <button class="node-button" type="button" data-add-node="decision">
+              <span class="node-swatch swatch-decision" aria-hidden="true"></span>
+              <span><strong>判斷</strong><small>分支問題</small></span>
+            </button>
+            <button class="node-button" type="button" data-add-node="result">
+              <span class="node-swatch swatch-result" aria-hidden="true"></span>
+              <span><strong>成果</strong><small>完成狀態</small></span>
+            </button>
+            <button class="node-button" type="button" data-add-node="note">
+              <span class="node-swatch swatch-note" aria-hidden="true"></span>
+              <span><strong>備註</strong><small>補充提醒</small></span>
+            </button>
+          </div>
+        </section>
+
+        <section class="tool-group" aria-labelledby="arrangeTitle">
+          <div class="section-heading">
+            <h2 id="arrangeTitle">整理畫面</h2>
+          </div>
+          <label class="select-field" for="layoutDirection">
+            <span>排列方向</span>
+            <select id="layoutDirection">
+              <option value="horizontal">由左到右</option>
+              <option value="vertical">由上到下</option>
+            </select>
+          </label>
+          <div class="stacked-actions">
+            <button id="autoLayoutButton" class="button button-outline" type="button">自動整理</button>
+            <button id="fitButton" class="button button-outline" type="button">適合畫面</button>
+            <button id="loadExampleButton" class="button button-outline" type="button">載入 Vibe Coding 範例</button>
+          </div>
+        </section>
+
+        <section class="tool-group tool-group-compact" aria-labelledby="boardInfoTitle">
+          <div class="section-heading">
+            <h2 id="boardInfoTitle">目前白板</h2>
+          </div>
+          <div class="board-metrics" aria-live="polite">
+            <span><strong id="nodeCount">0</strong> 個節點</span>
+            <span><strong id="edgeCount">0</strong> 條連線</span>
+          </div>
+          <button id="clearButton" class="text-button text-button-danger" type="button">清空白板</button>
+        </section>
+
+        <details class="help-panel">
+          <summary>快速操作</summary>
+          <ul>
+            <li>拖曳節點改變位置</li>
+            <li>雙擊節點修改文字</li>
+            <li>選節點後按 Delete 刪除</li>
+            <li>按 Ctrl + Z 復原</li>
+          </ul>
+        </details>
+      </aside>
+
+      <section class="board-section" aria-label="流程圖編輯區">
+        <div class="canvas-toolbar" role="toolbar" aria-label="畫布模式">
+          <div class="mode-switch" aria-label="操作模式">
+            <button class="mode-button is-active" type="button" data-mode="select" aria-pressed="true">選取</button>
+            <button class="mode-button" type="button" data-mode="pan" aria-pressed="false">移動畫布</button>
+            <button class="mode-button" type="button" data-mode="connect" aria-pressed="false">連線</button>
+          </div>
+          <span class="toolbar-divider" aria-hidden="true"></span>
+          <button id="zoomOutButton" class="toolbar-button" type="button" aria-label="縮小">縮小</button>
+          <output id="zoomOutput" class="zoom-output" aria-label="目前縮放比例">100%</output>
+          <button id="zoomInButton" class="toolbar-button" type="button" aria-label="放大">放大</button>
+        </div>
+
+        <div id="modeHint" class="mode-hint" role="status" aria-live="polite">
+          拖曳節點調整位置，雙擊節點修改內容。
+        </div>
+
+        <div class="board-frame">
+          <svg
+            id="boardSvg"
+            class="board-svg"
+            role="application"
+            aria-label="互動流程白板"
+            tabindex="0"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <pattern id="dotGrid" width="24" height="24" patternUnits="userSpaceOnUse">
+                <circle cx="1.5" cy="1.5" r="1.2" fill="#d7d6d0"></circle>
+              </pattern>
+              <marker
+                id="arrowHead"
+                viewBox="0 0 10 10"
+                refX="8.6"
+                refY="5"
+                markerWidth="7"
+                markerHeight="7"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke"></path>
+              </marker>
+            </defs>
+            <rect class="board-background" width="100%" height="100%" fill="url(#dotGrid)"></rect>
+            <g id="viewportLayer">
+              <g id="edgeLayer"></g>
+              <g id="nodeLayer"></g>
+            </g>
+          </svg>
+
+          <div id="emptyState" class="empty-state">
+            <span class="empty-state-mark" aria-hidden="true">＋</span>
+            <strong>先放下第一個節點</strong>
+            <p>從左側選「開始」或「步驟」，流程會同步出現在預覽區。</p>
+            <button id="emptyAddButton" class="button button-accent" type="button">新增第一個步驟</button>
+          </div>
+        </div>
+
+        <footer class="canvas-statusbar">
+          <span id="saveStatus" role="status" aria-live="polite">準備自動儲存</span>
+          <span id="selectionStatus">尚未選取節點</span>
+        </footer>
+      </section>
+
+      <aside id="previewPanel" class="preview-panel is-open" aria-label="即時預覽">
+        <div class="preview-header">
+          <div>
+            <span class="preview-kicker">即時預覽</span>
+            <h2 id="previewTopic">尚未命名的流程</h2>
+          </div>
+          <button id="closePreviewButton" class="icon-text-button" type="button" aria-label="關閉預覽">關閉</button>
+        </div>
+        <div class="preview-canvas">
+          <svg
+            id="previewSvg"
+            role="img"
+            aria-label="目前流程圖預覽"
+            xmlns="http://www.w3.org/2000/svg"
+          ></svg>
+          <div id="previewEmptyState" class="preview-empty-state">
+            新增節點後，這裡會出現乾淨版流程圖。
+          </div>
+        </div>
+        <div class="preview-actions">
+          <button id="previewPresentButton" class="button button-dark" type="button">打開展示模式</button>
+          <button id="previewExportButton" class="button button-outline" type="button">下載 PNG</button>
+        </div>
+        <p class="preview-note">預覽與下載不會顯示格線、控制點或編輯工具。</p>
+      </aside>
+    </main>
+
+    <dialog id="welcomeDialog" class="dialog welcome-dialog" aria-labelledby="welcomeTitle">
+      <form id="welcomeForm" method="dialog">
+        <span class="dialog-kicker">今晚的 Vibe Coding 練習</span>
+        <h2 id="welcomeTitle">先想一個主題，再把做法畫出來</h2>
+        <p>不需要先會寫程式。先說清楚要幫誰、解決什麼問題，以及每一步要發生什麼事。</p>
+        <label class="dialog-field" for="welcomeTopicInput">
+          <span>你的主題</span>
+          <input
+            id="welcomeTopicInput"
+            type="text"
+            maxlength="80"
+            autocomplete="off"
+            placeholder="例如：做一個學生點名小工具"
+          />
+        </label>
+        <button id="ideaButton" class="idea-button" type="button">沒有靈感？換一個題目提示</button>
+        <div class="dialog-actions dialog-actions-split">
+          <button id="startBlankButton" class="button button-dark" type="submit" value="blank">空白開始</button>
+          <button id="startExampleButton" class="button button-accent" type="submit" value="example">看 Vibe Coding 範例</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="nodeDialog" class="dialog edit-dialog" aria-labelledby="nodeDialogTitle">
+      <form id="nodeForm" method="dialog">
+        <div class="dialog-heading-row">
+          <div>
+            <span class="dialog-kicker">編輯節點</span>
+            <h2 id="nodeDialogTitle">修改節點內容</h2>
+          </div>
+          <button class="dialog-close" type="button" data-close-dialog="nodeDialog" aria-label="關閉">關閉</button>
+        </div>
+        <label class="dialog-field" for="nodeTypeInput">
+          <span>節點類型</span>
+          <select id="nodeTypeInput">
+            <option value="start">開始</option>
+            <option value="process">步驟</option>
+            <option value="decision">判斷</option>
+            <option value="result">成果</option>
+            <option value="note">備註</option>
+          </select>
+        </label>
+        <label class="dialog-field" for="nodeLabelInput">
+          <span>主要文字</span>
+          <input id="nodeLabelInput" type="text" maxlength="50" required />
+        </label>
+        <label class="dialog-field" for="nodeDetailInput">
+          <span>補充說明，可留白</span>
+          <textarea id="nodeDetailInput" rows="3" maxlength="120"></textarea>
+        </label>
+        <div class="dialog-actions">
+          <button class="button button-quiet" type="button" data-close-dialog="nodeDialog">取消</button>
+          <button class="button button-accent" type="submit" value="save">儲存節點</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="edgeDialog" class="dialog edit-dialog" aria-labelledby="edgeDialogTitle">
+      <form id="edgeForm" method="dialog">
+        <div class="dialog-heading-row">
+          <div>
+            <span class="dialog-kicker">編輯連線</span>
+            <h2 id="edgeDialogTitle">加上分支文字</h2>
+          </div>
+          <button class="dialog-close" type="button" data-close-dialog="edgeDialog" aria-label="關閉">關閉</button>
+        </div>
+        <label class="dialog-field" for="edgeLabelInput">
+          <span>連線標籤，可留白</span>
+          <input id="edgeLabelInput" type="text" maxlength="24" list="edgeLabelSuggestions" />
+          <datalist id="edgeLabelSuggestions">
+            <option value="是"></option>
+            <option value="否"></option>
+            <option value="成功"></option>
+            <option value="需要修改"></option>
+          </datalist>
+        </label>
+        <div class="dialog-actions">
+          <button class="button button-quiet" type="button" data-close-dialog="edgeDialog">取消</button>
+          <button class="button button-accent" type="submit" value="save">儲存標籤</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="presentationDialog" class="presentation-dialog" aria-labelledby="presentationTitle">
+      <div class="presentation-shell">
+        <header class="presentation-header">
+          <div>
+            <span>流程展示</span>
+            <h2 id="presentationTitle">尚未命名的流程</h2>
+          </div>
+          <div class="presentation-actions">
+            <button id="fullscreenButton" class="button button-outline" type="button">進入全螢幕</button>
+            <button id="closePresentationButton" class="button button-dark" type="button">返回編輯</button>
+          </div>
+        </header>
+        <svg
+          id="presentationSvg"
+          role="img"
+          aria-label="流程圖展示"
+          xmlns="http://www.w3.org/2000/svg"
+        ></svg>
+      </div>
+    </dialog>
+
+    <input id="jsonFileInput" type="file" accept="application/json,.json" hidden />
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
