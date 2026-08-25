@@ -429,6 +429,10 @@ h1 {
   padding-top: 20px;
 }
 
+.load-more-row [hidden] {
+  display: none;
+}
+
 .board-dialog {
   width: min(1180px, calc(100vw - 24px));
   height: min(820px, calc(100dvh - 24px));
