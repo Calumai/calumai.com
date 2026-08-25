@@ -281,6 +281,7 @@
     });
 
     elements.welcomeForm.addEventListener("submit", handleWelcomeSubmit);
+    elements.welcomeTopicInput.addEventListener("input", clearWelcomeTopicError);
     elements.ideaButton.addEventListener("click", suggestTopic);
     elements.nodeForm.addEventListener("submit", saveNodeEdit);
     elements.edgeForm.addEventListener("submit", saveEdgeEdit);
@@ -390,6 +391,10 @@
     }
   }
 
+  function clearWelcomeTopicError() {
+    elements.welcomeTopicInput.setCustomValidity("");
+  }
+
   function suggestTopic() {
     const current = elements.welcomeTopicInput.value.trim();
     let next = current;
@@ -399,6 +404,7 @@
       guard += 1;
     }
     elements.welcomeTopicInput.value = next;
+    clearWelcomeTopicError();
     elements.welcomeTopicInput.focus();
     elements.welcomeTopicInput.select();
   }
