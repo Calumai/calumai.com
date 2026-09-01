@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Updated the Lesson 04 Code.gs sample with the new Drive folder ID and a server-side Base64 audio helper.
+
 - Added Lesson 04 Code.gs and quiz.html samples with expandable source views and one-click copy actions.
 
 - Added direct Lesson 04 links for the deployed tribal-language listening quiz and the shared classroom materials folder.

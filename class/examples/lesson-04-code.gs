@@ -10,15 +10,14 @@ function getQuizData() {
   var data = sheet.getDataRange().getValues();
   var quizList = [];
 
-  // 從第 2 列開始讀取
   for (var i = 1; i < data.length; i++) {
     if (data[i][0] !== '') {
       quizList.push({
-        indigenous: data[i][0],      // A 欄：族語
-        chinese: data[i][1] || '',   // B 欄：中文
-        example: data[i][2] || '',   // C 欄：例句
-        level: data[i][3] || '',     // D 欄：級別
-        audioUrl: data[i][4] || ''   // E 欄：音檔連結
+        indigenous: data[i][0],
+        chinese: data[i][1] || '',
+        example: data[i][2] || '',
+        level: data[i][3] || '',
+        audioUrl: data[i][4] || ''
       });
     }
   }
@@ -26,26 +25,40 @@ function getQuizData() {
   return quizList;
 }
 
+// 終極解法：後端直接把音檔轉換成瀏覽器能播放的 Base64 格式
+function getAudioBase64(url) {
+  try {
+    var idMatch = url.match(/id=([^&]+)/);
+    if (idMatch && idMatch[1]) {
+      var fileId = idMatch[1];
+      var file = DriveApp.getFileById(fileId);
+      var blob = file.getBlob();
+      var base64 = Utilities.base64Encode(blob.getBytes());
+      return 'data:' + blob.getContentType() + ';base64,' + base64;
+    }
+  } catch (e) {
+    Logger.log(e);
+  }
+
+  return null;
+}
+
 // 自動填寫音檔連結小工具
 function autoFillAudioLinks() {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var data = sheet.getDataRange().getValues();
 
-  // 請在這裡填入您的 Google Drive 音檔資料夾 ID
-  // 資料夾權限必須設為「知道連結的任何人都可以查看」
-  var folderId = '1vzQzbBrNSTQ4URdNCv34oHt05xShQD6G';
+  var folderId = '1KDxjlAh3EVbC9FCAIONfZIrAu14vPnH9'; // 記得填入您的 ID
 
   try {
     var folder = DriveApp.getFolderById(folderId);
     var files = folder.getFiles();
     var audioMap = {};
 
-    // 建立「中文 -> 檔案 ID」的對應表
     while (files.hasNext()) {
       var file = files.next();
-      var name = file.getName(); // 例如：01-01_一.wav
+      var name = file.getName();
 
-      // 擷取底線「_」與副檔名前「.」之間的中文
       var match = name.match(/_(.+)\./);
       if (match && match[1]) {
         var chineseWord = match[1];
@@ -53,17 +66,14 @@ function autoFillAudioLinks() {
       }
     }
 
-    // 將對應的檔案連結填入 E 欄（第 5 欄）
     for (var i = 1; i < data.length; i++) {
-      var rowChinese = data[i][1]; // B 欄中文
+      var rowChinese = data[i][1];
       if (rowChinese && audioMap[rowChinese]) {
-        var directLink = 'https://drive.google.com/uc?export=download&id=' + audioMap[rowChinese];
+        var directLink = 'https://docs.google.com/uc?export=download&id=' + audioMap[rowChinese];
         sheet.getRange(i + 1, 5).setValue(directLink);
       }
     }
-
-    Logger.log('音檔連結填寫完成！');
   } catch (e) {
-    Logger.log('發生錯誤：' + e.toString());
+    Logger.log('發生錯誤: ' + e.toString());
   }
 }

@@ -51,9 +51,9 @@ const DATA={
     {
       id:'codegs-04',
       name:'Code.gs',
-      description:'讀取試算表題庫，並依檔名把 Drive 音檔連結填入 E 欄。',
+      description:'讀取試算表題庫、配對 Drive 音檔，並由後端轉成 Base64 供瀏覽器播放。',
       copyLabel:'一鍵複製 Code.gs',
-      href:'/class/examples/lesson-04-code.gs?v=20260901e'
+      href:'/class/examples/lesson-04-code.gs?v=20260901f'
     },
     {
       id:'quiz-html-04',
