@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Added a Lesson 04 Google Sheet example, copy link, and eight-step visual workflow from preparing audio files through Apps Script deployment.
+
+- Replaced the hard-coded Lesson 04 Drive folder ID with a browser-only Code.gs generator that validates a student's folder ID, then enables complete-code preview, copy, download, and reset actions.
+
 - Updated the Lesson 04 quiz.html sample to load Drive audio through the server-side Base64 helper, with loading, failure, stale-request, and playback error states.
 
 - Updated the Lesson 04 Code.gs sample with the new Drive folder ID and a server-side Base64 audio helper.

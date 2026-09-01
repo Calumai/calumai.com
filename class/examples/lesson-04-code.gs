@@ -1,3 +1,5 @@
+var AUDIO_FOLDER_ID = '__CALUMAI_DRIVE_FOLDER_ID__';
+
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('quiz')
     .setTitle('族語聽力測驗')
@@ -48,10 +50,8 @@ function autoFillAudioLinks() {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var data = sheet.getDataRange().getValues();
 
-  var folderId = '1KDxjlAh3EVbC9FCAIONfZIrAu14vPnH9'; // 記得填入您的 ID
-
   try {
-    var folder = DriveApp.getFolderById(folderId);
+    var folder = DriveApp.getFolderById(AUDIO_FOLDER_ID);
     var files = folder.getFiles();
     var audioMap = {};
 

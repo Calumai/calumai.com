@@ -53,7 +53,8 @@ const DATA={
       name:'Code.gs',
       description:'讀取試算表題庫、配對 Drive 音檔，並由後端轉成 Base64 供瀏覽器播放。',
       copyLabel:'一鍵複製 Code.gs',
-      href:'/class/examples/lesson-04-code.gs?v=20260901f'
+      href:'/class/examples/lesson-04-code.gs?v=20260901h',
+      requiresFolderId:true
     },
     {
       id:'quiz-html-04',
@@ -63,6 +64,10 @@ const DATA={
       href:'/class/examples/lesson-04-quiz.html?v=20260901g'
     }
   ],
+  sheetExample:{
+    href:'https://docs.google.com/spreadsheets/d/1tEVLoizcuAPDn1TVe9vWSMybxp5VCvTDs0HL-dk_hnE/edit?usp=sharing',
+    copyHref:'https://docs.google.com/spreadsheets/d/1tEVLoizcuAPDn1TVe9vWSMybxp5VCvTDs0HL-dk_hnE/copy'
+  },
   promptNames:[
     '階段一｜建立最基礎的網頁單字卡',
     '階段二｜升級成四選一聽力測驗',
@@ -266,27 +271,167 @@ const opening=id==='01'?'<section class="teaching-intro lesson-card"><h2>為什�
 const interactionHtml=d.interaction?`<section class="lesson-card discussion"><p class="eyebrow" style="color:${d.accent}">先聊聊 / 沒有標準答案</p><h2>用有趣的問題打開這堂課</h2><ul>${d.interaction.map(x=>`<li>${x}</li>`).join('')}</ul></section>`:'';
 const warningsHtml=d.warnings?`<section class="lesson-card safety-card"><p class="eyebrow" style="color:${d.accent}">部署前先看 / 權限與資料</p><h2>能上線，也要安全地上線</h2><ul>${d.warnings.map(x=>`<li>${x}</li>`).join('')}</ul></section>`:'';
 const showcaseHtml=d.showcase?`<section class="lesson-showcase" id="showcase" style="--lesson-accent:${d.accent}"><div class="lesson-showcase-heading"><div><p class="eyebrow" style="color:${d.accent}">第 ${id} 堂成品與素材</p><h2>${d.showcase.title}</h2><p>${d.showcase.lede}</p></div></div><div class="lesson-showcase-links">${d.showcase.items.map((item,index)=>`<a class="lesson-showcase-link${index===0?' is-primary':''}" href="${item.href}" target="_blank" rel="noopener noreferrer"><span class="lesson-showcase-label">${item.label}</span><strong>${item.title}</strong><span class="lesson-showcase-description">${item.description}</span><span class="lesson-showcase-action">${item.action}<span aria-hidden="true">↗</span></span></a>`).join('')}</div><p class="lesson-showcase-note">${d.showcase.note}</p></section>`:'';
-const codeFilesHtml=d.codeFiles?`<section class="lesson-code-sample" id="codegs" style="--lesson-accent:${d.accent}"><div class="lesson-code-heading"><p class="eyebrow">可直接貼進 Apps Script</p><h2>一鍵複製兩個完整檔案</h2><p>在同一個 Apps Script 專案建立 <code>Code.gs</code> 與 <code>quiz.html</code>，再依照檔名貼入。</p></div><div class="code-file-list">${d.codeFiles.map(file=>`<article class="code-file" data-code-source="${file.href}" aria-busy="true"><div class="code-file-heading"><div><strong>${file.name}</strong><span>${file.description}</span></div><button type="button" class="copy-btn codegs-copy" data-copy="${file.id}" data-ready-label="${file.copyLabel}" disabled>程式載入中</button></div><details class="codegs-details"><summary>查看完整 ${file.name}</summary><pre id="${file.id}" tabindex="0"><code>程式載入中...</code></pre></details><p class="code-load-status" role="status">正在準備可複製的程式碼。</p><a class="code-raw-link" href="${file.href}" download="${file.name}">下載原始檔</a></article>`).join('')}</div><p class="codegs-note">使用前請確認 A 至 E 欄位、<code>quiz.html</code> 與音檔資料夾 ID。只有需要被 iframe 嵌入時才保留 <code>ALLOWALL</code>。</p></section>`:'';
+const setupFlowHtml=d.sheetExample?`<div class="lesson-setup-flow" aria-labelledby="lesson-setup-flow-title"><div class="lesson-setup-flow-heading"><div><p class="flow-kicker">先完成素材準備</p><h3 id="lesson-setup-flow-title">從 Google Sheet 到可分享測驗</h3><p>先建立自己的題庫與音檔資料夾，再產生對應的完整程式碼。</p></div><div class="sheet-example-actions"><a href="${d.sheetExample.href}" target="_blank" rel="noopener noreferrer">開啟範例試算表 <span aria-hidden="true">↗</span></a><a class="is-secondary" href="${d.sheetExample.copyHref}" target="_blank" rel="noopener noreferrer">建立自己的副本 <span aria-hidden="true">↗</span></a></div></div><ol class="setup-flow-list" aria-label="Google Apps Script 聽力測驗製作流程"><li><b>01</b><div><strong>建立題庫</strong><p>開啟範例 Google Sheet 並建立副本。A 至 E 欄依序是族語、中文、例句、級別、音檔連結。</p></div></li><li><b>02</b><div><strong>整理音檔</strong><p>檔名使用 <code>編號_中文.wav</code>，底線後的文字要與試算表 B 欄一致。</p></div></li><li><b>03</b><div><strong>上傳雲端硬碟</strong><p>建立專用資料夾，只放本次測驗已取得授權的音檔。</p></div></li><li><b>04</b><div><strong>設定資料夾共用</strong><p>使用最小必要權限。若學生需要直接存取，再開啟「知道連結者可檢視」。</p></div></li><li><b>05</b><div><strong>複製資料夾 ID</strong><p>複製網址 <code>/folders/</code> 後面的 ID，也可以直接複製整段資料夾網址。</p></div></li><li><b>06</b><div><strong>產生 Code.gs</strong><p>把 ID 貼到下方欄位，取得已換成自己資料夾 ID 的完整程式碼。</p></div></li><li><b>07</b><div><strong>貼入 Apps Script</strong><p>從試算表開啟 Apps Script，建立 <code>Code.gs</code> 與 <code>quiz.html</code> 後貼上。</p></div></li><li><b>08</b><div><strong>授權、測試與部署</strong><p>執行 <code>autoFillAudioLinks</code>，確認 E 欄有連結，再部署並用無痕視窗測試聲音。</p></div></li></ol><p class="flow-security-note">共用前請確認音檔授權，資料夾內不要放學生個資或與課程無關的檔案。</p></div>`:'';
+const renderCodeFile=file=>{
+  const needsFolderId=Boolean(file.requiresFolderId);
+  const headingCopy=needsFolderId?'':`<button type="button" class="copy-btn codegs-copy" data-copy="${file.id}" data-ready-label="${file.copyLabel}" disabled>程式載入中</button>`;
+  const folderGate=needsFolderId?`<form class="folder-id-gate" data-folder-id-form novalidate><label class="folder-id-label" for="${file.id}-folder-id">你的 Google Drive 音檔資料夾 ID</label><div class="folder-id-row"><input class="folder-id-input" id="${file.id}-folder-id" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" aria-describedby="${file.id}-folder-help ${file.id}-folder-error" placeholder="例如：1AbC... 或完整資料夾網址" disabled><button type="submit" class="copy-btn folder-id-submit" data-folder-id-submit disabled>產生完整 Code.gs</button></div><p class="folder-id-help" id="${file.id}-folder-help">可以貼純 ID 或完整的 Google Drive 資料夾網址。ID 只在這個瀏覽器頁面處理，不會儲存或傳送。</p><p class="folder-id-error" id="${file.id}-folder-error" role="alert" hidden></p></form><div class="code-file-actions" data-generated-actions hidden><button type="button" class="copy-btn codegs-copy" data-copy="${file.id}" data-ready-label="${file.copyLabel}" disabled>${file.copyLabel}</button><a class="code-generated-download" data-generated-download download="Code.gs">下載完成版 Code.gs</a><button type="button" class="code-reset-button" data-folder-id-reset>重新填寫</button></div>`:'';
+  const detailsState=needsFolderId?' hidden':'';
+  const initialCode=needsFolderId?'請先填入資料夾 ID，再產生完整 Code.gs。':'程式載入中...';
+  const initialStatus=needsFolderId?'正在準備 Code.gs 範本。':'正在準備可複製的程式碼。';
+  const rawDownload=needsFolderId?'':`<a class="code-raw-link" href="${file.href}" download="${file.name}">下載原始檔</a>`;
+  return `<article class="code-file" data-code-source="${file.href}" data-requires-folder-id="${needsFolderId?'true':'false'}" aria-busy="true"><div class="code-file-heading"><div><strong>${file.name}</strong><span>${file.description}</span></div>${headingCopy}</div>${folderGate}<p class="code-load-status" role="status" aria-live="polite">${initialStatus}</p><details class="codegs-details" data-code-details${detailsState}><summary>查看完整 ${file.name}</summary><pre id="${file.id}" tabindex="0"><code>${initialCode}</code></pre></details>${rawDownload}</article>`;
+};
+const codeFilesHtml=d.codeFiles?`<section class="lesson-code-sample" id="codegs" style="--lesson-accent:${d.accent}"><div class="lesson-code-heading"><p class="eyebrow">可直接貼進 Apps Script</p><h2>準備素材，再取得兩個完整檔案</h2><p>照著流程建立題庫與音檔資料夾，再複製 <code>Code.gs</code> 與 <code>quiz.html</code>。</p></div>${setupFlowHtml}<div class="code-file-list">${d.codeFiles.map(renderCodeFile).join('')}</div><p class="codegs-note">使用前請確認 A 至 E 欄位、<code>quiz.html</code> 與音檔資料夾 ID。只有需要被 iframe 嵌入時才保留 <code>ALLOWALL</code>。</p></section>`:'';
 const branchHtml=d.branches?`<section class="branches"><p class="eyebrow" style="color:${d.accent}">同一條主線，不同任務深度</p><h2>卡住拿救援卡，完成就開支線</h2><div class="branch-grid">${d.branches.map(b=>`<article class="branch-card"><small>${b.subtitle}</small><h3>${b.title}</h3><ul>${b.items.map(x=>`<li>${x}</li>`).join('')}</ul></article>`).join('')}</div></section>`:'';
 const checksHtml=d.checks?`<section class="lesson-card check-card"><p class="eyebrow" style="color:${d.accent}">真人測試</p><h2>請另一個人想辦法把作品弄壞</h2><div class="check-grid">${d.checks.map((x,i)=>`<div><b>${String(i+1).padStart(2,'0')}</b><span>${x}</span></div>`).join('')}</div></section>`:'';
 const resourcesHtml=d.resources?`<section class="lesson-card resources"><p class="eyebrow" style="color:${d.accent}">課堂素材 / 官方文件</p><h2>${id==='04'?'下載教材，遇到問題回官方文件查證':'先玩一次，再開始修改'}</h2><div class="resource-row">${d.resources.map(r=>`<a href="${r.href}" target="_blank" rel="noopener">${r.label} ↗</a>`).join('')}</div></section>`:'';
 const supplementHtml=d.supplement?`<section class="lesson-card supplement-guide" id="supplement"><p class="eyebrow" style="color:${d.accent}">PDF 補充資料</p><h2>${d.supplement.title}</h2><p class="supplement-lede">${d.supplement.lede}</p><div class="stage-list">${d.supplement.stages.map(s=>`<article><b>${s[0]}</b><div><h3>${s[1]}</h3><p>${s[2]}</p></div></article>`).join('')}</div><h3 class="trouble-title">卡住的時候</h3><div class="trouble-list">${d.supplement.troubleshooting.map(t=>`<article><b>${t[0]}</b><p>${t[1]}</p></article>`).join('')}</div></section>`:'';
 root.innerHTML=`<section class="lesson-hero" style="border-left-color:${d.accent}"><p class="eyebrow" style="color:${d.accent}">第 ${id} 堂 / ${d.tag}</p><h1>${d.title}</h1><p class="lede">${d.lede}</p><div class="back-row"><a href="#slides">先看 PPT 預覽</a><a class="secondary" href="/class/slideshow.html?lesson=${id}">全螢幕播放投影片</a><a class="secondary" href="#prompts">複製提示詞</a></div></section>${showcaseHtml}${codeFilesHtml}${opening}${interactionHtml}${warningsHtml}<section class="lesson-grid" id="handout"><article class="lesson-card"><h2>課堂目標</h2><ul>${d.goals.map(x=>`<li>${x}</li>`).join('')}</ul><h3>今天的作品</h3><p>${d.output}</p></article><article class="lesson-card"><h2>講義：操作流程</h2><ol>${d.steps.map(x=>`<li>${x}</li>`).join('')}</ol><h3>課堂實作</h3><p>${d.practice}</p></article></section>${branchHtml}${supplementHtml}${checksHtml}${resourcesHtml}<section class="slides-section" id="slides"><h2>PPT 線上預覽</h2><p class="lede">直接在下方翻頁、開啟縮圖或自動播放；點一下播放區後，也可以使用鍵盤左右鍵。</p>${slidePreviewHtml}</section><section class="prompts" id="prompts"><h2>可直接複製的提示詞</h2><p class="lede">一次只選一個任務；修改後立刻測試，確認可用再進下一步。</p>${promptHtml}</section><section class="lesson-card source-note"><b>來源與提醒</b><p>${d.source}</p><p>AI 產出一定要人工檢查；語言、教材、學生資料與公開發布內容，請由教師確認。</p></section>`;
+function initializeFolderCodeGenerator(block,template){
+  const generator=window.Lesson04CodeGenerator;
+  if(!generator) throw new Error('Code.gs generator unavailable');
+
+  const button=block.querySelector('[data-copy]');
+  const source=document.getElementById(button.dataset.copy);
+  const form=block.querySelector('[data-folder-id-form]');
+  const input=block.querySelector('.folder-id-input');
+  const submit=block.querySelector('[data-folder-id-submit]');
+  const errorMessage=block.querySelector('.folder-id-error');
+  const actions=block.querySelector('[data-generated-actions]');
+  const download=block.querySelector('[data-generated-download]');
+  const reset=block.querySelector('[data-folder-id-reset]');
+  const details=block.querySelector('[data-code-details]');
+  const status=block.querySelector('.code-load-status');
+  let downloadUrl='';
+  let hasGeneratedCode=false;
+
+  const revokeDownload=()=>{
+    if(downloadUrl){
+      URL.revokeObjectURL(downloadUrl);
+      downloadUrl='';
+    }
+    download.removeAttribute('href');
+  };
+
+  const hideError=()=>{
+    errorMessage.hidden=true;
+    errorMessage.textContent='';
+    input.removeAttribute('aria-invalid');
+  };
+
+  const showError=message=>{
+    errorMessage.textContent=message;
+    errorMessage.hidden=false;
+    input.setAttribute('aria-invalid','true');
+  };
+
+  const lockGeneratedCode=()=>{
+    revokeDownload();
+    hasGeneratedCode=false;
+    button.disabled=true;
+    button.textContent=button.dataset.readyLabel;
+    actions.hidden=true;
+    details.open=false;
+    details.hidden=true;
+    source.textContent='請先填入資料夾 ID，再產生完整 Code.gs。';
+  };
+
+  const validateInput=()=>{
+    const value=input.value.trim();
+    const parsed=generator.parseFolderId(value);
+
+    if(!value){
+      hideError();
+      submit.disabled=true;
+      status.textContent='請先填入你的 Google Drive 音檔資料夾 ID。';
+      return parsed;
+    }
+
+    if(parsed.error){
+      showError(parsed.error);
+      submit.disabled=true;
+      status.textContent='資料夾 ID 尚未通過格式檢查。';
+      return parsed;
+    }
+
+    hideError();
+    submit.disabled=false;
+    status.textContent='資料夾 ID 格式可用，請按「產生完整 Code.gs」。實際權限會在 Apps Script 執行時確認。';
+    return parsed;
+  };
+
+  input.disabled=false;
+  status.textContent='請先填入你的 Google Drive 音檔資料夾 ID。';
+
+  input.addEventListener('input',()=>{
+    if(hasGeneratedCode) lockGeneratedCode();
+    validateInput();
+  });
+
+  form.addEventListener('submit',event=>{
+    event.preventDefault();
+    const parsed=validateInput();
+
+    if(parsed.error){
+      input.focus();
+      return;
+    }
+
+    try{
+      const completedCode=generator.buildCode(template,parsed.id);
+      const blob=new Blob([completedCode],{type:'text/plain;charset=utf-8'});
+      revokeDownload();
+      downloadUrl=URL.createObjectURL(blob);
+      download.href=downloadUrl;
+      source.textContent=completedCode;
+      button.disabled=false;
+      button.textContent=button.dataset.readyLabel;
+      details.hidden=false;
+      details.open=true;
+      actions.hidden=false;
+      hasGeneratedCode=true;
+      status.textContent='完整 Code.gs 已產生，可以一鍵複製或下載。資料夾是否可讀取，會在 Apps Script 執行時確認。';
+    }catch(error){
+      lockGeneratedCode();
+      showError('產生程式碼時發生錯誤，請重新載入頁面後再試一次。');
+      status.textContent='Code.gs 產生失敗，複製與下載功能仍保持停用。';
+      input.focus();
+    }
+  });
+
+  reset.addEventListener('click',()=>{
+    lockGeneratedCode();
+    input.value='';
+    hideError();
+    submit.disabled=true;
+    status.textContent='已清除資料夾 ID，請重新填寫。';
+    input.focus();
+  });
+
+  window.addEventListener('beforeunload',revokeDownload,{once:true});
+}
 document.querySelectorAll('[data-code-source]').forEach(async block=>{
   const source=document.getElementById(block.querySelector('[data-copy]').dataset.copy);
   const button=block.querySelector('[data-copy]');
   const status=block.querySelector('.code-load-status');
+  const needsFolderId=block.dataset.requiresFolderId==='true';
   try{
     const response=await fetch(block.dataset.codeSource);
     if(!response.ok) throw new Error(`HTTP ${response.status}`);
-    source.textContent=await response.text();
-    button.disabled=false;
-    button.textContent=button.dataset.readyLabel;
-    status.textContent='程式碼已載入，可以一鍵複製。';
+    const code=await response.text();
+    if(needsFolderId){
+      initializeFolderCodeGenerator(block,code);
+    }else{
+      source.textContent=code;
+      button.disabled=false;
+      button.textContent=button.dataset.readyLabel;
+      status.textContent='程式碼已載入，可以一鍵複製。';
+    }
   }catch(error){
-    source.textContent='程式碼載入失敗，請使用「下載原始檔」。';
+    source.textContent=needsFolderId?'Code.gs 範本載入失敗，請重新載入頁面。':'程式碼載入失敗，請使用「下載原始檔」。';
     button.textContent='載入失敗';
-    status.textContent='程式碼載入失敗，請下載原始檔後手動複製。';
+    status.textContent=needsFolderId?'Code.gs 範本載入失敗，資料夾 ID 不會被處理，請重新載入頁面。':'程式碼載入失敗，請下載原始檔後手動複製。';
   }finally{
     block.setAttribute('aria-busy','false');
   }
@@ -295,6 +440,8 @@ document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener
   const source=document.getElementById(button.dataset.copy);
   const text='value' in source?source.value:source.textContent;
   const originalLabel=button.textContent;
+  const codeStatus=button.closest('.code-file')?.querySelector('.code-load-status');
+  const originalStatus=codeStatus?.textContent||'';
   let copied=false;
   try{
     if(navigator.clipboard&&window.isSecureContext){
@@ -316,8 +463,12 @@ document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener
   }
   button.textContent=copied?'已複製':'請手動複製';
   button.classList.toggle('copied',copied);
+  if(codeStatus){
+    codeStatus.textContent=copied?'程式碼已複製到剪貼簿。':'複製失敗，請展開程式碼後手動複製。';
+  }
   setTimeout(()=>{
     button.textContent=originalLabel;
     button.classList.remove('copied');
+    if(codeStatus) codeStatus.textContent=originalStatus;
   },1600);
 }));
