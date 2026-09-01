@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="把 Vibe Coding 入門簡報轉成可操作、可保存進度的族語教師數位教材互動課程。">
+  <meta name="theme-color" content="#f4f6f3">
+  <title>Vibe Coding 入門｜族語教師數位教材工作坊</title>
+  <script>document.documentElement.classList.add("js");</script>
+  <link rel="preload" as="image" href="assets/slides/slide-1.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要內容</a>
+  <div class="page-progress" aria-hidden="true"><span id="page-progress-bar"></span></div>
+
+  <header class="site-header">
+    <div class="shell nav-shell">
+      <a class="brand" href="/class/" aria-label="回到 CALUMAI 課程首頁">
+        <span>CALUMAI</span><b>/ CLASS</b>
+      </a>
+      <nav aria-label="頁面導覽">
+        <a href="#route">學習路徑</a>
+        <a href="#modules">六個模組</a>
+        <a href="#lab">互動實作</a>
+        <a href="#slides">投影片</a>
+      </nav>
+      <button class="icon-button" id="theme-toggle" type="button" aria-label="切換顯示模式" title="切換顯示模式">
+        <i data-lucide="sun-moon" aria-hidden="true"></i>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero shell" id="top">
+      <div class="hero-copy reveal">
+        <p class="kicker">族語教師數位教材工作坊</p>
+        <div class="hero-tags" aria-label="課程標籤">
+          <span>初級</span><span>Vibe Coding</span><span>數位教材</span>
+        </div>
+        <h1>Vibe Coding<br><em>從想法到上線</em></h1>
+        <p class="hero-lede">不用先會寫程式。先把教學需求說清楚，再和 AI 一起做出可測試的教材。</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#modules" id="start-learning">
+            <i data-lucide="play" aria-hidden="true"></i>開始學習
+          </a>
+          <a class="button secondary" href="assets/20260825-師大課程.pptx" download>
+            <i data-lucide="download" aria-hidden="true"></i>下載原始簡報
+          </a>
+        </div>
+        <dl class="course-meta" aria-label="課程資訊">
+          <div><dt>約 90 分鐘</dt><dd>可自行調整節奏</dd></div>
+          <div><dt>6 個模組</dt><dd>從觀念到交付</dd></div>
+          <div><dt>6 個實作</dt><dd>每段都能動手做</dd></div>
+        </dl>
+      </div>
+
+      <div class="hero-visual reveal" aria-label="課程投影片預覽">
+        <div class="slide-stack">
+          <figure class="stack-card stack-back">
+            <img src="assets/slides/slide-38.png" alt="句子搬運遊戲藍圖投影片" width="1600" height="900" loading="eager">
+          </figure>
+          <figure class="stack-card stack-middle">
+            <img src="assets/slides/slide-15.png" alt="AI 生成族語互動教材範例投影片" width="1600" height="900" loading="eager">
+          </figure>
+          <figure class="stack-card stack-front">
+            <img src="assets/slides/slide-1.png" alt="Vibe Coding 入門課程封面" width="1600" height="900" fetchpriority="high">
+          </figure>
+        </div>
+        <div class="hero-quote">
+          <span aria-hidden="true">「</span>
+          <p>用說的，把腦袋裡的想法，慢慢做成程式。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="route-section" id="route">
+      <div class="shell reveal">
+        <div class="section-copy">
+          <h2>從一個想法，走到能上線的作品</h2>
+          <p>每一步只回答一個問題。做完能回頭，出錯也找得到位置。</p>
+        </div>
+        <ol class="route-track" aria-label="六階段學習路徑">
+          <li><b>想法</b><span>誰要用，解決什麼</span></li>
+          <li><b>藍圖</b><span>流程與畫面怎麼走</span></li>
+          <li><b>MVP</b><span>先讓核心流程跑起來</span></li>
+          <li><b>地圖</b><span>看懂 HTML、CSS、JS</span></li>
+          <li><b>測試</b><span>描述差異並安全修改</span></li>
+          <li><b>上線</b><span>保存、版本與部署</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="modules shell" id="modules">
+      <div class="section-copy reveal">
+        <h2>六個模組，不用一次吞完 57 張投影片</h2>
+        <p>每個模組有一個清楚成果。點選後直接進入對應實作。</p>
+      </div>
+
+      <div class="module-groups reveal">
+        <section class="module-group" aria-labelledby="group-start">
+          <header><h3 id="group-start">先建立方向</h3><span>2 個模組</span></header>
+          <button class="module-row is-active" type="button" data-unit="1">
+            <span class="module-play"><i data-lucide="play" aria-hidden="true"></i></span>
+            <span class="module-body"><b>Vibe Coding：老師不必先成為工程師</b><small>理解角色分工、工具階段與開始前的風險。</small></span>
+            <span class="module-type">互動</span><span class="module-time">14 分鐘</span>
+          </button>
+          <button class="module-row" type="button" data-unit="2">
+            <span class="module-play"><i data-lucide="play" aria-hidden="true"></i></span>
+            <span class="module-body"><b>從教學需求畫出第一張藍圖</b><small>把模糊點子拆成內容、功能、資料與使用者。</small></span>
+            <span class="module-type">產生器</span><span class="module-time">12 分鐘</span>
+          </button>
+        </section>
+
+        <section class="module-group" aria-labelledby="group-build">
+          <header><h3 id="group-build">把想法做出來</h3><span>2 個模組</span></header>
+          <button class="module-row" type="button" data-unit="3">
+            <span class="module-play"><i data-lucide="play" aria-hidden="true"></i></span>
+            <span class="module-body"><b>先讓核心流程跑起來</b><small>排序 MVP 版本，練習預期、實際、重現與限制。</small></span>
+            <span class="module-type">排序</span><span class="module-time">13 分鐘</span>
+          </button>
+          <button class="module-row" type="button" data-unit="4">
+            <span class="module-play"><i data-lucide="play" aria-hidden="true"></i></span>
+            <span class="module-body"><b>把想法變成 AI 看得懂的設計稿</b><small>完成 User Flow、Flowchart、Wireframe 與資料流。</small></span>
+            <span class="module-type">拼圖</span><span class="module-time">16 分鐘</span>
+          </button>
+        </section>
+
+        <section class="module-group" aria-labelledby="group-ship">
+          <header><h3 id="group-ship">看懂並安全交付</h3><span>2 個模組</span></header>
+          <button class="module-row" type="button" data-unit="5">
+            <span class="module-play"><i data-lucide="play" aria-hidden="true"></i></span>
+            <span class="module-body"><b>網頁透視鏡：看懂、判斷、指揮 AI</b><small>定位 HTML、CSS、JavaScript、路徑與部署問題。</small></span>
+            <span class="module-type">診斷</span><span class="module-time">18 分鐘</span>
+          </button>
+          <button class="module-row" type="button" data-unit="6">
+            <span class="module-play"><i data-lucide="play" aria-hidden="true"></i></span>
+            <span class="module-body"><b>把作品帶回家，安全修改再上線</b><small>下載、備份、單點修改、回歸測試與版本保存。</small></span>
+            <span class="module-type">演練</span><span class="module-time">17 分鐘</span>
+          </button>
+        </section>
+      </div>
+    </section>
+
+    <section class="lab-section" id="lab">
+      <div class="shell">
+        <div class="section-copy light reveal">
+          <p class="kicker">互動工作台</p>
+          <h2>把投影片變成動手做</h2>
+          <p>答案會保存在這台裝置。關掉頁面後，下次還能繼續。</p>
+        </div>
+
+        <div class="lab-shell reveal">
+          <aside class="lab-aside">
+            <div>
+              <span class="lab-step" id="lab-step">模組 1 / 6</span>
+              <h3 id="lab-title">誰負責什麼？</h3>
+              <p id="lab-description">把工作分給老師或 AI，建立正確的人機分工。</p>
+            </div>
+            <div class="lab-progress" aria-label="課程完成進度">
+              <div><span>我的進度</span><b id="completion-label">0 / 6</b></div>
+              <div class="progress-track"><span id="completion-bar"></span></div>
+            </div>
+            <button class="button completion-button" id="mark-complete" type="button">
+              <i data-lucide="check" aria-hidden="true"></i>標記完成
+            </button>
+            <div class="lab-nav" aria-label="切換互動模組">
+              <button type="button" data-lab="1" class="is-active">1</button>
+              <button type="button" data-lab="2">2</button>
+              <button type="button" data-lab="3">3</button>
+              <button type="button" data-lab="4">4</button>
+              <button type="button" data-lab="5">5</button>
+              <button type="button" data-lab="6">6</button>
+            </div>
+          </aside>
+
+          <div class="lab-stage">
+            <section class="lab-panel is-active" data-panel="1" aria-labelledby="role-lab-title">
+              <div class="panel-head">
+                <div><h3 id="role-lab-title">人決定方向與品質，AI 協助實作與修改</h3><p>為每一項工作選擇主要負責者。</p></div>
+                <button class="text-button" type="button" data-reset="roles"><i data-lucide="rotate-ccw" aria-hidden="true"></i>重置</button>
+              </div>
+              <div class="role-grid" id="role-grid">
+                <article data-answer="teacher"><b>決定學習目標</b><div><button type="button" data-role="teacher">老師</button><button type="button" data-role="ai">AI</button></div></article>
+                <article data-answer="teacher"><b>確認族語正確性</b><div><button type="button" data-role="teacher">老師</button><button type="button" data-role="ai">AI</button></div></article>
+                <article data-answer="ai"><b>產生第一版程式</b><div><button type="button" data-role="teacher">老師</button><button type="button" data-role="ai">AI</button></div></article>
+                <article data-answer="ai"><b>快速重排手機版</b><div><button type="button" data-role="teacher">老師</button><button type="button" data-role="ai">AI</button></div></article>
+                <article data-answer="teacher"><b>判斷教材是否適齡</b><div><button type="button" data-role="teacher">老師</button><button type="button" data-role="ai">AI</button></div></article>
+                <article data-answer="teacher"><b>決定哪些資料能公開</b><div><button type="button" data-role="teacher">老師</button><button type="button" data-role="ai">AI</button></div></article>
+              </div>
+              <p class="feedback" id="role-feedback" aria-live="polite">完成六項分類後，這裡會顯示結果。</p>
+            </section>
+
+            <section class="lab-panel" data-panel="2" aria-labelledby="blueprint-title" hidden>
+              <div class="panel-head">
+                <div><h3 id="blueprint-title">四問藍圖產生器</h3><p>先知道誰會用，才知道網站應該長什麼樣子。</p></div>
+                <button class="text-button" type="button" data-reset="blueprint"><i data-lucide="rotate-ccw" aria-hidden="true"></i>清空</button>
+              </div>
+              <div class="blueprint-grid">
+                <form id="blueprint-form" autocomplete="off">
+                  <label>誰要用？<input name="audience" placeholder="例如：國小三年級族語初學者"></label>
+                  <label>要完成什麼？<input name="goal" placeholder="例如：辨認 10 個家庭單字"></label>
+                  <label>學生會做什麼？<textarea name="actions" rows="3" placeholder="例如：播放音檔、選圖片、看提示、進入下一題"></textarea></label>
+                  <label>需要什麼資料？<textarea name="data" rows="3" placeholder="例如：族語、中文、圖片、音檔與正確答案"></textarea></label>
+                </form>
+                <div class="blueprint-output">
+                  <div class="output-head"><b>第一版需求摘要</b><button type="button" id="copy-blueprint"><i data-lucide="copy" aria-hidden="true"></i>複製</button></div>
+                  <div id="blueprint-empty" class="empty-state"><i data-lucide="pencil-line" aria-hidden="true"></i><p>填寫左側四問，這裡會即時組成可交給 AI 的需求。</p></div>
+                  <pre id="blueprint-result" tabindex="0" hidden></pre>
+                </div>
+              </div>
+            </section>
+
+            <section class="lab-panel" data-panel="3" aria-labelledby="mvp-title" hidden>
+              <div class="panel-head">
+                <div><h3 id="mvp-title">MVP 版本排序</h3><p>先能用，再穩定，最後才漂亮。</p></div>
+                <button class="text-button" type="button" data-reset="mvp"><i data-lucide="rotate-ccw" aria-hidden="true"></i>重新打亂</button>
+              </div>
+              <div class="sort-layout">
+                <ol class="sortable-list" id="mvp-list" aria-label="可排序的 MVP 功能清單"></ol>
+                <div class="sort-result">
+                  <h4>排序原則</h4>
+                  <p>先完成能跑的核心流程，再增加媒體、手機版與視覺精修。</p>
+                  <button class="button primary" type="button" id="check-mvp">檢查順序</button>
+                  <p class="feedback" id="mvp-feedback" aria-live="polite">尚未檢查。</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="lab-panel" data-panel="4" aria-labelledby="flow-title" hidden>
+              <div class="panel-head">
+                <div><h3 id="flow-title">族語聽力流程拼圖</h3><p>流程圖也是與 AI 溝通的 Prompt。</p></div>
+                <button class="text-button" type="button" data-reset="flow"><i data-lucide="rotate-ccw" aria-hidden="true"></i>重新打亂</button>
+              </div>
+              <div class="flow-canvas">
+                <ol class="sortable-list flow-list" id="flow-list" aria-label="可排序的學習流程"></ol>
+                <div class="branch-question">
+                  <b>學生答錯時要怎麼辦？</b>
+                  <div><button type="button" data-branch="retry">顯示提示，再試一次</button><button type="button" data-branch="next">直接進入下一題</button></div>
+                </div>
+                <div class="flow-actions"><button class="button primary" type="button" id="check-flow">驗證流程</button><p class="feedback" id="flow-feedback" aria-live="polite">先排列主流程，再選擇答錯分支。</p></div>
+              </div>
+            </section>
+
+            <section class="lab-panel" data-panel="5" aria-labelledby="lens-title" hidden>
+              <div class="panel-head">
+                <div><h3 id="lens-title">網站透視鏡</h3><p>HTML 管內容，CSS 管外觀，JavaScript 管互動。</p></div>
+                <button class="text-button" type="button" data-reset="lens"><i data-lucide="rotate-ccw" aria-hidden="true"></i>重置</button>
+              </div>
+              <div class="lens-grid">
+                <div class="demo-site" id="demo-site">
+                  <div class="demo-browser-bar"><span></span><span></span><span></span><b>family-words.local</b></div>
+                  <main>
+                    <p class="demo-caption">家庭單字</p>
+                    <h4 id="demo-word">qbsuran</h4>
+                    <p>點選正確的中文意思</p>
+                    <div class="demo-answers"><button type="button" data-demo-answer="wrong">朋友</button><button type="button" data-demo-answer="right">祖父母</button></div>
+                    <p id="demo-feedback">等待作答</p>
+                  </main>
+                </div>
+                <div class="lens-console">
+                  <div class="lens-tabs" role="tablist" aria-label="網頁分層">
+                    <button type="button" role="tab" aria-selected="true" data-layer="html">HTML</button>
+                    <button type="button" role="tab" aria-selected="false" data-layer="css">CSS</button>
+                    <button type="button" role="tab" aria-selected="false" data-layer="js">JavaScript</button>
+                  </div>
+                  <pre id="lens-code" tabindex="0"></pre>
+                  <p id="lens-note">內容與結構：標題、文字、按鈕與答案。</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="lab-panel" data-panel="6" aria-labelledby="ship-title" hidden>
+              <div class="panel-head">
+                <div><h3 id="ship-title">安全修改與上線演練</h3><p>可回復的修改，才是安全的修改。</p></div>
+                <button class="text-button" type="button" data-reset="ship"><i data-lucide="rotate-ccw" aria-hidden="true"></i>重新打亂</button>
+              </div>
+              <div class="sort-layout">
+                <ol class="sortable-list" id="ship-list" aria-label="可排序的安全修改流程"></ol>
+                <div class="sort-result">
+                  <h4>安全循環</h4>
+                  <p>備份、小改、測試、記錄。每次只改一件事，才知道問題從哪裡來。</p>
+                  <button class="button primary" type="button" id="check-ship">檢查流程</button>
+                  <p class="feedback" id="ship-feedback" aria-live="polite">尚未檢查。</p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide-section shell" id="slides">
+      <div class="section-copy reveal">
+        <h2>57 張原始投影片，完整保留</h2>
+        <p>用滑桿快速巡覽，或下載 PPTX 回到課堂投影與編修。</p>
+      </div>
+      <div class="slide-viewer reveal">
+        <div class="viewer-stage">
+          <img id="slide-image" src="assets/slides/slide-1.png" alt="投影片 1：Vibe Coding 入門封面" width="1600" height="900">
+          <div class="viewer-error" id="viewer-error" hidden><i data-lucide="image-off" aria-hidden="true"></i><p>這張投影片暫時無法載入。</p></div>
+        </div>
+        <div class="viewer-controls">
+          <button class="icon-button" id="slide-prev" type="button" aria-label="上一張投影片"><i data-lucide="arrow-left" aria-hidden="true"></i></button>
+          <label for="slide-range"><span>投影片</span><input id="slide-range" type="range" min="1" max="57" value="1"><output id="slide-count" for="slide-range">01 / 57</output></label>
+          <button class="icon-button" id="slide-next" type="button" aria-label="下一張投影片"><i data-lucide="arrow-right" aria-hidden="true"></i></button>
+        </div>
+        <div class="thumbnail-rail" id="thumbnail-rail" aria-label="投影片縮圖"></div>
+      </div>
+    </section>
+
+    <section class="closing-section">
+      <div class="shell closing-grid reveal">
+        <div><h2>下載不是結束，而是開始掌握作品</h2><p>帶走原始簡報、需求藍圖與可回復的修改流程，做出真正能在課堂使用的教材。</p></div>
+        <div class="closing-actions">
+          <a class="button primary" href="#lab">回到互動工作台</a>
+          <a class="button secondary" href="assets/20260825-師大課程.pptx" download>下載 PPTX</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell"><span>CALUMAI / 族語教師數位教材工作坊</span><a href="/class/">回到課程首頁</a></div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="/assets/lucide.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
