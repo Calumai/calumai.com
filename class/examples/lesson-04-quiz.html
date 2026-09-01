@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant">
 <head>
   <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
       font-family: 'Helvetica Neue', Helvetica, Arial, '微軟正黑體', sans-serif;
@@ -27,7 +29,7 @@
     .play-btn:active { transform: scale(0.95); }
     .play-btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
 
-    .error-text { color: #e74c3c; font-size: 0.9rem; margin-bottom: 15px; }
+    .error-text { color: #e74c3c; font-size: 0.9rem; margin-bottom: 15px; font-weight: bold; }
 
     .options-grid {
       display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px;
@@ -58,6 +60,11 @@
 
     .result-screen { display: none; }
     .score-text { font-size: 3rem; color: #43936C; font-weight: bold; margin: 20px 0; }
+
+    button:focus-visible {
+      outline: 3px solid #f4b942;
+      outline-offset: 3px;
+    }
   </style>
 </head>
 <body>
@@ -65,8 +72,8 @@
   <div class="quiz-container" id="quiz-screen">
     <div class="header">第 <span id="current-q-num">1</span> 題 / 共 <span id="total-q">0</span> 題</div>
 
-    <div id="audio-error" class="error-text"></div>
-    <button class="play-btn" id="play-btn" onclick="playAudio()">🔊</button>
+    <div id="audio-error" class="error-text" role="status" aria-live="polite"></div>
+    <button class="play-btn" id="play-btn" type="button" aria-label="播放本題音檔" onclick="playAudio()">🔊</button>
     <audio id="audio-player"></audio>
 
     <div class="options-grid" id="options-container"></div>
@@ -76,14 +83,14 @@
       <div class="example-text" id="fb-example"></div>
     </div>
 
-    <button class="next-btn" id="next-btn" onclick="loadNextQuestion()">下一題</button>
+    <button class="next-btn" id="next-btn" type="button" onclick="loadNextQuestion()">下一題</button>
   </div>
 
   <div class="quiz-container result-screen" id="result-screen">
     <h2>測驗結束！</h2>
     <div class="score-text" id="final-score">100</div>
-    <p>您的總得分</p>
-    <button class="next-btn" style="display:block; margin-top:20px;" onclick="location.reload()">重新測驗</button>
+    <p>總得分</p>
+    <button class="next-btn" type="button" style="display:block; margin-top:20px;" onclick="location.reload()">重新測驗</button>
   </div>
 
   <script>
@@ -92,18 +99,33 @@
     let currentIdx = 0;
     let score = 0;
     let hasAnswered = false;
+    let audioRequestId = 0;
 
     window.onload = function() {
-      document.getElementById('current-q-num').innerText = "載入中...";
-      google.script.run.withSuccessHandler(initQuiz).getQuizData();
+      document.getElementById('current-q-num').innerText = '載入中...';
+      google.script.run
+        .withSuccessHandler(initQuiz)
+        .withFailureHandler(showQuizLoadError)
+        .getQuizData();
     };
 
     function initQuiz(data) {
-      allData = data;
-      // 洗牌題目順序
+      allData = Array.isArray(data) ? data.filter(item => item && item.indigenous) : [];
+      if (allData.length === 0) {
+        showQuizLoadError(new Error('未找到題目，請檢查試算表內容。'));
+        return;
+      }
+
       quizQuestions = [...allData].sort(() => Math.random() - 0.5);
       document.getElementById('total-q').innerText = quizQuestions.length;
       loadQuestion();
+    }
+
+    function showQuizLoadError(error) {
+      const message = error && error.message ? error.message : String(error || '未知錯誤');
+      document.getElementById('current-q-num').innerText = '載入失敗';
+      document.getElementById('audio-error').innerText = '⚠️ 題目載入失敗：' + message;
+      document.getElementById('play-btn').disabled = true;
     }
 
     function loadQuestion() {
@@ -114,20 +136,53 @@
 
       const q = quizQuestions[currentIdx];
 
-      // 音檔處理
+      // 每次換題先停止上一題，避免舊音檔或舊請求覆蓋新題目
       const player = document.getElementById('audio-player');
       const errorMsg = document.getElementById('audio-error');
       const playBtn = document.getElementById('play-btn');
+      const requestId = ++audioRequestId;
+
+      player.pause();
+      player.removeAttribute('src');
+      player.load();
+      player.oncanplay = null;
+      player.onerror = null;
 
       if (q.audioUrl) {
-        player.src = q.audioUrl;
-        errorMsg.innerText = "";
-        playBtn.disabled = false;
-        player.play().catch(e => console.log("自動播放被瀏覽器阻擋，需手動點擊"));
-      } else {
-        player.src = "";
-        errorMsg.innerText = "⚠️ 此題無音檔可播放";
+        errorMsg.innerText = '⏳ 音檔讀取中...';
         playBtn.disabled = true;
+        playBtn.innerText = '⏳';
+
+        google.script.run
+          .withSuccessHandler(function(base64Data) {
+            if (requestId !== audioRequestId) return;
+
+            if (!base64Data) {
+              showAudioError('音檔讀取失敗', requestId);
+              return;
+            }
+
+            player.oncanplay = function() {
+              if (requestId !== audioRequestId) return;
+              errorMsg.innerText = '';
+              playBtn.disabled = false;
+              playBtn.innerText = '🔊';
+            };
+            player.onerror = function() {
+              showAudioError('瀏覽器無法解碼這個音檔', requestId);
+            };
+            player.src = base64Data;
+            player.load();
+          })
+          .withFailureHandler(function(error) {
+            const message = error && error.message ? error.message : '後端讀取失敗';
+            showAudioError(message, requestId);
+          })
+          .getAudioBase64(q.audioUrl);
+      } else {
+        errorMsg.innerText = '⚠️ 此題無音檔';
+        playBtn.disabled = true;
+        playBtn.innerText = '🔇';
       }
 
       // 生成選項（1 個正確 + 3 個隨機錯誤）
@@ -154,8 +209,24 @@
       });
     }
 
-    function playAudio() {
-      document.getElementById('audio-player').play();
+    function showAudioError(message, requestId) {
+      if (requestId !== audioRequestId) return;
+      document.getElementById('audio-error').innerText = '⚠️ ' + message;
+      document.getElementById('play-btn').disabled = true;
+      document.getElementById('play-btn').innerText = '❌';
+    }
+
+    async function playAudio() {
+      const player = document.getElementById('audio-player');
+      const errorMsg = document.getElementById('audio-error');
+
+      try {
+        if (player.ended) player.currentTime = 0;
+        await player.play();
+        errorMsg.innerText = '';
+      } catch (error) {
+        errorMsg.innerText = '⚠️ 播放失敗，請重新載入音檔後再試。';
+      }
     }
 
     function checkAnswer(btn, selectedOption, q) {

@@ -60,7 +60,7 @@ const DATA={
       name:'quiz.html',
       description:'顯示聽力題目、四個選項、答題回饋與最後得分。',
       copyLabel:'一鍵複製 HTML',
-      href:'/class/examples/lesson-04-quiz.html?v=20260901e'
+      href:'/class/examples/lesson-04-quiz.html?v=20260901g'
     }
   ],
   promptNames:[
