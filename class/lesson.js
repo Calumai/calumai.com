@@ -2,7 +2,101 @@ const DATA={
 '01':{title:'Gemini Notebook 遊戲化 RPG 簡報',tag:'GEMINI NOTEBOOK / GAME DESIGN',accent:'#147d7e',lede:'把一份教材變成一場可以闖關、練習與展示的學習冒險。',goals:['理解遊戲化的目標、任務、挑戰、回饋與成長','用 Gemini Notebook 整理真實教材與來源','完成 8–12 張 RPG 簡報初版'],steps:['上傳「112年情境族語｜01上課用語｜太魯閣語」PDF','請 Gemini Notebook 先整理對話、單詞與互動測驗','設計玩家、世界觀、任務線與三個關卡','要求 Gemini Notebook 生成簡報大綱','人工核對太魯閣語與中文意思'],practice:'把 PDF 中的對話練習、單詞練習與互動測驗轉成三個 RPG 關卡。',output:'Gemini Notebook 遊戲化 RPG 簡報 v1',prompts:['請根據我上傳的教材，整理所有語言資料、中文意思、使用情境與頁碼。只能使用來源中確認的內容，不可以自行猜測或補寫。','請把這份教材設計成適合國中生的 RPG。請提供世界觀、角色、3 個任務、挑戰、回饋、獎勵與勝利條件，並區分教材資料與故事設定。','請檢查這份 RPG 簡報：哪些語言內容有來源？哪些可能是推測？請列出需要族語教師人工確認的地方。'],source:'使用者提供的 112 年情境族語 PDF'},
 '02':{"title":"Vibe 你的學生測驗網頁","tag":"VIBE CODING / QUIZ WEB","accent":"#e3a62f","lede":"先讓測驗「能玩」：全班走同一條主線，卡住就拿救援卡，提早完成就開支線任務。","goals":["把自己的教材整理成可替換的 QUIZ_DATA 題庫","完成開始、答題、回饋、計分、錯題與重玩的單一 HTML 測驗","使用「一次改一項、改完立刻測」的 Vibe Coding 除錯流程"],"steps":["玩一次範例，從學生角度找出最想修理的體驗","在教師標準版找到 QUIZ_INFO 與 QUIZ_DATA","先替換標題與 1 題，再完整測試一次","用主線提示詞完成至少 5 題的最低可用版本","依目前狀態選擇救援卡、主線卡或一項支線任務","交換作品進行 Bug 狩獵，記錄重現步驟與修正結果","保留可用版本，整理成可開啟 HTML 或網址"],"practice":"完成一份至少 5 題的學生測驗，請另一位同學從頭作答，至少修正一個實際發現的問題。","output":"可開啟的單一 HTML 測驗、題目來源、使用提示詞與 Bug 狩獵紀錄","promptNames":["主線｜產生最低可用測驗","救援｜只替換題庫","升級｜一次新增一項功能","除錯｜不要重寫整份作品","遷移｜把骨架換成別科教材"],"prompts":["你是一位熟悉國中教學、使用者介面與前端網頁開發的教學工程師。\n\n請根據我提供的教材，製作一份可以給學生使用的互動測驗網頁。\n\n請使用單一 HTML 檔案，將 HTML、CSS、JavaScript 全部放在同一個檔案中，不需要安裝套件，也不需要登入或資料庫。\n\n【基本功能】\n1. 首頁顯示測驗名稱、說明與開始按鈕。\n2. 學生填寫姓名、班級或座號後才能開始。\n3. 每次顯示一題選擇題。\n4. 每題包含題目、3 至 4 個選項、正確答案與解析。\n5. 選擇答案後立即顯示答對或答錯。\n6. 答錯時顯示提示與正確解析。\n7. 顯示目前題數與進度條。\n8. 完成後顯示答對題數、總分與鼓勵文字。\n9. 提供查看錯題與重新挑戰按鈕。\n10. 按鈕要大、文字清楚，適合手機與國中學生。\n\n【程式要求】\n1. 將題目集中放在程式上方的 QUIZ_DATA。\n2. 將測驗名稱與說明集中放在 QUIZ_INFO。\n3. 在可修改位置加上繁體中文註解。\n4. 不使用外部框架，不加入登入、資料庫、排行榜或付費功能。\n5. 先確保開始、答題、回饋、計分、錯題與重玩流程完整可用。\n6. 直接輸出完整的 <!DOCTYPE html> 程式碼。\n\n【教材內容】\n請貼在這裡：","以下是一份已經可以正常運作的 HTML 測驗。請不要重新設計整份網頁，也不要改變原本功能。\n\n你只需要：\n1. 找出 QUIZ_INFO 與 QUIZ_DATA。\n2. 將測驗名稱、說明與題庫換成我提供的內容。\n3. 保留計分、解析、錯題、重玩與手機版功能。\n4. 檢查每題 answer 是否真的對應正確選項。\n5. 在修改位置加上「從這裡開始修改題目」的繁體中文註解。\n6. 回傳修改完成的完整 HTML。\n\n【原始 HTML】\n\n【至少 5 題的新題目】","以下 HTML 測驗目前可以正常運作。\n\n請只新增【填入一項功能，例如：每次隨機抽 5 題】。\n\n重要要求：\n1. 不要刪除原本功能。\n2. 不要改變 QUIZ_DATA 的資料格式。\n3. 保留開始、答題、回饋、計分、錯題與重新挑戰。\n4. 修改完成後列出新增的位置。\n5. 提供至少 5 個重新測試步驟。\n6. 回傳完整 HTML。\n\n【原始程式碼】","你是一位耐心的網頁程式除錯老師。\n\n【我原本期待】\n\n【實際發生】\n\n【重現步驟】\n1.\n2.\n3.\n\n【錯誤訊息；沒有就寫沒有看到】\n\n請回答：\n1. 最可能的原因。\n2. 要檢查的程式區域。\n3. 最小修改方案。\n4. 修改後的完整函式或完整 HTML。\n5. 修正後必須再測試的 3 個案例。\n\n不要重寫整個作品，也不要改動與錯誤無關的功能。\n\n【原始程式碼】","請保留這份測驗的操作骨架，只替換成【科目／教材主題】版本。\n\n請先輸出一張轉換表：\n1. 原本題目內容要換成什麼。\n2. 學生要進行哪一種互動。\n3. 答對與答錯要得到什麼回饋。\n4. 結果頁要提供什麼下一步。\n5. 哪些內容必須由老師人工確認。\n\n等我確認轉換表後，再修改 QUIZ_INFO 與 QUIZ_DATA。不要先增加新功能，也不要改動可正常運作的流程。\n\n【原始 HTML】\n\n【新教材】"],"interaction":["如果學生一直連按答案，分數會不會像爆米花一樣一直跳？","你寧願要 50 題普通題，還是 5 題有清楚解析的題目？","答錯時，你比較想收到提示、重試，還是隊友幫忙？","如果把這份測驗換成你的科目，第一題會問什麼？"],"branches":[{"title":"救援卡","subtitle":"改一改就能交","items":["使用教師標準版","只改 QUIZ_INFO 與 5 題 QUIZ_DATA","完整作答一次即可通關"]},{"title":"共同主線","subtitle":"做出自己的版本","items":["完成作答、回饋、計分與重玩","加入一項教學個人化設計","交給同學實際測試"]},{"title":"支線任務","subtitle":"一次只選一項","items":["隨機抽題或選項","Combo、限時、圖片題","錯題複習、最高分或深色模式"]}],"checks":["不填姓名能不能開始？","沒選答案能不能前進？","連按會不會重複加分？","最後一題能不能正常結算？","錯題與解析有沒有對應？","重新挑戰後狀態有沒有歸零？","手機畫面會不會超出？","長題目仍能不能閱讀？"],"resources":[{"label":"開啟學生測驗 HTML 範例","href":"/class/examples/lesson-02-quiz-example.html"}],"source":"課程自製差異化 Vibe Coding 教學框架；題目內容與答案需由授課教師人工確認。"},
 '03':{"title":"Gemini＋GAS 測驗成績系統","tag":"GEMINI + GAS / GOOGLE SHEETS","accent":"#3d8dff","lede":"再讓測驗「會收」：把學生結果送進 Google 試算表，留下真正能用的教學資料。","goals":["看懂 Index.html、Code.gs 與 Google 試算表之間的資料路線","使用 google.script.run 傳送成績，處理傳送中、成功與失敗狀態","部署成別人能開啟的 Web App，完成跨裝置真人測試"],"steps":["不論上一堂進度，先取得教師標準版測驗重新起跑","建立「測驗紀錄」工作表與九個資料欄位","從試算表開啟 Apps Script，建立 Code.gs 與 Index.html","加入 doGet、saveQuizResult 與 appendRow 寫入流程","由 Index.html 使用 google.script.run 傳送 payload","加入 withSuccessHandler、withFailureHandler 與防重複提交","部署成網頁應用程式，使用另一個帳號或裝置測試","用試算表回答一個真實教學問題"],"practice":"至少完成兩次跨裝置測試：正常送出一筆，以及故意漏填或重複按送出，確認資料與回饋正確。","output":"正式 Web App 網址、Google 試算表測驗紀錄、真人測試結果與個資／權限說明","promptNames":["主線｜把 HTML 改造成 GAS Web App","升級｜避免重複提交","除錯｜GAS 急診室","分析｜把成績變成教學問題","遷移｜改造成另一種收集系統"],"prompts":["你是一位熟悉 Google Apps Script、Google Sheets 與國中數位教學的工程師。\n\n請將我提供的單一 HTML 測驗改造成 Google Apps Script Web App，分別輸出 Code.gs 與 Index.html。\n\n【Code.gs】\n1. 建立 doGet()，使用 HtmlService 顯示 Index.html。\n2. 建立 saveQuizResult(payload)。\n3. 寫入目前綁定的 Google 試算表，工作表名稱為「測驗紀錄」。\n4. 工作表不存在時自動建立，第一列自動建立：提交時間、姓名、班級、座號、測驗名稱、答對題數、總題數、百分比、作答內容。\n5. 每次成功提交新增一列，並驗證必要欄位與分數範圍。\n6. 成功回傳 success: true 與「成績已送出」。\n\n【Index.html】\n1. 保留原本測驗、計分、錯題與重玩功能。\n2. 完成測驗後才顯示送出成績。\n3. 整理姓名、班級、座號、測驗名稱、分數、總題數、百分比與作答內容成 payload。\n4. 使用 google.script.run 呼叫 saveQuizResult(payload)。\n5. 加入 withSuccessHandler 與 withFailureHandler。\n6. 傳送時停用按鈕並顯示傳送中；成功後顯示已送出；失敗時允許重試。\n7. 不收集不必要的個人資料。\n\n【限制】\n- 由 Apps Script HTML Service 顯示，不使用外部 fetch 或第三方資料庫。\n- 不加入登入、排行榜或複雜管理後台。\n- 不省略檔案內容，加入繁體中文註解。\n\n【原始 HTML】","以下 Apps Script 測驗目前可以正常送出成績。\n\n請只新增「避免重複提交」功能：\n1. 點擊後立即停用送出按鈕。\n2. 成功前顯示「傳送中」。\n3. 成功後按鈕改成「已送出」，不可再次點擊。\n4. 失敗時恢復按鈕，允許重新送出。\n5. 不刪除原本測驗與寫入試算表功能。\n6. 分別回傳修改後的 Code.gs 與 Index.html。\n\n【Code.gs】\n\n【Index.html】","你是一位 Google Apps Script 除錯老師。\n\n【我完成到哪一步】\n\n【正式網址能不能開】\n\n【按送出後看到什麼】\n\n【Apps Script 錯誤或執行記錄】\n\n【試算表是否新增資料】\n\n【Code.gs】\n\n【Index.html 中與送出相關的程式】\n\n請回答最可能原因、先檢查的設定、最小修改方案、修改後完整函式，以及修正後要重測的 3 個案例。不要重寫整個專案，也不要要求我公開試算表或任何金鑰。","以下是 Google 試算表「測驗紀錄」的欄位與匿名化資料。\n\n請先不要產生新程式，先協助我回答：\n1. 有多少人完成？\n2. 班級平均與完成率是多少？\n3. 哪些題目最多人答錯？\n4. 哪些資料不足以支持結論？\n5. 下一堂課可以安排哪三種複習活動？\n\n請把計算方式、需要的欄位與適合的試算表公式分開列出。不要捏造缺少的資料，也不要輸出學生個人敏感資訊。\n\n【欄位與匿名化資料】","請保留 Index.html → google.script.run → Code.gs → Google 試算表的資料路線，改造成【課前調查／課後回饋／闖關紀錄／作品互評】系統。\n\n請先輸出：\n1. 新系統的使用者與目的。\n2. 要收集的最少欄位。\n3. 不應收集的個人資料。\n4. Index.html 要改的輸入與畫面。\n5. Code.gs 要改的驗證與欄位。\n6. 至少 6 個測試案例。\n\n等我確認後，再分別修改 Code.gs 與 Index.html。"],"interaction":["學生按下送出後，資料要經過哪三個地方才會到老師手上？","如果把送出按鈕當成打地鼠連按三次，試算表會發生什麼？","只有老師自己的電腦能開，算正式完成嗎？","收回成績後，你最想先回答哪一個教學問題？"],"branches":[{"title":"救援卡","subtitle":"先收到一筆就通關","items":["直接使用教師 Code.gs 與 Index.html","取得正式網址","同學送出後試算表新增一列"]},{"title":"共同主線","subtitle":"做成班級可用版","items":["必填與欄位驗證","傳送中、成功、失敗","防止重複提交並記錄作答內容"]},{"title":"支線任務","subtitle":"讓資料真的幫助教學","items":["班級平均與完成率","各題答對率與錯題排行","伺服器計分或教師結果頁"]}],"checks":["正式網址能由別人開啟嗎？","姓名留白會阻止送出嗎？","正常作答會新增一列嗎？","連按會產生重複資料嗎？","傳送失敗能看到訊息並重試嗎？","欄位順序與分數正確嗎？","更新程式後有更新部署嗎？","是否只收集必要資料？"],"resources":[{"label":"開啟 GAS Starter 與可複製程式碼","href":"/class/examples/lesson-03-gas-starter.html"},{"label":"先玩測驗送出流程預覽","href":"/class/examples/lesson-03-gas-quiz-preview.html"}],"source":"<a href=\"https://developers.google.com/apps-script/guides/web\" target=\"_blank\" rel=\"noopener\">Google Apps Script Web Apps</a>、<a href=\"https://developers.google.com/apps-script/guides/html/communication\" target=\"_blank\" rel=\"noopener\">google.script.run</a>、<a href=\"https://developers.google.com/apps-script/reference/spreadsheet/sheet\" target=\"_blank\" rel=\"noopener\">Sheet.appendRow</a>；學生資料與部署權限須由教師確認。"},
-'04':{title:'Gemini + GAS 自動化題庫',tag:'GEMINI + GAS / AUTOMATION',accent:'#3d8dff',lede:'讓題庫可以自動產生、整理、評分、批次處理並留下紀錄。',goals:['理解 Google Sheet、GAS 與 Gemini 的資料流','設計提示詞模板與結構化輸出','加入錯誤處理、測試與人工抽查'],steps:['建立題庫輸入、輸出與狀態欄位','設計固定格式的 Gemini 提示詞','用 GAS 讀取資料並呼叫模型','將結果寫回指定欄位','測試空白、錯誤與重複資料'],practice:'讓系統根據 3 個主題各產生 5 題，保留版本、來源與檢查狀態。',output:'可重複執行的題庫自動化工具與測試報告',prompts:['請協助我設計 Google Apps Script 題庫自動化流程，輸入為主題與難度，輸出為題目、選項、答案、解析與標籤。','請把這個 Gemini 題庫輸出限制成嚴格 JSON，並列出格式錯誤時的處理方式。','請幫我建立題庫自動化的測試案例，包含成功、空白、重複與模型輸出錯誤。'],source:'Google Apps Script 與 Gemini 實作課程；API 權限需依帳號設定'},
+'04':{
+  title:'把 Google 雲端硬碟變成你的網頁伺服器',
+  tag:'VIBE CODING / GOOGLE APPS SCRIPT',
+  accent:'#3d8dff',
+  lede:'用 Google Apps Script 把完成的 Vibe Coding 網頁部署成可分享的 Web App，再從族語單字卡一路升級到聽力測驗與成績紀錄。',
+  goals:[
+    '理解 doGet、HTML Service、測試部署 /dev 與正式部署 /exec 的角色',
+    '整理 index.html、圖片、CSS、JavaScript 與音檔，辨認相對路徑、公開權限與 iframe 沙盒限制',
+    '完成 Web App 部署、跨帳號／跨裝置驗收，以及修改後發布新版本',
+    '用五段 AI 指令逐步製作族語單字卡、聽力測驗、音檔配對與成績紀錄'
+  ],
+  steps:[
+    '準備 Google 帳號、桌機瀏覽器，以及一份可在本機正常開啟的網頁作品',
+    '先判斷 GAS 是否適合：低流量教學展示可以；需要自訂網域、高流量或高權限瀏覽器 API 時改用其他部署方式',
+    '建立 Apps Script 專案，認識編輯器、檔案清單、執行記錄與「部署」選單',
+    '建立 doGet() 與 HTML 檔；若使用圖片、CSS、JavaScript 或音檔，逐項確認路徑與最小必要權限',
+    '使用「測試部署」取得 /dev 網址，在擁有編輯權限的帳號確認最新儲存版本',
+    '新增「網頁應用程式」部署，依資料敏感度選擇執行身分與存取範圍，再取得 /exec 正式網址',
+    '用無痕視窗、另一個帳號與手機測試首頁、圖片、按鈕、連結與錯誤狀態',
+    '修改一行文字，建立新版本並更新部署，確認正式網址真的顯示新版',
+    '完成基本部署後，再依補充講義的五段提示詞逐項增加單字卡、測驗、音檔與成績功能'
+  ],
+  practice:'在 30 分鐘內完成三個檢核：另一台裝置可開啟 /exec 網址、所有必要素材正常顯示，以及修改標題後發布新版本並看見更新。',
+  output:'可分享的 Web App 正式網址、跨裝置驗收截圖、版本更新紀錄與公開權限檢查表',
+  promptNames:[
+    '階段一｜建立最基礎的網頁單字卡',
+    '階段二｜升級成四選一聽力測驗',
+    '階段三｜一鍵自動配對音檔',
+    '階段四｜以 Base64 載入受保護音檔',
+    '階段五｜建立成績與錯題紀錄'
+  ],
+  prompts:[
+    '我是一位族語老師，我有一份包含「族語、中文、例句」的單字清單，目前整理在 Google 試算表中。請幫我寫一段 Google Apps Script（GAS）程式碼，功能需求如下：\n\n1. 讀取試算表資料。\n2. 建立一個前端網頁 card.html，要有 3D 翻牌動畫效果的單字卡。\n3. 正面顯示族語，點擊卡片會翻面顯示中文與例句。\n4. 網頁要有「上一張／下一張」按鈕可以切換單字。\n5. 只讀取我指定的工作表，不公開試算表 ID 或不必要的資料。\n\n請給我完整的 Code.gs 與 card.html，並告訴我如何部署、如何測試，以及哪些權限需要由我確認。',
+    '我想把剛才的單字卡升級成「聽力測驗網頁 quiz.html」。請幫我修改前端與後端程式碼：\n\n1. 題目隨機洗牌，每次載入順序都不同。\n2. 每題播放試算表 D 欄的發音檔。\n3. 顯示 4 個中文選項：1 個正確、3 個從其他單字隨機取得。\n4. 作答後立即回饋；答對變綠，答錯變紅並顯示正確答案與族語文字。\n5. 加入計分與最後結算畫面。\n6. 不允許重複作答或重複加分；沒有音檔時要顯示可理解的錯誤。\n\n請保留已能運作的功能，分別提供修改後的 Code.gs 與 quiz.html，並列出至少 6 個測試案例。',
+    '錄音檔都放在 Google 雲端硬碟的一個資料夾，檔名可能像 01-43_amin.wav、cacay_a_pulu.mp3。請在 Apps Script 建立「族語小工具 → 自動填入音檔」自訂選單：\n\n1. 掃描我指定且有權限的資料夾。\n2. 清洗檔名：去除前方數字編號、將底線轉空格、去除副檔名。\n3. 與試算表 A 欄族語比對。\n4. 成功才把可播放的檔案連結填入 D 欄。\n5. 完成後回報成功筆數、未配對、重複檔名與一對多衝突。\n6. 先提供 dry run 預覽，不要在我確認前覆寫既有 D 欄資料。\n\n請提供完整函式、必要權限、回復方式與測試案例。',
+    '聽力測驗中的 Google Drive 音檔無法穩定播放。請先診斷權限、連結格式、CORS／瀏覽器限制與 Apps Script 配額，再提供最小修改方案。若確實需要 Base64：\n\n1. 後端接收 Drive 檔案 ID，驗證檔案類型與大小後轉成 Base64 資料流回傳。\n2. 前端透過 google.script.run 非同步取得資料，播放按鈕先顯示「音檔準備中…」。\n3. 成功後才建立 audio 來源並顯示「點此播放發音」。\n4. 加入成功與失敗處理、逾時提示及有限度快取。\n5. 不把永久金鑰、OAuth token 或非必要檔案內容送到瀏覽器。\n\n請分別提供修改後的 Code.gs、quiz.html 與效能／配額限制說明。',
+    '請在目前可正常運作的測驗加入學習者資料與成績回報：\n\n1. 首頁輸入姓名或代碼，並選擇 5、10、20 題或全部。\n2. 結算後透過 google.script.run 傳送成績。\n3. 後端驗證必要欄位與分數範圍；不要只相信前端傳回的百分比。\n4. 若「成績紀錄」工作表不存在才建立，欄位包含測驗時間、學習者、得分、總分、答對率與錯題。\n5. 送出時顯示傳送中；成功後鎖定；失敗可重試；使用 submission_id 防止重複寫入。\n6. 只收集教學必要資料，說明保存期限與誰能查看。\n\n請保留原測驗功能，提供完整 Code.gs、quiz.html，以及成功、驗證失敗、重複送出與網路失敗測試。'
+  ],
+  interaction:[
+    '你現在手上的網址是 file://、localhost、/dev，還是可分享的 /exec？',
+    '哪些素材必須讓學生讀到？哪些學生姓名、錄音或試算表資料絕對不該公開？',
+    '程式已儲存但正式網頁沒更新時，下一步應該檢查什麼？',
+    '如果一個外部程式庫要求讀取整個雲端硬碟，你會先做哪三項確認？'
+  ],
+  warnings:[
+    '/dev 測試網址只供擁有指令碼編輯權限的人使用；交作業或給學生時要驗收 /exec 正式網址。',
+    '學校 Workspace 可能不提供「任何人」或匿名公開選項；請依校方政策選擇最小存取範圍。',
+    'Drive 資料夾設為知道連結者可查看，代表連結持有人可以讀取；學生姓名、錄音與成績不要放進公開資料夾。',
+    '簡報中的外部 Script Library 僅作為來源案例；未檢查原始碼、維護者與 OAuth 權限前，不要授權正式資料。',
+    'Apps Script 配額依帳號與服務而異且可能調整；不要把「可同時多少人使用」當成固定保證。'
+  ],
+  branches:[
+    {title:'救援卡',subtitle:'先讓一頁成功上線',items:['使用沒有外部圖片的單一 index.html','只完成 doGet、測試部署與正式部署','請同學用另一個帳號打開 /exec']},
+    {title:'共同主線',subtitle:'做成可分享的教材',items:['整理圖片、CSS、JS 與權限','完成桌機、手機、無痕與同儕測試','修改一行文字並發布新版本']},
+    {title:'支線任務',subtitle:'部署成功再加功能',items:['Google Sheets 族語單字卡','四選一聽力測驗與音檔配對','成績／錯題紀錄與防重複送出']}
+  ],
+  checks:[
+    '本機原始頁面能完整操作嗎？',
+    '/dev 是否只有編輯者可開？',
+    '/exec 是否能由另一個帳號開啟？',
+    '圖片、CSS、JavaScript 與音檔都正常嗎？',
+    '權限是否只開到完成教學所需的範圍？',
+    '更新後是否建立新版本並更新部署？',
+    '手機與無痕視窗是否完整走完流程？',
+    '錯誤狀態是否有訊息與重試方法？',
+    '外部函式庫是否已檢查來源與權限？',
+    '是否避免公開學生姓名、錄音、成績與永久金鑰？'
+  ],
+  resources:[
+    {label:'下載 44 張可編輯課程 PPT',href:'/class/ppt/lesson-04.pptx?v=20260901a'},
+    {label:'開啟五段 AI 指令補充 PDF',href:'/class/handouts/lesson-04-ai-five-prompts.pdf?v=20260901a'},
+    {label:'Google 官方：部署 Web App',href:'https://developers.google.com/apps-script/guides/web'},
+    {label:'Google 官方：HTML Service 限制',href:'https://developers.google.com/apps-script/guides/html/restrictions'},
+    {label:'Google 官方：前後端通訊',href:'https://developers.google.com/apps-script/guides/html/communication'},
+    {label:'Google 官方：服務配額',href:'https://developers.google.com/apps-script/guides/services/quotas'}
+  ],
+  supplement:{
+    title:'補充講義｜從單字卡一路做到聽力測驗與成績追蹤',
+    lede:'一次只複製一個階段給 AI，確認可運作再往下走。同一個對話持續修改，並在每一步保留上一個可用版本。這份 PDF 提供提示詞與規格，不是可直接執行的完整程式。',
+    stages:[
+      ['01','3D 翻牌單字卡','讀取 Sheets 的族語、中文、例句，先完成最小可用的 card.html。'],
+      ['02','四選一聽力測驗','加入隨機題目、音檔、即時回饋、計分與結算。'],
+      ['03','音檔自動配對','清洗 Drive 檔名後比對 A 欄，先 dry run 再寫入 D 欄。'],
+      ['04','穩定載入音檔','先診斷權限；必要時以 google.script.run 取得 Base64，並限制大小與快取。'],
+      ['05','成績與錯題紀錄','後端驗證、最少個資、傳送狀態與 submission_id 防重複。']
+    ],
+    troubleshooting:[
+      ['音檔沒聲音','先查檔案權限、檔案 ID、網路與瀏覽器主控台，再考慮 Base64。'],
+      ['改了程式但網頁沒變','/dev 讀最新儲存內容；/exec 要到「管理部署」更新到新版本。'],
+      ['別人打不開','檢查部署的存取範圍、學校網域政策與是否誤傳 /dev。'],
+      ['AI 程式跑不動','保留可用版本，貼完整錯誤訊息、檔名、重現步驟與最小相關程式碼。']
+    ]
+  },
+  source:'主教材：使用者提供的 44 張〈把 Google 雲端硬碟變成你的網頁伺服器〉PPT；補充教材：使用者提供的 3 頁〈族語數位教材：給 AI 的五段指令〉PDF。技術查核依 <a href="https://developers.google.com/apps-script/guides/web" target="_blank" rel="noopener">Google Apps Script Web Apps</a>、<a href="https://developers.google.com/apps-script/guides/html/restrictions" target="_blank" rel="noopener">HTML Service 限制</a>、<a href="https://developers.google.com/apps-script/guides/html/communication" target="_blank" rel="noopener">google.script.run</a> 與 <a href="https://developers.google.com/apps-script/guides/services/quotas" target="_blank" rel="noopener">服務配額</a>（2026-09-01 查核）。'
+},
 '05':{title:'讓你的網頁活起來：Google 協作平台與 Netlify 上架',tag:'GOOGLE SITES / NETLIFY',accent:'#147d7e',lede:'把作品整理、發布，變成別人打得開、看得懂、可以使用的網址。',goals:['理解內容結構、嵌入、權限與發布','用 Google Sites 包裝教學作品','認識 Netlify 靜態網站部署與檢查'],steps:['規劃首頁、導覽、作品、說明與資源頁','Google Sites 加入文字、圖片、檔案與嵌入','預覽桌機與手機版','發布並確認 Published site 權限','Netlify 部署後檢查路徑、網址與資產'],practice:'把第 3–4 堂題庫作品包裝成 Google Sites 或 Netlify 網站。',output:'可開啟、可分享的線上作品網址',prompts:['請把我的作品整理成教學網站，規劃首頁、作品介紹、操作步驟、學習資源、作品展示與聯絡方式。','請產生 Google Sites 發布前檢查表，包含預覽、連結、手機版、權限與個人資料。','請產生 Netlify 靜態網站上架前檢查表，包含檔案路徑、首頁、資產、公開網址與回復方式。'],source:'https://support.google.com/sites/answer/6372880?hl=en；https://docs.netlify.com/'},
 '06':{title:'一份教材生出 5 種遊戲：生成方法',tag:'GAME GENERATION / FIVE FORMS',accent:'#e3a62f',lede:'固定同一份教材，一次產生五種不同的遊戲化方向。',goals:['理解教材、任務、挑戰的轉換公式','一次生成 RPG、卡牌、密室、經營、偵探五種遊戲','保留每種遊戲的教材來源與限制'],steps:['固定教材與學習目標','指定五種遊戲形式','要求每種都有規則、任務與勝利條件','整理成比較表','排除沒有真正使用教材的方案'],practice:'用同一份教材生成五種遊戲提案，不更換學習內容。',output:'五種遊戲提案比較表',prompts:['請根據同一份教材，設計 RPG、卡牌、密室逃脫、模擬經營、偵探解謎五種遊戲。每種都要有目標、規則、3 個任務、回饋、獎勵與勝利條件。','請確保五種遊戲都使用相同的教材內容，並標出每個任務對應的教材段落。','請列出這五種遊戲各自的優點、限制、製作成本與適合的課堂情境。'],source:'課程自製遊戲化設計框架'},
 '07':{title:'一份教材生出 5 種遊戲：比較與實作',tag:'GAME PROTOTYPE / PLAYTEST',accent:'#e3a62f',lede:'從五個方向選出一個真正能上課的遊戲，做出最小可玩版本。',goals:['用評分表選擇遊戲形式','把創意變成可執行規則','完成 10 分鐘可試玩的原型'],steps:['依教材貼合度、時間、參與度、成本、評量打分','選出主方案與備案','刪掉不必要機制','用紙張或投影片做原型','找同儕試玩並記錄問題'],practice:'完成遊戲選擇評分表，並讓同學試玩 10 分鐘。',output:'遊戲選擇評分表與最小可玩原型',prompts:['請比較這五種遊戲，依教材貼合度、課堂時間、製作難度、學生參與度與學習評量各 1–5 分。','請把推薦遊戲縮小成 10 分鐘可試玩的最小版本，只保留核心規則。','請根據試玩回饋，分類問題為規則、教材、操作、時間與評量，並提出修正順序。'],source:'課程自製遊戲化設計框架'},
@@ -112,13 +206,14 @@ const id=(location.pathname.match(/lesson-(\d+)/)||[])[1]||'01';
 const d=DATA[id]||DATA['01'];
 const root=document.querySelector('#lesson');
 document.title=`第 ${id} 堂｜${d.title}｜CALUMAI`;
-const ppt=`/class/ppt/lesson-${id}.pptx`;
-const slideCounts={'01':9,'02':12,'03':12};
+const assetVersion=id==='04'?'?v=20260901a':'';
+const ppt=`/class/ppt/lesson-${id}.pptx${assetVersion}`;
+const slideCounts={'01':9,'02':12,'03':12,'04':44};
 const slideTotal=slideCounts[id]||8;
 let slideHtml='';
 for(let i=1;i<=slideTotal;i++){
   const n=String(i).padStart(2,'0');
-  slideHtml+=`<figure class="slide-frame"><img loading="lazy" src="/class/ppt-preview/${id}/slide-${n}.png" alt="第 ${id} 堂 PPT 第 ${i} 張"><figcaption>第 ${i} 張</figcaption></figure>`;
+  slideHtml+=`<figure class="slide-frame"><img loading="lazy" decoding="async" src="/class/ppt-preview/${id}/slide-${n}.png${assetVersion}" alt="第 ${id} 堂 PPT 第 ${i} 張"><figcaption>第 ${i} 張</figcaption></figure>`;
 }
 const allPrompts=id==='01'?[...d.prompts,...SCRIPT_PROMPTS,FULL_PROMPT,ESCAPE_PROMPT,ADVANCED_RPG_PROMPT]:d.prompts;
 const promptHtml=allPrompts.map((p,i)=>{
@@ -127,8 +222,33 @@ const promptHtml=allPrompts.map((p,i)=>{
 }).join('');
 const opening=id==='01'?'<section class="teaching-intro lesson-card"><h2>為什麼先談遊戲教學？</h2><p>遊戲教學不是把課堂變成單純玩遊戲，而是把學習目標、練習、回饋與成長設計成學生願意參與的任務流程。</p><h3>遊戲教學的好處</h3><ul><li>提高參與動機與持續練習意願</li><li>把語言放進有意義的情境</li><li>提供立即回饋、重試與可見的成長</li><li>促進合作、表達與成果展示</li></ul><h3>為什麼選 RPG？</h3><p>RPG 能把角色、任務、關卡、能力值與回饋串成一條成長路線，適合將 PDF 中的上課用語放進連續情境。</p><h3>除了 RPG 還能做什麼？</h3><p>同一份教材也可以做成卡牌配對、密室逃脫、模擬經營、偵探解謎、闖關問答、合作任務或故事分支。</p><p><a class="download-secondary" href="/class/examples/lesson-01-examples.html">預覽第一堂課兩份 RPG PDF 範例 ↗</a></p><p><a class="download-secondary" href="/class/examples/lesson-01-rpg-examples.zip">下載第一堂課兩份 RPG PDF 範例（ZIP）</a></p><p><a class="download-secondary" href="/class/examples/truku-campus-rpg-example.html" target="_blank" rel="noopener">開啟族語 2D RPG 校園大冒險 HTML 範例 ↗</a></p></section>':'';
 const interactionHtml=d.interaction?`<section class="lesson-card discussion"><p class="eyebrow" style="color:${d.accent}">先聊聊 / 沒有標準答案</p><h2>用有趣的問題打開這堂課</h2><ul>${d.interaction.map(x=>`<li>${x}</li>`).join('')}</ul></section>`:'';
+const warningsHtml=d.warnings?`<section class="lesson-card safety-card"><p class="eyebrow" style="color:${d.accent}">部署前先看 / 權限與資料</p><h2>能上線，也要安全地上線</h2><ul>${d.warnings.map(x=>`<li>${x}</li>`).join('')}</ul></section>`:'';
 const branchHtml=d.branches?`<section class="branches"><p class="eyebrow" style="color:${d.accent}">同一條主線，不同任務深度</p><h2>卡住拿救援卡，完成就開支線</h2><div class="branch-grid">${d.branches.map(b=>`<article class="branch-card"><small>${b.subtitle}</small><h3>${b.title}</h3><ul>${b.items.map(x=>`<li>${x}</li>`).join('')}</ul></article>`).join('')}</div></section>`:'';
 const checksHtml=d.checks?`<section class="lesson-card check-card"><p class="eyebrow" style="color:${d.accent}">真人測試</p><h2>請另一個人想辦法把作品弄壞</h2><div class="check-grid">${d.checks.map((x,i)=>`<div><b>${String(i+1).padStart(2,'0')}</b><span>${x}</span></div>`).join('')}</div></section>`:'';
-const resourcesHtml=d.resources?`<section class="lesson-card resources"><p class="eyebrow" style="color:${d.accent}">課堂範例</p><h2>先玩一次，再開始修改</h2><div class="resource-row">${d.resources.map(r=>`<a href="${r.href}" target="_blank" rel="noopener">${r.label} ↗</a>`).join('')}</div></section>`:'';
-root.innerHTML=`<section class="lesson-hero" style="border-left-color:${d.accent}"><p class="eyebrow" style="color:${d.accent}">第 ${id} 堂 / ${d.tag}</p><h1>${d.title}</h1><p class="lede">${d.lede}</p><div class="back-row"><a href="#slides">先看 PPT 預覽</a><a class="secondary" href="/class/slideshow.html?lesson=${id}">全螢幕播放投影片</a><a class="secondary" href="#prompts">複製提示詞</a></div></section>${opening}${interactionHtml}<section class="lesson-grid" id="handout"><article class="lesson-card"><h2>課堂目標</h2><ul>${d.goals.map(x=>`<li>${x}</li>`).join('')}</ul><h3>今天的作品</h3><p>${d.output}</p></article><article class="lesson-card"><h2>講義：操作流程</h2><ol>${d.steps.map(x=>`<li>${x}</li>`).join('')}</ol><h3>課堂實作</h3><p>${d.practice}</p></article></section>${branchHtml}${checksHtml}${resourcesHtml}<section class="slides-section" id="slides"><h2>PPT 線上預覽</h2><p class="lede">先逐張預覽投影片；需要簡報模式時，點上方「全螢幕播放投影片」。</p><div class="slide-grid">${slideHtml}</div><p><a class="download-secondary" href="${ppt}">需要時下載可編輯 PPT</a></p></section><section class="prompts" id="prompts"><h2>可直接複製的提示詞</h2><p class="lede">一次只選一個任務，替換【】中的內容；修改後立刻測試，再進下一步。</p>${promptHtml}</section><section class="lesson-card source-note"><b>來源與提醒</b><p>${d.source}</p><p>AI 產出一定要人工檢查；語言、教材、學生資料與公開發布內容，請由教師確認。</p></section>`;
-document.querySelectorAll('[data-copy]').forEach(btn=>btn.addEventListener('click',async()=>{const t=document.getElementById(btn.dataset.copy);await navigator.clipboard.writeText(t.value);btn.textContent='已複製';btn.classList.add('copied');setTimeout(()=>{btn.textContent='複製提示詞';btn.classList.remove('copied')},1600)}));
+const resourcesHtml=d.resources?`<section class="lesson-card resources"><p class="eyebrow" style="color:${d.accent}">課堂素材 / 官方文件</p><h2>${id==='04'?'下載教材，遇到問題回官方文件查證':'先玩一次，再開始修改'}</h2><div class="resource-row">${d.resources.map(r=>`<a href="${r.href}" target="_blank" rel="noopener">${r.label} ↗</a>`).join('')}</div></section>`:'';
+const supplementHtml=d.supplement?`<section class="lesson-card supplement-guide" id="supplement"><p class="eyebrow" style="color:${d.accent}">PDF 補充資料</p><h2>${d.supplement.title}</h2><p class="supplement-lede">${d.supplement.lede}</p><div class="stage-list">${d.supplement.stages.map(s=>`<article><b>${s[0]}</b><div><h3>${s[1]}</h3><p>${s[2]}</p></div></article>`).join('')}</div><h3 class="trouble-title">卡住的時候</h3><div class="trouble-list">${d.supplement.troubleshooting.map(t=>`<article><b>${t[0]}</b><p>${t[1]}</p></article>`).join('')}</div></section>`:'';
+root.innerHTML=`<section class="lesson-hero" style="border-left-color:${d.accent}"><p class="eyebrow" style="color:${d.accent}">第 ${id} 堂 / ${d.tag}</p><h1>${d.title}</h1><p class="lede">${d.lede}</p><div class="back-row"><a href="#slides">先看 PPT 預覽</a><a class="secondary" href="/class/slideshow.html?lesson=${id}">全螢幕播放投影片</a><a class="secondary" href="#prompts">複製提示詞</a></div></section>${opening}${interactionHtml}${warningsHtml}<section class="lesson-grid" id="handout"><article class="lesson-card"><h2>課堂目標</h2><ul>${d.goals.map(x=>`<li>${x}</li>`).join('')}</ul><h3>今天的作品</h3><p>${d.output}</p></article><article class="lesson-card"><h2>講義：操作流程</h2><ol>${d.steps.map(x=>`<li>${x}</li>`).join('')}</ol><h3>課堂實作</h3><p>${d.practice}</p></article></section>${branchHtml}${supplementHtml}${checksHtml}${resourcesHtml}<section class="slides-section" id="slides"><h2>PPT 線上預覽</h2><p class="lede">先逐張預覽投影片；需要簡報模式時，點上方「全螢幕播放投影片」。</p><div class="slide-grid">${slideHtml}</div><p><a class="download-secondary" href="${ppt}">需要時下載可編輯 PPT</a></p></section><section class="prompts" id="prompts"><h2>可直接複製的提示詞</h2><p class="lede">一次只選一個任務；修改後立刻測試，確認可用再進下一步。</p>${promptHtml}</section><section class="lesson-card source-note"><b>來源與提醒</b><p>${d.source}</p><p>AI 產出一定要人工檢查；語言、教材、學生資料與公開發布內容，請由教師確認。</p></section>`;
+document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{
+  const textarea=document.getElementById(button.dataset.copy);
+  let copied=false;
+  try{
+    if(navigator.clipboard&&window.isSecureContext){
+      await navigator.clipboard.writeText(textarea.value);
+      copied=true;
+    }else{
+      textarea.focus();
+      textarea.select();
+      copied=document.execCommand('copy');
+    }
+  }catch(error){
+    textarea.focus();
+    textarea.select();
+    copied=document.execCommand('copy');
+  }
+  button.textContent=copied?'已複製':'請手動複製';
+  button.classList.toggle('copied',copied);
+  setTimeout(()=>{
+    button.textContent='複製提示詞';
+    button.classList.remove('copied');
+  },1600);
+}));
