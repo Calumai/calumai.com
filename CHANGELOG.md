@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added direct Lesson 04 links for the deployed tribal-language listening quiz and the shared classroom materials folder.
+
 - 將 `/class/lesson-04.html` 的 44 張靜態長列表改為可直接操作的頁內投影片播放器，加入翻頁、自動播放、進度列、縮圖總覽、鍵盤、全螢幕、手機滑動與載入失敗重試。
 - 以使用者提供的 44 張 Google Apps Script 工作坊簡報與 3 頁 AI 指令 PDF，重做 `/class/lesson-04.html`：新增完整講義、五段可複製提示詞、安全／權限提醒、44 張線上預覽、全螢幕播放與原始教材下載。
 - 將 `/class/vibe-flow/` 的預設六節點範例改為「用 Vibe Coding 做一個族語單詞測驗網站」，涵蓋題庫、答案、AI 製作、計分驗證、修正與發布。

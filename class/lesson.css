@@ -19,3 +19,41 @@
 .slide-player-actions a:active{transform:translateY(1px)}
 .slide-player-actions a:focus-visible{outline:3px solid #147d7e;outline-offset:3px}
 @media(max-width:780px){.slide-player-shell{aspect-ratio:4/3;min-height:270px}.slide-player-actions{align-items:flex-start;flex-direction:column}.slide-player-actions>div{width:100%;justify-content:flex-start}.slide-player-actions a{flex:1;text-align:center}}
+
+.lesson-showcase{
+  margin:0 0 28px;
+  padding:30px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#fff;
+}
+.lesson-showcase-heading{max-width:760px;margin-bottom:20px}
+.lesson-showcase-heading .eyebrow{margin:0 0 7px;font-weight:900;letter-spacing:.08em}
+.lesson-showcase-heading h2{margin:0 0 9px;font-size:30px;line-height:1.2;letter-spacing:-.03em}
+.lesson-showcase-heading p:last-child{margin:0;color:var(--muted);line-height:1.65}
+.lesson-showcase-links{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+.lesson-showcase-link{
+  display:flex;
+  min-height:168px;
+  flex-direction:column;
+  align-items:flex-start;
+  padding:22px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  color:var(--ink);
+  text-decoration:none;
+  transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease;
+}
+.lesson-showcase-link.is-primary{border-color:color-mix(in srgb,var(--lesson-accent) 55%,white);background:color-mix(in srgb,var(--lesson-accent) 8%,white)}
+.lesson-showcase-link:hover{border-color:var(--lesson-accent);box-shadow:0 10px 24px color-mix(in srgb,var(--lesson-accent) 13%,transparent);transform:translateY(-2px)}
+.lesson-showcase-link:active{transform:translateY(1px)}
+.lesson-showcase-link:focus-visible{outline:3px solid var(--lesson-accent);outline-offset:3px}
+.lesson-showcase-label{margin-bottom:14px;color:var(--lesson-accent);font-size:13px;font-weight:900;letter-spacing:.12em}
+.lesson-showcase-link strong{font-size:23px;line-height:1.25}
+.lesson-showcase-description{margin:8px 0 20px;color:var(--muted);line-height:1.55}
+.lesson-showcase-action{margin-top:auto;border-bottom:2px solid currentColor;font-weight:900;line-height:1.35}
+.lesson-showcase-action span{margin-left:4px}
+.lesson-showcase-note{margin:14px 0 0;color:var(--muted);font-size:13px;line-height:1.6}
+@media(prefers-reduced-motion:reduce){.lesson-showcase-link{transition:none}}
+@media(max-width:780px){.lesson-showcase{padding:22px}.lesson-showcase-heading h2{font-size:27px}.lesson-showcase-links{grid-template-columns:1fr}.lesson-showcase-link{min-height:0}.lesson-showcase-link strong{font-size:21px}}
