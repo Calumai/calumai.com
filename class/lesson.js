@@ -47,6 +47,22 @@ const DATA={
     ],
     note:'若 Google 多帳號把成品網址導向錯誤帳號，請改用無痕視窗開啟原始 /exec 網址。'
   },
+  codeFiles:[
+    {
+      id:'codegs-04',
+      name:'Code.gs',
+      description:'讀取試算表題庫，並依檔名把 Drive 音檔連結填入 E 欄。',
+      copyLabel:'一鍵複製 Code.gs',
+      href:'/class/examples/lesson-04-code.gs?v=20260901e'
+    },
+    {
+      id:'quiz-html-04',
+      name:'quiz.html',
+      description:'顯示聽力題目、四個選項、答題回饋與最後得分。',
+      copyLabel:'一鍵複製 HTML',
+      href:'/class/examples/lesson-04-quiz.html?v=20260901e'
+    }
+  ],
   promptNames:[
     '階段一｜建立最基礎的網頁單字卡',
     '階段二｜升級成四選一聽力測驗',
@@ -250,32 +266,58 @@ const opening=id==='01'?'<section class="teaching-intro lesson-card"><h2>為什�
 const interactionHtml=d.interaction?`<section class="lesson-card discussion"><p class="eyebrow" style="color:${d.accent}">先聊聊 / 沒有標準答案</p><h2>用有趣的問題打開這堂課</h2><ul>${d.interaction.map(x=>`<li>${x}</li>`).join('')}</ul></section>`:'';
 const warningsHtml=d.warnings?`<section class="lesson-card safety-card"><p class="eyebrow" style="color:${d.accent}">部署前先看 / 權限與資料</p><h2>能上線，也要安全地上線</h2><ul>${d.warnings.map(x=>`<li>${x}</li>`).join('')}</ul></section>`:'';
 const showcaseHtml=d.showcase?`<section class="lesson-showcase" id="showcase" style="--lesson-accent:${d.accent}"><div class="lesson-showcase-heading"><div><p class="eyebrow" style="color:${d.accent}">第 ${id} 堂成品與素材</p><h2>${d.showcase.title}</h2><p>${d.showcase.lede}</p></div></div><div class="lesson-showcase-links">${d.showcase.items.map((item,index)=>`<a class="lesson-showcase-link${index===0?' is-primary':''}" href="${item.href}" target="_blank" rel="noopener noreferrer"><span class="lesson-showcase-label">${item.label}</span><strong>${item.title}</strong><span class="lesson-showcase-description">${item.description}</span><span class="lesson-showcase-action">${item.action}<span aria-hidden="true">↗</span></span></a>`).join('')}</div><p class="lesson-showcase-note">${d.showcase.note}</p></section>`:'';
+const codeFilesHtml=d.codeFiles?`<section class="lesson-code-sample" id="codegs" style="--lesson-accent:${d.accent}"><div class="lesson-code-heading"><p class="eyebrow">可直接貼進 Apps Script</p><h2>一鍵複製兩個完整檔案</h2><p>在同一個 Apps Script 專案建立 <code>Code.gs</code> 與 <code>quiz.html</code>，再依照檔名貼入。</p></div><div class="code-file-list">${d.codeFiles.map(file=>`<article class="code-file" data-code-source="${file.href}" aria-busy="true"><div class="code-file-heading"><div><strong>${file.name}</strong><span>${file.description}</span></div><button type="button" class="copy-btn codegs-copy" data-copy="${file.id}" data-ready-label="${file.copyLabel}" disabled>程式載入中</button></div><details class="codegs-details"><summary>查看完整 ${file.name}</summary><pre id="${file.id}" tabindex="0"><code>程式載入中...</code></pre></details><p class="code-load-status" role="status">正在準備可複製的程式碼。</p><a class="code-raw-link" href="${file.href}" download="${file.name}">下載原始檔</a></article>`).join('')}</div><p class="codegs-note">使用前請確認 A 至 E 欄位、<code>quiz.html</code> 與音檔資料夾 ID。只有需要被 iframe 嵌入時才保留 <code>ALLOWALL</code>。</p></section>`:'';
 const branchHtml=d.branches?`<section class="branches"><p class="eyebrow" style="color:${d.accent}">同一條主線，不同任務深度</p><h2>卡住拿救援卡，完成就開支線</h2><div class="branch-grid">${d.branches.map(b=>`<article class="branch-card"><small>${b.subtitle}</small><h3>${b.title}</h3><ul>${b.items.map(x=>`<li>${x}</li>`).join('')}</ul></article>`).join('')}</div></section>`:'';
 const checksHtml=d.checks?`<section class="lesson-card check-card"><p class="eyebrow" style="color:${d.accent}">真人測試</p><h2>請另一個人想辦法把作品弄壞</h2><div class="check-grid">${d.checks.map((x,i)=>`<div><b>${String(i+1).padStart(2,'0')}</b><span>${x}</span></div>`).join('')}</div></section>`:'';
 const resourcesHtml=d.resources?`<section class="lesson-card resources"><p class="eyebrow" style="color:${d.accent}">課堂素材 / 官方文件</p><h2>${id==='04'?'下載教材，遇到問題回官方文件查證':'先玩一次，再開始修改'}</h2><div class="resource-row">${d.resources.map(r=>`<a href="${r.href}" target="_blank" rel="noopener">${r.label} ↗</a>`).join('')}</div></section>`:'';
 const supplementHtml=d.supplement?`<section class="lesson-card supplement-guide" id="supplement"><p class="eyebrow" style="color:${d.accent}">PDF 補充資料</p><h2>${d.supplement.title}</h2><p class="supplement-lede">${d.supplement.lede}</p><div class="stage-list">${d.supplement.stages.map(s=>`<article><b>${s[0]}</b><div><h3>${s[1]}</h3><p>${s[2]}</p></div></article>`).join('')}</div><h3 class="trouble-title">卡住的時候</h3><div class="trouble-list">${d.supplement.troubleshooting.map(t=>`<article><b>${t[0]}</b><p>${t[1]}</p></article>`).join('')}</div></section>`:'';
-root.innerHTML=`<section class="lesson-hero" style="border-left-color:${d.accent}"><p class="eyebrow" style="color:${d.accent}">第 ${id} 堂 / ${d.tag}</p><h1>${d.title}</h1><p class="lede">${d.lede}</p><div class="back-row"><a href="#slides">先看 PPT 預覽</a><a class="secondary" href="/class/slideshow.html?lesson=${id}">全螢幕播放投影片</a><a class="secondary" href="#prompts">複製提示詞</a></div></section>${showcaseHtml}${opening}${interactionHtml}${warningsHtml}<section class="lesson-grid" id="handout"><article class="lesson-card"><h2>課堂目標</h2><ul>${d.goals.map(x=>`<li>${x}</li>`).join('')}</ul><h3>今天的作品</h3><p>${d.output}</p></article><article class="lesson-card"><h2>講義：操作流程</h2><ol>${d.steps.map(x=>`<li>${x}</li>`).join('')}</ol><h3>課堂實作</h3><p>${d.practice}</p></article></section>${branchHtml}${supplementHtml}${checksHtml}${resourcesHtml}<section class="slides-section" id="slides"><h2>PPT 線上預覽</h2><p class="lede">直接在下方翻頁、開啟縮圖或自動播放；點一下播放區後，也可以使用鍵盤左右鍵。</p>${slidePreviewHtml}</section><section class="prompts" id="prompts"><h2>可直接複製的提示詞</h2><p class="lede">一次只選一個任務；修改後立刻測試，確認可用再進下一步。</p>${promptHtml}</section><section class="lesson-card source-note"><b>來源與提醒</b><p>${d.source}</p><p>AI 產出一定要人工檢查；語言、教材、學生資料與公開發布內容，請由教師確認。</p></section>`;
+root.innerHTML=`<section class="lesson-hero" style="border-left-color:${d.accent}"><p class="eyebrow" style="color:${d.accent}">第 ${id} 堂 / ${d.tag}</p><h1>${d.title}</h1><p class="lede">${d.lede}</p><div class="back-row"><a href="#slides">先看 PPT 預覽</a><a class="secondary" href="/class/slideshow.html?lesson=${id}">全螢幕播放投影片</a><a class="secondary" href="#prompts">複製提示詞</a></div></section>${showcaseHtml}${codeFilesHtml}${opening}${interactionHtml}${warningsHtml}<section class="lesson-grid" id="handout"><article class="lesson-card"><h2>課堂目標</h2><ul>${d.goals.map(x=>`<li>${x}</li>`).join('')}</ul><h3>今天的作品</h3><p>${d.output}</p></article><article class="lesson-card"><h2>講義：操作流程</h2><ol>${d.steps.map(x=>`<li>${x}</li>`).join('')}</ol><h3>課堂實作</h3><p>${d.practice}</p></article></section>${branchHtml}${supplementHtml}${checksHtml}${resourcesHtml}<section class="slides-section" id="slides"><h2>PPT 線上預覽</h2><p class="lede">直接在下方翻頁、開啟縮圖或自動播放；點一下播放區後，也可以使用鍵盤左右鍵。</p>${slidePreviewHtml}</section><section class="prompts" id="prompts"><h2>可直接複製的提示詞</h2><p class="lede">一次只選一個任務；修改後立刻測試，確認可用再進下一步。</p>${promptHtml}</section><section class="lesson-card source-note"><b>來源與提醒</b><p>${d.source}</p><p>AI 產出一定要人工檢查；語言、教材、學生資料與公開發布內容，請由教師確認。</p></section>`;
+document.querySelectorAll('[data-code-source]').forEach(async block=>{
+  const source=document.getElementById(block.querySelector('[data-copy]').dataset.copy);
+  const button=block.querySelector('[data-copy]');
+  const status=block.querySelector('.code-load-status');
+  try{
+    const response=await fetch(block.dataset.codeSource);
+    if(!response.ok) throw new Error(`HTTP ${response.status}`);
+    source.textContent=await response.text();
+    button.disabled=false;
+    button.textContent=button.dataset.readyLabel;
+    status.textContent='程式碼已載入，可以一鍵複製。';
+  }catch(error){
+    source.textContent='程式碼載入失敗，請使用「下載原始檔」。';
+    button.textContent='載入失敗';
+    status.textContent='程式碼載入失敗，請下載原始檔後手動複製。';
+  }finally{
+    block.setAttribute('aria-busy','false');
+  }
+});
 document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{
-  const textarea=document.getElementById(button.dataset.copy);
+  const source=document.getElementById(button.dataset.copy);
+  const text='value' in source?source.value:source.textContent;
+  const originalLabel=button.textContent;
   let copied=false;
   try{
     if(navigator.clipboard&&window.isSecureContext){
-      await navigator.clipboard.writeText(textarea.value);
+      await navigator.clipboard.writeText(text);
       copied=true;
     }else{
-      textarea.focus();
-      textarea.select();
+      const fallback=document.createElement('textarea');
+      fallback.value=text;
+      fallback.setAttribute('readonly','');
+      fallback.style.position='fixed';
+      fallback.style.opacity='0';
+      document.body.appendChild(fallback);
+      fallback.select();
       copied=document.execCommand('copy');
+      fallback.remove();
     }
   }catch(error){
-    textarea.focus();
-    textarea.select();
-    copied=document.execCommand('copy');
+    copied=false;
   }
   button.textContent=copied?'已複製':'請手動複製';
   button.classList.toggle('copied',copied);
   setTimeout(()=>{
-    button.textContent='複製提示詞';
+    button.textContent=originalLabel;
     button.classList.remove('copied');
   },1600);
 }));

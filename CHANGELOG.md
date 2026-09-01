@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added Lesson 04 Code.gs and quiz.html samples with expandable source views and one-click copy actions.
+
 - Added direct Lesson 04 links for the deployed tribal-language listening quiz and the shared classroom materials folder.
 
 - 將 `/class/lesson-04.html` 的 44 張靜態長列表改為可直接操作的頁內投影片播放器，加入翻頁、自動播放、進度列、縮圖總覽、鍵盤、全螢幕、手機滑動與載入失敗重試。

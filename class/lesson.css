@@ -57,3 +57,38 @@
 .lesson-showcase-note{margin:14px 0 0;color:var(--muted);font-size:13px;line-height:1.6}
 @media(prefers-reduced-motion:reduce){.lesson-showcase-link{transition:none}}
 @media(max-width:780px){.lesson-showcase{padding:22px}.lesson-showcase-heading h2{font-size:27px}.lesson-showcase-links{grid-template-columns:1fr}.lesson-showcase-link{min-height:0}.lesson-showcase-link strong{font-size:21px}}
+
+.lesson-code-sample{
+  margin:0 0 28px;
+  padding:28px;
+  border:1px solid #26364a;
+  border-radius:14px;
+  background:#101827;
+  color:#f7fafc;
+}
+.lesson-code-heading{max-width:800px}
+.lesson-code-heading .eyebrow{margin:0 0 7px;color:#9fc3ff;font-weight:900;letter-spacing:.08em}
+.lesson-code-heading h2{margin:0 0 9px;font-size:28px;line-height:1.2;letter-spacing:-.025em}
+.lesson-code-heading p{margin:0;color:#c5d0dc;line-height:1.6}
+.lesson-code-heading code,.codegs-note code{color:#c9dcff;font-family:Consolas,"Courier New",monospace}
+.code-file-list{display:grid;gap:14px;margin-top:22px}
+.code-file{border:1px solid #34455d;border-radius:12px;background:#0c1422;padding:19px}
+.code-file-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:24px}
+.code-file-heading>div{display:grid;gap:5px;max-width:720px}
+.code-file-heading strong{font-size:22px;line-height:1.25}
+.code-file-heading span{color:#aebdcb;line-height:1.55}
+.codegs-copy{flex:0 0 auto;background:#a9c9ff;color:#101827;white-space:nowrap}
+.codegs-copy:hover{background:#bdd6ff}
+.codegs-copy:active{transform:translateY(1px)}
+.codegs-copy:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.codegs-copy.copied{background:#b7e5c5;color:#102238}
+.codegs-copy:disabled{background:#52647a;color:#e4ebf2;cursor:wait}
+.codegs-details{margin-top:17px;border-top:1px solid #34455d;padding-top:15px}
+.codegs-details summary{width:max-content;max-width:100%;cursor:pointer;color:#dfe8f2;font-weight:900}
+.codegs-details summary:focus-visible{outline:3px solid #a9c9ff;outline-offset:4px}
+.codegs-details pre{max-height:440px;margin:16px 0 0;overflow:auto;border:1px solid #34455d;border-radius:10px;background:#0a101c;padding:18px;color:#eef5ff;font:14px/1.7 Consolas,"Courier New",monospace;tab-size:2;white-space:pre}
+.codegs-details pre:focus-visible{outline:3px solid #a9c9ff;outline-offset:3px}
+.code-load-status{margin:14px 0 0;color:#9fb0c0;font-size:13px}
+.code-raw-link{display:inline-block;margin-top:8px;color:#c9dcff;font-size:13px;font-weight:800}
+.codegs-note{margin:16px 0 0;color:#aebdcb;font-size:13px;line-height:1.65}
+@media(max-width:780px){.lesson-code-sample{padding:22px}.lesson-code-heading h2{font-size:25px}.code-file{padding:16px}.code-file-heading{flex-direction:column;gap:14px}.codegs-copy{width:100%}.codegs-details pre{max-height:360px;padding:14px;font-size:12.5px}}
