@@ -12,6 +12,7 @@
 - `workbench/index.html`：可編輯三頁繪本，能下載自帶圖片的 HTML 或列印成 PDF。
 - `materials/`：Markdown、7 份 YAML 模板與 9 份範例。
 - `assets/images/`：5 張課堂備援圖及排版預覽。
+- `assets/fonts/`：固定標題使用的 22 KB 芫荽字型子集及 SIL OFL 1.1 授權；學生可編輯內容仍使用繁中系統字型，避免子集缺字。
 - `downloads/`：完整本機教材壓縮包。
 
 ## 維護與驗證

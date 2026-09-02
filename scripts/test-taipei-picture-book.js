@@ -10,6 +10,7 @@ function read(relative) {
 }
 
 const html = read("index.html");
+const styles = read("styles.css");
 const app = read("app.js");
 const promptLibrary = read(path.join("materials", "docs", "prompt-library.md"));
 const workbench = read(path.join("workbench", "index.html"));
@@ -47,6 +48,18 @@ for (const image of [
   assert(fs.statSync(target).size > 100_000, `image ${image} is unexpectedly small`);
 }
 
+const displayFont = path.join(route, "assets", "fonts", "iansui-course-display.woff2");
+const fontLicense = path.join(route, "assets", "fonts", "OFL-Iansui.txt");
+assert(fs.existsSync(displayFont), "missing self-hosted Iansui display font");
+assert(fs.statSync(displayFont).size > 10_000, "display font is unexpectedly small");
+assert.equal(fs.readFileSync(displayFont).subarray(0, 4).toString("ascii"), "wOF2", "display font must be WOFF2");
+assert(fs.existsSync(fontLicense), "missing Iansui OFL license");
+assert.match(html, /rel="preload"[^>]+iansui-course-display\.woff2/, "display font should be preloaded");
+assert.match(styles, /@font-face\s*{[\s\S]*?font-family:\s*"Iansui"/, "Iansui font-face is missing");
+assert.match(styles, /\.hero h1\s*{[\s\S]*?font-family:\s*var\(--font-display\)/, "hero should use the display font");
+assert.match(styles, /\.section-heading h2\s*{[\s\S]*?font-family:\s*var\(--font-display\)/, "section headings should use the display font");
+assert.doesNotMatch(styles, /DFKai-SB|BiauKai/, "legacy Kai font fallback should be removed");
+
 assert.match(workbench, /blobToDataUrl/, "workbench should embed images in downloaded HTML");
 assert.match(workbench, /\.\.\/assets\/images\/page-cover\.png/, "workbench cover path is invalid");
 assert.match(workbench, /href="\.\.\/"/, "workbench needs a return link");
@@ -59,4 +72,4 @@ assert.equal((classIndex.match(/<!doctype html>/gi) || []).length, 1, "class ind
 assert.equal((classIndex.match(/\/class\/taipei-ai\/2026-0904-picture-book\//g) || []).length, 2, "class index should link the route and its preview image once each");
 assert.match(classIndex, /北市府四堂課 · 獨立系列/, "class index must label the course as an independent series");
 
-console.log("Taipei 9/4 picture-book course tests passed: 20 prompts, 16 YAML files, assets, workbench, ZIP and class entry.");
+console.log("Taipei 9/4 picture-book course tests passed: 20 prompts, 16 YAML files, assets, typography, workbench, ZIP and class entry.");

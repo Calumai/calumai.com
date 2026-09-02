@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Iansui";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/fonts/iansui-course-display.woff2") format("woff2");
+}
+
 :root {
   color-scheme: light;
   --ink: #173c35;
@@ -13,6 +21,8 @@
   --line: rgba(23, 60, 53, .16);
   --shadow: 0 24px 70px rgba(22, 50, 44, .14);
   --radius: 28px;
+  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei UI", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-display: "Iansui", var(--font-body);
   --mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
 }
 
@@ -27,8 +37,9 @@ body {
   margin: 0;
   color: var(--ink);
   background: var(--paper);
-  font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+  font-family: var(--font-body);
   line-height: 1.7;
+  text-rendering: optimizeLegibility;
 }
 
 body::before {
@@ -167,16 +178,19 @@ a { -webkit-tap-highlight-color: transparent; }
 .hero h1 {
   max-width: 690px;
   margin: 0;
-  font-size: clamp(4.2rem, 8vw, 7.8rem);
-  line-height: .91;
-  letter-spacing: -.085em;
+  font-family: var(--font-display);
+  font-size: clamp(3.8rem, 7.3vw, 6.9rem);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: .025em;
 }
 
 .hero h1 em {
   color: var(--red);
-  font-family: "DFKai-SB", "BiauKai", serif;
+  font-family: inherit;
   font-style: normal;
-  letter-spacing: -.07em;
+  font-weight: inherit;
+  letter-spacing: .04em;
 }
 
 .hero-lede {
@@ -372,9 +386,12 @@ a { -webkit-tap-highlight-color: transparent; }
 
 .section-heading h2 {
   margin: 0;
-  font-size: clamp(2.2rem, 4.8vw, 4.2rem);
-  line-height: 1.1;
-  letter-spacing: -.055em;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4.2vw, 3.8rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: .015em;
+  text-wrap: balance;
 }
 
 .section-heading > p:last-child,
@@ -435,7 +452,7 @@ a { -webkit-tap-highlight-color: transparent; }
 .role-card h3 {
   margin: .2rem 0 1.2rem;
   font-size: 2.3rem;
-  letter-spacing: -.045em;
+  letter-spacing: -.01em;
 }
 
 .role-card ul {
@@ -695,7 +712,7 @@ td:last-child { color: rgba(255, 255, 255, .68); }
   margin: .2rem 0 0;
   font-size: clamp(1.4rem, 2.6vw, 2.2rem);
   line-height: 1.2;
-  letter-spacing: -.035em;
+  letter-spacing: -.01em;
 }
 
 .prompt-summary {
@@ -913,7 +930,7 @@ td:last-child { color: rgba(255, 255, 255, .68); }
   margin: 0;
   font-size: clamp(1.7rem, 3vw, 2.7rem);
   line-height: 1.2;
-  letter-spacing: -.045em;
+  letter-spacing: -.01em;
 }
 
 .workbench-card p:not(.eyebrow) { color: rgba(255, 255, 255, .7); }
@@ -1051,7 +1068,7 @@ footer a { color: #fff; }
 
 @media (max-width: 1050px) {
   .hero { grid-template-columns: 1fr 400px; gap: 2.5rem; }
-  .hero h1 { font-size: clamp(4.3rem, 8.3vw, 6.5rem); }
+  .hero h1 { font-size: clamp(3.8rem, 7.5vw, 5.9rem); }
   .role-flow { grid-template-columns: 1fr; gap: 1rem; }
   .flow-arrow { transform: rotate(90deg); }
   .role-card { min-height: 0; }
@@ -1062,7 +1079,7 @@ footer a { color: #fff; }
   .site-header nav { display: none; }
   .hero { min-height: auto; grid-template-columns: 1fr; padding-top: 4.5rem; }
   .hero-art { min-height: 470px; }
-  .hero h1 { font-size: clamp(4.3rem, 15vw, 7rem); }
+  .hero h1 { font-size: clamp(3.8rem, 13vw, 6.2rem); }
   .split-heading { grid-template-columns: 1fr; gap: 1rem; }
   .prompt-studio { min-height: 0; grid-template-columns: 1fr; }
   .prompt-sidebar { max-height: 440px; border-right: 0; border-bottom: 1px solid var(--line); }
@@ -1082,10 +1099,12 @@ footer a { color: #fff; }
   .brand span { display: none; }
   .header-cta { padding: .52rem .78rem; font-size: .76rem; }
   .hero { padding-block: 3.5rem 4.5rem; }
-  .hero h1 { font-size: clamp(3.4rem, 18vw, 5rem); }
+  .hero-copy { min-width: 0; }
+  .hero h1 { max-width: 100%; font-size: clamp(3rem, 14.5vw, 4.35rem); }
   .hero-lede { font-size: 1rem; }
-  .hero-stats { justify-content: space-between; gap: .7rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
   .hero-stats dt { font-size: 1.35rem; }
+  .hero-stats dd { font-size: .75rem; line-height: 1.4; }
   .hero-art { min-height: 370px; }
   .book-cover { width: 88%; border-width: 7px; }
   .art-note { padding: .45rem .6rem; }
