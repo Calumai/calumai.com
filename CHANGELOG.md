@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fixed the Lesson 04 eight-step workflow so steps 05–08 share the intended second desktop row, while preserving the single-column mobile layout.
+
 - Added a Lesson 04 Google Sheet example, copy link, and eight-step visual workflow from preparing audio files through Apps Script deployment.
 
 - Replaced the hard-coded Lesson 04 Drive folder ID with a browser-only Code.gs generator that validates a student's folder ID, then enables complete-code preview, copy, download, and reset actions.
