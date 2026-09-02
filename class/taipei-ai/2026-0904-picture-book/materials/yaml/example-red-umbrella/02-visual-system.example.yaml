@@ -1,0 +1,160 @@
+schema_version: "1.0"
+card_type: visual_system
+project_id: RED-UMBRELLA-DEMO
+version: "1.0"
+updated_at: "2026-09-02"
+
+output:
+  type: picture_book_page
+  aspect_ratio: "4:3"
+  width_px: 1448
+  height_px: 1086
+  file_format: png
+  color_space: sRGB
+  text_policy: no_generated_text
+  safe_area_notes: "上方保留約四分之一低細節區域，正式文字後製"
+
+character_anchors:
+  - character_id: CHAR-XQ
+    role: protagonist
+    name_or_label: "小晴"
+    source_basis: [SRC-01]
+    feature_origin: creative_proposal
+    observable_features:
+      face: "圓臉、深棕色眼睛"
+      hair: "下巴長度的黑色直髮"
+      skin_tone: "自然暖膚色"
+      body_proportion: "兒童約五頭身"
+      clothing: "芥黃色連帽外套、深藍長褲、白色運動鞋"
+      accessories: "淺綠色小側背包"
+    personality_shown_by_action: "先觀察、再請成人協助"
+    reference_images:
+      - "../../../assets/images/char-xq-turnaround.png"
+    reference_status: pending_human_review
+    do_not_change:
+      - "圓臉與深棕色眼睛"
+      - "下巴長度黑色直髮"
+      - "兒童約五頭身"
+      - "芥黃色連帽外套、深藍長褲與白色運動鞋"
+      - "淺綠色小側背包"
+    unknown_or_hidden_features: []
+    review_status: pending_human_review
+  - character_id: CHAR-MGR
+    role: helper
+    name_or_label: "活動中心管理員"
+    source_basis: [SRC-01]
+    feature_origin: creative_proposal
+    observable_features:
+      face: "長臉、溫和表情"
+      hair: "短黑髮"
+      skin_tone: "自然暖膚色"
+      body_proportion: "成人約七頭身"
+      clothing: "灰藍色襯衫、深灰長褲"
+      accessories: "無"
+    personality_shown_by_action: "站在服務桌後協助保管與核對"
+    reference_images:
+      - "../../../assets/images/char-manager-turnaround.png"
+    reference_status: pending_human_review
+    do_not_change:
+      - "長臉與溫和表情"
+      - "短黑髮"
+      - "成人約七頭身"
+      - "灰藍色襯衫與深灰長褲"
+      - "不增加配件"
+    unknown_or_hidden_features: []
+    review_status: pending_human_review
+  - character_id: CHAR-CHEN
+    role: umbrella_owner
+    name_or_label: "陳奶奶"
+    source_basis: [SRC-01]
+    feature_origin: creative_proposal
+    observable_features:
+      face: "橢圓臉、微笑"
+      hair: "銀灰短髮"
+      skin_tone: "自然暖膚色"
+      body_proportion: "成人約六頭半身"
+      clothing: "淡紫色外套、深色長裙、深色平底鞋"
+      accessories: "無"
+    personality_shown_by_action: "雙手接回紅雨傘並微笑道謝"
+    reference_images: []
+    reference_status: not_applicable
+    do_not_change:
+      - "橢圓臉與微笑"
+      - "銀灰短髮"
+      - "成人約六頭半身"
+      - "淡紫色外套、深色長裙與深色平底鞋"
+      - "不增加配件"
+    unknown_or_hidden_features: []
+    review_status: pending_human_review
+
+scene_anchors:
+  - scene_id: SCENE-PARK
+    location: "虛構的一般社區公園"
+    source_basis: [SRC-01]
+    feature_origin: mixed_source_and_creative_decision
+    permanent_props: ["木製長椅", "雨後濕潤步道", "低矮綠色灌木"]
+    time_of_day: afternoon
+    lighting: "雨後柔和漫射光"
+    palette: ["雨灰", "葉綠", "暖木色"]
+    reference_images:
+      - "../../../assets/images/page-discovery.png"
+    must_not_add: ["真實標誌", "地址", "大型遊樂設施"]
+    unknown_or_hidden_features: []
+    review_status: pending_human_review
+  - scene_id: SCENE-CENTER
+    location: "虛構活動中心服務桌"
+    source_basis: [SRC-01]
+    feature_origin: mixed_source_and_creative_decision
+    permanent_props: ["淺木色服務桌", "無字軟木公告板", "窗戶"]
+    time_of_day: afternoon
+    lighting: "窗邊柔光"
+    palette: ["淺木色", "奶油白", "灰藍"]
+    reference_images:
+      - "../../../assets/images/page-return.png"
+    must_not_add: ["真實單位名稱", "電話", "地址", "品牌標誌"]
+    unknown_or_hidden_features: []
+    review_status: pending_human_review
+  - scene_id: SCENE-STREET
+    location: "虛構住家附近人行道"
+    source_basis: [SRC-01]
+    feature_origin: mixed_source_and_creative_decision
+    permanent_props: ["小樹", "暖色窗光"]
+    time_of_day: early_evening
+    lighting: "細雨中的柔和暮光"
+    palette: ["灰藍", "暖黃", "雨水反光"]
+    reference_images: []
+    must_not_add: ["真實門牌", "店家招牌", "車牌"]
+    unknown_or_hidden_features: []
+    review_status: pending_human_review
+
+style:
+  style_id: STYLE-WATERCOLOR
+  style_name: "柔和透明水彩故事書"
+  lines: "細而不完全封閉的深灰鉛筆線"
+  materials: "透明水彩與可見紙張纖維"
+  palette:
+    primary: ["雨灰", "葉綠", "暖木色", "芥黃"]
+    accent: ["雨傘紅", "小鴨黃", "側背包淺綠"]
+    avoid: ["螢光色", "大面積純黑"]
+  character_proportion: "兒童繪本的自然簡化比例"
+  background_treatment: "背景保留足夠辨識物件，其餘柔化"
+  lighting_and_shadow: "柔和漫射光、透明淡影"
+  composition_habit: "單一焦點、清楚動作、保留約四分之一文字安全區"
+  texture: "自然水彩紙纖維"
+  mood: "溫暖、好奇、安心"
+  must_avoid:
+    - "特定在世創作者姓名或直接模仿要求"
+    - "照片寫實或 3D 塑膠質感"
+    - "圖內文字、偽文字、字母、數字、標誌、簽名與浮水印"
+
+continuity_rules:
+  use_same_character_ids: true
+  use_same_scene_ids: true
+  change_only_page_action_and_composition: true
+  compare_pages_side_by_side: true
+
+approval:
+  art_owner: null
+  culture_or_language_reviewer: not_applicable
+  approved_at: null
+  status: pending_human_review

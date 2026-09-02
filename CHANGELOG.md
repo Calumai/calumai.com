@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Added the independent Taipei City 9/4 AI picture-book course at `/class/taipei-ai/2026-0904-picture-book/`, including 20 copyable prompts, 16 browsable YAML files, a self-contained layout workbench, human review gates, classroom examples and downloadable source materials.
+- Rebuilt `/class/index.html` as one valid semantic HTML document, preserved the existing 12-course, Vibe Flow, AI Handout and NTNU entries, and added a clearly separated Taipei City course section.
+- Added `scripts/test-taipei-picture-book.js` to verify the course route, prompt inventory, YAML viewer files, images, downloadable archive, workbench behavior and `/class/` entry.
+
 - Fixed the Lesson 04 eight-step workflow so steps 05–08 share the intended second desktop row, while preserving the single-column mobile layout.
 
 - Added a Lesson 04 Google Sheet example, copy link, and eight-step visual workflow from preparing audio files through Apps Script deployment.

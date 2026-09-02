@@ -1,0 +1,63 @@
+schema_version: "1.0"
+card_type: culture_language_rights_guardrails
+project_id: RED-UMBRELLA-DEMO
+version: "1.0"
+updated_at: "2026-09-02"
+
+scope:
+  community_or_group: null
+  person_or_family: "所有人物皆為虛構"
+  location: "虛構的一般社區"
+  time_period: present_day
+  gender_or_role: "兒童、一般管理員與年長失主"
+  occasion: everyday_life
+  applies_only_to_listed_scope: true
+
+source_basis:
+  - source_id: SRC-01
+    supports:
+      - "本故事是虛構的日常失物情境"
+      - "故事沒有族群、族語、祭儀或歷史主張"
+    limits:
+      - "不能據此推論真實活動中心的正式失物流程"
+      - "不能據此取得官方教學或公開授權"
+
+confirmed_features: []
+
+uncertain_features:
+  - item: "故事中的失物處理方式是否符合主辦單位要傳達的兒童行為指引"
+    reason: "目前只是虛構情節，未有主管機關或主辦單位核准紀錄"
+    do_not_generate_until_confirmed: false
+    person_to_confirm: "主辦單位課程負責人"
+    status: pending_human_review
+
+prohibited_generalizations:
+  - "不得聲稱本故事代表任何族群、地方或真實事件"
+  - "不得替一般雨傘、吊牌或活動中心增加文化象徵或歷史意義"
+  - "不得把虛構情節宣稱為正式兒童安全或失物處理指引"
+  - "不得加入真實姓名、學校、地址、電話或單位標誌"
+
+language_locks: []
+
+rights_and_privacy:
+  personal_data_allowed: false
+  child_data_allowed: false
+  upload_permission: unknown
+  generation_permission: unknown
+  public_display_permission: unknown
+  required_credit: null
+  restrictions:
+    - "教學、生成與公開範圍須由主辦單位具名確認"
+  reviewer: null
+  status: pending_human_review
+
+publication_rule:
+  label_if_unreviewed: "課堂草稿，尚未完成內容／權利審訂"
+  public_release_allowed: false
+
+human_review:
+  author_or_source_owner: pending_human_review
+  language_reviewer: not_applicable
+  culture_reviewer: not_applicable
+  rights_reviewer: pending_human_review
+  overall_status: pending_human_review

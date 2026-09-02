@@ -1,0 +1,134 @@
+schema_version: "1.0"
+card_type: production_log
+project_id: RED-UMBRELLA-DEMO
+version: "1.0"
+updated_at: "2026-09-02"
+
+tools:
+  research_tool: "人工依自製故事草稿整理；尚未執行 NotebookLM"
+  chat_tool: "Codex"
+  image_tool: "OpenAI built-in image generation"
+  layout_tool: "../../../workbench/index.html"
+  note: "實際順序為封面 V01 → 第 1 頁 V01 → 第 5 頁 V01 → 小晴三視圖 V01 → 管理員三視圖 V01；04a–04c 是初審後才建立的 V02 重製工單。未記錄密碼、API Key 或永久金鑰"
+
+pages:
+  - page_no: 0
+    drawing_job_version: RED-UMBRELLA-P00-V01-ACTUAL-PROMPT
+    attempts:
+      - attempt: 1
+        created_at: "2026-09-02"
+        file_name: "../../../assets/images/page-cover.png"
+        model_or_tool: "OpenAI built-in image generation"
+        prompt_version: RED-UMBRELLA-P00-V01-ACTUAL-PROMPT
+        failed_checks: [C04]
+        visible_issue: "成品視線為左至右，但 V01 規格誤寫成右至左"
+        minimal_fix: "V02 工單把方向修為 left_to_right；故事與畫面無須重生"
+        output_status: draft
+    selected_file: null
+    final_review:
+      reviewer: "獨立 AI 子代理（未參與生圖；非真人終驗）"
+      reviewed_at: "2026-09-02"
+      status: pending_human_review
+      notes: "C01、C02、C03、C05、C06 通過 AI 初審；C04 為軟性 FAIL 並已修正 V02 工單；C07、C08 待真人"
+  - page_no: 1
+    drawing_job_version: RED-UMBRELLA-P01-V01-ACTUAL-PROMPT
+    attempts:
+      - attempt: 1
+        created_at: "2026-09-02"
+        file_name: "../../../assets/images/page-discovery.png"
+        model_or_tool: "OpenAI built-in image generation"
+        prompt_version: RED-UMBRELLA-P01-V01-ACTUAL-PROMPT
+        failed_checks: []
+        visible_issue: null
+        minimal_fix: null
+        output_status: pending_human_review
+    selected_file: null
+    final_review:
+      reviewer: "獨立 AI 子代理（未參與生圖；非真人終驗）"
+      reviewed_at: "2026-09-02"
+      status: pending_human_review
+      notes: "C01 至 C06 通過 AI 初審；C07、C08 與最終放行仍待具名真人"
+  - page_no: 5
+    drawing_job_version: RED-UMBRELLA-P05-V01-ACTUAL-PROMPT
+    attempts:
+      - attempt: 1
+        created_at: "2026-09-02"
+        file_name: "../../../assets/images/page-return.png"
+        model_or_tool: "OpenAI built-in image generation"
+        prompt_version: RED-UMBRELLA-P05-V01-ACTUAL-PROMPT
+        failed_checks: [C04]
+        visible_issue: "管理員佔用原工單指定的上方右側文字安全區"
+        minimal_fix: "先以左上方替代排版供課堂練習；正式版應建立 V02 工單後只重生本頁"
+        output_status: draft
+    selected_file: null
+    final_review:
+      reviewer: null
+      reviewed_at: null
+      status: pending_human_review
+      notes: "已做內部快檢並發現 C04；尚未完成獨立驗收與權利核准"
+  - page_no: CHAR-XQ-anchor
+    drawing_job_version: CHAR-XQ-V01-ACTUAL-PROMPT
+    attempts:
+      - attempt: 1
+        created_at: "2026-09-02"
+        file_name: "../../../assets/images/char-xq-turnaround.png"
+        model_or_tool: "OpenAI built-in image generation"
+        prompt_version: CHAR-XQ-V01-ACTUAL-PROMPT
+        failed_checks: []
+        visible_issue: null
+        minimal_fix: null
+        output_status: not_reviewed
+    selected_file: null
+    final_review:
+      reviewer: null
+      reviewed_at: null
+      status: pending_human_review
+      notes: "在三張故事圖之後補建，供 V02 工單使用；尚未完成真人核准"
+  - page_no: CHAR-MGR-anchor
+    drawing_job_version: CHAR-MGR-V01-ACTUAL-PROMPT
+    attempts:
+      - attempt: 1
+        created_at: "2026-09-02"
+        file_name: "../../../assets/images/char-manager-turnaround.png"
+        model_or_tool: "OpenAI built-in image generation"
+        prompt_version: CHAR-MGR-V01-ACTUAL-PROMPT
+        failed_checks: []
+        visible_issue: null
+        minimal_fix: null
+        output_status: not_reviewed
+    selected_file: null
+    final_review:
+      reviewer: null
+      reviewed_at: null
+      status: pending_human_review
+      notes: "在 P05 V01 之後補建，供跨頁管理員的 V02 工單使用；尚未完成真人核准"
+
+human_reviews:
+  source_and_story:
+    reviewer: null
+    status: pending_human_review
+    reviewed_at: null
+  language:
+    reviewer: null
+    status: not_applicable
+    reviewed_at: null
+  culture:
+    reviewer: null
+    status: not_applicable
+    reviewed_at: null
+  rights_and_privacy:
+    reviewer: null
+    status: pending_human_review
+    reviewed_at: null
+  final_artwork:
+    reviewer: null
+    status: pending_human_review
+    reviewed_at: null
+
+export:
+  editable_source: "../../../workbench/index.html"
+  preview_pdf: null
+  packaged_sources: true
+  packaged_prompts_and_yaml: true
+  public_release_allowed: false
+  final_status: pending_human_review

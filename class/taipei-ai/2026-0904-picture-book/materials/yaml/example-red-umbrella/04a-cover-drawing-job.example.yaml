@@ -1,0 +1,79 @@
+schema_version: "1.0"
+card_type: page_drawing_job
+job_id: RED-UMBRELLA-P00-V02
+project_id: RED-UMBRELLA-DEMO
+page_no: 0
+version: "2.0"
+updated_at: "2026-09-02"
+
+purpose: picture_book_cover
+audience:
+  age_range: "7-10"
+  reading_context: classroom_draft
+
+output:
+  count: 1
+  aspect_ratio: "4:3"
+  width_px: 1448
+  height_px: 1086
+  file_format: png
+  text_policy: no_generated_text
+
+content:
+  beat_id: null
+  story_beat: "用小晴、紅雨傘與雨後公園建立故事懸念"
+  primary_subject: "小晴與紅雨傘"
+  primary_action: "小晴站在雨後步道上，看向靠在長椅旁的紅雨傘"
+  emotional_note: "溫暖、好奇、有開始冒險的感覺"
+  narration_for_layout_only: "紅雨傘回家了"
+  dialogue_for_layout_only: null
+
+anchors:
+  character_ids: [CHAR-XQ]
+  scene_id: SCENE-PARK
+  style_id: STYLE-WATERCOLOR
+  culture_guardrail_version: "1.0"
+
+composition:
+  shot_size: wide
+  camera_angle: child_eye_level
+  subject_position: lower_right
+  gaze_or_movement_direction: left_to_right
+  foreground: ["少量水窪與雨滴"]
+  middle_ground: ["小晴", "木製長椅", "紅雨傘"]
+  background: ["柔化的綠色灌木"]
+  negative_space:
+    position: upper_left
+    purpose: "供後製書名與作者使用"
+    approximate_percent: 35
+
+lighting:
+  time_of_day: afternoon
+  direction: diffuse
+  quality: "雨後柔和漫射光"
+  mood: "溫暖、好奇"
+
+references:
+  source_refs: [SRC-01]
+  character_reference_images:
+    - "../../../assets/images/char-xq-turnaround.png"
+  scene_reference_images: []
+  object_reference_images: []
+  note: "這是 V01 生圖後補建的 V02 工單；已依初審把誤寫的視線方向修為 left_to_right，角色三視圖仍待真人審定"
+
+must_include:
+  - "紅雨傘靠在木製長椅旁"
+  - "小晴的五項不可變特徵"
+  - "上方左側有乾淨且低細節的書名安全區"
+
+must_avoid:
+  - "任何書名、文字、偽文字、字母、數字、標誌、簽名或浮水印"
+  - "把黃色小鴨吊牌放大成封面主角"
+  - "新增其他人物"
+  - "真實地名、品牌或文化象徵"
+
+acceptance:
+  criterion_file: 05-criterion.example.yaml
+  independent_reviewer_required: true
+  human_review_required_for_culture_language_rights: true
+  status: not_reviewed

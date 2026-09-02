@@ -1,0 +1,62 @@
+schema_version: "1.0"
+card_type: production_log
+project_id: null
+version: "0.1"
+updated_at: null
+
+tools:
+  research_tool: null
+  chat_tool: null
+  image_tool: null
+  layout_tool: null
+  note: "不要記錄密碼、API Key 或永久金鑰"
+
+pages:
+  - page_no: null
+    drawing_job_version: null
+    attempts:
+      - attempt: 1
+        created_at: null
+        file_name: null
+        model_or_tool: null
+        prompt_version: null
+        failed_checks: []
+        visible_issue: null
+        minimal_fix: null
+        output_status: not_reviewed
+    selected_file: null
+    final_review:
+      reviewer: null
+      reviewed_at: null
+      status: pending_human_review
+      notes: null
+
+human_reviews:
+  source_and_story:
+    reviewer: null
+    status: pending_human_review
+    reviewed_at: null
+  language:
+    reviewer: null
+    status: not_applicable
+    reviewed_at: null
+  culture:
+    reviewer: null
+    status: not_applicable
+    reviewed_at: null
+  rights_and_privacy:
+    reviewer: null
+    status: pending_human_review
+    reviewed_at: null
+  final_artwork:
+    reviewer: null
+    status: pending_human_review
+    reviewed_at: null
+
+export:
+  editable_source: null
+  preview_pdf: null
+  packaged_sources: false
+  packaged_prompts_and_yaml: false
+  public_release_allowed: false
+  final_status: pending_human_review

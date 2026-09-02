@@ -1,0 +1,137 @@
+schema_version: "1.0"
+card_type: source_pack
+project:
+  project_id: RED-UMBRELLA-DEMO
+  title: "紅雨傘回家了"
+  author_or_owner: null
+  version: "1.0"
+  updated_at: "2026-09-02"
+
+sources:
+  - source_id: SRC-01
+    title: "課堂範例〈紅雨傘回家了〉"
+    source_type: course_created_fictional_draft
+    creator_or_provider: "本教材專案的 AI 輔助草稿；正式權利歸屬待主辦單位確認"
+    location_or_url: "../../docs/red-umbrella-example.md"
+    supports:
+      - "完整故事事件與順序"
+      - "人物、雨傘、吊牌與場景的文字設定"
+    rights:
+      upload_permission: unknown
+      teaching_use: unknown
+      generation_use: unknown
+      public_display: unknown
+      notes: "目前只作教材草稿；不得把檔名或課程名稱當成官方授權"
+    sensitivity:
+      personal_data: false
+      child_data: false
+      cultural_knowledge: false
+      unpublished_material: true
+    review:
+      reviewer: null
+      reviewed_at: null
+      status: pending_human_review
+
+verified_facts:
+  - fact_id: FACT-01
+    statement: "雨停後，小晴在公園長椅旁發現一把紅雨傘。"
+    source_refs: [SRC-01]
+    citation_note: "故事原文第 1 段"
+    status: not_reviewed
+  - fact_id: FACT-02
+    statement: "傘柄上有黃色小鴨吊牌。"
+    source_refs: [SRC-01]
+    citation_note: "故事原文第 2 段"
+    status: not_reviewed
+  - fact_id: FACT-03
+    statement: "小晴把雨傘送到活動中心，沒有帶回家。"
+    source_refs: [SRC-01]
+    citation_note: "故事原文第 2 段"
+    status: not_reviewed
+  - fact_id: FACT-04
+    statement: "失物通知不公開黃色小鴨吊牌這個辨識線索。"
+    source_refs: [SRC-01]
+    citation_note: "故事原文第 3 段"
+    status: not_reviewed
+  - fact_id: FACT-05
+    statement: "陳奶奶正確說出吊牌特徵後取回雨傘。"
+    source_refs: [SRC-01]
+    citation_note: "故事原文第 4 至 5 段"
+    status: not_reviewed
+  - fact_id: FACT-06
+    statement: "結尾下起細雨，小晴撐自己的藍雨傘回家。"
+    source_refs: [SRC-01]
+    citation_note: "故事原文第 5 至 6 段"
+    status: not_reviewed
+
+event_order:
+  - order: 1
+    actor: "小晴"
+    action: "在公園發現紅雨傘"
+    cause: "雨停後走過公園"
+    result: "注意到失物"
+    source_refs: [SRC-01]
+    status: not_reviewed
+  - order: 2
+    actor: "小晴"
+    action: "看見黃色小鴨吊牌"
+    cause: "靠近觀察雨傘"
+    result: "保留可供認領的辨識線索"
+    source_refs: [SRC-01]
+    status: not_reviewed
+  - order: 3
+    actor: "小晴"
+    action: "把雨傘送到活動中心"
+    cause: "擔心主人找不到"
+    result: "管理員協助保管"
+    source_refs: [SRC-01]
+    status: not_reviewed
+  - order: 4
+    actor: "小晴與管理員"
+    action: "製作不公開吊牌線索的失物通知"
+    cause: "需要通知主人並保留核對方式"
+    result: "等待失主前來"
+    source_refs: [SRC-01]
+    status: not_reviewed
+  - order: 5
+    actor: "陳奶奶"
+    action: "正確說出黃色小鴨吊牌"
+    cause: "前來認領紅雨傘"
+    result: "通過故事中的辨識核對"
+    source_refs: [SRC-01]
+    status: not_reviewed
+  - order: 6
+    actor: "小晴"
+    action: "交還紅雨傘後撐藍雨傘回家"
+    cause: "確認陳奶奶是故事中的失主"
+    result: "故事以輕快雨聲收尾"
+    source_refs: [SRC-01]
+    status: not_reviewed
+
+exact_terms: []
+conflicts: []
+
+unknowns:
+  - item: "本虛構失物處理流程是否符合主辦單位要傳達的兒童行為指引"
+    blocks_production: false
+    blocks_publication: true
+    person_to_confirm: "主辦單位課程負責人"
+    status: pending_human_review
+  - item: "本教材草稿的正式教學、生成與公開權利範圍"
+    blocks_production: false
+    blocks_publication: true
+    person_to_confirm: "主辦單位權責人員"
+    status: pending_human_review
+
+do_not_infer:
+  - "人物的真實身分、族別、學校、地址或家庭背景"
+  - "雨傘、吊牌或活動中心具有特定文化象徵"
+  - "真實品牌、標誌、電話、地址或單位名稱"
+  - "這是正式兒童安全或失物處理指引"
+
+human_approval:
+  source_owner: pending_human_review
+  language_reviewer: not_applicable
+  culture_reviewer: not_applicable
+  rights_reviewer: pending_human_review
+  overall_status: pending_human_review

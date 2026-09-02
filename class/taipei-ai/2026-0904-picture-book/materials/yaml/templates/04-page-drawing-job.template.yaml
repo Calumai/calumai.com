@@ -1,0 +1,76 @@
+schema_version: "1.0"
+card_type: page_drawing_job
+job_id: null
+project_id: null
+page_no: null
+version: "0.1"
+updated_at: null
+
+purpose: picture_book_page
+audience:
+  age_range: null
+  reading_context: null
+
+output:
+  count: 1
+  aspect_ratio: "4:3"
+  width_px: 1600
+  height_px: 1200
+  file_format: png
+  text_policy: no_generated_text
+
+content:
+  beat_id: null
+  story_beat: null
+  primary_subject: null
+  primary_action: null
+  emotional_note: null
+  narration_for_layout_only: null
+  dialogue_for_layout_only: null
+
+anchors:
+  character_ids: []
+  scene_id: null
+  style_id: STYLE-01
+  culture_guardrail_version: null
+
+composition:
+  shot_size: null
+  camera_angle: null
+  subject_position: null
+  gaze_or_movement_direction: null
+  foreground: []
+  middle_ground: []
+  background: []
+  negative_space:
+    position: null
+    purpose: "供後製文字使用"
+    approximate_percent: 25
+
+lighting:
+  time_of_day: null
+  direction: null
+  quality: null
+  mood: null
+
+references:
+  source_refs: []
+  character_reference_images: []
+  scene_reference_images: []
+  object_reference_images: []
+  note: "參考圖只支持看得到且已確認的內容"
+
+must_include:
+  - null
+
+must_avoid:
+  - "任何文字、字母、數字、標誌、簽名或浮水印"
+  - "未在工單中出現的新角色、服飾、器物或象徵"
+  - "猜測或補畫未確認的文化細節"
+  - "改變角色五個不可變特徵"
+
+acceptance:
+  criterion_file: 05-criterion.template.yaml
+  independent_reviewer_required: true
+  human_review_required_for_culture_language_rights: true
+  status: not_reviewed

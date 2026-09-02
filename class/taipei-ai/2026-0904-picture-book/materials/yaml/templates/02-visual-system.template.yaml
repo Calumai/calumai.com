@@ -1,0 +1,82 @@
+schema_version: "1.0"
+card_type: visual_system
+project_id: null
+version: "0.1"
+updated_at: null
+
+output:
+  type: picture_book_page
+  aspect_ratio: "4:3"
+  width_px: 1600
+  height_px: 1200
+  file_format: png
+  color_space: sRGB
+  text_policy: no_generated_text
+  safe_area_notes: "保留排版空間，正式文字後製"
+
+character_anchors:
+  - character_id: CHAR-01
+    role: protagonist
+    name_or_label: null
+    source_basis: []
+    feature_origin: null
+    observable_features:
+      face: null
+      hair: null
+      skin_tone: null
+      body_proportion: null
+      clothing: null
+      accessories: null
+    personality_shown_by_action: null
+    reference_images: []
+    reference_status: null
+    do_not_change:
+      - null
+    unknown_or_hidden_features:
+      - null
+    review_status: pending_human_review
+
+scene_anchors:
+  - scene_id: SCENE-01
+    location: null
+    source_basis: []
+    feature_origin: null
+    permanent_props: []
+    time_of_day: null
+    lighting: null
+    palette: []
+    reference_images: []
+    must_not_add: []
+    unknown_or_hidden_features: []
+    review_status: pending_human_review
+
+style:
+  style_id: STYLE-01
+  style_name: null
+  lines: null
+  materials: null
+  palette:
+    primary: []
+    accent: []
+    avoid: []
+  character_proportion: null
+  background_treatment: null
+  lighting_and_shadow: null
+  composition_habit: null
+  texture: null
+  mood: null
+  must_avoid:
+    - "特定在世創作者姓名或直接模仿要求"
+    - "圖內文字、字母、數字、標誌、簽名與浮水印"
+
+continuity_rules:
+  use_same_character_ids: true
+  use_same_scene_ids: true
+  change_only_page_action_and_composition: true
+  compare_pages_side_by_side: true
+
+approval:
+  art_owner: null
+  culture_or_language_reviewer: null
+  approved_at: null
+  status: pending_human_review

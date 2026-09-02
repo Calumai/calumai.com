@@ -1,0 +1,79 @@
+schema_version: "1.0"
+card_type: page_drawing_job
+job_id: RED-UMBRELLA-P01-V02
+project_id: RED-UMBRELLA-DEMO
+page_no: 1
+version: "2.0"
+updated_at: "2026-09-02"
+
+purpose: picture_book_page
+audience:
+  age_range: "7-10"
+  reading_context: classroom_draft
+
+output:
+  count: 1
+  aspect_ratio: "4:3"
+  width_px: 1448
+  height_px: 1086
+  file_format: png
+  text_policy: no_generated_text
+
+content:
+  beat_id: BEAT-01
+  story_beat: "雨停後，小晴在公園長椅旁發現紅雨傘"
+  primary_subject: "小晴與紅雨傘"
+  primary_action: "小晴停下腳步，微微前傾看向靠在長椅旁的紅傘"
+  emotional_note: "好奇、關心，不誇張驚嚇"
+  narration_for_layout_only: "午後的雨停了。小晴走過公園，看見長椅旁有一把紅雨傘。"
+  dialogue_for_layout_only: null
+
+anchors:
+  character_ids: [CHAR-XQ]
+  scene_id: SCENE-PARK
+  style_id: STYLE-WATERCOLOR
+  culture_guardrail_version: "1.0"
+
+composition:
+  shot_size: medium_wide
+  camera_angle: child_eye_level
+  subject_position: lower_left
+  gaze_or_movement_direction: left_to_right
+  foreground: ["少量雨後水窪"]
+  middle_ground: ["小晴", "木製長椅", "紅雨傘"]
+  background: ["柔化灌木與步道"]
+  negative_space:
+    position: upper_right
+    purpose: "供後製旁白使用"
+    approximate_percent: 28
+
+lighting:
+  time_of_day: afternoon
+  direction: diffuse
+  quality: "雨後柔和漫射光"
+  mood: "好奇、關心"
+
+references:
+  source_refs: [SRC-01]
+  character_reference_images:
+    - "../../../assets/images/char-xq-turnaround.png"
+  scene_reference_images: []
+  object_reference_images: []
+  note: "這是 V01 生圖後補建的 V02 重製工單；角色三視圖尚待真人審定"
+
+must_include:
+  - "紅雨傘靠在木製長椅旁"
+  - "小晴的五項不可變特徵"
+  - "雨後濕潤步道"
+
+must_avoid:
+  - "任何文字、偽文字、字母、數字、標誌、簽名或浮水印"
+  - "把紅雨傘畫在小晴手上"
+  - "新增其他人物"
+  - "真實地名、品牌或文化象徵"
+
+acceptance:
+  criterion_file: 05-criterion.example.yaml
+  independent_reviewer_required: true
+  human_review_required_for_culture_language_rights: true
+  status: not_reviewed

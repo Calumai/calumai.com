@@ -1,0 +1,103 @@
+schema_version: "1.0"
+card_type: acceptance_criteria
+project_id: RED-UMBRELLA-DEMO
+version: "1.0"
+updated_at: "2026-09-02"
+
+policy:
+  hard_fail_if_any_hard_check_fails: true
+  require_visible_evidence: true
+  allow_unknown_as_pass: false
+  max_regeneration_attempts_per_page: 3
+  final_human_decision_required: true
+
+checks:
+  - check_id: C01
+    name: source_and_story_fidelity
+    severity: hard
+    inspect: "紅雨傘、黃色吊牌、失物通知與認領的事件因果是否符合核准內容卡"
+    evidence_required:
+      - "成品中可指出的畫面或文字"
+      - "00-source-pack 與 01-content 的對應欄位"
+    pass_rule: "沒有改變 FACT-01 至 FACT-06，也沒有把待確認內容畫成正式事實"
+    human_reviewer_required: false
+  - check_id: C02
+    name: character_continuity
+    severity: hard
+    inspect: "主角五項不可變特徵與配角卡片中的核准特徵是否一致"
+    evidence_required:
+      - "成品與 CHAR-XQ 三視圖並排比較"
+      - "02-visual-system 的 character_anchors"
+    pass_rule: "主角五項特徵皆一致；配角符合各自卡片；沒有多肢、缺肢或角色融合"
+    human_reviewer_required: false
+  - check_id: C03
+    name: scene_and_object_continuity
+    severity: hard
+    inspect: "紅傘、藍傘、黃色吊牌、場景固定物件與必要道具是否正確"
+    evidence_required:
+      - "成品畫面"
+      - "scene_anchor 與該頁 drawing job"
+    pass_rule: "必要物件完整，雨傘顏色與數量正確，未新增禁止元素"
+    human_reviewer_required: false
+  - check_id: C04
+    name: composition_and_readability
+    severity: soft
+    inspect: "唯一主要動作、鏡位、閱讀方向與文字留白是否清楚"
+    evidence_required:
+      - "成品畫面"
+      - "drawing_job.composition"
+    pass_rule: "焦點清楚，指定文字區可用，人物手部與雨傘沒有被裁切"
+    human_reviewer_required: false
+  - check_id: C05
+    name: style_consistency
+    severity: soft
+    inspect: "線條、材質、色盤、人物比例、背景與光影是否符合 STYLE-WATERCOLOR"
+    evidence_required:
+      - "三張備援圖並排比較"
+      - "02-visual-system.style"
+    pass_rule: "主要視覺規則一致，沒有無故換媒材、人物比例或色盤"
+    human_reviewer_required: false
+  - check_id: C06
+    name: no_generated_text
+    severity: hard
+    inspect: "圖內是否出現文字、偽文字、字母、數字、標誌、簽名或浮水印"
+    evidence_required:
+      - "放大檢查完整畫面"
+    pass_rule: "圖片完全沒有文字、偽文字、字母、數字、標誌、簽名或浮水印"
+    human_reviewer_required: false
+  - check_id: C07
+    name: culture_and_language
+    severity: hard
+    inspect: "是否新增族群、族語、服飾、歷史、儀式或文化象徵主張"
+    evidence_required:
+      - "03-culture-guardrails"
+      - "成品中對應內容"
+    pass_rule: "沒有禁止推論；無文化與語言主張不等於可略過檢查"
+    human_reviewer_required: true
+  - check_id: C08
+    name: rights_privacy_and_release
+    severity: hard
+    inspect: "是否加入真實姓名、兒童個資、地址、標誌，並正確標示草稿與公開狀態"
+    evidence_required:
+      - "00-source-pack 權利紀錄"
+      - "03-culture-guardrails 的 rights_and_privacy"
+      - "成品公開狀態標示"
+    pass_rule: "沒有個資或真實標誌；未取得具名權利核准前只標示課堂草稿且不公開"
+    human_reviewer_required: true
+
+review_output:
+  required_fields:
+    - check_id
+    - result
+    - visible_evidence
+    - source_or_spec_evidence
+    - minimal_fix
+  allowed_results: [PASS, FAIL, PENDING_HUMAN_REVIEW]
+
+on_failure:
+  retry_scope: failed_page_only
+  fix_scope: "一次只修最大的一個失敗原因"
+  record_reason: true
+  keep_passed_fields_unchanged: true
+  escalate_after_limit: true
+  escalation_action: "停止自動重生，交由講師、作者或適合的審訂者處理"

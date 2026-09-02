@@ -1,0 +1,113 @@
+schema_version: "1.0"
+card_type: acceptance_criteria
+project_id: null
+version: "0.1"
+updated_at: null
+
+policy:
+  hard_fail_if_any_hard_check_fails: true
+  require_visible_evidence: true
+  allow_unknown_as_pass: false
+  max_regeneration_attempts_per_page: 3
+  final_human_decision_required: true
+
+checks:
+  - check_id: C01
+    name: source_and_story_fidelity
+    severity: hard
+    inspect: "人物、主要動作、事件順序與因果是否符合核准內容卡"
+    evidence_required:
+      - "成品中可指出的畫面或文字"
+      - "source_pack 或 content YAML 的對應欄位"
+    pass_rule: "沒有改變核准事實，也沒有把待確認內容畫成既定事實"
+    human_reviewer_required: false
+
+  - check_id: C02
+    name: character_continuity
+    severity: hard
+    inspect: "臉型、髮型、身形比例、服裝與配件是否符合角色定錨"
+    evidence_required:
+      - "本頁與角色基準圖並排比較"
+      - "character_anchor.do_not_change"
+    pass_rule: "每個角色卡所列不可變特徵皆一致；主角至少五項，配角依核准角色卡檢查；沒有多肢、缺肢或角色融合"
+    human_reviewer_required: false
+
+  - check_id: C03
+    name: scene_and_object_continuity
+    severity: hard
+    inspect: "場景固定物件、位置關係、時間與必要道具是否正確"
+    evidence_required:
+      - "成品畫面"
+      - "scene_anchor 與 drawing job"
+    pass_rule: "必要物件完整，未新增禁止元素"
+    human_reviewer_required: false
+
+  - check_id: C04
+    name: composition_and_readability
+    severity: soft
+    inspect: "唯一主要動作、鏡位、閱讀方向與文字留白是否清楚"
+    evidence_required:
+      - "成品畫面"
+      - "drawing_job.composition"
+    pass_rule: "視線焦點清楚，後製文字區域可用，重要物件未被裁切"
+    human_reviewer_required: false
+
+  - check_id: C05
+    name: style_consistency
+    severity: soft
+    inspect: "線條、材質、色盤、人物比例、背景與光影是否符合 style"
+    evidence_required:
+      - "與已通過頁面並排比較"
+      - "visual_system.style"
+    pass_rule: "主要視覺規則一致，沒有無故換媒材或色盤"
+    human_reviewer_required: false
+
+  - check_id: C06
+    name: no_generated_text
+    severity: hard
+    inspect: "圖內是否出現文字、字母、數字、標誌、簽名或浮水印"
+    evidence_required:
+      - "放大檢查完整畫面"
+    pass_rule: "圖片完全沒有文字、偽文字、字母、數字、標誌、簽名或浮水印"
+    human_reviewer_required: false
+
+  - check_id: C07
+    name: culture_and_language
+    severity: hard
+    inspect: "文化、服飾、器物、族語、譯文與適用範圍是否有證據且經適合的人確認"
+    evidence_required:
+      - "culture_guardrails"
+      - "來源引用與真人審訂紀錄"
+      - "成品中對應內容"
+    pass_rule: "沒有禁止推論；所有必要真人審訂均已完成"
+    human_reviewer_required: true
+
+  - check_id: C08
+    name: rights_privacy_and_release
+    severity: hard
+    inspect: "素材、真人、兒童、個資、生成與公開範圍是否符合權利紀錄"
+    evidence_required:
+      - "來源與授權紀錄"
+      - "公開狀態標示"
+    pass_rule: "所有必要權限已記錄；未審訂草稿沒有被標成正式公開成品"
+    human_reviewer_required: true
+
+review_output:
+  required_fields:
+    - check_id
+    - result
+    - visible_evidence
+    - source_or_spec_evidence
+    - minimal_fix
+  allowed_results:
+    - PASS
+    - FAIL
+    - PENDING_HUMAN_REVIEW
+
+on_failure:
+  retry_scope: failed_page_only
+  fix_scope: "一次只修最大的一個失敗原因"
+  record_reason: true
+  keep_passed_fields_unchanged: true
+  escalate_after_limit: true
+  escalation_action: "停止自動重生，交由講師、作者或適合的審訂者處理"

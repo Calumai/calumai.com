@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>紅雨傘回家了｜離線排版起始檔</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #203028;
+      --paper: #f7f2e8;
+      --accent: #b84235;
+      --panel: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #d9ded8;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .8rem 1rem;
+      color: #fff;
+      background: #24372f;
+      box-shadow: 0 2px 10px rgb(0 0 0 / 20%);
+    }
+
+    .toolbar p { margin: 0; font-size: .95rem; }
+
+    .toolbar-copy { display: grid; gap: .25rem; }
+
+    .toolbar-link {
+      width: fit-content;
+      color: #f7d99b;
+      font-size: .82rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .toolbar-link:hover { text-decoration: underline; }
+
+    .actions { display: flex; gap: .65rem; flex-wrap: wrap; }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: .7rem 1rem;
+      color: #fff;
+      background: var(--accent);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    main {
+      display: grid;
+      gap: 2rem;
+      justify-items: center;
+      padding: 2rem;
+    }
+
+    .slide {
+      position: relative;
+      width: min(1120px, calc(100vw - 2rem));
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: 0 14px 40px rgb(26 42 34 / 22%);
+    }
+
+    .slide img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .text-box {
+      position: absolute;
+      min-width: 28%;
+      max-width: 44%;
+      padding: 1rem 1.2rem;
+      border: 2px dashed rgb(42 71 57 / 38%);
+      border-radius: 1rem;
+      background: rgb(255 253 247 / 86%);
+      font-size: clamp(1rem, 2vw, 1.75rem);
+      line-height: 1.55;
+      outline: none;
+    }
+
+    .text-box:focus {
+      border-color: var(--accent);
+      background: #fffdf7;
+    }
+
+    .cover-title {
+      top: 9%;
+      left: 7%;
+      max-width: 48%;
+      font-size: clamp(1.8rem, 4.8vw, 4rem);
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .cover-credit {
+      left: 7%;
+      bottom: 12%;
+      font-size: clamp(.8rem, 1.4vw, 1.2rem);
+    }
+
+    .upper-right { top: 8%; right: 7%; }
+    .upper-left { top: 8%; left: 7%; }
+
+    .page-number {
+      position: absolute;
+      right: 2.5%;
+      bottom: 2.5%;
+      width: 2rem;
+      height: 2rem;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgb(255 255 255 / 82%);
+      font-weight: 800;
+    }
+
+    .status {
+      width: min(1120px, calc(100vw - 2rem));
+      margin: 0;
+      padding: .8rem 1rem;
+      border-left: .35rem solid #d39a2c;
+      background: #fff8df;
+      font-size: .95rem;
+    }
+
+    @media print {
+      @page { size: 10in 7.5in; margin: 0; }
+      body { background: #fff; }
+      .toolbar, .status { display: none; }
+      main { display: block; padding: 0; }
+      .slide {
+        width: 10in;
+        height: 7.5in;
+        margin: 0;
+        box-shadow: none;
+        break-after: page;
+      }
+      .text-box { border-color: transparent; }
+    }
+  </style>
+</head>
+<body>
+  <header class="toolbar">
+    <div class="toolbar-copy">
+      <a class="toolbar-link" href="../">← 回到 9/4 課程</a>
+      <p>點一下虛線框改字；內容不會自動保存，離開前請下載 HTML 或另存 PDF。</p>
+    </div>
+    <div class="actions">
+      <button id="download-html" type="button" onclick="downloadEditedHtml()">下載已編輯 HTML</button>
+      <button type="button" onclick="window.print()">列印／另存 PDF</button>
+    </div>
+  </header>
+
+  <main>
+    <p class="status">課堂備援草稿：圖片與權利狀態仍為 pending_human_review，不代表正式公開成品。</p>
+
+    <section class="slide" aria-label="封面">
+      <img src="../assets/images/page-cover.png" alt="小晴在雨後公園看見紅雨傘的無字水彩圖">
+      <div class="text-box cover-title" contenteditable="true" role="textbox" aria-label="書名">紅雨傘回家了</div>
+      <div class="text-box cover-credit" contenteditable="true" role="textbox" aria-label="作者資訊">故事／繪圖：請填姓名</div>
+    </section>
+
+    <section class="slide" aria-label="第 1 頁">
+      <img src="../assets/images/page-discovery.png" alt="小晴靠近長椅旁紅雨傘的無字水彩圖">
+      <div class="text-box upper-right" contenteditable="true" role="textbox" aria-label="第 1 頁旁白">午後的雨停了。小晴走過公園，看見長椅旁有一把紅雨傘。</div>
+      <div class="page-number">1</div>
+    </section>
+
+    <section class="slide" aria-label="第 5 頁">
+      <img src="../assets/images/page-return.png" alt="小晴將紅雨傘交還陳奶奶的無字水彩圖">
+      <div class="text-box upper-left" contenteditable="true" role="textbox" aria-label="第 5 頁旁白">第二天，陳奶奶說出了吊牌的模樣。紅雨傘終於回家了。</div>
+      <div class="page-number">5</div>
+    </section>
+  </main>
+  <script>
+    function blobToDataUrl(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    async function downloadEditedHtml() {
+      const button = document.getElementById('download-html');
+      const originalLabel = button.textContent;
+      button.disabled = true;
+      button.textContent = '正在打包圖片…';
+
+      try {
+        const clone = document.documentElement.cloneNode(true);
+        const sourceImages = [...document.querySelectorAll('.slide img')];
+        const clonedImages = [...clone.querySelectorAll('.slide img')];
+
+        await Promise.all(sourceImages.map(async (image, index) => {
+          try {
+            const response = await fetch(image.src);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            clonedImages[index].setAttribute('src', await blobToDataUrl(await response.blob()));
+          } catch (error) {
+            clonedImages[index].setAttribute('src', image.src);
+          }
+        }));
+
+        const source = '<!doctype html>\n' + clone.outerHTML;
+        const blob = new Blob([source], { type: 'text/html;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = '紅雨傘回家了-已編輯.html';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(link.href);
+        window.alert('已下載自帶圖片的 HTML，可直接保存或分享；正式公開前仍要完成真人授權與內容審訂。');
+      } finally {
+        button.disabled = false;
+        button.textContent = originalLabel;
+      }
+    }
+  </script>
+</body>
+</html>

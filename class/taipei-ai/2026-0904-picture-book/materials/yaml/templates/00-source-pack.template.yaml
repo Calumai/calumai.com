@@ -1,0 +1,86 @@
+schema_version: "1.0"
+card_type: source_pack
+project:
+  project_id: null
+  title: null
+  author_or_owner: null
+  version: "0.1"
+  updated_at: null
+
+sources:
+  - source_id: SRC-01
+    title: null
+    source_type: null
+    creator_or_provider: null
+    location_or_url: null
+    supports:
+      - null
+    rights:
+      upload_permission: unknown
+      teaching_use: unknown
+      generation_use: unknown
+      public_display: unknown
+      notes: "未記錄時不得自行判定可用"
+    sensitivity:
+      personal_data: unknown
+      child_data: unknown
+      cultural_knowledge: unknown
+      unpublished_material: unknown
+    review:
+      reviewer: null
+      reviewed_at: null
+      status: pending_human_review
+
+verified_facts:
+  - fact_id: FACT-01
+    statement: null
+    source_refs:
+      - SRC-01
+    citation_note: null
+    status: pending_human_review
+
+event_order:
+  - order: 1
+    actor: null
+    action: null
+    cause: null
+    result: null
+    source_refs:
+      - SRC-01
+    status: pending_human_review
+
+exact_terms:
+  - term_id: TERM-01
+    language: null
+    exact_text: null
+    meaning_or_note: null
+    source_refs:
+      - SRC-01
+    must_not_rewrite: true
+    status: pending_human_review
+
+conflicts:
+  - conflict_id: null
+    claims: []
+    source_refs: []
+    resolution: null
+    status: not_applicable
+
+unknowns:
+  - item: null
+    blocks_production: false
+    blocks_publication: false
+    person_to_confirm: null
+    status: pending_human_review
+
+do_not_infer:
+  - "未在來源中出現的文化、語言、歷史、服飾與人物身分"
+  - "照片看不到的角度、結構、材質、圖紋意義與用途"
+  - "單一人物或單張圖片可代表整個群體的結論"
+
+human_approval:
+  source_owner: pending_human_review
+  language_reviewer: not_applicable
+  culture_reviewer: not_applicable
+  rights_reviewer: pending_human_review
+  overall_status: pending_human_review

@@ -1,0 +1,65 @@
+schema_version: "1.0"
+card_type: story_content
+project_id: null
+version: "0.1"
+updated_at: null
+
+story:
+  title: null
+  purpose: null
+  audience:
+    age_range: null
+    reading_level: null
+  language: zh-Hant
+  theme: null
+  target_page_count: null
+  source_pack_version: null
+
+creative_scope:
+  allowed:
+    - null
+  prohibited:
+    - "改變來源中的人物、事件順序與因果"
+    - "把待確認內容寫成已確認事實"
+  approval_owner: null
+
+non_negotiables:
+  facts: []
+  locked_text: []
+  cultural_or_language_rules: []
+
+beats:
+  - beat_id: BEAT-01
+    type: setup
+    narrative_function: null
+    character_ids: []
+    action: null
+    cause_from_previous: null
+    emotional_weight: low
+    dialogue_density: low
+    must_be_visible: []
+    decision_type: source_supported
+    source_refs: []
+    human_review_required: false
+
+page_plan:
+  - page_no: 1
+    beat_ids:
+      - BEAT-01
+    primary_story_action: null
+    narration_draft: null
+    dialogue_draft: null
+    text_limits:
+      narration_max_chars: null
+      dialogue_max_chars: null
+    character_ids: []
+    scene_id: null
+    text_safe_area: null
+    source_refs: []
+    creative_decisions: []
+    pending_human_review: []
+
+approval:
+  author: null
+  approved_at: null
+  status: pending_human_review

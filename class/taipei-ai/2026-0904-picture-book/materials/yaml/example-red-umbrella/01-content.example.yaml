@@ -1,0 +1,185 @@
+schema_version: "1.0"
+card_type: story_content
+project_id: RED-UMBRELLA-DEMO
+version: "1.0"
+updated_at: "2026-09-02"
+
+story:
+  title: "紅雨傘回家了"
+  purpose: "練習拾獲物品情境的故事分頁；不視為正式行為指引"
+  audience:
+    age_range: "7-10"
+    reading_level: early_reader
+  language: zh-Hant
+  theme: "誠實、觀察與求助"
+  target_page_count: 6
+  source_pack_version: "1.0"
+
+creative_scope:
+  allowed:
+    - "調整不改變事件因果的角色短對白"
+    - "安排沒有真實名稱或標誌的一般室內佈置"
+    - "調整旁白長短、文字留白與核准畫風"
+  prohibited:
+    - "改變紅雨傘、黃色吊牌、失物通知與認領的因果"
+    - "把故事宣稱成真實事件、正式安全指引或特定群體故事"
+  approval_owner: null
+
+non_negotiables:
+  facts: [FACT-01, FACT-02, FACT-03, FACT-04, FACT-05, FACT-06]
+  locked_text: []
+  cultural_or_language_rules:
+    - "不新增任何族群、歷史、儀式或語言主張"
+
+beats:
+  - beat_id: BEAT-01
+    type: setup
+    narrative_function: "發現失物"
+    character_ids: [CHAR-XQ]
+    action: "小晴在雨後公園停下，看見長椅旁的紅雨傘"
+    cause_from_previous: null
+    emotional_weight: low
+    dialogue_density: low
+    must_be_visible: ["雨後公園", "長椅旁的紅雨傘"]
+    decision_type: source_supported
+    source_refs: [SRC-01]
+    human_review_required: false
+  - beat_id: BEAT-02
+    type: trigger
+    narrative_function: "注意辨識線索"
+    character_ids: [CHAR-XQ]
+    action: "小晴看見傘柄上的黃色小鴨吊牌"
+    cause_from_previous: "靠近觀察紅雨傘"
+    emotional_weight: medium
+    dialogue_density: low
+    must_be_visible: ["紅傘柄", "黃色小鴨吊牌"]
+    decision_type: source_supported
+    source_refs: [SRC-01]
+    human_review_required: false
+  - beat_id: BEAT-03
+    type: action
+    narrative_function: "選擇請成人協助"
+    character_ids: [CHAR-XQ, CHAR-MGR]
+    action: "小晴把紅雨傘交給活動中心管理員"
+    cause_from_previous: "擔心主人回來找不到"
+    emotional_weight: medium
+    dialogue_density: low
+    must_be_visible: ["小晴交出紅雨傘", "服務桌"]
+    decision_type: source_supported
+    source_refs: [SRC-01]
+    human_review_required: true
+  - beat_id: BEAT-04
+    type: method
+    narrative_function: "通知主人並保留辨識線索"
+    character_ids: [CHAR-XQ, CHAR-MGR]
+    action: "兩人製作只畫紅傘、不畫黃色吊牌的失物通知"
+    cause_from_previous: "管理員接手保管雨傘"
+    emotional_weight: medium
+    dialogue_density: low
+    must_be_visible: ["只畫紅傘的通知草圖", "黃色吊牌沒有出現在通知中"]
+    decision_type: source_supported
+    source_refs: [SRC-01]
+    human_review_required: true
+  - beat_id: BEAT-05
+    type: climax
+    narrative_function: "確認主人並歸還"
+    character_ids: [CHAR-XQ, CHAR-MGR, CHAR-CHEN]
+    action: "陳奶奶正確說出吊牌特徵，小晴交還紅雨傘"
+    cause_from_previous: "陳奶奶看見失物通知後前來"
+    emotional_weight: high
+    dialogue_density: medium
+    must_be_visible: ["三人", "紅雨傘", "黃色小鴨吊牌"]
+    decision_type: source_supported
+    source_refs: [SRC-01]
+    human_review_required: true
+  - beat_id: BEAT-06
+    type: ending
+    narrative_function: "以輕快雨聲收尾"
+    character_ids: [CHAR-XQ]
+    action: "小晴撐著自己的藍雨傘回家"
+    cause_from_previous: "紅雨傘已回到主人手中"
+    emotional_weight: low
+    dialogue_density: none
+    must_be_visible: ["藍雨傘", "細雨", "回家方向"]
+    decision_type: source_supported
+    source_refs: [SRC-01]
+    human_review_required: false
+
+page_plan:
+  - page_no: 1
+    beat_ids: [BEAT-01]
+    primary_story_action: "小晴發現紅雨傘"
+    narration_draft: "午後的雨停了。小晴走過公園，看見長椅旁有一把紅雨傘。"
+    dialogue_draft: null
+    text_limits: {narration_max_chars: 42, dialogue_max_chars: 0}
+    character_ids: [CHAR-XQ]
+    scene_id: SCENE-PARK
+    text_safe_area: upper_right
+    source_refs: [SRC-01]
+    creative_decisions: []
+    pending_human_review: []
+  - page_no: 2
+    beat_ids: [BEAT-02]
+    primary_story_action: "小晴注意黃色小鴨吊牌"
+    narration_draft: "傘柄上，掛著一個黃色小鴨吊牌。"
+    dialogue_draft: "主人一定很著急。"
+    text_limits: {narration_max_chars: 28, dialogue_max_chars: 18}
+    character_ids: [CHAR-XQ]
+    scene_id: SCENE-PARK
+    text_safe_area: upper_left
+    source_refs: [SRC-01]
+    creative_decisions: ["內心話的精簡句型"]
+    pending_human_review: []
+  - page_no: 3
+    beat_ids: [BEAT-03]
+    primary_story_action: "小晴把傘交給管理員"
+    narration_draft: "小晴沒有把傘帶回家，她把傘送到活動中心。"
+    dialogue_draft: "可以請您幫忙保管嗎？"
+    text_limits: {narration_max_chars: 36, dialogue_max_chars: 18}
+    character_ids: [CHAR-XQ, CHAR-MGR]
+    scene_id: SCENE-CENTER
+    text_safe_area: upper_right
+    source_refs: [SRC-01]
+    creative_decisions: ["小晴的禮貌對白"]
+    pending_human_review: ["行為情境需主辦單位確認"]
+  - page_no: 4
+    beat_ids: [BEAT-04]
+    primary_story_action: "小晴畫失物通知"
+    narration_draft: "他們畫了紅雨傘，卻把黃色小鴨留作認領的小祕密。"
+    dialogue_draft: null
+    text_limits: {narration_max_chars: 40, dialogue_max_chars: 0}
+    character_ids: [CHAR-XQ, CHAR-MGR]
+    scene_id: SCENE-CENTER
+    text_safe_area: upper_left
+    source_refs: [SRC-01]
+    creative_decisions: ["以小祕密解釋辨識線索"]
+    pending_human_review: ["失物處理方式需主辦單位確認"]
+  - page_no: 5
+    beat_ids: [BEAT-05]
+    primary_story_action: "小晴交還紅雨傘"
+    narration_draft: "第二天，陳奶奶說出了吊牌的模樣。紅雨傘終於回家了。"
+    dialogue_draft: "謝謝你們！"
+    text_limits: {narration_max_chars: 44, dialogue_max_chars: 12}
+    character_ids: [CHAR-XQ, CHAR-MGR, CHAR-CHEN]
+    scene_id: SCENE-CENTER
+    text_safe_area: upper_right
+    source_refs: [SRC-01]
+    creative_decisions: ["陳奶奶的簡短感謝"]
+    pending_human_review: ["行為情境需主辦單位確認"]
+  - page_no: 6
+    beat_ids: [BEAT-06]
+    primary_story_action: "小晴撐藍雨傘回家"
+    narration_draft: "細雨又落下來。小晴覺得，今天的雨聲特別輕快。"
+    dialogue_draft: null
+    text_limits: {narration_max_chars: 38, dialogue_max_chars: 0}
+    character_ids: [CHAR-XQ]
+    scene_id: SCENE-STREET
+    text_safe_area: upper_left
+    source_refs: [SRC-01]
+    creative_decisions: []
+    pending_human_review: []
+
+approval:
+  author: null
+  approved_at: null
+  status: pending_human_review

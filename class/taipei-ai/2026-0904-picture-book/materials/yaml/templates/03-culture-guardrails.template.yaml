@@ -1,0 +1,71 @@
+schema_version: "1.0"
+card_type: culture_language_rights_guardrails
+project_id: null
+version: "0.1"
+updated_at: null
+
+scope:
+  community_or_group: null
+  person_or_family: null
+  location: null
+  time_period: null
+  gender_or_role: null
+  occasion: null
+  applies_only_to_listed_scope: true
+
+source_basis:
+  - source_id: null
+    supports: []
+    limits: []
+
+confirmed_features:
+  - feature_id: null
+    description: null
+    source_refs: []
+    confirmed_by: null
+    confirmed_at: null
+
+uncertain_features:
+  - item: null
+    reason: null
+    do_not_generate_until_confirmed: true
+    person_to_confirm: null
+    status: pending_human_review
+
+prohibited_generalizations:
+  - "不得以單一人物、家庭或照片代表整個群體"
+  - "不得把特定年代、場合、性別或角色的服飾擴大成通用標準"
+  - "不得從外觀猜測族別、身分、圖紋意義、器物用途或信仰"
+  - "不得補畫參考圖看不到的背面、內層或結構"
+
+language_locks:
+  - term_id: null
+    language: null
+    exact_text: null
+    meaning_or_translation: null
+    source_refs: []
+    must_not_rewrite: true
+    reviewer: null
+    status: pending_human_review
+
+rights_and_privacy:
+  personal_data_allowed: false
+  child_data_allowed: false
+  upload_permission: unknown
+  generation_permission: unknown
+  public_display_permission: unknown
+  required_credit: null
+  restrictions: []
+  reviewer: null
+  status: pending_human_review
+
+publication_rule:
+  label_if_unreviewed: "課堂草稿，尚未完成文化／語言／權利審訂"
+  public_release_allowed: false
+
+human_review:
+  author_or_source_owner: pending_human_review
+  language_reviewer: not_applicable
+  culture_reviewer: not_applicable
+  rights_reviewer: pending_human_review
+  overall_status: pending_human_review
