@@ -25,7 +25,7 @@ assert.match(html, /<html lang="zh-Hant">/, "practice page language is missing")
 assert.match(html, /Content-Security-Policy[^>]+default-src 'self'/, "practice page needs a same-origin CSP");
 assert.match(html, /connect-src 'self'/, "practice page must only connect to the same origin");
 assert.match(html, /styles\.css\?v=20260903c/, "practice stylesheet cache key is stale");
-assert.match(html, /app\.js\?v=20260903d/, "practice app cache key is stale");
+assert.match(html, /app\.js\?v=20260903e/, "practice app cache key is stale");
 assert.match(html, /<a class="skip-link" href="#main">/, "practice page needs a skip link");
 assert.match(html, /id="claim-form"/, "practice page needs a classroom claim form");
 assert.match(html, /id="workspace"[^>]+hidden/, "workspace must stay hidden before a session is claimed");

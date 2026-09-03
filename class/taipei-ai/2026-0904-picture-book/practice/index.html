@@ -11,7 +11,7 @@
   <link rel="preload" href="../assets/fonts/iansui-course-display.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20260903c">
   <script src="core.js" defer></script>
-  <script src="app.js?v=20260903d" defer></script>
+  <script src="app.js?v=20260903e" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -212,6 +212,12 @@
           </div>
           <label class="prompt-preview-label" for="prompt-preview">完整提示詞預覽</label>
           <textarea id="prompt-preview" class="prompt-preview" rows="6" readonly aria-describedby="prompt-helper-message"></textarea>
+          <div class="prompt-review-box">
+            <label for="prompt-review-input">提示詞檢視 AI 助手</label>
+            <textarea id="prompt-review-input" rows="4" placeholder="貼上想檢查的提示詞，或直接使用上方完整提示詞"></textarea>
+            <button class="button secondary compact" id="review-prompt-button" type="button">檢視並給修改建議</button>
+            <div id="prompt-review-result" class="form-message" role="status" aria-live="polite"></div>
+          </div>
           <p class="form-message" id="prompt-helper-message" role="status" aria-live="polite">選好模板後，可以套用到下方欄位。</p>
         </details>
         <div class="tool-layout">
