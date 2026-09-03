@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Fixed the AI revised-prompt textarea so it fills the available responsive column instead of rendering at the browser's narrow default width; mobile actions remain stacked and full width.
 - Added a post-share reminder in `/class/patrol/` telling students they may minimize the patrol page and return to their learning materials, while keeping the page and shared window or tab open.
 - Added the CALUMAI-styled remote classroom patrol prototype at `/class/patrol/`, including teacher and student entry points, 100-person/25-per-page patrol layout, student search and help filtering, announcements, and browser screen-sharing preview. Added its entry to the `/class/` course overview. The first version is an interaction prototype; cross-device teacher delivery is not yet implemented.
 - Rebuilt the Taipei 9/4 image exercise as one clear path: choose a purpose, write one canonical prompt, optionally receive real AI feedback, explicitly keep the original or select the suggested revision, then generate. Removed the duplicated helper/form controls, added a 3-4000 character counter, optional style insertion and a 2:3 preview matching the API output.

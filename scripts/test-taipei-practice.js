@@ -24,7 +24,7 @@ for (const file of ["index.html", "styles.css", "core.js", "app.js"]) {
 assert.match(html, /<html lang="zh-Hant">/, "practice page language is missing");
 assert.match(html, /Content-Security-Policy[^>]+default-src 'self'/, "practice page needs a same-origin CSP");
 assert.match(html, /connect-src 'self'/, "practice page must only connect to the same origin");
-assert.match(html, /styles\.css\?v=20260903d/, "practice stylesheet cache key is stale");
+assert.match(html, /styles\.css\?v=20260903e/, "practice stylesheet cache key is stale");
 assert.match(html, /app\.js\?v=20260903o/, "practice app cache key is stale");
 assert.match(html, /<a class="skip-link" href="#main">/, "practice page needs a skip link");
 assert.match(html, /id="claim-form"/, "practice page needs a classroom claim form");
@@ -222,6 +222,7 @@ assert.match(styles, /@media \(max-width: 620px\)[\s\S]*?\.shell\s*{\s*width:\s*
 assert.match(styles, /@media \(max-width: 620px\)[\s\S]*?\.form-row\s*{\s*grid-template-columns:\s*1fr/, "mobile form rows must be single-column");
 assert.match(styles, /min-width:\s*320px/, "practice page should support narrow mobile viewports");
 assert.match(styles, /\.image-success img[\s\S]*?aspect-ratio:\s*2 \/ 3/, "image preview must match the 1024x1536 API ratio");
+assert.match(styles, /\.review-suggestion textarea\s*\{[^}]*width:\s*100%[^}]*box-sizing:\s*border-box/, "AI revised prompt must fill its responsive container");
 assert.doesNotMatch(styles, /min-width:\s*(?:4\d\d|[5-9]\d\d|\d{4,})px/, "practice CSS contains a fixed minimum width wider than 390px");
 
 assert.doesNotMatch(combinedStudentSource, /[—–]/, "practice page must use regular hyphens");
