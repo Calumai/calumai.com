@@ -317,20 +317,29 @@
   }
 
   byId("apply-prompt-template").addEventListener("click", applyPromptTemplate);
-  byId("prompt-review-button").addEventListener("click", () => {
+  byId("prompt-review-button").addEventListener("click", async () => {
     const input = byId("prompt-review-input");
     const text = input.value.trim() || byId("prompt-preview").value.trim();
-    const suggestions = [];
-    if (text.length < 20) suggestions.push("先補充至少一句完整的主題與畫面描述。");
-    if (!/(用途|海報|繪本|封面|配圖)/u.test(text)) suggestions.push("補上生成用途，讓模型知道這是繪本、海報、封面或社群配圖。");
-    if (!/(角色|主體|人物|物件|孩子|老師)/u.test(text)) suggestions.push("說明畫面的主要角色或物件，以及誰是視覺焦點。");
-    if (!/(動作|站|坐|看|拿|走|互動|正在)/u.test(text)) suggestions.push("補充角色正在做什麼，避免只得到靜態的物件排列。");
-    if (!/(風格|水彩|插畫|攝影|蠟筆|色彩|光線)/u.test(text)) suggestions.push("補上媒材、畫風、色彩或光線方向。");
-    if (!/(構圖|左側|右側|置中|遠景|特寫|留白|直式)/u.test(text)) suggestions.push("指定構圖與主體位置；海報或封面請記得寫出留白區。");
-    if (!/(不要|避免|禁止|無文字|無水印)/u.test(text)) suggestions.push("加上不要出現的內容，例如文字、水印、Logo、錯誤肢體或未確認文化圖紋。");
-    byId("prompt-review-result").textContent = suggestions.length
-      ? `建議修改 ${suggestions.length} 點：\n- ${suggestions.join("\n- ")}`
-      : "目前結構完整，可以生成；生成後仍請人工檢查文字、文化元素與版面留白。";
+    const result = byId("prompt-review-result");
+    const button = byId("review-prompt-button");
+    if (text.length < 3) { result.textContent = "請先輸入至少 3 個字的提示詞。"; return; }
+    button.disabled = true;
+    result.textContent = "AI 正在檢視提示詞，請稍候…";
+    try {
+      const payload = await callService("/generate/text", "POST", {
+        topic: "圖片提示詞檢視",
+        audience: "授課教師",
+        duration_minutes: 5,
+        objective: "找出提示詞缺漏並提供具體可直接修改的建議",
+        source_notes: text,
+        requirements: "請用繁體中文，以條列方式指出優點、缺漏與改寫示例；不要捏造文化事實。"
+      }, 120000);
+      result.textContent = payload.content || "AI 沒有回傳建議。";
+    } catch (error) {
+      result.textContent = core.friendlyError(error);
+    } finally {
+      button.disabled = false;
+    }
   });
   byId("prompt-template").addEventListener("change", refreshPromptPreview);
   byId("prompt-style").addEventListener("change", refreshPromptPreview);
@@ -496,6 +505,10 @@
     } else {
       const idempotencyKey = core.createIdempotencyKey(kind, makeUuid());
       const request = buildGenerationRequest(kind, idempotencyKey);
+      if (kind === "image" && (!request.prompt || request.prompt.trim().length < 3)) {
+        byId("image-feedback").textContent = "請先選擇用途與至少一項畫面內容（至少 3 個字即可）。";
+        return;
+      }
       generationStates[kind] = core.transitionGeneration(generationStates[kind], {
         type: "start",
         idempotencyKey,
