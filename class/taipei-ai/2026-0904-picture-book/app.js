@@ -79,7 +79,7 @@
         title: match[2].trim(),
         group: match[1].startsWith("N") ? "notebook" : "chat",
         summary: promptDescriptions[match[1]] || firstParagraph || "依照任務複製後，再替換方括號中的內容。",
-        content: codeMatch ? codeMatch[1].trim() : "這一節沒有可複製的程式碼區塊，請下載完整提示詞原稿查看說明。"
+        content: `【用途】${promptDescriptions[match[1]] || firstParagraph || "依照任務複製後，再替換方括號中的內容。"}\n\n${codeMatch ? codeMatch[1].trim() : "這一節沒有可複製的程式碼區塊，請下載完整提示詞原稿查看說明。"}`
       };
     });
   }
