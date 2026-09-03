@@ -9,9 +9,9 @@
   <title>AI 教材練習室｜北市府 AI 教學應用</title>
   <link rel="icon" href="/assets/calumai-logo-mark.png">
   <link rel="preload" href="../assets/fonts/iansui-course-display.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260903a">
+  <link rel="stylesheet" href="styles.css?v=20260903c">
   <script src="core.js" defer></script>
-  <script src="app.js?v=20260903a" defer></script>
+  <script src="app.js?v=20260903b" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -167,27 +167,99 @@
           <h3>生成一張無字繪本候選圖</h3>
           <p>一次處理一個場景，先把構圖、留白與不要出現的內容說清楚。</p>
         </div>
+        <details class="prompt-helper" open>
+          <summary>提示詞助手</summary>
+          <p>依照「內容、角色、場景、構圖、風格、光線、參考、禁忌、驗收」整理提示詞；先選模板，再套用到下方欄位。</p>
+          <div class="prompt-helper-grid">
+            <div class="field">
+              <label for="prompt-template">提示詞用途</label>
+              <select id="prompt-template">
+                <option value="picturebook">單張繪本插圖</option>
+                <option value="spec">繪圖工作規格單</option>
+                <option value="character">角色三視圖</option>
+                <option value="series">多頁作品固定設定</option>
+                <option value="style">畫風提示詞骨架</option>
+                <option value="review">獨立驗收指令</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="prompt-style">畫風索引</label>
+              <select id="prompt-style">
+                <option value="溫柔手繪水彩繪本風">002｜溫柔手繪水彩繪本風</option>
+                <option value="可愛卡通繪本風">009｜可愛卡通繪本風</option>
+                <option value="北歐簡約童書幾何風">046｜北歐簡約童書幾何風</option>
+                <option value="粉彩鉛筆柔和童書風">052｜粉彩鉛筆柔和童書風</option>
+                <option value="分層紙雕剪影繪本風">054｜分層紙雕剪影繪本風</option>
+                <option value="剪紙動畫民間寓言風">057｜剪紙動畫民間寓言風</option>
+                <option value="刺繡線稿繪本風">062｜刺繡線稿繪本風</option>
+                <option value="歐洲清線冒險漫畫風">068｜歐洲清線冒險漫畫風</option>
+                <option value="知識型簡報插畫風">074｜知識型簡報插畫風</option>
+                <option value="兒童科普百科圖鑑風">077｜兒童科普百科圖鑑風</option>
+                <option value="低解析像素點陣插畫風">082｜低解析像素點陣插畫風</option>
+                <option value="螢光壓克力塗鴉壁畫風">088｜螢光壓克力塗鴉壁畫風</option>
+              </select>
+            </div>
+          </div>
+          <div class="prompt-helper-actions">
+            <button class="button secondary compact" id="apply-prompt-template" type="button">套用模板到欄位</button>
+            <button class="button secondary compact" id="copy-prompt-preview" type="button">複製完整提示詞</button>
+          </div>
+          <label class="prompt-preview-label" for="prompt-preview">完整提示詞預覽</label>
+          <textarea id="prompt-preview" class="prompt-preview" rows="6" readonly aria-describedby="prompt-helper-message"></textarea>
+          <p class="form-message" id="prompt-helper-message" role="status" aria-live="polite">選好模板後，可以套用到下方欄位。</p>
+        </details>
         <div class="tool-layout">
           <form id="image-form" class="generator-form">
             <div class="field">
               <label for="image-scene">場景與動作</label>
-              <textarea id="image-scene" name="scene" required maxlength="1800" rows="5" placeholder="例如：雨後的公園，小晴看見長椅旁的紅雨傘，停下腳步仔細觀察。"></textarea>
+              <select id="image-scene" name="scene" required maxlength="1800">
+                <option value="" selected disabled>請選擇場景與動作</option>
+                <option value="雨後的公園，小晴看見長椅旁的紅雨傘，停下腳步仔細觀察。">雨後公園｜觀察紅雨傘</option>
+                <option value="清晨部落廣場，孩子們圍著長者安靜聽故事。">部落廣場｜圍著長者聽故事</option>
+                <option value="河邊午後，孩子蹲下來觀察水面與周圍的植物。">河邊午後｜觀察水面植物</option>
+                <option value="教室裡，學生一起翻閱繪本並討論畫面中的角色。">教室閱讀｜一起討論繪本</option>
+              </select>
             </div>
             <div class="field">
               <label for="image-style">視覺風格</label>
-              <input id="image-style" name="style" type="text" required maxlength="800" value="溫暖手繪水彩繪本，柔和自然光，紙張肌理">
+              <select id="image-style" name="style" required maxlength="800">
+                <option value="" selected disabled>請選擇視覺風格</option>
+                <option value="溫暖手繪水彩繪本，柔和自然光，紙張肌理">手繪水彩｜柔和自然光</option>
+                <option value="明亮扁平插畫，清楚色塊，兒童繪本風">明亮扁平插畫｜清楚色塊</option>
+                <option value="柔和蠟筆質感，簡潔線條，溫暖色調">柔和蠟筆｜簡潔線條</option>
+              </select>
             </div>
             <div class="field">
               <label for="image-composition">畫面構圖</label>
-              <textarea id="image-composition" name="composition" required maxlength="800" rows="3" placeholder="交代景別、角色位置與視線方向。"></textarea>
+              <select id="image-composition" name="composition" required maxlength="800">
+                <option value="" selected disabled>請選擇畫面構圖</option>
+                <option value="角色置中，中景構圖，視線朝向畫面中央">角色置中｜中景、視線朝向中央</option>
+                <option value="角色在左側，右側保留乾淨留白">角色左側｜右側保留留白</option>
+                <option value="角色在右側，左側保留乾淨留白">角色右側｜左側保留留白</option>
+                <option value="遠景環境優先，角色位於畫面下方">環境遠景｜角色位於畫面下方</option>
+                <option value="俯視構圖，場景物件排列清楚">俯視構圖｜物件排列清楚</option>
+              </select>
+              <small>先選最接近的構圖，再於「場景與動作」補充細節。</small>
             </div>
             <div class="field">
               <label for="image-safe-area">文字安全區</label>
-              <input id="image-safe-area" name="safe_area" type="text" required maxlength="600" placeholder="例如：右上保留約三分之一乾淨天空，不放人物與重要物件">
+              <select id="image-safe-area" name="safe_area" required maxlength="600">
+                <option value="" selected disabled>請選擇文字安全區</option>
+                <option value="右上保留約三分之一乾淨天空，不放人物與重要物件">右上留白｜約三分之一乾淨天空</option>
+                <option value="左上保留乾淨留白，方便放置標題">左上留白｜方便放置標題</option>
+                <option value="下方保留乾淨留白，方便放置說明文字">下方留白｜方便放置說明</option>
+                <option value="不特別保留文字區，完整呈現整個畫面">不指定留白｜完整呈現畫面</option>
+              </select>
             </div>
             <div class="field">
               <label for="image-avoid">不要出現</label>
-              <textarea id="image-avoid" name="avoid" required maxlength="800" rows="3" placeholder="例如：不要文字、浮水印、額外手指、錯誤服飾或未確認的文化圖紋。"></textarea>
+              <select id="image-avoid" name="avoid" required maxlength="800">
+                <option value="" selected disabled>請選擇要排除的內容</option>
+                <option value="不要文字、浮水印、額外手指、錯誤服飾或未確認的文化圖紋。">基本排除｜文字、浮水印、錯誤肢體</option>
+                <option value="不要出現現代品牌、Logo、武器或血腥元素。">安全排除｜品牌、Logo、武器、血腥</option>
+                <option value="不要加入未提供的族群符號、儀式或服飾細節。">文化排除｜未確認的符號與服飾</option>
+                <option value="不要多餘角色、變形肢體或錯誤視線。">畫面排除｜多餘角色與變形</option>
+              </select>
             </div>
             <button class="button primary full-button" type="submit">生成繪本圖片</button>
           </form>

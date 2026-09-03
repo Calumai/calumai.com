@@ -24,14 +24,21 @@ for (const file of ["index.html", "styles.css", "core.js", "app.js"]) {
 assert.match(html, /<html lang="zh-Hant">/, "practice page language is missing");
 assert.match(html, /Content-Security-Policy[^>]+default-src 'self'/, "practice page needs a same-origin CSP");
 assert.match(html, /connect-src 'self'/, "practice page must only connect to the same origin");
-assert.match(html, /styles\.css\?v=20260903a/, "practice stylesheet cache key is stale");
-assert.match(html, /app\.js\?v=20260903a/, "practice app cache key is stale");
+assert.match(html, /styles\.css\?v=20260903c/, "practice stylesheet cache key is stale");
+assert.match(html, /app\.js\?v=20260903b/, "practice app cache key is stale");
 assert.match(html, /<a class="skip-link" href="#main">/, "practice page needs a skip link");
 assert.match(html, /id="claim-form"/, "practice page needs a classroom claim form");
 assert.match(html, /id="workspace"[^>]+hidden/, "workspace must stay hidden before a session is claimed");
 assert.match(html, /role="tablist"/, "generator switcher must expose tab semantics");
 assert.match(html, /id="text-panel" role="tabpanel"/, "text generator tab panel is missing");
 assert.match(html, /id="image-panel" role="tabpanel"/, "image generator tab panel is missing");
+assert.match(html, /class="prompt-helper"/, "prompt helper is missing");
+for (const promptField of ["prompt-template", "prompt-style", "apply-prompt-template", "copy-prompt-preview", "prompt-preview"]) {
+  assert.match(html, new RegExp(`(?:id|class)=['\"][^'\"]*${promptField}[^'\"]*['\"]`), `prompt helper control ${promptField} is missing`);
+}
+for (const templateKey of ["picturebook", "spec", "character", "series", "style", "review"]) {
+  assert.match(app, new RegExp(`${templateKey}:`), `prompt template ${templateKey} is missing`);
+}
 assert.match(html, /id="text-feedback"[^>]+aria-live="polite"/, "text feedback must be announced");
 assert.match(html, /id="image-feedback"[^>]+aria-live="polite"/, "image feedback must be announced");
 
@@ -201,7 +208,8 @@ assert.equal(retried.request, textPayload, "retry must preserve the original req
 for (const endpoint of ["/session", "/session/claim", "/session/logout"]) {
   assert(app.includes(`"${endpoint}"`), `app does not call ${endpoint}`);
 }
-assert.match(app, /`\/generate\/\$\{kind\}`/, "app must route both generator kinds through the service contract");
+assert.match(app, /\/api\/generate-image/, "app must route image generation through the RelayRouter proxy");
+assert.match(app, /\/generate\/text/, "app must route text generation through the service contract");
 assert.match(app, /performGeneration\("text", false\)/, "text generator submit is not wired");
 assert.match(app, /performGeneration\("image", false\)/, "image generator submit is not wired");
 assert.match(app, /kind === "image" \? 180000 : 120000/, "generation requests need bounded client timeouts");

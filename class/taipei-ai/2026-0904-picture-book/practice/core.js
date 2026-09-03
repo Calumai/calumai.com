@@ -110,7 +110,7 @@
   }
 
   function normalizeGenerationResult(kind, payload) {
-    if (!payload || payload.ok !== true || payload.kind !== kind) {
+    if (!payload || payload.ok !== true || (payload.kind !== kind && !(kind === "image" && payload.image))) {
       throw new Error("生成回應格式不完整");
     }
 
@@ -135,12 +135,13 @@
       };
     }
 
-    const mimeType = clean(payload.image && payload.image.mime_type).toLowerCase();
+    const mimeType = clean(payload.image && payload.image.mime_type || "image/png").toLowerCase();
     const dataBase64 = clean(payload.image && payload.image.data_base64).replace(/\s/g, "");
-    if (!ALLOWED_IMAGE_TYPES.has(mimeType) || !dataBase64) {
+    const src = clean(payload.image && payload.image.src);
+    if (!ALLOWED_IMAGE_TYPES.has(mimeType) || (!dataBase64 && !/^https:\/\//u.test(src))) {
       throw new Error("圖片生成結果格式不支援");
     }
-    return { ...shared, kind, mimeType, dataBase64 };
+    return { ...shared, kind, mimeType, dataBase64, src };
   }
 
   function createGenerationState(kind) {
@@ -237,14 +238,14 @@
   }
 
   function buildImageDownload(result, scene) {
-    if (!result || !ALLOWED_IMAGE_TYPES.has(result.mimeType) || !result.dataBase64) {
+    if (!result || !ALLOWED_IMAGE_TYPES.has(result.mimeType) || (!result.dataBase64 && !result.src)) {
       throw new Error("缺少可下載的圖片");
     }
     const extension = IMAGE_EXTENSIONS.get(result.mimeType);
     return {
       filename: `${safeFilename(scene, "ai-picture-book")}.${extension}`,
       mimeType: result.mimeType,
-      dataUrl: `data:${result.mimeType};base64,${result.dataBase64}`
+      dataUrl: result.dataBase64 ? `data:${result.mimeType};base64,${result.dataBase64}` : result.src
     };
   }
 

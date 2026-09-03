@@ -19,6 +19,11 @@
     image: core.createGenerationState("image")
   };
   let currentSession = null;
+  const previewMode = ["127.0.0.1", "localhost"].includes(globalThis.location.hostname)
+    && new URLSearchParams(globalThis.location.search).get("preview") === "1";
+  let previewSessionActive = false;
+  const previewQuota = { text: 2, image: 1 };
+  const previewImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
 
   function makeUuid() {
     if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
@@ -29,8 +34,69 @@
     return Array.from(bytes, (value) => value.toString(16).padStart(2, "0")).join("");
   }
 
+  function previewSessionPayload(nickname) {
+    return {
+      ok: true,
+      session: { nickname: nickname || "本機學員", mode: "preview", expires_at: "2099-01-01T00:00:00Z" },
+      classroom: { status: "open", opens_at: "2099-01-01T00:00:00Z", closes_at: "2099-01-01T23:59:59Z" },
+      remaining: { text: previewQuota.text, image: previewQuota.image },
+      classroom_remaining: { text: 80 - (2 - previewQuota.text), image: 40 - (1 - previewQuota.image) }
+    };
+  }
+
+  function previewResponse(pathname, body) {
+    if (pathname === "/session") {
+      return previewSessionActive
+        ? previewSessionPayload()
+        : { ok: false, request_id: "local-preview", error: { code: "UNAUTHENTICATED", message: "請先輸入課堂碼登入。", retryable: false } };
+    }
+    if (pathname === "/session/claim") {
+      previewSessionActive = true;
+      return previewSessionPayload(body && body.nickname);
+    }
+    if (pathname === "/session/logout") {
+      previewSessionActive = false;
+      return { ok: true };
+    }
+    if (!previewSessionActive) {
+      return { ok: false, request_id: "local-preview", error: { code: "UNAUTHENTICATED", message: "請先輸入課堂碼登入。", retryable: false } };
+    }
+    const kind = pathname === "/generate/image" || pathname === "/api/generate-image" ? "image" : "text";
+    if (previewQuota[kind] <= 0) {
+      return { ok: false, request_id: "local-preview", error: { code: "SESSION_QUOTA_EXHAUSTED", message: "本機展示額度已用完。", retryable: false } };
+    }
+    previewQuota[kind] -= 1;
+    const remaining = { text: previewQuota.text, image: previewQuota.image };
+    const classroomRemaining = {
+      text: 80 - (2 - previewQuota.text),
+      image: 40 - (1 - previewQuota.image)
+    };
+    if (kind === "image") {
+      return {
+        ok: true,
+        request_id: "local-preview-image",
+        kind,
+        image: { mime_type: "image/png", data_base64: previewImageBase64, type: "base64", src: `data:image/png;base64,${previewImageBase64}` },
+        remaining,
+        classroom_remaining: classroomRemaining
+      };
+    }
+    const topic = body && body.topic ? body.topic : "本機展示教材";
+    return {
+      ok: true,
+      request_id: "local-preview-text",
+      kind,
+      content: `# ${topic}\n\n## 本機展示草稿\n\n這是本機預覽模式產生的範例文字，不會送到正式服務。\n\n- 對象：${body && body.audience ? body.audience : "待填寫"}\n- 時間：${body && body.duration_minutes ? body.duration_minutes : "待填寫"} 分鐘\n- 下一步：檢查內容、文化脈絡與授權後再下載。`,
+      usage: { input_tokens: 0, output_tokens: 0, total_tokens: 0 },
+      remaining,
+      classroom_remaining: classroomRemaining
+    };
+  }
+
   async function callService(pathname, method, body, timeoutMs) {
-    const descriptor = core.createRequest(pathname, method, body);
+    if (previewMode) return previewResponse(pathname, body);
+    const descriptor = core.createRequest(pathname === "/generate-image" ? "/generate/image" : pathname, method, body);
+    if (pathname === "/generate-image") descriptor.url = "/api/generate-image";
     const controller = new AbortController();
     const timeout = globalThis.setTimeout(() => controller.abort(), timeoutMs);
 
@@ -175,10 +241,82 @@
     const statusChip = byId("classroom-status-chip");
     statusChip.textContent = classroomLabel(session.classroom.status);
     statusChip.dataset.status = session.classroom.status;
-    byId("classroom-window").textContent = `開放 ${formatDateTime(session.classroom.opensAt)}，關閉 ${formatDateTime(session.classroom.closesAt)}。工作階段至 ${formatDateTime(session.expiresAt)}。`;
+    byId("classroom-window").textContent = previewMode
+      ? "本機展示模式：這裡的課堂碼與生成結果只用於看版面，不會送到正式服務。"
+      : `開放 ${formatDateTime(session.classroom.opensAt)}，關閉 ${formatDateTime(session.classroom.closesAt)}。工作階段至 ${formatDateTime(session.expiresAt)}。`;
     updateQuotaDisplay(session.remaining, session.classroomRemaining);
     updateSubmitAvailability();
   }
+
+  const promptTemplateInstructions = {
+    picturebook: "請生成一張無字繪本插圖，讓畫面先說清楚一個動作與情緒。",
+    spec: "請把以下需求整理成可交給生圖工具執行的繪圖工作規格單。",
+    character: "請依參考資料保持同一角色的臉型、髮型、膚色、比例、服裝與配件，製作角色三視圖。",
+    series: "請記住以下固定設定，後續每一頁沿用同一角色、場景、畫風、色盤與比例。",
+    style: "請把媒材、線條、材質、人物比例、背景、色盤、光影與避免事項寫成完整畫風提示詞。",
+    review: "你是獨立驗收員，請依工單、參考資料與驗收標準逐項輸出 PASS 或 FAIL，不替作品找理由。"
+  };
+
+  function readImagePromptFields() {
+    return {
+      scene: byId("image-scene").value || "待選擇場景與動作",
+      style: byId("image-style").value || "待選擇視覺風格",
+      composition: byId("image-composition").value || "待選擇畫面構圖",
+      safeArea: byId("image-safe-area").value || "待選擇文字安全區",
+      avoid: byId("image-avoid").value || "待選擇排除內容"
+    };
+  }
+
+  function refreshPromptPreview() {
+    const fields = readImagePromptFields();
+    const instruction = promptTemplateInstructions[byId("prompt-template").value] || promptTemplateInstructions.picturebook;
+    byId("prompt-preview").value = `${instruction}\n\n內容與動作：${fields.scene}\n畫風與材質：${fields.style}\n構圖與鏡位：${fields.composition}\n文字安全區：${fields.safeArea}\n避免事項：${fields.avoid}\n\n驗收：圖中不要有文字或浮水印；角色、服飾、文化元素與語言內容需由教師或具備權限的人員確認。`;
+  }
+
+  function applyPromptTemplate() {
+    const template = byId("prompt-template").value;
+    const defaults = {
+      scene: "雨後的公園，小晴看見長椅旁的紅雨傘，停下腳步仔細觀察。",
+      style: byId("prompt-style").value,
+      composition: "角色在左側，右側保留乾淨留白",
+      safeArea: "右上保留約三分之一乾淨天空，不放人物與重要物件",
+      avoid: "不要文字、浮水印、額外手指、錯誤服飾或未確認的文化圖紋。"
+    };
+    if (template === "character") defaults.scene = "角色站立於乾淨背景，依序呈現正面、側面與背面三個角度。";
+    if (template === "series") defaults.scene = "同一角色在課堂場景中翻閱繪本，畫面保留固定道具與背景地標。";
+    if (template === "review") defaults.avoid = "若角色、腳本、構圖、畫風、文字或文化元素任一硬條件失敗，標記 FAIL 並交回真人。";
+    const optionValues = {
+      "image-scene": ["雨後的公園，小晴看見長椅旁的紅雨傘，停下腳步仔細觀察。", "清晨部落廣場，孩子們圍著長者安靜聽故事。", "河邊午後，孩子蹲下來觀察水面與周圍的植物。", "教室裡，學生一起翻閱繪本並討論畫面中的角色。"],
+      "image-style": ["溫暖手繪水彩繪本，柔和自然光，紙張肌理", "明亮扁平插畫，清楚色塊，兒童繪本風", "柔和蠟筆質感，簡潔線條，溫暖色調"],
+      "image-composition": ["角色置中，中景構圖，視線朝向畫面中央", "角色在左側，右側保留乾淨留白", "角色在右側，左側保留乾淨留白", "遠景環境優先，角色位於畫面下方", "俯視構圖，場景物件排列清楚"],
+      "image-safe-area": ["右上保留約三分之一乾淨天空，不放人物與重要物件", "左上保留乾淨留白，方便放置標題", "下方保留乾淨留白，方便放置說明文字", "不特別保留文字區，完整呈現整個畫面"],
+      "image-avoid": ["不要文字、浮水印、額外手指、錯誤服飾或未確認的文化圖紋。", "不要出現現代品牌、Logo、武器或血腥元素。", "不要加入未提供的族群符號、儀式或服飾細節。", "不要多餘角色、變形肢體或錯誤視線。"]
+    };
+    const desired = { "image-scene": defaults.scene, "image-style": defaults.style, "image-composition": defaults.composition, "image-safe-area": defaults.safeArea, "image-avoid": defaults.avoid };
+    for (const [id, value] of Object.entries(desired)) {
+      const field = byId(id);
+      if (optionValues[id].includes(value)) field.value = value;
+      else field.selectedIndex = 1;
+    }
+    refreshPromptPreview();
+    byId("prompt-helper-message").textContent = "模板已套用到圖片欄位，仍可逐項調整。";
+  }
+
+  byId("apply-prompt-template").addEventListener("click", applyPromptTemplate);
+  byId("prompt-template").addEventListener("change", refreshPromptPreview);
+  byId("prompt-style").addEventListener("change", refreshPromptPreview);
+  ["image-scene", "image-style", "image-composition", "image-safe-area", "image-avoid"].forEach((id) => {
+    byId(id).addEventListener("change", refreshPromptPreview);
+  });
+  byId("copy-prompt-preview").addEventListener("click", async () => {
+    try {
+      await copyText(byId("prompt-preview").value);
+      byId("prompt-helper-message").textContent = "完整提示詞已複製。";
+    } catch {
+      byId("prompt-helper-message").textContent = "無法自動複製，請選取提示詞後手動複製。";
+    }
+  });
+  refreshPromptPreview();
 
   async function restoreSession() {
     setClaimBusy(true, "確認工作階段");
@@ -317,7 +455,7 @@
     const input = valuesOf(generationForms[kind]);
     return kind === "text"
       ? core.buildTextPayload(input, idempotencyKey)
-      : core.buildImagePayload(input, idempotencyKey);
+      : { prompt: [input.scene, input.style, input.composition, `文字安全區：${input.safeArea}`, `避免：${input.avoid}`].filter(Boolean).join("\n") };
   }
 
   async function performGeneration(kind, isRetry) {
@@ -339,7 +477,7 @@
 
     try {
       const payload = await callService(
-        `/generate/${kind}`,
+        kind === "image" ? "/generate-image" : "/generate/text",
         "POST",
         generationStates[kind].request,
         kind === "image" ? 180000 : 120000
