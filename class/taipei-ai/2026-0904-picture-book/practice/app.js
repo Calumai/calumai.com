@@ -254,7 +254,13 @@
     character: "請依參考資料保持同一角色的臉型、髮型、膚色、比例、服裝與配件，製作角色三視圖。",
     series: "請記住以下固定設定，後續每一頁沿用同一角色、場景、畫風、色盤與比例。",
     style: "請把媒材、線條、材質、人物比例、背景、色盤、光影與避免事項寫成完整畫風提示詞。",
-    review: "你是獨立驗收員，請依工單、參考資料與驗收標準逐項輸出 PASS 或 FAIL，不替作品找理由。"
+    review: "你是獨立驗收員，請依工單、參考資料與驗收標準逐項輸出 PASS 或 FAIL，不替作品找理由。",
+    poster: "請設計一張資訊清楚、適合遠距閱讀的班級或活動海報主視覺，預留標題與日期區域，不直接生成文字。",
+    cover: "請設計課程封面主視覺，建立明確主體、視覺焦點與品牌色彩，保留後製標題的乾淨留白。",
+    social: "請設計適合社群貼文的直式配圖，三秒內看懂主題，主體醒目並保留安全邊界。",
+    infographic: "請把教學概念轉成分區清楚的資訊圖表插畫，以圖像表達關係，文字交由後製加入。",
+    worksheet: "請設計適合學習單的黑白或低彩度輔助插圖，輪廓清楚、留白充足，不放文字。",
+    scene: "請先建立一個能傳達時間、地點、天氣與情緒的場景，讓角色動作自然且背景不搶主體。"
   };
 
   function readImagePromptFields() {
@@ -286,6 +292,11 @@
     };
     if (template === "character") defaults.scene = "角色站立於乾淨背景，依序呈現正面、側面與背面三個角度。";
     if (template === "series") defaults.scene = "同一角色在課堂場景中翻閱繪本，畫面保留固定道具與背景地標。";
+    if (template === "poster") defaults.scene = "校園入口的活動宣傳場景，學生與老師一起布置主視覺，畫面上方與右側保留海報標題留白。";
+    if (template === "cover") defaults.scene = "課程主題的象徵性場景，單一視覺焦點置中，四周保留封面標題與單位識別的留白。";
+    if (template === "social") defaults.scene = "活動現場的高情緒瞬間，主體靠近畫面中央，適合手機直式瀏覽。";
+    if (template === "infographic") defaults.scene = "以三個視覺區塊呈現教學流程，箭頭與圖示位置清楚，右側保留說明留白。";
+    if (template === "worksheet") defaults.scene = "幾個可供學生觀察與塗色的簡單物件，輪廓清楚，背景乾淨。";
     if (template === "review") defaults.avoid = "若角色、腳本、構圖、畫風、文字或文化元素任一硬條件失敗，標記 FAIL 並交回真人。";
     const optionValues = {
       "image-purpose": ["繪本單頁插圖", "班級海報", "活動宣傳海報", "課程封面", "社群貼文配圖"],
