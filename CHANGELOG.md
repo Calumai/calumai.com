@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Recolored the Taipei 9/4 course and layout workbench to match the supplied campaign artwork with cool white, bright blue, accessible navy, red and orange; regenerated the workbench preview and added palette, contrast, legacy-color and mobile-overflow regression checks.
 - Removed internal Captain/schema provenance notes from the Taipei 9/4 student page, prompt library, source handouts, and downloadable course archive while preserving the teaching YAML fields and workflow.
 - Replaced the Taipei 9/4 course's oversized Windows Kai headline with a self-hosted 22 KB Iansui subset, relaxed Chinese tracking, balanced section headings, and added typography regression checks plus the OFL license.
 - Added the independent Taipei City 9/4 AI picture-book course at `/class/taipei-ai/2026-0904-picture-book/`, including 20 copyable prompts, 16 browsable YAML files, a self-contained layout workbench, human review gates, classroom examples and downloadable source materials.

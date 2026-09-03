@@ -3,13 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#005fb8">
   <title>紅雨傘回家了｜離線排版起始檔</title>
   <style>
     :root {
       color-scheme: light;
-      --ink: #203028;
-      --paper: #f7f2e8;
-      --accent: #b84235;
+      --ink: #0c2247;
+      --paper: #f5faff;
+      --accent: #005fb8;
+      --accent-hover: #0c2247;
+      --orange: #fca116;
+      --orange-soft: #fff2d9;
+      --control-border: #7896b4;
       --panel: #ffffff;
     }
 
@@ -18,7 +23,7 @@
     body {
       margin: 0;
       color: var(--ink);
-      background: #d9ded8;
+      background: linear-gradient(135deg, #dfefff, #f5faff) fixed;
       font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
     }
 
@@ -32,8 +37,8 @@
       gap: 1rem;
       padding: .8rem 1rem;
       color: #fff;
-      background: #24372f;
-      box-shadow: 0 2px 10px rgb(0 0 0 / 20%);
+      background: linear-gradient(90deg, var(--ink), var(--accent));
+      box-shadow: 0 2px 12px rgb(0 95 184 / 24%);
     }
 
     .toolbar p { margin: 0; font-size: .95rem; }
@@ -42,7 +47,7 @@
 
     .toolbar-link {
       width: fit-content;
-      color: #f7d99b;
+      color: var(--orange);
       font-size: .82rem;
       font-weight: 800;
       text-decoration: none;
@@ -61,6 +66,21 @@
       font: inherit;
       font-weight: 700;
       cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    button:hover { background: var(--accent-hover); }
+    button:active { transform: translateY(1px); }
+
+    button:focus-visible,
+    .toolbar-link:focus-visible {
+      outline: 3px solid var(--orange);
+      outline-offset: 3px;
+    }
+
+    .text-box:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
     }
 
     main {
@@ -76,7 +96,7 @@
       aspect-ratio: 4 / 3;
       overflow: hidden;
       background: var(--paper);
-      box-shadow: 0 14px 40px rgb(26 42 34 / 22%);
+      box-shadow: 0 14px 40px rgb(0 95 184 / 20%);
     }
 
     .slide img {
@@ -91,9 +111,9 @@
       min-width: 28%;
       max-width: 44%;
       padding: 1rem 1.2rem;
-      border: 2px dashed rgb(42 71 57 / 38%);
+      border: 2px dashed var(--control-border);
       border-radius: 1rem;
-      background: rgb(255 253 247 / 86%);
+      background: rgb(255 255 255 / 90%);
       font-size: clamp(1rem, 2vw, 1.75rem);
       line-height: 1.55;
       outline: none;
@@ -101,7 +121,7 @@
 
     .text-box:focus {
       border-color: var(--accent);
-      background: #fffdf7;
+      background: #fff;
     }
 
     .cover-title {
@@ -139,9 +159,19 @@
       width: min(1120px, calc(100vw - 2rem));
       margin: 0;
       padding: .8rem 1rem;
-      border-left: .35rem solid #d39a2c;
-      background: #fff8df;
+      border-left: .35rem solid var(--orange);
+      background: var(--orange-soft);
       font-size: .95rem;
+    }
+
+    @media (max-width: 700px) {
+      .toolbar { align-items: stretch; flex-direction: column; }
+      .actions { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+      button { min-width: 0; padding-inline: .55rem; font-size: .86rem; white-space: nowrap; }
+      main { gap: 1rem; padding: 1rem; }
+      .slide,
+      .status { width: 100%; }
+      .text-box { max-width: 58%; padding: .65rem .75rem; }
     }
 
     @media print {

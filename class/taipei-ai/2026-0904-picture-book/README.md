@@ -7,7 +7,7 @@
 ## 頁面結構
 
 - `index.html`：課程流程、時間表、提示詞工作台、YAML 工作台、範例、人工關卡與下載區。
-- `styles.css`：本路由專用響應式樣式。
+- `styles.css`：本路由專用響應式樣式；色票對齊「115年度 AI × 族語教學」封面的冷白、亮藍、深海軍藍、紅與橘。
 - `app.js`：提示詞解析／複製、YAML 載入／複製、個人關卡進度與閱讀進度。
 - `workbench/index.html`：可編輯三頁繪本，能下載自帶圖片的 HTML 或列印成 PDF。
 - `materials/`：Markdown、7 份 YAML 模板與 9 份範例。
