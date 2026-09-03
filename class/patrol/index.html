@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="CALUMAI 遠端教室巡堂：查看學生操作進度與求助狀態。">
+  <title>遠端教室巡堂｜CALUMAI</title>
+  <link rel="stylesheet" href="/class/patrol/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell nav"><a class="brand" href="/class/">CALUMAI <span>/ CLASS</span></a><nav><a href="/class/">課程首頁</a><a href="#privacy">隱私說明</a></nav></div>
+  </header>
+
+  <main id="entry" class="entry shell">
+    <p class="eyebrow">REMOTE CLASSROOM / PATROL</p>
+    <h1>遠端教室<br><em>巡堂系統</em></h1>
+    <p class="lede">看見學生做到哪裡，在需要時即時靠近。</p>
+    <div class="role-grid">
+      <button data-role="teacher"><span class="role-no">01</span><span><b>我是老師</b><small>查看全班進度、求助與分享狀態</small></span><i>→</i></button>
+      <button data-role="student"><span class="role-no gold">02</span><span><b>我是學生</b><small>加入課堂並主動分享操作畫面</small></span><i>→</i></button>
+    </div>
+    <aside id="privacy"><b>PRIVACY FIRST</b><p>學生親自同意才會分享；不錄影、不永久保存。課堂結束後分享自動停止。</p></aside>
+  </main>
+
+  <main id="teacher" class="workspace shell" hidden>
+    <div class="workspace-head"><div><p class="eyebrow">LIVE PATROL / 100 PEOPLE</p><h1>下午好，林老師</h1><p>畫面每 10 秒更新；需要協助的學生排在前面。</p></div><div class="class-code"><small>課堂代碼</small><b>834 921</b><button id="copy-code">複製連結</button></div></div>
+    <div class="stats"><button data-filter="all" class="active"><strong>93</strong><span>已加入／100</span></button><button data-filter="sharing"><strong>81</strong><span>正在分享</span></button><button data-filter="help"><strong>6</strong><span>需要協助</span></button><button data-filter="waiting"><strong>12</strong><span>尚未分享</span></button></div>
+    <div class="toolbar"><div class="filters"><button data-filter="all" class="active">全部學生</button><button data-filter="help">需要協助 <em>6</em></button><button data-filter="waiting">尚未分享</button><button data-filter="offline">已離線</button></div><label><span>搜尋</span><input id="student-search" placeholder="輸入學生姓名"></label><button id="announce">全班公告</button><button class="exit">退出</button></div>
+    <section id="student-grid" class="student-grid" aria-live="polite"></section>
+    <footer class="pager"><span>顯示 1–25，共 93 位學生</span><div><button disabled>←</button><button class="active">1</button><button>2</button><button>3</button><button>4</button><button>→</button></div></footer>
+  </main>
+
+  <main id="student" class="student-view shell" hidden>
+    <button class="exit back">← 返回</button><div class="student-panel"><p class="eyebrow">CLASS IN PROGRESS</p><h1>AI 備課進階班</h1><p>林老師・課堂代碼 834 921</p><label class="name-field">你的姓名<input value="陳品妤"></label><div id="share-preview" class="share-preview"><div class="monitor-icon">▣</div><h2>老師還看不到你的操作畫面</h2><p>請選擇正在上課的視窗或分頁，你可以隨時停止分享。</p><video id="share-video" autoplay muted hidden></video></div><button id="share-button" class="main-button">開始分享畫面</button><button id="help-button" class="help-button">舉手｜我需要老師協助</button><p class="privacy-note">畫面不會錄影或永久保存。</p></div>
+  </main>
+
+  <dialog id="student-dialog"><button class="dialog-close">×</button><p class="eyebrow">STUDENT SCREEN</p><h2 id="dialog-name"></h2><div id="dialog-screen" class="large-screen"></div><div class="dialog-actions"><button>要求即時畫面</button><button>傳送提醒</button></div><p>只有學生按下同意後，老師才能查看即時畫面。</p></dialog>
+  <dialog id="notice-dialog"><button class="dialog-close">×</button><p class="eyebrow">ANNOUNCEMENT</p><h2>發送全班公告</h2><textarea>請完成第三步後先停下來，等待老師說明。</textarea><button class="main-button dialog-close">立即發送</button></dialog>
+  <script src="/class/patrol/app.js"></script>
+</body>
+</html>
