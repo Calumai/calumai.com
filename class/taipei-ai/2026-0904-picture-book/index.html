@@ -13,7 +13,7 @@
   <title>自己的繪本自己生！｜北市府 AI 教學應用</title>
   <link rel="icon" href="/assets/calumai-logo-mark.png">
   <link rel="preload" href="assets/fonts/iansui-course-display.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260903d">
+  <link rel="stylesheet" href="styles.css?v=20260903e">
   <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
@@ -116,35 +116,51 @@
           <p class="eyebrow">PROMPT LIBRARY</p>
           <h2>不用背提示詞，照任務選就好</h2>
         </div>
-        <p>繪本課堂先用 <b>N-CLASS</b>；老師日常備課可切到「教師備課」，每次只選一個任務。</p>
+        <p>繪本課堂先用 <b>N-CLASS</b>；老師製作教材可切到「教師教材」，先選簡報或資訊圖表，再挑一個用途。</p>
       </div>
 
       <div class="prompt-studio">
         <aside class="prompt-sidebar">
-          <div class="prompt-howto"><strong>不用全部貼！</strong><p><b>做繪本：</b>先用 N-CLASS；N00-N08 是卡住時的拆開練習。</p><p><b>老師備課：</b>T01-T10 依需求挑一組；標示 Studio 的範例要貼到對應功能的自訂欄。</p><p><b>規劃創作：</b>C00-C09 也是一次選一組。</p></div>
+          <div class="prompt-howto"><strong>不用全部貼！</strong><p><b>做繪本：</b>先用 N-CLASS；N00-N08 是卡住時的拆開練習。</p><p><b>做教師教材：</b>①選簡報或資訊圖表 → ②選用途 → ③準備來源 → ④只把一組提示詞貼到工作室對應功能的自訂欄。</p><p><b>規劃創作：</b>C00-C09 也是一次選一組。</p></div>
           <div class="prompt-tabs" role="tablist" aria-label="提示詞工具分類">
             <button type="button" class="is-active" role="tab" aria-selected="true" data-prompt-group="notebook">NotebookLM</button>
-            <button type="button" role="tab" aria-selected="false" data-prompt-group="teacher">教師備課</button>
+            <button type="button" role="tab" aria-selected="false" data-prompt-group="teacher">教師教材</button>
             <button type="button" role="tab" aria-selected="false" data-prompt-group="chat">聊天機器人</button>
           </div>
           <label class="teacher-example-picker" for="teacher-example-select">
-            <span>老師常用範例</span>
+            <span>老師常用範例｜一次選一個</span>
             <select id="teacher-example-select">
-              <option value="">選一個備課情境</option>
-              <option value="T01">T01 一堂課快速備課</option>
-              <option value="T02">T02 三種閱讀支援</option>
-              <option value="T03">T03 學習單與答案</option>
-              <option value="T04">T04 匿名評量診斷</option>
-              <option value="T05">T05 代課交接單</option>
-              <option value="T06">T06 核心詞彙表</option>
-              <option value="T07">T07 分層討論題</option>
-              <option value="T08">T08 備課音訊</option>
-              <option value="T09">T09 測驗與字卡</option>
-              <option value="T10">T10 分享安全檢查</option>
+              <option value="">先選要做的教材</option>
+              <optgroup label="教學簡報｜貼到工作室的簡報">
+                <option value="T01">T01 一堂課上台簡報</option>
+                <option value="T02">T02 學生自學複習簡報</option>
+                <option value="T03">T03 分齡視覺比喻簡報</option>
+                <option value="T04">T04 迷思與問答簡報</option>
+                <option value="T05">T05 歷史文化時間軸</option>
+                <option value="T06">T06 概念比較與對照</option>
+              </optgroup>
+              <optgroup label="資訊圖表｜貼到工作室的資訊圖表">
+                <option value="T07">T07 課前預習圖</option>
+                <option value="T08">T08 步驟與安全圖</option>
+                <option value="T09">T09 概念關係圖</option>
+                <option value="T10">T10 匿名數據重點圖</option>
+              </optgroup>
+              <optgroup label="其他備課與 Studio 工具">
+                <option value="T11">T11 一堂課快速備課</option>
+                <option value="T12">T12 三種閱讀支援</option>
+                <option value="T13">T13 學習單與答案</option>
+                <option value="T14">T14 匿名評量診斷</option>
+                <option value="T15">T15 代課交接單</option>
+                <option value="T16">T16 核心詞彙表</option>
+                <option value="T17">T17 分層討論題</option>
+                <option value="T18">T18 備課音訊</option>
+                <option value="T19">T19 測驗與字卡</option>
+                <option value="T20">T20 分享安全檢查</option>
+              </optgroup>
             </select>
-            <small>選擇後會直接打開對應提示詞。</small>
+            <small>簡報與資訊圖表都貼在 NotebookLM 工作室的鉛筆／自訂欄，不是貼在聊天區。</small>
           </label>
-          <label class="prompt-search">搜尋提示詞<input id="prompt-search" type="search" placeholder="例如：備課、學習單、題庫、迷思"></label>
+          <label class="prompt-search">搜尋提示詞<input id="prompt-search" type="search" placeholder="例如：簡報、資訊圖表、時間軸、學習單"></label>
           <div id="prompt-list" class="prompt-list" aria-label="提示詞清單"></div>
         </aside>
         <article class="prompt-viewer" aria-live="polite">
@@ -260,7 +276,7 @@
         <a class="download-card featured" href="downloads/taipei-0904-picture-book-course-pack.zip" download><span>完整包</span><h3>9/4 全部教材 ZIP</h3><p>講師教案、學員講義、提示詞、YAML、範例、圖片與排版起始檔。</p><b>下載約 14 MB ↓</b></a>
         <a class="download-card" href="materials/docs/student-handout.md" download><span>上課用</span><h3>學員操作講義</h3><p>跟著步驟完成來源、故事、YAML、生圖與驗收。</p><b>下載 Markdown ↓</b></a>
         <a class="download-card" href="materials/docs/prompt-library.md" download><span>提示詞</span><h3>完整提示詞庫</h3><p>繪本核對、教師備課與聊天規劃三組任務全部收錄。</p><b>下載 Markdown ↓</b></a>
-        <a class="download-card" href="materials/docs/notebooklm-teacher-examples.md" download><span>教師用</span><h3>NotebookLM 教師範例包</h3><p>十種備課、分級、評量、代課與 Studio 實作情境。</p><b>下載 Markdown ↓</b></a>
+        <a class="download-card" href="materials/docs/notebooklm-teacher-examples.md" download><span>教師用</span><h3>NotebookLM 教師範例包</h3><p>20 種實例；簡報與資訊圖表優先，另含備課、評量與 Studio 工具。</p><b>下載 Markdown ↓</b></a>
         <a class="download-card" href="materials/docs/red-umbrella-example.md" download><span>備援</span><h3>紅雨傘完整故事</h3><p>原始六頁節拍與設定已整理，可再拆成練習室固定 10 頁。</p><b>下載 Markdown ↓</b></a>
         <a class="download-card" href="materials/docs/preclass-release-checklist.md" download><span>必填</span><h3>上課前放行單</h3><p>授權、語言文化與公開範圍必須由具名真人確認。</p><b>下載 Markdown ↓</b></a>
         <a class="download-card" href="materials/docs/teacher-guide.md" download><span>講師用</span><h3>完整三小時教案</h3><p>時間、示範重點、停損規則與交付標準。</p><b>下載 Markdown ↓</b></a>
@@ -272,7 +288,8 @@
         <p><b>NotebookLM（Google 現名 Gemini Notebook）提醒：</b>以已加入、已勾選的來源為核心；來源沒有寫到就標示待確認。Slide Deck 逐頁修改目前不會重新參考來源，修改後要重新上傳核對。</p>
         <div>
           <a href="https://support.google.com/gemininotebook/answer/16215270" target="_blank" rel="noopener">Google 來源說明 ↗</a>
-          <a href="https://support.google.com/gemininotebook/answer/16757456?hl=en" target="_blank" rel="noopener">Slide Deck 說明 ↗</a>
+          <a href="https://support.google.com/gemininotebook/answer/16757456?hl=zh-Hant" target="_blank" rel="noopener">簡報官方說明 ↗</a>
+          <a href="https://support.google.com/gemininotebook/answer/16758265?hl=zh-Hant" target="_blank" rel="noopener">資訊圖表官方說明 ↗</a>
         </div>
       </div>
     </section>
@@ -285,7 +302,7 @@
     </div>
   </footer>
 
-  <script src="app.js?v=20260903b"></script>
+  <script src="app.js?v=20260903c"></script>
 </body>
 </html>
 
