@@ -416,7 +416,9 @@
           requirements: "請用繁體中文。先輸出【檢視建議】並列出最多三點具體建議，再輸出【修正版提示詞】、一段可直接生圖且不超過 4000 字的完整提示詞，最後輸出【修正版結束】。不得捏造文化事實或改變原意。"
         }, core.createIdempotencyKey("text", makeUuid()));
         const payload = await callService("/generate/text", "POST", request, 120000);
-        const content = payload.content || "";
+        const reviewGeneration = core.normalizeGenerationResult("text", payload);
+        updateSessionFromResult(reviewGeneration);
+        const content = reviewGeneration.content || "";
         const suggestion = extractReviewedPrompt(content);
         const advice = content.split("【修正版提示詞】", 1)[0].replace("【檢視建議】", "").trim();
         reviewResult.textContent = advice || "AI 沒有回傳具體建議，你仍可直接使用原稿生成。";
