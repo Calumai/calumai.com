@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Made the Taipei 9/4 practice room resilient to mixed HTML/JavaScript cache versions: optional prompt-library and prompt-review controls no longer stop session login when an older cached page is briefly served.
 - Added the classroom-gated AI practice room at `/class/taipei-ai/2026-0904-picture-book/practice/` with text and image exercises, same-origin session handling, personal and class quotas, bounded timeouts, idempotent retry, complete loading and error states, accessible downloads, strict browser safeguards, and a course-page entry after the YAML lab. Added contract, safety and 390px layout regression tests.
 - Recolored the Taipei 9/4 course and layout workbench to match the supplied campaign artwork with cool white, bright blue, accessible navy, red and orange; regenerated the workbench preview and added palette, contrast, legacy-color and mobile-overflow regression checks.
 - Removed internal Captain/schema provenance notes from the Taipei 9/4 student page, prompt library, source handouts, and downloadable course archive while preserving the teaching YAML fields and workflow.

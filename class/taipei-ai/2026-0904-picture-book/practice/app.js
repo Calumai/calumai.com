@@ -335,25 +335,31 @@
   const libraryList = byId("style-library-list");
   const librarySearch = byId("style-library-search");
   const libraryCategory = byId("style-library-category");
-  [...new Set(styleLibrary.map((item) => item.category))].forEach((category) => libraryCategory.add(new Option(category, category)));
-  function renderStyleLibrary() {
-    const query = librarySearch.value.trim().toLowerCase();
-    const category = libraryCategory.value;
-    libraryList.replaceChildren();
-    styleLibrary.filter((item) => (category === "all" || item.category === category) && (!query || `${item.prompt} ${item.description} ${item.category}`.toLowerCase().includes(query))).forEach((item) => {
-      const button = document.createElement("button"); button.type = "button"; button.className = "style-library-item";
-      const title = document.createElement("strong"); title.textContent = item.description;
-      const prompt = document.createElement("small"); prompt.textContent = `${item.category}｜${item.prompt}`;
-      button.append(title, prompt); button.addEventListener("click", () => { const select = byId("image-style"); const option = [...select.options].find((entry) => entry.value === item.prompt); if (!option) select.add(new Option(item.description, item.prompt)); select.value = item.prompt; refreshPromptPreview(); libraryDialog.close(); }); libraryList.append(button);
-    });
+  const openStyleLibrary = byId("open-style-library");
+  if (libraryDialog && libraryList && librarySearch && libraryCategory && openStyleLibrary) {
+    [...new Set(styleLibrary.map((item) => item.category))].forEach((category) => libraryCategory.add(new Option(category, category)));
+    function renderStyleLibrary() {
+      const query = librarySearch.value.trim().toLowerCase();
+      const category = libraryCategory.value;
+      libraryList.replaceChildren();
+      styleLibrary.filter((item) => (category === "all" || item.category === category) && (!query || `${item.prompt} ${item.description} ${item.category}`.toLowerCase().includes(query))).forEach((item) => {
+        const button = document.createElement("button"); button.type = "button"; button.className = "style-library-item";
+        const title = document.createElement("strong"); title.textContent = item.description;
+        const prompt = document.createElement("small"); prompt.textContent = `${item.category}｜${item.prompt}`;
+        button.append(title, prompt); button.addEventListener("click", () => { const select = byId("image-style"); const option = [...select.options].find((entry) => entry.value === item.prompt); if (!option) select.add(new Option(item.description, item.prompt)); select.value = item.prompt; refreshPromptPreview(); libraryDialog.close(); }); libraryList.append(button);
+      });
+    }
+    openStyleLibrary.addEventListener("click", () => { renderStyleLibrary(); libraryDialog.showModal(); });
+    librarySearch.addEventListener("input", renderStyleLibrary); libraryCategory.addEventListener("change", renderStyleLibrary);
   }
-  byId("open-style-library").addEventListener("click", () => { renderStyleLibrary(); libraryDialog.showModal(); });
-  librarySearch.addEventListener("input", renderStyleLibrary); libraryCategory.addEventListener("change", renderStyleLibrary);
-  byId("prompt-review-button").addEventListener("click", async () => {
+  const promptReviewButton = byId("prompt-review-button");
+  if (promptReviewButton) promptReviewButton.addEventListener("click", async () => {
     const input = byId("prompt-review-input");
-    const text = input.value.trim() || byId("prompt-preview").value.trim();
+    const preview = byId("prompt-preview");
     const result = byId("prompt-review-result");
     const button = byId("review-prompt-button");
+    if (!input || !preview || !result || !button) return;
+    const text = input.value.trim() || preview.value.trim();
     if (text.length < 3) { result.textContent = "請先輸入至少 3 個字的提示詞。"; return; }
     button.disabled = true;
     result.textContent = "AI 正在檢視提示詞，請稍候…";
