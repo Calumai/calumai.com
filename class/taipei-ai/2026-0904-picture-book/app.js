@@ -8,13 +8,23 @@
     N01: "盤點每份來源能證明什麼，以及授權或審訂狀態。",
     N02: "核對原作中的事件、人物、原因與結果。",
     N03: "整理文化、語言、授權與不可泛化的紅線。",
-    N04: "從核對後事件拆故事節拍，再比較 6、7、8 頁方案。",
+    N04: "從核對後事件拆故事節拍，再配置成練習室固定 10 頁。",
     N05: "建立不補想像的角色與場景事實表。",
     N06: "在不改變原意的前提下提出分齡文字建議。",
     N07: "製作只用於檢查敘事與閱讀方向的故事樣書。",
     N08: "重新上傳草稿後，逐項對照來源做初步核對。",
+    T01: "把課綱、教材與教師筆記整理成可核對的 40 分鐘備課卡。",
+    T02: "同一核心概念提供鷹架、標準與延伸三種閱讀支援。",
+    T03: "產生學生學習單與分開的教師答案版，答案都能回到來源。",
+    T04: "用去識別的全班結果找迷思、補救活動與離堂檢核。",
+    T05: "把課表、教案與班規整理成不含學生個資的代課交接單。",
+    T06: "建立保留正確拼寫與文化邊界的核心詞彙表。",
+    T07: "準備找證據、連關係、做判斷三層討論題與教師追問。",
+    T08: "貼到 Studio Audio Overview 自訂欄，生成教師備課預聽。",
+    T09: "貼到 Studio 測驗／字卡自訂欄，建立可回查來源的練習。",
+    T10: "在分享筆記本前盤點來源、產物、個資、授權與文化風險。",
     C00: "先訪談需求，沒有資料就不替作者假設。",
-    C01: "把核准事實包拆成節拍，再由作者選頁數。",
+    C01: "把核准事實包拆成節拍，再由作者核准固定 10 頁安排。",
     C02: "把核准故事與分頁方案填入內容 YAML。",
     C03: "建立角色、場景、畫風與輸出規格 YAML。",
     C04: "建立不可改寫、不可泛化與待真人確認的紅線 YAML。",
@@ -60,7 +70,7 @@
   }
 
   function parsePromptLibrary(markdown) {
-    const headingPattern = /^##\s+(N-CLASS|N\d{2}|C\d{2})｜([^\r\n]+)$/gm;
+    const headingPattern = /^##\s+(N-CLASS|N\d{2}|T\d{2}|C\d{2})｜([^\r\n]+)$/gm;
     const headings = Array.from(markdown.matchAll(headingPattern));
 
     return headings.map((match, index) => {
@@ -77,9 +87,9 @@
       return {
         code: match[1],
         title: match[2].trim(),
-        group: match[1].startsWith("N") ? "notebook" : "chat",
+        group: match[1].startsWith("T") ? "teacher" : match[1].startsWith("N") ? "notebook" : "chat",
         summary: promptDescriptions[match[1]] || firstParagraph || "依照任務複製後，再替換方括號中的內容。",
-        content: `【用途】${promptDescriptions[match[1]] || firstParagraph || "依照任務複製後，再替換方括號中的內容。"}\n\n${codeMatch ? codeMatch[1].trim() : "這一節沒有可複製的程式碼區塊，請下載完整提示詞原稿查看說明。"}`
+        content: codeMatch ? codeMatch[1].trim() : "這一節沒有可複製的程式碼區塊，請下載完整提示詞原稿查看說明。"
       };
     });
   }
@@ -111,7 +121,8 @@
       summary: document.getElementById("prompt-summary"),
       content: document.getElementById("prompt-content"),
       copy: document.getElementById("copy-prompt"),
-      status: document.getElementById("prompt-status")
+      status: document.getElementById("prompt-status"),
+      teacherSelect: document.getElementById("teacher-example-select")
     };
   }
 
@@ -124,7 +135,26 @@
     elements.content.textContent = prompt.content;
     elements.copy.disabled = false;
     elements.status.textContent = "";
+    if (elements.teacherSelect) {
+      elements.teacherSelect.value = prompt.group === "teacher" ? prompt.code : "";
+    }
     renderPromptList();
+  }
+
+  function setPromptGroup(group, preferredCode) {
+    const elements = promptElements();
+    state.promptGroup = group;
+    document.querySelectorAll("[data-prompt-group]").forEach((item) => {
+      const selected = item.dataset.promptGroup === group;
+      item.classList.toggle("is-active", selected);
+      item.setAttribute("aria-selected", selected ? "true" : "false");
+    });
+    elements.search.value = "";
+    const preferred = preferredCode
+      ? state.prompts.find((prompt) => prompt.code === preferredCode && prompt.group === group)
+      : null;
+    const first = preferred || state.prompts.find((prompt) => prompt.group === group);
+    if (first) showPrompt(first);
   }
 
   function renderPromptList() {
@@ -168,7 +198,10 @@
       const response = await fetch(promptSource, { cache: "no-store" });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       state.prompts = parsePromptLibrary(await response.text());
-      if (state.prompts.length !== 20) throw new Error(`預期 20 組，實際 ${state.prompts.length} 組`);
+      const codes = state.prompts.map((prompt) => prompt.code);
+      const requiredCodes = ["N-CLASS", "N00", "N08", "T01", "T10", "C00", "C09"];
+      if (new Set(codes).size !== codes.length) throw new Error("提示詞代碼重複");
+      if (requiredCodes.some((code) => !codes.includes(code))) throw new Error("提示詞庫缺少必要任務");
       showPrompt(state.prompts.find((prompt) => prompt.code === "N-CLASS") || state.prompts[0]);
     } catch (error) {
       elements.code.textContent = "載入失敗";
@@ -180,16 +213,15 @@
 
     document.querySelectorAll("[data-prompt-group]").forEach((tab) => {
       tab.addEventListener("click", () => {
-        state.promptGroup = tab.dataset.promptGroup;
-        document.querySelectorAll("[data-prompt-group]").forEach((item) => {
-          const selected = item === tab;
-          item.classList.toggle("is-active", selected);
-          item.setAttribute("aria-selected", selected ? "true" : "false");
-        });
-        const first = state.prompts.find((prompt) => prompt.group === state.promptGroup);
-        if (first) showPrompt(first);
+        setPromptGroup(tab.dataset.promptGroup);
       });
     });
+
+    if (elements.teacherSelect) {
+      elements.teacherSelect.addEventListener("change", () => {
+        if (elements.teacherSelect.value) setPromptGroup("teacher", elements.teacherSelect.value);
+      });
+    }
 
     elements.search.addEventListener("input", renderPromptList);
     elements.copy.addEventListener("click", async () => {

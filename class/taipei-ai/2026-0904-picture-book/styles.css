@@ -621,7 +621,7 @@ td:last-child { color: var(--ink-soft); }
 
 .prompt-tabs {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: .35rem;
   padding: 1rem;
 }
@@ -640,6 +640,39 @@ td:last-child { color: var(--ink-soft); }
 .prompt-tabs button.is-active {
   color: #fff;
   background: var(--blue-dark);
+}
+
+.teacher-example-picker {
+  display: grid;
+  gap: .4rem;
+  margin: 0 1rem 1rem;
+  padding: .8rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.teacher-example-picker span {
+  color: var(--ink);
+  font-size: .82rem;
+  font-weight: 850;
+}
+
+.teacher-example-picker select {
+  width: 100%;
+  min-height: 44px;
+  padding: .55rem .65rem;
+  border: 1px solid var(--control-border);
+  border-radius: 10px;
+  color: var(--ink);
+  background: #fff;
+  font: inherit;
+}
+
+.teacher-example-picker small {
+  color: var(--ink-soft);
+  font-size: .72rem;
+  line-height: 1.45;
 }
 
 .prompt-search {
@@ -1134,7 +1167,7 @@ footer a { color: #fff; }
   .hero h1 { font-size: clamp(3.8rem, 13vw, 6.2rem); }
   .split-heading { grid-template-columns: 1fr; gap: 1rem; }
   .prompt-studio { min-height: 0; grid-template-columns: 1fr; }
-  .prompt-sidebar { max-height: 440px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .prompt-sidebar { max-height: 620px; border-right: 0; border-bottom: 1px solid var(--line); }
   .prompt-viewer pre { min-height: 520px; }
   .yaml-map { grid-template-columns: repeat(2, 1fr); }
   .story-gallery { grid-template-columns: 1fr 1fr; }
