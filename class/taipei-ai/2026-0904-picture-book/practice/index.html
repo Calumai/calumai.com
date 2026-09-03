@@ -211,6 +211,17 @@
         <div class="tool-layout">
           <form id="image-form" class="generator-form">
             <div class="field">
+              <label for="image-purpose">生成用途</label>
+              <select id="image-purpose" name="purpose" required>
+                <option value="" selected disabled>請選擇生成用途</option>
+                <option value="繪本單頁插圖">繪本單頁插圖</option>
+                <option value="班級海報">班級海報</option>
+                <option value="活動宣傳海報">活動宣傳海報</option>
+                <option value="課程封面">課程封面</option>
+                <option value="社群貼文配圖">社群貼文配圖</option>
+              </select>
+            </div>
+            <div class="field">
               <label for="image-scene">場景與動作</label>
               <select id="image-scene" name="scene" required maxlength="1800">
                 <option value="" selected disabled>請選擇場景與動作</option>

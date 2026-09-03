@@ -259,6 +259,7 @@
 
   function readImagePromptFields() {
     return {
+      purpose: byId("image-purpose").value || "待選擇生成用途",
       scene: byId("image-scene").value || "待選擇場景與動作",
       style: byId("image-style").value || "待選擇視覺風格",
       composition: byId("image-composition").value || "待選擇畫面構圖",
@@ -270,12 +271,13 @@
   function refreshPromptPreview() {
     const fields = readImagePromptFields();
     const instruction = promptTemplateInstructions[byId("prompt-template").value] || promptTemplateInstructions.picturebook;
-    byId("prompt-preview").value = `${instruction}\n\n內容與動作：${fields.scene}\n畫風與材質：${fields.style}\n構圖與鏡位：${fields.composition}\n文字安全區：${fields.safeArea}\n避免事項：${fields.avoid}\n\n驗收：圖中不要有文字或浮水印；角色、服飾、文化元素與語言內容需由教師或具備權限的人員確認。`;
+    byId("prompt-preview").value = `${instruction}\n\n生成用途：${fields.purpose}\n內容與動作：${fields.scene}\n畫風與材質：${fields.style}\n構圖與鏡位：${fields.composition}\n文字安全區：${fields.safeArea}\n避免事項：${fields.avoid}\n\n驗收：圖中不要有文字或浮水印；角色、服飾、文化元素與語言內容需由教師或具備權限的人員確認。`;
   }
 
   function applyPromptTemplate() {
     const template = byId("prompt-template").value;
     const defaults = {
+      purpose: byId("image-purpose").value || "繪本單頁插圖",
       scene: "雨後的公園，小晴看見長椅旁的紅雨傘，停下腳步仔細觀察。",
       style: byId("prompt-style").value,
       composition: "角色在左側，右側保留乾淨留白",
@@ -286,13 +288,14 @@
     if (template === "series") defaults.scene = "同一角色在課堂場景中翻閱繪本，畫面保留固定道具與背景地標。";
     if (template === "review") defaults.avoid = "若角色、腳本、構圖、畫風、文字或文化元素任一硬條件失敗，標記 FAIL 並交回真人。";
     const optionValues = {
+      "image-purpose": ["繪本單頁插圖", "班級海報", "活動宣傳海報", "課程封面", "社群貼文配圖"],
       "image-scene": ["雨後的公園，小晴看見長椅旁的紅雨傘，停下腳步仔細觀察。", "清晨部落廣場，孩子們圍著長者安靜聽故事。", "河邊午後，孩子蹲下來觀察水面與周圍的植物。", "教室裡，學生一起翻閱繪本並討論畫面中的角色。"],
       "image-style": ["溫暖手繪水彩繪本，柔和自然光，紙張肌理", "明亮扁平插畫，清楚色塊，兒童繪本風", "柔和蠟筆質感，簡潔線條，溫暖色調"],
       "image-composition": ["角色置中，中景構圖，視線朝向畫面中央", "角色在左側，右側保留乾淨留白", "角色在右側，左側保留乾淨留白", "遠景環境優先，角色位於畫面下方", "俯視構圖，場景物件排列清楚"],
       "image-safe-area": ["右上保留約三分之一乾淨天空，不放人物與重要物件", "左上保留乾淨留白，方便放置標題", "下方保留乾淨留白，方便放置說明文字", "不特別保留文字區，完整呈現整個畫面"],
       "image-avoid": ["不要文字、浮水印、額外手指、錯誤服飾或未確認的文化圖紋。", "不要出現現代品牌、Logo、武器或血腥元素。", "不要加入未提供的族群符號、儀式或服飾細節。", "不要多餘角色、變形肢體或錯誤視線。"]
     };
-    const desired = { "image-scene": defaults.scene, "image-style": defaults.style, "image-composition": defaults.composition, "image-safe-area": defaults.safeArea, "image-avoid": defaults.avoid };
+    const desired = { "image-purpose": defaults.purpose, "image-scene": defaults.scene, "image-style": defaults.style, "image-composition": defaults.composition, "image-safe-area": defaults.safeArea, "image-avoid": defaults.avoid };
     for (const [id, value] of Object.entries(desired)) {
       const field = byId(id);
       if (optionValues[id].includes(value)) field.value = value;
@@ -305,7 +308,7 @@
   byId("apply-prompt-template").addEventListener("click", applyPromptTemplate);
   byId("prompt-template").addEventListener("change", refreshPromptPreview);
   byId("prompt-style").addEventListener("change", refreshPromptPreview);
-  ["image-scene", "image-style", "image-composition", "image-safe-area", "image-avoid"].forEach((id) => {
+  ["image-purpose", "image-scene", "image-style", "image-composition", "image-safe-area", "image-avoid"].forEach((id) => {
     byId(id).addEventListener("change", refreshPromptPreview);
   });
   byId("copy-prompt-preview").addEventListener("click", async () => {
@@ -455,7 +458,7 @@
     const input = valuesOf(generationForms[kind]);
     return kind === "text"
       ? core.buildTextPayload(input, idempotencyKey)
-      : { prompt: [input.scene, input.style, input.composition, `文字安全區：${input.safeArea}`, `避免：${input.avoid}`].filter(Boolean).join("\n") };
+      : { prompt: [input.purpose, input.scene, input.style, input.composition, `文字安全區：${input.safeArea}`, `避免：${input.avoid}`].filter(Boolean).join("\n") };
   }
 
   async function performGeneration(kind, isRetry) {
