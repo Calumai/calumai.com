@@ -11,7 +11,7 @@
   <link rel="preload" href="../assets/fonts/iansui-course-display.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20260903c">
   <script src="core.js" defer></script>
-  <script src="app.js?v=20260903h" defer></script>
+  <script src="app.js?v=20260903i" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -204,6 +204,7 @@
                 <option value="低解析像素點陣插畫風">082｜低解析像素點陣插畫風</option>
                 <option value="螢光壓克力塗鴉壁畫風">088｜螢光壓克力塗鴉壁畫風</option>
               </select>
+              <button class="button secondary compact" id="open-style-library" type="button">開啟完整風格大全</button>
             </div>
           </div>
           <div class="prompt-helper-actions">
@@ -220,6 +221,11 @@
           </div>
           <p class="form-message" id="prompt-helper-message" role="status" aria-live="polite">選好模板後，可以套用到下方欄位。</p>
         </details>
+        <dialog id="style-library-dialog" class="style-library-dialog" aria-labelledby="style-library-title">
+          <form method="dialog" class="style-library-head"><div><h3 id="style-library-title">AI 繪圖風格大全</h3><p>搜尋提示詞，選取後會加入下方視覺風格。</p></div><button class="button secondary compact" value="cancel">關閉</button></form>
+          <div class="style-library-tools"><input id="style-library-search" type="search" placeholder="搜尋中文、英文或分類…"><select id="style-library-category"><option value="all">全部分類</option></select></div>
+          <div id="style-library-list" class="style-library-list"></div>
+        </dialog>
         <div class="tool-layout">
           <form id="image-form" class="generator-form">
             <div class="field">

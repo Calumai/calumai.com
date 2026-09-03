@@ -317,6 +317,33 @@
   }
 
   byId("apply-prompt-template").addEventListener("click", applyPromptTemplate);
+  const styleLibrary = [
+    ["攝影", "DSLR style", "數位單眼相機質感"], ["攝影", "cinematic photo style", "電影劇照風格"], ["攝影", "macro lens", "微距細節"], ["攝影", "soft light", "柔和光線"],
+    ["角度效果", "face close-up", "臉部特寫"], ["角度效果", "full body shot", "全身畫面"], ["角度效果", "bird view", "鳥瞰視角"], ["角度效果", "low angle view", "低角度仰拍"], ["角度效果", "bokeh", "背景散景"],
+    ["繪畫媒材", "pencil", "鉛筆畫"], ["繪畫媒材", "charcoal", "炭筆畫"], ["繪畫媒材", "watercolor painting", "水彩畫"], ["繪畫媒材", "oil painting", "油畫"], ["繪畫媒材", "ink drawing", "水墨畫"], ["繪畫媒材", "clean outline drawing", "乾淨外框"],
+    ["材料質感", "paper art", "紙雕藝術"], ["材料質感", "paper cutting", "剪紙藝術"], ["材料質感", "origami art", "摺紙藝術"], ["材料質感", "stained glass", "彩繪玻璃"], ["材料質感", "mosaic", "馬賽克拼貼"], ["材料質感", "Play-Doh clay", "兒童黏土"], ["材料質感", "lego", "積木材質"], ["材料質感", "felt doll", "羊毛氈娃娃"],
+    ["動畫漫畫", "2D cartoon", "2D 卡通"], ["動畫漫畫", "3D cartoon", "3D 卡通"], ["動畫漫畫", "2D animation", "2D 動畫"], ["動畫漫畫", "American comic book", "美式漫畫"], ["動畫漫畫", "Manga", "日式漫畫"],
+    ["藝術流派", "Renaissance", "文藝復興"], ["藝術流派", "Baroque art", "巴洛克"], ["藝術流派", "Impressionnisme", "印象派"], ["藝術流派", "Surrealism", "超現實主義"], ["藝術流派", "Cubism", "立體主義"], ["藝術流派", "minimalism", "極簡主義"], ["藝術流派", "poster art", "海報藝術"], ["藝術流派", "street art", "街頭藝術"], ["藝術流派", "Ukiyo-e", "浮世繪"],
+    ["特色風格", "pixel art", "像素點陣畫"], ["特色風格", "Infographic", "資訊圖表"], ["特色風格", "low poly", "低多邊形"], ["特色風格", "knolling", "物件整齊排列"], ["特色風格", "diagrammatic drawing", "示意圖"], ["特色風格", "mascot logo", "吉祥物標誌"]
+  ].map(([category, prompt, description]) => ({ category, prompt, description }));
+  const libraryDialog = byId("style-library-dialog");
+  const libraryList = byId("style-library-list");
+  const librarySearch = byId("style-library-search");
+  const libraryCategory = byId("style-library-category");
+  [...new Set(styleLibrary.map((item) => item.category))].forEach((category) => libraryCategory.add(new Option(category, category)));
+  function renderStyleLibrary() {
+    const query = librarySearch.value.trim().toLowerCase();
+    const category = libraryCategory.value;
+    libraryList.replaceChildren();
+    styleLibrary.filter((item) => (category === "all" || item.category === category) && (!query || `${item.prompt} ${item.description} ${item.category}`.toLowerCase().includes(query))).forEach((item) => {
+      const button = document.createElement("button"); button.type = "button"; button.className = "style-library-item";
+      const title = document.createElement("strong"); title.textContent = item.description;
+      const prompt = document.createElement("small"); prompt.textContent = `${item.category}｜${item.prompt}`;
+      button.append(title, prompt); button.addEventListener("click", () => { const select = byId("image-style"); const option = [...select.options].find((entry) => entry.value === item.prompt); if (!option) select.add(new Option(item.description, item.prompt)); select.value = item.prompt; refreshPromptPreview(); libraryDialog.close(); }); libraryList.append(button);
+    });
+  }
+  byId("open-style-library").addEventListener("click", () => { renderStyleLibrary(); libraryDialog.showModal(); });
+  librarySearch.addEventListener("input", renderStyleLibrary); libraryCategory.addEventListener("change", renderStyleLibrary);
   byId("prompt-review-button").addEventListener("click", async () => {
     const input = byId("prompt-review-input");
     const text = input.value.trim() || byId("prompt-preview").value.trim();
