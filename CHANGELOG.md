@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added a post-share reminder in `/class/patrol/` telling students they may minimize the patrol page and return to their learning materials, while keeping the page and shared window or tab open.
 - Added the CALUMAI-styled remote classroom patrol prototype at `/class/patrol/`, including teacher and student entry points, 100-person/25-per-page patrol layout, student search and help filtering, announcements, and browser screen-sharing preview. Added its entry to the `/class/` course overview. The first version is an interaction prototype; cross-device teacher delivery is not yet implemented.
 - Made the Taipei 9/4 practice room resilient to mixed HTML/JavaScript cache versions: optional prompt-library and prompt-review controls no longer stop session login when an older cached page is briefly served.
 - Added the classroom-gated AI practice room at `/class/taipei-ai/2026-0904-picture-book/practice/` with text and image exercises, same-origin session handling, personal and class quotas, bounded timeouts, idempotent retry, complete loading and error states, accessible downloads, strict browser safeguards, and a course-page entry after the YAML lab. Added contract, safety and 390px layout regression tests.

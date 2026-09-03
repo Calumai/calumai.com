@@ -6,6 +6,7 @@
   <meta name="description" content="CALUMAI 遠端教室巡堂：查看學生操作進度與求助狀態。">
   <title>遠端教室巡堂｜CALUMAI</title>
   <link rel="stylesheet" href="/class/patrol/styles.css">
+  <style>.share-success{margin-top:12px;padding:15px 17px;border:1px solid #9ecfc8;border-left:6px solid var(--teal);border-radius:10px;background:#effaf8;text-align:left}.share-success b{display:block;color:var(--teal);font-size:15px}.share-success p{margin:5px 0 0;color:var(--muted);font-size:14px;line-height:1.6}</style>
 </head>
 <body>
   <header class="site-header">
@@ -32,7 +33,7 @@
   </main>
 
   <main id="student" class="student-view shell" hidden>
-    <button class="exit back">← 返回</button><div class="student-panel"><p class="eyebrow">CLASS IN PROGRESS</p><h1>AI 備課進階班</h1><p>林老師・課堂代碼 834 921</p><label class="name-field">你的姓名<input value="陳品妤"></label><div id="share-preview" class="share-preview"><div class="monitor-icon">▣</div><h2>老師還看不到你的操作畫面</h2><p>請選擇正在上課的視窗或分頁，你可以隨時停止分享。</p><video id="share-video" autoplay muted hidden></video></div><button id="share-button" class="main-button">開始分享畫面</button><button id="help-button" class="help-button">舉手｜我需要老師協助</button><p class="privacy-note">畫面不會錄影或永久保存。</p></div>
+    <button class="exit back">← 返回</button><div class="student-panel"><p class="eyebrow">CLASS IN PROGRESS</p><h1>AI 備課進階班</h1><p>林老師・課堂代碼 834 921</p><label class="name-field">你的姓名<input value="陳品妤"></label><div id="share-preview" class="share-preview"><div class="monitor-icon">▣</div><h2>老師還看不到你的操作畫面</h2><p>請選擇正在上課的視窗或分頁，你可以隨時停止分享。</p><video id="share-video" autoplay muted hidden></video></div><button id="share-button" class="main-button">開始分享畫面</button><div id="share-success" class="share-success" hidden role="status"><b>分享成功，現在可以回去操作教材了</b><p>你可以把這個巡堂網頁縮小，但請保持頁面開啟，也不要關閉正在分享的視窗或分頁。</p></div><button id="help-button" class="help-button">舉手｜我需要老師協助</button><p class="privacy-note">畫面不會錄影或永久保存。</p></div>
   </main>
 
   <dialog id="student-dialog"><button class="dialog-close">×</button><p class="eyebrow">STUDENT SCREEN</p><h2 id="dialog-name"></h2><div id="dialog-screen" class="large-screen"></div><div class="dialog-actions"><button>要求即時畫面</button><button>傳送提醒</button></div><p>只有學生按下同意後，老師才能查看即時畫面。</p></dialog>
