@@ -66,7 +66,7 @@
     if (!previewSessionActive) {
       return { ok: false, request_id: "local-preview", error: { code: "UNAUTHENTICATED", message: "請先輸入課堂碼登入。", retryable: false } };
     }
-    const kind = pathname === "/generate/image" || pathname === "/api/generate-image" ? "image" : "text";
+    const kind = ["/generate/image", "/generate-image", "/api/generate-image"].includes(pathname) ? "image" : "text";
     if (previewQuota[kind] <= 0) {
       return { ok: false, request_id: "local-preview", error: { code: "SESSION_QUOTA_EXHAUSTED", message: "本機展示額度已用完。", retryable: false } };
     }
@@ -87,11 +87,15 @@
       };
     }
     const topic = body && body.topic ? body.topic : "本機展示教材";
+    const isPromptReview = topic.includes("提示詞檢視");
+    const reviewedSource = body && body.source_notes ? body.source_notes : "一個清楚的課堂畫面";
     return {
       ok: true,
       request_id: "local-preview-text",
       kind,
-      content: `# ${topic}\n\n## 本機展示草稿\n\n這是本機預覽模式產生的範例文字，不會送到正式服務。\n\n- 對象：${body && body.audience ? body.audience : "待填寫"}\n- 時間：${body && body.duration_minutes ? body.duration_minutes : "待填寫"} 分鐘\n- 下一步：檢查內容、文化脈絡與授權後再下載。`,
+      content: isPromptReview
+        ? `【檢視建議】\n- 已有清楚主題，可再補充主體位置、光線和不要出現的內容。\n\n【修正版提示詞】\n${reviewedSource}；主體清楚，構圖有明確焦點，光線自然，不要文字、浮水印或 Logo。\n【修正版結束】`
+        : `# ${topic}\n\n## 本機展示草稿\n\n這是本機預覽模式產生的範例文字，不會送到正式服務。\n\n- 對象：${body && body.audience ? body.audience : "待填寫"}\n- 時間：${body && body.duration_minutes ? body.duration_minutes : "待填寫"} 分鐘\n- 下一步：檢查內容、文化脈絡與授權後再下載。`,
       usage: { input_tokens: 0, output_tokens: 0, total_tokens: 0 },
       remaining,
       classroom_remaining: classroomRemaining
@@ -253,6 +257,197 @@
     updateSubmitAvailability();
   }
 
+  let getSelectedImagePrompt = null;
+  let getImageSubmitLabel = () => "生成繪本圖片";
+  const canonicalImagePrompt = byId("image-prompt");
+  if (canonicalImagePrompt) {
+    const purposeField = byId("image-purpose");
+    const purposeHint = byId("image-purpose-hint");
+    const promptCount = byId("image-prompt-count");
+    const reviewButton = byId("review-prompt-button");
+    const reviewResult = byId("prompt-review-result");
+    const reviewSuggestion = byId("prompt-review-suggestion");
+    const reviewedPromptField = byId("reviewed-prompt");
+    const useReviewedButton = byId("use-reviewed-prompt");
+    const keepOriginalButton = byId("keep-original-prompt");
+    const selectedPromptState = byId("selected-prompt-state");
+    const imageSubmitButton = imageForm.querySelector('button[type="submit"]');
+    let reviewedPrompt = "";
+    let reviewedSource = "";
+    let selectedPromptVersion = "original";
+
+    const purposeGuidance = {
+      "繪本插圖": {
+        hint: "先說清楚誰、在哪裡、正在做什麼，以及希望讀者感受到什麼。",
+        example: "例如：雨後的公園裡，一位穿黃色雨衣的小女孩停在長椅旁，低頭觀察一把紅色雨傘；溫暖手繪水彩風，角色在左側，右側保留乾淨留白，不要文字與浮水印。"
+      },
+      "班級海報": {
+        hint: "描述班級主題、主要人物與要保留的標題位置；文字建議後製加入。",
+        example: "例如：五年甲班閱讀月海報主視覺，三位學生在樹下分享繪本，明亮扁平插畫；上方保留約四分之一留白供後製標題，不要生成文字與 Logo。"
+      },
+      "活動海報": {
+        hint: "描述活動氣氛、焦點與資訊留白；日期和標題建議後製加入。",
+        example: "例如：校園文化日活動海報主視覺，孩子與長者在廣場一起唱歌，歡樂、有交流感；直式構圖，上方與下方保留資訊區，不要生成文字。"
+      },
+      "課程封面": {
+        hint: "抓住一個明確主題焦點，並預留課名和單位識別的位置。",
+        example: "例如：AI 教學工作坊課程封面，一台平板從畫面左側展開繪本、圖卡與聲音圖示，藍白科技感搭配紅橘亮點；右側保留標題空間，不要文字。"
+      },
+      "教材或學習單插圖": {
+        hint: "畫面要簡單、輪廓清楚，避免太多裝飾搶走學習重點。",
+        example: "例如：給低年級學習單使用的河流生態插圖，清楚呈現魚、石頭、水草與河岸，平視角度、乾淨白底、柔和低彩度，不要標籤文字。"
+      },
+      "角色設定圖": {
+        hint: "交代角色年齡、外觀、服裝、配件與固定特徵，方便後續保持一致。",
+        example: "例如：八歲女孩角色設定圖，圓臉、短黑髮、黃色雨衣、紅色雨鞋，正面與側面全身，乾淨淺色背景，比例與服裝保持一致，不要文字。"
+      },
+      "社群宣傳圖": {
+        hint: "主體要能在手機上一眼看懂，四周保留安全邊界。",
+        example: "例如：教師研習招生社群直式配圖，一位老師帶著學生使用平板創作故事，明亮有活力、主體醒目；四周保留安全邊界，不要文字與浮水印。"
+      }
+    };
+
+    function updateSelectedPromptState() {
+      const active = selectedPromptVersion === "reviewed" && reviewedPrompt ? reviewedPrompt : canonicalImagePrompt.value.trim();
+      selectedPromptState.textContent = selectedPromptVersion === "reviewed" && reviewedPrompt
+        ? `目前將使用：AI 建議版（${active.length} 字）`
+        : `目前將使用：你的原始提示詞（${active.length} 字）`;
+      imageSubmitButton.textContent = getImageSubmitLabel();
+    }
+
+    function clearOutdatedReview() {
+      if (!reviewedSource || canonicalImagePrompt.value.trim() === reviewedSource) return;
+      reviewedPrompt = "";
+      reviewedSource = "";
+      selectedPromptVersion = "original";
+      reviewedPromptField.value = "";
+      reviewSuggestion.hidden = true;
+      reviewResult.textContent = "你已修改原稿；若需要新的建議，請再請 AI 檢視一次。";
+    }
+
+    function updatePromptInput() {
+      promptCount.textContent = `${canonicalImagePrompt.value.length} / 4000`;
+      clearOutdatedReview();
+      updateSelectedPromptState();
+    }
+
+    function extractReviewedPrompt(content) {
+      const match = String(content || "").match(/【修正版提示詞】\s*([\s\S]*?)(?:【修正版結束】|$)/u);
+      return match ? match[1].trim().slice(0, 4000) : "";
+    }
+
+    getSelectedImagePrompt = () => selectedPromptVersion === "reviewed" && reviewedPrompt
+      ? reviewedPrompt
+      : canonicalImagePrompt.value.trim();
+    getImageSubmitLabel = () => selectedPromptVersion === "reviewed" && reviewedPrompt
+      ? "4. 用 AI 建議版生成圖片"
+      : "4. 用我的原稿生成圖片";
+
+    purposeField.addEventListener("change", () => {
+      const guidance = purposeGuidance[purposeField.value];
+      if (guidance) {
+        purposeHint.textContent = guidance.hint;
+        canonicalImagePrompt.placeholder = guidance.example;
+      }
+    });
+    canonicalImagePrompt.addEventListener("input", updatePromptInput);
+
+    const styleLibrary = [
+      ["攝影", "DSLR style", "數位單眼相機質感"], ["攝影", "cinematic photo style", "電影劇照風格"], ["攝影", "macro lens", "微距細節"], ["攝影", "soft light", "柔和光線"],
+      ["角度效果", "face close-up", "臉部特寫"], ["角度效果", "full body shot", "全身畫面"], ["角度效果", "bird view", "鳥瞰視角"], ["角度效果", "low angle view", "低角度仰拍"], ["角度效果", "bokeh", "背景散景"],
+      ["繪畫媒材", "pencil", "鉛筆畫"], ["繪畫媒材", "charcoal", "炭筆畫"], ["繪畫媒材", "watercolor painting", "水彩畫"], ["繪畫媒材", "oil painting", "油畫"], ["繪畫媒材", "ink drawing", "水墨畫"], ["繪畫媒材", "clean outline drawing", "乾淨外框"],
+      ["材料質感", "paper art", "紙雕藝術"], ["材料質感", "paper cutting", "剪紙藝術"], ["材料質感", "origami art", "摺紙藝術"], ["材料質感", "stained glass", "彩繪玻璃"], ["材料質感", "mosaic", "馬賽克拼貼"], ["材料質感", "Play-Doh clay", "兒童黏土"], ["材料質感", "lego", "積木材質"], ["材料質感", "felt doll", "羊毛氈娃娃"],
+      ["動畫漫畫", "2D cartoon", "2D 卡通"], ["動畫漫畫", "3D cartoon", "3D 卡通"], ["動畫漫畫", "2D animation", "2D 動畫"], ["動畫漫畫", "American comic book", "美式漫畫"], ["動畫漫畫", "Manga", "日式漫畫"],
+      ["藝術流派", "Renaissance", "文藝復興"], ["藝術流派", "Baroque art", "巴洛克"], ["藝術流派", "Impressionnisme", "印象派"], ["藝術流派", "Surrealism", "超現實主義"], ["藝術流派", "Cubism", "立體主義"], ["藝術流派", "minimalism", "極簡主義"], ["藝術流派", "poster art", "海報藝術"], ["藝術流派", "street art", "街頭藝術"], ["藝術流派", "Ukiyo-e", "浮世繪"],
+      ["特色風格", "pixel art", "像素點陣畫"], ["特色風格", "Infographic", "資訊圖表"], ["特色風格", "low poly", "低多邊形"], ["特色風格", "knolling", "物件整齊排列"], ["特色風格", "diagrammatic drawing", "示意圖"], ["特色風格", "mascot logo", "吉祥物標誌"]
+    ].map(([category, prompt, description]) => ({ category, prompt, description }));
+    const libraryDialog = byId("style-library-dialog");
+    const libraryList = byId("style-library-list");
+    const librarySearch = byId("style-library-search");
+    const libraryCategory = byId("style-library-category");
+    const openStyleLibrary = byId("open-style-library");
+    [...new Set(styleLibrary.map((item) => item.category))].forEach((category) => libraryCategory.add(new Option(category, category)));
+
+    function renderStyleLibrary() {
+      const query = librarySearch.value.trim().toLowerCase();
+      const category = libraryCategory.value;
+      libraryList.replaceChildren();
+      styleLibrary.filter((item) => (category === "all" || item.category === category) && (!query || `${item.prompt} ${item.description} ${item.category}`.toLowerCase().includes(query))).forEach((item) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "style-library-item";
+        const title = document.createElement("strong"); title.textContent = item.description;
+        const prompt = document.createElement("small"); prompt.textContent = `${item.category}｜${item.prompt}`;
+        button.append(title, prompt);
+        button.addEventListener("click", () => {
+          const addition = `視覺風格：${item.description}（${item.prompt}）`;
+          const current = canonicalImagePrompt.value.trim();
+          if (!current.includes(addition)) canonicalImagePrompt.value = current ? `${current}；${addition}` : addition;
+          updatePromptInput();
+          libraryDialog.close();
+          canonicalImagePrompt.focus();
+        });
+        libraryList.append(button);
+      });
+    }
+
+    openStyleLibrary.addEventListener("click", () => { renderStyleLibrary(); libraryDialog.showModal(); });
+    librarySearch.addEventListener("input", renderStyleLibrary);
+    libraryCategory.addEventListener("change", renderStyleLibrary);
+
+    reviewButton.addEventListener("click", async () => {
+      const original = canonicalImagePrompt.value.trim();
+      if (original.length < 3) {
+        reviewResult.textContent = "請先在上方寫至少 3 個字，再請 AI 檢視。";
+        canonicalImagePrompt.focus();
+        return;
+      }
+      reviewButton.disabled = true;
+      reviewButton.textContent = "AI 檢視中…";
+      reviewResult.textContent = "AI 正在閱讀你的原稿，這不會自動改掉內容。";
+      reviewSuggestion.hidden = true;
+      try {
+        const request = core.buildTextPayload({
+          topic: `${purposeField.value || "圖片"}提示詞檢視`,
+          audience: "課堂學員",
+          duration_minutes: 5,
+          objective: "指出圖片提示詞可以更清楚的地方，並產生一份忠於原意的修正版",
+          source_notes: original,
+          requirements: "請用繁體中文。先輸出【檢視建議】並列出最多三點具體建議，再輸出【修正版提示詞】、一段可直接生圖且不超過 4000 字的完整提示詞，最後輸出【修正版結束】。不得捏造文化事實或改變原意。"
+        }, core.createIdempotencyKey("text", makeUuid()));
+        const payload = await callService("/generate/text", "POST", request, 120000);
+        const content = payload.content || "";
+        const suggestion = extractReviewedPrompt(content);
+        const advice = content.split("【修正版提示詞】", 1)[0].replace("【檢視建議】", "").trim();
+        reviewResult.textContent = advice || "AI 沒有回傳具體建議，你仍可直接使用原稿生成。";
+        if (suggestion.length >= 3) {
+          reviewedPrompt = suggestion;
+          reviewedSource = original;
+          reviewedPromptField.value = suggestion;
+          reviewSuggestion.hidden = false;
+          selectedPromptVersion = "original";
+          updateSelectedPromptState();
+        }
+      } catch (error) {
+        reviewResult.textContent = `${core.friendlyError(error)} 你仍可直接使用原稿生成。`;
+      } finally {
+        reviewButton.disabled = false;
+        reviewButton.textContent = "請 AI 檢視目前文字";
+      }
+    });
+
+    useReviewedButton.addEventListener("click", () => {
+      if (!reviewedPrompt) return;
+      selectedPromptVersion = "reviewed";
+      updateSelectedPromptState();
+    });
+    keepOriginalButton.addEventListener("click", () => {
+      selectedPromptVersion = "original";
+      updateSelectedPromptState();
+      canonicalImagePrompt.focus();
+    });
+    updatePromptInput();
+  } else {
   const promptTemplateInstructions = {
     picturebook: "請生成一張無字繪本插圖，讓畫面先說清楚一個動作與情緒。",
     spec: "請把以下需求整理成可交給生圖工具執行的繪圖工作規格單。",
@@ -352,7 +547,7 @@
     openStyleLibrary.addEventListener("click", () => { renderStyleLibrary(); libraryDialog.showModal(); });
     librarySearch.addEventListener("input", renderStyleLibrary); libraryCategory.addEventListener("change", renderStyleLibrary);
   }
-  const promptReviewButton = byId("prompt-review-button");
+  const promptReviewButton = byId("review-prompt-button");
   if (promptReviewButton) promptReviewButton.addEventListener("click", async () => {
     const input = byId("prompt-review-input");
     const preview = byId("prompt-preview");
@@ -364,14 +559,14 @@
     button.disabled = true;
     result.textContent = "AI 正在檢視提示詞，請稍候…";
     try {
-      const payload = await callService("/generate/text", "POST", {
+      const payload = await callService("/generate/text", "POST", core.buildTextPayload({
         topic: "圖片提示詞檢視",
         audience: "授課教師",
         duration_minutes: 5,
         objective: "找出提示詞缺漏並提供具體可直接修改的建議",
         source_notes: text,
         requirements: "請用繁體中文，以條列方式指出優點、缺漏與改寫示例；不要捏造文化事實。"
-      }, 120000);
+      }, core.createIdempotencyKey("text", makeUuid())), 120000);
       result.textContent = payload.content || "AI 沒有回傳建議。";
     } catch (error) {
       result.textContent = core.friendlyError(error);
@@ -393,6 +588,7 @@
     }
   });
   refreshPromptPreview();
+  }
 
   async function restoreSession() {
     setClaimBusy(true, "確認工作階段");
@@ -523,16 +719,24 @@
       submit.disabled = true;
       submit.textContent = kind === "text" ? "正在生成教材" : "正在生成圖片";
     } else {
-      submit.textContent = kind === "text" ? "生成教材草稿" : "生成繪本圖片";
+      submit.textContent = kind === "text" ? "生成教材草稿" : getImageSubmitLabel();
       updateSubmitAvailability();
     }
   }
 
   function buildGenerationRequest(kind, idempotencyKey) {
     const input = valuesOf(generationForms[kind]);
-    return kind === "text"
-      ? core.buildTextPayload(input, idempotencyKey)
-      : { prompt: [input.purpose, input.scene, input.style, input.composition, `文字安全區：${input.safeArea}`, `避免：${input.avoid}`].filter(Boolean).join("\n") };
+    if (kind === "text") return core.buildTextPayload(input, idempotencyKey);
+    const legacyPrompt = [
+      input.purpose,
+      input.scene,
+      input.style,
+      input.composition,
+      input.safe_area ? `文字安全區：${input.safe_area}` : "",
+      input.avoid ? `避免：${input.avoid}` : ""
+    ].filter(Boolean).join("；");
+    const prompt = (getSelectedImagePrompt ? getSelectedImagePrompt() : legacyPrompt).trim().replace(/\s+/gu, " ");
+    return { prompt };
   }
 
   async function performGeneration(kind, isRetry) {
@@ -544,10 +748,17 @@
     } else {
       const idempotencyKey = core.createIdempotencyKey(kind, makeUuid());
       const request = buildGenerationRequest(kind, idempotencyKey);
-      if (kind === "image" && (!request.prompt || request.prompt.trim().length < 3)) {
-        byId("image-feedback").textContent = "請先選擇用途與至少一項畫面內容（至少 3 個字即可）。";
+      if (kind === "image" && (!request.prompt || request.prompt.length < 3 || request.prompt.length > 4000)) {
+        byId("image-feedback").textContent = "請在圖片描述中輸入 3～4000 個字，不用寫滿。";
+        const promptField = byId("image-prompt");
+        if (promptField) {
+          promptField.setAttribute("aria-invalid", "true");
+          promptField.focus();
+        }
         return;
       }
+      const promptField = byId("image-prompt");
+      if (promptField) promptField.removeAttribute("aria-invalid");
       generationStates[kind] = core.transitionGeneration(generationStates[kind], {
         type: "start",
         idempotencyKey,
@@ -596,7 +807,8 @@
   }
 
   function renderImageSuccess(result) {
-    const download = core.buildImageDownload(result, valuesOf(imageForm).scene);
+    const imageInput = valuesOf(imageForm);
+    const download = core.buildImageDownload(result, imageInput.purpose || imageInput.prompt || "圖片");
     byId("image-output").src = download.dataUrl;
     byId("image-request-reference").textContent = result.requestId ? `查詢編號 ${result.requestId}` : "";
   }
@@ -649,7 +861,8 @@
     button.disabled = true;
     button.textContent = "準備圖片";
     try {
-      const spec = core.buildImageDownload(generationStates.image.result, valuesOf(imageForm).scene);
+      const imageInput = valuesOf(imageForm);
+      const spec = core.buildImageDownload(generationStates.image.result, imageInput.purpose || imageInput.prompt || "圖片");
       clickDownload(spec.dataUrl, spec.filename, false);
       byId("image-feedback").textContent = "圖片已開始下載。";
     } catch {

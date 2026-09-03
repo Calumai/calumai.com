@@ -429,6 +429,20 @@ p { overflow-wrap: anywhere; }
 .panel-heading h3 { margin: 0; font-size: clamp(1.35rem, 2.5vw, 1.85rem); line-height: 1.3; }
 .panel-heading p { max-width: 680px; margin: .35rem 0 0; color: var(--ink-soft); font-size: .88rem; }
 
+.image-flow-intro {
+  margin: 1rem clamp(1.2rem, 3vw, 2rem) 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid #a9c8e5;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #eef7ff, #fff);
+}
+
+.image-flow-intro h3 { margin: .15rem 0 .9rem; font-size: clamp(1.15rem, 2.2vw, 1.45rem); }
+.image-flow-intro ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; margin: 0; padding: 0; list-style: none; }
+.image-flow-intro li { display: flex; align-items: center; gap: .55rem; min-width: 0; color: var(--ink-soft); font-size: .82rem; font-weight: 800; }
+.image-flow-intro li b,
+.step-number { display: inline-grid; flex: 0 0 auto; width: 1.75rem; height: 1.75rem; place-items: center; border-radius: 999px; color: var(--white); background: var(--blue-dark); font-size: .78rem; }
+
 .prompt-helper {
   margin: 1rem clamp(1.2rem, 3vw, 2rem) 0;
   padding: 1rem 1.1rem;
@@ -460,6 +474,20 @@ p { overflow-wrap: anywhere; }
 .style-library-item small { color:var(--ink-soft); }
 .prompt-preview-label { display: block; margin-top: .9rem; font-size: .82rem; font-weight: 900; }
 .prompt-preview { min-height: 150px !important; margin-top: .35rem; background: #eef7ff !important; color: var(--ink-soft) !important; }
+.step-field > label { display: flex; align-items: center; gap: .55rem; font-size: 1rem; }
+.field-meta { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
+.field-meta small { max-width: 42rem; }
+.field-meta output { flex: 0 0 auto; color: var(--blue-dark); font-size: .78rem; font-weight: 900; }
+#open-style-library { margin-top: .7rem; }
+.prompt-review-box { margin-top: .4rem; padding: 1rem; border: 1px solid #a9c8e5; border-radius: 14px; background: #f5faff; }
+.prompt-review-box h4 { display: flex; align-items: center; gap: .55rem; margin: 0; font-size: 1rem; }
+.prompt-review-box > p { margin: .55rem 0 .8rem; color: var(--ink-soft); font-size: .84rem; }
+.review-feedback { margin-top: .75rem; color: var(--ink-soft); font-size: .84rem; line-height: 1.7; white-space: pre-wrap; }
+.review-suggestion { margin-top: .9rem; padding-top: .9rem; border-top: 1px solid var(--line); }
+.review-suggestion label { display: block; margin-bottom: .4rem; font-weight: 900; }
+.review-suggestion textarea { background: var(--white); }
+.prompt-choice-actions { display: flex; flex-wrap: wrap; gap: .65rem; margin-top: .7rem; }
+.selected-prompt-state { margin: .2rem 0 .9rem; padding: .7rem .8rem; border-left: 4px solid var(--orange); color: var(--ink-soft); background: #fff8ef; font-size: .84rem; font-weight: 800; }
 
 .tool-layout {
   display: grid;
@@ -579,7 +607,7 @@ p { overflow-wrap: anywhere; }
 
 .image-skeleton {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 2 / 3;
   border-radius: var(--radius-control);
   background: linear-gradient(135deg, #bfdcf3, #e7f3fc);
 }
@@ -588,7 +616,7 @@ p { overflow-wrap: anywhere; }
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 2 / 3;
   object-fit: contain;
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
@@ -648,12 +676,17 @@ footer a:focus-visible { outline-color: var(--white); }
   .review-alert { padding: .9rem 1rem; }
   .tool-tabs { max-width: none; }
   .tool-panel { overflow: visible; }
+  .image-flow-intro { margin-inline: 1rem; }
+  .image-flow-intro ol { grid-template-columns: 1fr 1fr; }
   .prompt-helper { margin-inline: 1rem; }
   .prompt-helper-grid { grid-template-columns: 1fr; }
   .panel-heading,
   .generator-form,
   .result-panel { padding: 1rem; }
   .form-row { grid-template-columns: 1fr; }
+  .field-meta { flex-direction: column; gap: .2rem; }
+  .prompt-choice-actions { display: grid; grid-template-columns: 1fr; }
+  .prompt-choice-actions .button { width: 100%; }
   .result-panel > header { align-items: flex-start; }
   .empty-state,
   .loading-state,

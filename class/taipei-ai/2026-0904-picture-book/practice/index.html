@@ -9,9 +9,9 @@
   <title>AI 教材練習室｜北市府 AI 教學應用</title>
   <link rel="icon" href="/assets/calumai-logo-mark.png">
   <link rel="preload" href="../assets/fonts/iansui-course-display.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260903c">
+  <link rel="stylesheet" href="styles.css?v=20260903d">
   <script src="core.js" defer></script>
-  <script src="app.js?v=20260903m" defer></script>
+  <script src="app.js?v=20260903n" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -167,141 +167,62 @@
           <h3>生成一張無字繪本候選圖</h3>
           <p>一次處理一個場景，先把構圖、留白與不要出現的內容說清楚。</p>
         </div>
-        <details class="prompt-helper" open>
-          <summary>提示詞助手</summary>
-          <p>提示詞助手是「教你怎麼寫、可複製的完整指令」；下方欄位是「實際送給生圖 API 的簡化設定」，兩者用途不同。可先選模板，再一鍵套用。</p>
-          <div class="prompt-helper-grid">
-            <div class="field">
-              <label for="prompt-template">提示詞用途</label>
-              <select id="prompt-template">
-                <option value="picturebook">單張繪本插圖</option>
-                <option value="spec">繪圖工作規格單</option>
-                <option value="character">角色三視圖</option>
-                <option value="series">多頁作品固定設定</option>
-                <option value="style">畫風提示詞骨架</option>
-                <option value="review">獨立驗收指令</option>
-                <option value="poster">班級／活動海報</option>
-                <option value="cover">課程封面主視覺</option>
-                <option value="social">社群貼文配圖</option>
-                <option value="infographic">教學資訊圖表</option>
-                <option value="worksheet">學習單插圖</option>
-                <option value="scene">場景氣氛建立</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="prompt-style">畫風索引</label>
-              <select id="prompt-style">
-                <option value="溫柔手繪水彩繪本風">002｜溫柔手繪水彩繪本風</option>
-                <option value="可愛卡通繪本風">009｜可愛卡通繪本風</option>
-                <option value="北歐簡約童書幾何風">046｜北歐簡約童書幾何風</option>
-                <option value="粉彩鉛筆柔和童書風">052｜粉彩鉛筆柔和童書風</option>
-                <option value="分層紙雕剪影繪本風">054｜分層紙雕剪影繪本風</option>
-                <option value="剪紙動畫民間寓言風">057｜剪紙動畫民間寓言風</option>
-                <option value="刺繡線稿繪本風">062｜刺繡線稿繪本風</option>
-                <option value="歐洲清線冒險漫畫風">068｜歐洲清線冒險漫畫風</option>
-                <option value="知識型簡報插畫風">074｜知識型簡報插畫風</option>
-                <option value="兒童科普百科圖鑑風">077｜兒童科普百科圖鑑風</option>
-                <option value="低解析像素點陣插畫風">082｜低解析像素點陣插畫風</option>
-                <option value="螢光壓克力塗鴉壁畫風">088｜螢光壓克力塗鴉壁畫風</option>
-              </select>
-              <button class="button secondary compact" id="open-style-library" type="button">開啟完整風格大全</button>
-            </div>
-          </div>
-          <div class="prompt-helper-actions">
-            <button class="button secondary compact" id="apply-prompt-template" type="button">套用模板到欄位</button>
-            <button class="button secondary compact" id="copy-prompt-preview" type="button">複製完整提示詞</button>
-          </div>
-          <label class="prompt-preview-label" for="prompt-preview">完整提示詞預覽</label>
-          <textarea id="prompt-preview" class="prompt-preview" rows="6" readonly aria-describedby="prompt-helper-message"></textarea>
-          <div class="prompt-review-box">
-            <label for="prompt-review-input">提示詞檢視 AI 助手</label>
-            <textarea id="prompt-review-input" rows="4" placeholder="貼上想檢查的提示詞，或直接使用上方完整提示詞"></textarea>
-            <button class="button secondary compact" id="review-prompt-button" type="button">檢視並給修改建議</button>
-            <div id="prompt-review-result" class="form-message" role="status" aria-live="polite"></div>
-          </div>
-          <p class="form-message" id="prompt-helper-message" role="status" aria-live="polite">選好模板後，可以套用到下方欄位。</p>
-        </details>
+        <section class="image-flow-intro" aria-labelledby="image-flow-title">
+          <p class="eyebrow">圖片生成流程</p>
+          <h3 id="image-flow-title">先用自己的話寫，再決定要不要採用 AI 建議</h3>
+          <ol>
+            <li><b>1</b><span>選擇圖片用途</span></li>
+            <li><b>2</b><span>寫下你想看到的畫面</span></li>
+            <li><b>3</b><span>請 AI 檢視，可自由採用</span></li>
+            <li><b>4</b><span>用目前文字生成圖片</span></li>
+          </ol>
+        </section>
         <dialog id="style-library-dialog" class="style-library-dialog" aria-labelledby="style-library-title">
-          <form method="dialog" class="style-library-head"><div><h3 id="style-library-title">AI 繪圖風格大全</h3><p>搜尋提示詞，選取後會加入下方視覺風格。</p></div><button class="button secondary compact" value="cancel">關閉</button></form>
+          <form method="dialog" class="style-library-head"><div><h3 id="style-library-title">選填：加入一種視覺風格</h3><p>搜尋後點一下，風格會直接加到你的提示詞。</p></div><button class="button secondary compact" value="cancel">關閉</button></form>
           <div class="style-library-tools"><input id="style-library-search" type="search" placeholder="搜尋中文、英文或分類…"><select id="style-library-category"><option value="all">全部分類</option></select></div>
           <div id="style-library-list" class="style-library-list"></div>
         </dialog>
         <div class="tool-layout">
           <form id="image-form" class="generator-form">
-            <div class="field">
-              <label for="image-purpose">生成用途</label>
+            <div class="field step-field">
+              <label for="image-purpose"><span class="step-number">1</span>這張圖要用在哪裡？</label>
               <select id="image-purpose" name="purpose" required>
-                <option value="" selected disabled>請選擇生成用途</option>
-                <option value="繪本單頁插圖">繪本單頁插圖</option>
+                <option value="" selected disabled>請先選一個用途</option>
+                <option value="繪本插圖">繪本插圖</option>
                 <option value="班級海報">班級海報</option>
-                <option value="活動宣傳海報">活動宣傳海報</option>
+                <option value="活動海報">活動海報</option>
                 <option value="課程封面">課程封面</option>
-                <option value="社群貼文配圖">社群貼文配圖</option>
+                <option value="教材或學習單插圖">教材／學習單插圖</option>
+                <option value="角色設定圖">角色設定圖</option>
+                <option value="社群宣傳圖">社群宣傳圖</option>
               </select>
+              <small id="image-purpose-hint">選用途只是幫你掌握重點；真正送去生成的是下一格的文字。</small>
             </div>
-            <div class="field">
-              <label for="image-scene">場景與動作</label>
-              <select id="image-scene" name="scene" required maxlength="1800">
-                <option value="" selected disabled>請選擇場景與動作</option>
-                <option value="雨後的公園，小晴看見長椅旁的紅雨傘，停下腳步仔細觀察。">雨後公園｜觀察紅雨傘</option>
-                <option value="清晨部落廣場，孩子們圍著長者安靜聽故事。">部落廣場｜圍著長者聽故事</option>
-                <option value="河邊午後，孩子蹲下來觀察水面與周圍的植物。">河邊午後｜觀察水面植物</option>
-                <option value="教室裡，學生一起翻閱繪本並討論畫面中的角色。">教室閱讀｜一起討論繪本</option>
-              </select>
+            <div class="field step-field">
+              <label for="image-prompt"><span class="step-number">2</span>用自己的話描述想看到的畫面</label>
+              <textarea id="image-prompt" name="prompt" required minlength="3" maxlength="4000" rows="9" aria-describedby="image-prompt-help image-prompt-count" placeholder="例如：雨後的公園裡，一位穿黃色雨衣的小女孩停在長椅旁，低頭觀察一把紅色雨傘；溫暖手繪水彩風，角色在左側，右側保留乾淨留白，不要文字與浮水印。"></textarea>
+              <div class="field-meta">
+                <small id="image-prompt-help">寫 3～4000 個字即可，不用寫滿。可包含人物、場景、動作、畫風、構圖及不要出現的內容。</small>
+                <output id="image-prompt-count" for="image-prompt">0 / 4000</output>
+              </div>
+              <button class="button secondary compact" id="open-style-library" type="button">選填：從風格大全加入畫風</button>
             </div>
-            <div class="field">
-              <label for="image-style">視覺風格</label>
-              <select id="image-style" name="style" required maxlength="800">
-                <option value="" selected disabled>請選擇視覺風格</option>
-                <option value="溫暖手繪水彩繪本，柔和自然光，紙張肌理">手繪水彩｜柔和自然光</option>
-                <option value="明亮扁平插畫，清楚色塊，兒童繪本風">明亮扁平插畫｜清楚色塊</option>
-                <option value="柔和蠟筆質感，簡潔線條，溫暖色調">柔和蠟筆｜簡潔線條</option>
-                <option value="可愛卡通插畫，圓潤造型，明亮色彩">可愛卡通｜圓潤造型</option>
-                <option value="北歐童書幾何插畫，簡潔構成，低飽和色彩">北歐幾何｜低飽和色彩</option>
-                <option value="粉彩鉛筆童書風，細緻筆觸，柔和留白">粉彩鉛筆｜柔和留白</option>
-                <option value="分層紙雕插畫，立體陰影，清楚前後景">紙雕剪影｜立體陰影</option>
-                <option value="剪紙動畫風，民間故事感，鮮明色塊">剪紙動畫｜鮮明色塊</option>
-                <option value="刺繡線稿插畫，布料紋理，手作質感">刺繡線稿｜手作質感</option>
-                <option value="歐洲清線冒險漫畫，動態姿勢，明確輪廓">冒險漫畫｜清楚輪廓</option>
-                <option value="知識型簡報插畫，扁平圖示，資訊分區清楚">知識插畫｜資訊分區</option>
-                <option value="兒童科普圖鑑風，觀察視角，細節清楚">科普圖鑑｜細節清楚</option>
-                <option value="低解析像素插畫，復古遊戲感，方格色塊">像素插畫｜復古遊戲感</option>
-                <option value="螢光壓克力塗鴉，強烈筆觸，高對比色彩">壓克力塗鴉｜高對比</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="image-composition">畫面構圖</label>
-              <select id="image-composition" name="composition" required maxlength="800">
-                <option value="" selected disabled>請選擇畫面構圖</option>
-                <option value="角色置中，中景構圖，視線朝向畫面中央">角色置中｜中景、視線朝向中央</option>
-                <option value="角色在左側，右側保留乾淨留白">角色左側｜右側保留留白</option>
-                <option value="角色在右側，左側保留乾淨留白">角色右側｜左側保留留白</option>
-                <option value="遠景環境優先，角色位於畫面下方">環境遠景｜角色位於畫面下方</option>
-                <option value="俯視構圖，場景物件排列清楚">俯視構圖｜物件排列清楚</option>
-              </select>
-              <small>先選最接近的構圖，再於「場景與動作」補充細節。</small>
-            </div>
-            <div class="field">
-              <label for="image-safe-area">文字安全區</label>
-              <select id="image-safe-area" name="safe_area" required maxlength="600">
-                <option value="" selected disabled>請選擇文字安全區</option>
-                <option value="右上保留約三分之一乾淨天空，不放人物與重要物件">右上留白｜約三分之一乾淨天空</option>
-                <option value="左上保留乾淨留白，方便放置標題">左上留白｜方便放置標題</option>
-                <option value="下方保留乾淨留白，方便放置說明文字">下方留白｜方便放置說明</option>
-                <option value="不特別保留文字區，完整呈現整個畫面">不指定留白｜完整呈現畫面</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="image-avoid">不要出現</label>
-              <select id="image-avoid" name="avoid" required maxlength="800">
-                <option value="" selected disabled>請選擇要排除的內容</option>
-                <option value="不要文字、浮水印、額外手指、錯誤服飾或未確認的文化圖紋。">基本排除｜文字、浮水印、錯誤肢體</option>
-                <option value="不要出現現代品牌、Logo、武器或血腥元素。">安全排除｜品牌、Logo、武器、血腥</option>
-                <option value="不要加入未提供的族群符號、儀式或服飾細節。">文化排除｜未確認的符號與服飾</option>
-                <option value="不要多餘角色、變形肢體或錯誤視線。">畫面排除｜多餘角色與變形</option>
-              </select>
-            </div>
-            <button class="button primary full-button" type="submit">生成繪本圖片</button>
+            <section class="prompt-review-box" aria-labelledby="prompt-review-title">
+              <h4 id="prompt-review-title"><span class="step-number">3</span>請 AI 幫你檢查提示詞</h4>
+              <p>AI 會指出哪裡可以更清楚，並提供一份修正版；會使用一次個人文字額度。它不會直接改掉你的原文，也不會自動生成圖片。</p>
+              <button class="button secondary compact" id="review-prompt-button" type="button">請 AI 檢視目前文字</button>
+              <div id="prompt-review-result" class="review-feedback" role="status" aria-live="polite"></div>
+              <div id="prompt-review-suggestion" class="review-suggestion" hidden>
+                <label for="reviewed-prompt">AI 建議的修正版</label>
+                <textarea id="reviewed-prompt" rows="7" readonly maxlength="4000"></textarea>
+                <div class="prompt-choice-actions">
+                  <button class="button primary compact" id="use-reviewed-prompt" type="button">採用 AI 修正版</button>
+                  <button class="button secondary compact" id="keep-original-prompt" type="button">保留我的原文</button>
+                </div>
+              </div>
+            </section>
+            <p class="selected-prompt-state" id="selected-prompt-state" role="status">目前將使用：你在上方輸入的文字</p>
+            <button class="button primary full-button" type="submit"><span aria-hidden="true">4.</span> 用目前提示詞生成圖片</button>
           </form>
 
           <section class="result-panel" aria-labelledby="image-result-title">

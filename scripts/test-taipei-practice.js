@@ -24,28 +24,26 @@ for (const file of ["index.html", "styles.css", "core.js", "app.js"]) {
 assert.match(html, /<html lang="zh-Hant">/, "practice page language is missing");
 assert.match(html, /Content-Security-Policy[^>]+default-src 'self'/, "practice page needs a same-origin CSP");
 assert.match(html, /connect-src 'self'/, "practice page must only connect to the same origin");
-assert.match(html, /styles\.css\?v=20260903c/, "practice stylesheet cache key is stale");
-assert.match(html, /app\.js\?v=20260903m/, "practice app cache key is stale");
+assert.match(html, /styles\.css\?v=20260903d/, "practice stylesheet cache key is stale");
+assert.match(html, /app\.js\?v=20260903n/, "practice app cache key is stale");
 assert.match(html, /<a class="skip-link" href="#main">/, "practice page needs a skip link");
 assert.match(html, /id="claim-form"/, "practice page needs a classroom claim form");
 assert.match(html, /id="workspace"[^>]+hidden/, "workspace must stay hidden before a session is claimed");
 assert.match(html, /role="tablist"/, "generator switcher must expose tab semantics");
 assert.match(html, /id="text-panel" role="tabpanel"/, "text generator tab panel is missing");
 assert.match(html, /id="image-panel" role="tabpanel"/, "image generator tab panel is missing");
-assert.match(html, /class="prompt-helper"/, "prompt helper is missing");
-for (const promptField of ["prompt-template", "prompt-style", "apply-prompt-template", "copy-prompt-preview", "prompt-preview"]) {
-  assert.match(html, new RegExp(`(?:id|class)=['\"][^'\"]*${promptField}[^'\"]*['\"]`), `prompt helper control ${promptField} is missing`);
+for (const promptField of ["image-purpose", "image-prompt", "image-prompt-count", "review-prompt-button", "reviewed-prompt", "use-reviewed-prompt", "keep-original-prompt"]) {
+  assert.match(html, new RegExp(`(?:id|class)=['\"][^'\"]*${promptField}[^'\"]*['\"]`), `canonical prompt control ${promptField} is missing`);
 }
-for (const templateKey of ["picturebook", "spec", "character", "series", "style", "review"]) {
-  assert.match(app, new RegExp(`${templateKey}:`), `prompt template ${templateKey} is missing`);
-}
+assert.doesNotMatch(html, /id="prompt-template"|id="prompt-preview"|id="image-scene"/, "the public page must not expose parallel prompt flows");
+assert.match(html, /name="prompt"[^>]+minlength="3"[^>]+maxlength="4000"/, "canonical image prompt bounds are missing");
 assert.match(html, /id="text-feedback"[^>]+aria-live="polite"/, "text feedback must be announced");
 assert.match(html, /id="image-feedback"[^>]+aria-live="polite"/, "image feedback must be announced");
 
-for (const fieldName of ["class_code", "nickname", "topic", "audience", "duration_minutes", "objective", "source_notes", "requirements", "scene", "style", "composition", "safe_area", "avoid"]) {
+for (const fieldName of ["class_code", "nickname", "topic", "audience", "duration_minutes", "objective", "source_notes", "requirements", "purpose", "prompt"]) {
   assert.match(html, new RegExp(`name=["']${fieldName}["']`), `missing form field ${fieldName}`);
 }
-for (const requiredField of ["text-source-notes", "text-requirements", "image-avoid"]) {
+for (const requiredField of ["text-source-notes", "text-requirements", "image-prompt"]) {
   assert.match(html, new RegExp(`id=["']${requiredField}["'][^>]*\\srequired(?:\\s|>)`), `${requiredField} must match the server-required contract`);
 }
 assert.match(html, /name="duration_minutes"[^>]+min="5"[^>]+max="240"/, "duration range must match the service contract");
@@ -57,11 +55,7 @@ for (const [fieldName, maximum] of Object.entries({
   objective: 1000,
   source_notes: 8000,
   requirements: 3000,
-  scene: 1800,
-  style: 800,
-  composition: 800,
-  safe_area: 600,
-  avoid: 800
+  prompt: 4000
 })) {
   assert.match(html, new RegExp(`name=["']${fieldName}["'][^>]+maxlength=["']${maximum}["']`), `${fieldName} maximum must match the service contract`);
 }
@@ -209,6 +203,8 @@ for (const endpoint of ["/session", "/session/claim", "/session/logout"]) {
   assert(app.includes(`"${endpoint}"`), `app does not call ${endpoint}`);
 }
 assert.match(app, /\/api\/generate-image/, "app must route image generation through the RelayRouter proxy");
+assert.match(app, /return \{ prompt \};/, "image generation must send one canonical prompt field");
+assert.match(app, /core\.buildTextPayload\([\s\S]*?core\.createIdempotencyKey\("text", makeUuid\(\)\)/, "AI review must use the authenticated text-generation contract");
 assert.match(app, /\/generate\/text/, "app must route text generation through the service contract");
 assert.match(app, /performGeneration\("text", false\)/, "text generator submit is not wired");
 assert.match(app, /performGeneration\("image", false\)/, "image generator submit is not wired");
@@ -225,6 +221,7 @@ assert.match(styles, /@media \(max-width: 920px\)[\s\S]*?\.tool-layout\s*{\s*gri
 assert.match(styles, /@media \(max-width: 620px\)[\s\S]*?\.shell\s*{\s*width:\s*min\(100% - 24px, 1180px\)/, "390px shell must remain inside the viewport");
 assert.match(styles, /@media \(max-width: 620px\)[\s\S]*?\.form-row\s*{\s*grid-template-columns:\s*1fr/, "mobile form rows must be single-column");
 assert.match(styles, /min-width:\s*320px/, "practice page should support narrow mobile viewports");
+assert.match(styles, /\.image-success img[\s\S]*?aspect-ratio:\s*2 \/ 3/, "image preview must match the 1024x1536 API ratio");
 assert.doesNotMatch(styles, /min-width:\s*(?:4\d\d|[5-9]\d\d|\d{4,})px/, "practice CSS contains a fixed minimum width wider than 390px");
 
 assert.doesNotMatch(combinedStudentSource, /[—–]/, "practice page must use regular hyphens");
