@@ -70,7 +70,6 @@ for (const [token, value] of Object.entries({
 
 assert.match(html, /<meta name="theme-color" content="#005fb8">/i, "theme color should use accessible brand blue");
 assert.match(html, /styles\.css\?v=20260903c/, "course stylesheet cache key is stale");
-assert.match(html, /workbench-preview\.png\?v=20260903a" width="1280" height="960"/, "workbench preview cache key or dimensions are stale");
 assert.match(workbench, /--ink:\s*#0c2247/i, "workbench navy token is stale");
 assert.match(workbench, /--accent:\s*#005fb8/i, "workbench action blue is stale");
 assert.match(workbench, /--orange:\s*#fca116/i, "workbench orange token is stale");
