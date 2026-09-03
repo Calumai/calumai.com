@@ -426,6 +426,7 @@
     logoutButton.textContent = "正在結束";
     try {
       await callService("/session/logout", "POST", {}, 15000);
+      if (previewMode) { previewQuota.text = 2; previewQuota.image = 1; }
       for (const kind of ["text", "image"]) {
         generationStates[kind] = core.transitionGeneration(generationStates[kind], { type: "reset" });
         renderGeneration(kind);
