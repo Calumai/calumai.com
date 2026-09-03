@@ -608,6 +608,9 @@ td:last-child { color: var(--ink-soft); }
   background: var(--white);
   box-shadow: var(--shadow);
 }
+.prompt-howto { margin: 0 0 1rem; padding: .9rem 1rem; border: 1px solid var(--orange); border-radius: 12px; background: #fff7eb; color: var(--ink); }
+.prompt-howto strong { color: var(--orange-dark, #b85b00); font-size: 1.05rem; }
+.prompt-howto p { margin: .35rem 0 0; color: var(--ink-soft); font-size: .86rem; line-height: 1.5; }
 
 .prompt-sidebar {
   display: flex;
