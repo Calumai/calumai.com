@@ -105,9 +105,10 @@ assertContrast(palette.ink, palette.paper, 7, "primary text on paper");
 assertContrast(palette.inkSoft, palette.paper, 4.5, "secondary text on paper");
 assertContrast(palette.controlBorder, palette.white, 3, "control border on white");
 
-for (const id of ["workflow", "schedule", "prompts", "yaml", "example", "gates", "downloads"]) {
+for (const id of ["workflow", "prompts", "yaml", "example", "gates", "downloads"]) {
   assert.match(html, new RegExp(`id=["']${id}["']`), `missing section #${id}`);
 }
+assert.doesNotMatch(html, /3-HOUR ROUTE|三小時，先求走完整條線|查看完整 12 段時間表|本頁屬於北市府四堂/u, "internal schedule or boundary copy must not be public");
 
 assert.match(html, /<section class="practice-cta"[^>]+aria-labelledby="practice-cta-title">/, "course page needs a practice CTA after YAML");
 assert.match(html, /href="practice\/">開啟 AI 教材練習室<\/a>/, "practice CTA link is missing");
