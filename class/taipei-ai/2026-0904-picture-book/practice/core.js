@@ -212,7 +212,15 @@
       RETRY_EXHAUSTED: "此請求已達重試上限，請修改內容後重新生成。",
       IDEMPOTENCY_CONFLICT: "這筆識別碼已用於其他內容，請重新按下生成。",
       RATE_LIMITED: "目前請求較多，請稍候再試。",
-      CONTENT_BLOCKED: "內容未通過安全檢查，請調整描述後再試。"
+      CONTENT_BLOCKED: "內容或參考圖未通過安全檢查，請調整後再試。",
+      REFERENCE_IMAGE_REQUIRED: "請先上傳至少一張有權使用的參考圖。",
+      INVALID_REFERENCE_IMAGE: "參考圖只接受 PNG、JPG 或 WebP，單張不可超過 4 MB。",
+      REFERENCE_UPLOAD_TOO_LARGE: "參考圖總量太大，請減少張數或壓縮後再試。",
+      CULTURE_REVIEW_REQUIRED: "傳統服飾或圖紋必須先補齊明確來源與真人審訂。",
+      IMAGE_API_AUTH_FAILED: "圖片服務驗證失敗，請通知講師。",
+      IMAGE_API_RATE_LIMITED: "圖片服務目前忙碌，請稍候再試。",
+      IMAGE_API_EMPTY_RESULT: "圖片服務沒有回傳可用圖片。",
+      IMAGE_API_FAILED: "這次圖片生成沒有完成，請檢查內容後再試。"
     };
     if (fixed[code]) return fixed[code];
     if (code.endsWith("_TIMEOUT")) return "生成逾時，原請求可以再試一次。";

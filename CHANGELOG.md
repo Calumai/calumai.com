@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Replaced the Taipei 9/4 single-image exercise with a course-centered ten-page picture-book studio: learners upload rights-cleared reference images, lock story/character/style decisions, generate an editable ten-page storyboard, then create and download one reviewed page at a time. Added a mandatory source-and-human-review gate for traditional clothing, patterns, objects and cultural scenes, server-side RelayRouter `/images/edits` forwarding, per-page retry limits, printable book output and responsive mobile layouts.
 - Fixed the AI revised-prompt textarea so it fills the available responsive column instead of rendering at the browser's narrow default width; mobile actions remain stacked and full width.
 - Added a post-share reminder in `/class/patrol/` telling students they may minimize the patrol page and return to their learning materials, while keeping the page and shared window or tab open.
 - Added the CALUMAI-styled remote classroom patrol prototype at `/class/patrol/`, including teacher and student entry points, 100-person/25-per-page patrol layout, student search and help filtering, announcements, and browser screen-sharing preview. Added its entry to the `/class/` course overview. The first version is an interaction prototype; cross-device teacher delivery is not yet implemented.

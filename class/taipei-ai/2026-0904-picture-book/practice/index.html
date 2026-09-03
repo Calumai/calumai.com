@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="北市府 AI 教學應用課堂練習室，使用課堂碼生成教材文字與繪本圖片。">
   <meta name="theme-color" content="#005fb8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
   <title>AI 教材練習室｜北市府 AI 教學應用</title>
   <link rel="icon" href="/assets/calumai-logo-mark.png">
   <link rel="preload" href="../assets/fonts/iansui-course-display.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260903e">
+  <link rel="stylesheet" href="styles.css?v=20260903f">
   <script src="core.js" defer></script>
-  <script src="app.js?v=20260903o" defer></script>
+  <script src="app.js?v=20260903p" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -90,7 +90,7 @@
 
       <div class="tool-tabs" role="tablist" aria-label="選擇生成練習">
         <button id="text-tab" type="button" role="tab" aria-selected="true" aria-controls="text-panel" tabindex="0" data-tab="text">教材文字</button>
-        <button id="image-tab" type="button" role="tab" aria-selected="false" aria-controls="image-panel" tabindex="-1" data-tab="image">繪本圖片</button>
+        <button id="image-tab" type="button" role="tab" aria-selected="false" aria-controls="image-panel" tabindex="-1" data-tab="image">10 頁繪本</button>
       </div>
 
       <section class="tool-panel" id="text-panel" role="tabpanel" aria-labelledby="text-tab">
@@ -162,97 +162,220 @@
         </div>
       </section>
 
-      <section class="tool-panel" id="image-panel" role="tabpanel" aria-labelledby="image-tab" hidden>
-        <div class="panel-heading">
-          <h3>生成一張無字繪本候選圖</h3>
-          <p>一次處理一個場景，先把構圖、留白與不要出現的內容說清楚。</p>
+      <section class="tool-panel book-studio" id="image-panel" role="tabpanel" aria-labelledby="image-tab" hidden>
+        <div class="panel-heading book-heading">
+          <div>
+            <p class="kicker">課堂作品線</p>
+            <h3>10 頁繪本製作室</h3>
+            <p>先用課程來源完成整本分鏡，再以同一組角色、服飾與圖紋參考圖逐頁生成。課堂先完成計畫與關鍵頁，課後可補齊全本。</p>
+          </div>
+          <span class="book-badge">文字後製，不畫進圖片</span>
         </div>
-        <section class="image-flow-intro" aria-labelledby="image-flow-title">
-          <p class="eyebrow">圖片生成流程</p>
-          <h3 id="image-flow-title">先用自己的話寫，再決定要不要採用 AI 建議</h3>
-          <ol>
-            <li><b>1</b><span>選擇圖片用途</span></li>
-            <li><b>2</b><span>寫下你想看到的畫面</span></li>
-            <li><b>3</b><span>請 AI 檢視，可自由採用</span></li>
-            <li><b>4</b><span>用目前文字生成圖片</span></li>
-          </ol>
+
+        <ol class="book-flow" aria-label="十頁繪本製作流程">
+          <li data-state="active"><b>1</b><span>故事與來源</span></li>
+          <li><b>2</b><span>參考圖與權利</span></li>
+          <li><b>3</b><span>AI 拆成 10 頁</span></li>
+          <li><b>4</b><span>逐頁生圖與檢查</span></li>
+          <li><b>5</b><span>排版輸出</span></li>
+        </ol>
+
+        <form id="book-setup-form" class="book-setup-form">
+          <section class="book-step-card" aria-labelledby="book-story-title">
+            <header class="book-step-head">
+              <span>01</span>
+              <div><h4 id="book-story-title">先決定這本書要說什麼</h4><p>AI 只能依你貼入的課程來源拆故事；找不到依據的內容要標「待確認」。</p></div>
+            </header>
+            <div class="book-form-grid">
+              <div class="field">
+                <label for="book-title">書名（可先用暫名）</label>
+                <input id="book-title" name="book_title" required maxlength="160" placeholder="例如：山風帶來的名字">
+              </div>
+              <div class="field">
+                <label for="book-audience">閱讀對象</label>
+                <select id="book-audience" name="book_audience" required>
+                  <option value="國小一至二年級">國小一至二年級</option>
+                  <option value="國小三至四年級">國小三至四年級</option>
+                  <option value="國小五至六年級" selected>國小五至六年級</option>
+                  <option value="國中以上">國中以上</option>
+                  <option value="親子共讀">親子共讀</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="book-format">成品形式</label>
+                <select id="book-format" name="book_format" required>
+                  <option value="picture-book">單頁繪本｜每頁一個主畫面</option>
+                  <option value="comic">漫畫｜每頁 1～4 格</option>
+                  <option value="mixed">混合｜繪本跨頁＋漫畫格</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="book-learning-goal">希望讀者帶走什麼</label>
+                <input id="book-learning-goal" name="learning_goal" required maxlength="300" placeholder="例如：理解地名故事要查來源，也要尊重說故事的人">
+              </div>
+            </div>
+            <div class="field">
+              <label for="book-story-source">課程來源／故事事實包</label>
+              <textarea id="book-story-source" name="story_source" required minlength="20" maxlength="8000" rows="7" placeholder="貼上已核對的故事、訪談摘要、人物、地點、事件因果與來源說明。不要貼未授權全文或學生個資。"></textarea>
+              <small>這一格是整本書的事實邊界。沒有來源的創作請明確寫「虛構設定」。</small>
+            </div>
+            <div class="field">
+              <label for="book-locked-facts">不能被 AI 改寫的內容</label>
+              <textarea id="book-locked-facts" name="locked_facts" required maxlength="2000" rows="4" placeholder="例如：人物關係、事件順序、族語正確拼寫、服飾所屬年代與場合；未確認項目一律不寫入。"></textarea>
+            </div>
+          </section>
+
+          <section class="book-step-card" aria-labelledby="book-reference-title">
+            <header class="book-step-head">
+              <span>02</span>
+              <div><h4 id="book-reference-title">上傳 AI 真正會看到的參考圖</h4><p>可放角色、服飾／圖紋、場景或重要物件，最多 4 張；每張都要標用途與來源。</p></div>
+            </header>
+            <label class="reference-drop" for="book-reference-input">
+              <strong>選擇參考圖</strong>
+              <span>PNG、JPG 或 WebP；每張不超過 4 MB，最多 4 張</span>
+              <input id="book-reference-input" type="file" accept="image/png,image/jpeg,image/webp" multiple>
+            </label>
+            <div id="book-reference-list" class="reference-list" aria-live="polite"></div>
+            <p id="book-reference-message" class="form-message" role="status"></p>
+
+            <div class="field cultural-mode-field">
+              <label for="culture-mode">這本書是否會畫傳統原住民族服飾、圖紋或器物？</label>
+              <select id="culture-mode" name="culture_mode" required>
+                <option value="general">不會；也不要讓 AI 自行加入</option>
+                <option value="verified-traditional">會；我有參考圖、明確範圍與真人審訂</option>
+              </select>
+            </div>
+            <div id="culture-fields" class="culture-fields" hidden>
+              <aside class="culture-warning">
+                <strong>傳統服飾與圖紋不是裝飾素材庫</strong>
+                <p>請寫清楚族群／家族／地點、年代、場合與角色身分。AI 只能依參考圖中看得到且已確認的部分工作，不可猜圖紋意義、補畫背面或混搭不同群體。</p>
+              </aside>
+              <div class="field">
+                <label for="culture-scope">本次可使用的明確範圍</label>
+                <input id="culture-scope" name="culture_scope" maxlength="300" placeholder="例如：○○族、某家族、2024 年豐年祭、女性青年服飾；僅限本課堂草稿">
+              </div>
+              <div class="field">
+                <label for="culture-rules">已由真人確認的特徵與禁止事項</label>
+                <textarea id="culture-rules" name="culture_rules" maxlength="1600" rows="5" placeholder="寫出可畫的顏色、位置、穿著方式與來源；看不到或尚未確認的部位請寫『不要生成』。"></textarea>
+              </div>
+              <label class="consent-row culture-confirm" for="culture-reviewed">
+                <input id="culture-reviewed" type="checkbox">
+                <span>我已請適合的人確認上述範圍；若尚未確認，我只做文字分鏡，不送出文化圖像生成。</span>
+              </label>
+            </div>
+
+            <div class="book-form-grid">
+              <div class="field">
+                <label for="book-visual-style">整本固定畫風</label>
+                <select id="book-visual-style" name="visual_style" required>
+                  <option value="溫暖手繪水彩童書，柔和自然光，紙張肌理">溫暖手繪水彩童書</option>
+                  <option value="清楚線條的兒童漫畫，柔和色塊，表情易讀">兒童漫畫清線風</option>
+                  <option value="剪紙拼貼童書，分層紙張質感，鮮明色塊">剪紙拼貼童書</option>
+                  <option value="粉彩鉛筆童書，細緻筆觸，低飽和色彩">粉彩鉛筆童書</option>
+                  <option value="刺繡與布料質感插畫，圖紋僅依核准參考圖">刺繡布料插畫</option>
+                  <option value="北歐幾何童書，簡潔構成，留白清楚">北歐幾何童書</option>
+                  <option value="custom">自訂畫風</option>
+                </select>
+                <button class="button secondary compact style-picker-button" id="open-style-library" type="button">從風格大全選擇</button>
+              </div>
+              <div class="field">
+                <label for="book-palette">固定色盤與光線</label>
+                <input id="book-palette" name="palette" required maxlength="300" placeholder="例如：靛藍、土紅、米白；午後柔光；避免霓虹色">
+              </div>
+            </div>
+            <div class="field" id="custom-style-field" hidden>
+              <label for="book-custom-style">自訂畫風描述</label>
+              <input id="book-custom-style" maxlength="500" placeholder="描述媒材、線條、色彩與閱讀感，不填藝術家姓名">
+            </div>
+            <div class="field">
+              <label for="book-character-locks">角色固定特徵</label>
+              <textarea id="book-character-locks" name="character_locks" required maxlength="1600" rows="4" placeholder="至少寫臉型、髮型、身形比例、服裝、配件五項；後續每頁都會沿用。"></textarea>
+            </div>
+            <label class="consent-row" for="reference-rights">
+              <input id="reference-rights" type="checkbox" required>
+              <span>我有權把這些參考圖送交 AI 處理；圖中沒有未經同意的兒童、個資或限制上傳內容。</span>
+            </label>
+          </section>
+
+          <section class="book-step-card plan-action-card" aria-labelledby="book-plan-action-title">
+            <header class="book-step-head">
+              <span>03</span>
+              <div><h4 id="book-plan-action-title">先產生 10 頁文字分鏡，不先燒圖片額度</h4><p>AI 會拆出每頁功能、旁白、動作、構圖與待審項目；你仍可逐頁修改。</p></div>
+            </header>
+            <button class="button primary full-button" id="create-book-plan" type="submit">建立 10 頁分鏡</button>
+            <p id="book-plan-message" class="form-message" role="status" aria-live="polite"></p>
+          </section>
+        </form>
+
+        <section id="book-plan-workspace" class="book-plan-workspace" hidden aria-labelledby="book-plan-title">
+          <header class="book-plan-toolbar">
+            <div>
+              <p class="kicker">10 頁草稿</p>
+              <h3 id="book-plan-title">逐頁修改，再決定哪一頁要生成</h3>
+              <p>每頁只放一個主要事件。漫畫可調格數；正式文字保留為可編輯欄位，不會畫進圖片。</p>
+            </div>
+            <div class="book-toolbar-actions">
+              <button class="button secondary compact" id="download-book-plan" type="button">下載分鏡 JSON</button>
+              <button class="button primary compact" id="generate-next-page" type="button">生成下一個未完成頁</button>
+              <button class="button secondary compact" id="print-book" type="button" disabled>預覽／列印全本</button>
+            </div>
+          </header>
+          <div class="book-progress" aria-live="polite">
+            <div><span id="book-progress-label">0 / 10 頁已有圖片</span><small>每頁最多嘗試 3 次；先修正失敗頁，不整本重生。</small></div>
+            <progress id="book-progress-bar" value="0" max="10">0 / 10</progress>
+          </div>
+          <div id="book-page-list" class="book-page-list"></div>
+          <p id="book-generation-message" class="form-message book-generation-message" role="status" aria-live="polite"></p>
         </section>
+
         <dialog id="style-library-dialog" class="style-library-dialog" aria-labelledby="style-library-title">
-          <form method="dialog" class="style-library-head"><div><h3 id="style-library-title">選填：加入一種視覺風格</h3><p>搜尋後點一下，風格會直接加到你的提示詞。</p></div><button class="button secondary compact" value="cancel">關閉</button></form>
+          <form method="dialog" class="style-library-head"><div><h3 id="style-library-title">視覺風格大全</h3><p>風格只控制媒材與視覺語言，不會提供或驗證文化內容。</p></div><button class="button secondary compact" value="cancel">關閉</button></form>
           <div class="style-library-tools"><input id="style-library-search" type="search" placeholder="搜尋中文、英文或分類…"><select id="style-library-category"><option value="all">全部分類</option></select></div>
           <div id="style-library-list" class="style-library-list"></div>
         </dialog>
-        <div class="tool-layout">
-          <form id="image-form" class="generator-form">
-            <div class="field step-field">
-              <label for="image-purpose"><span class="step-number">1</span>這張圖要用在哪裡？</label>
-              <select id="image-purpose" name="purpose" required>
-                <option value="" selected disabled>請先選一個用途</option>
-                <option value="繪本插圖">繪本插圖</option>
-                <option value="班級海報">班級海報</option>
-                <option value="活動海報">活動海報</option>
-                <option value="課程封面">課程封面</option>
-                <option value="教材或學習單插圖">教材／學習單插圖</option>
-                <option value="角色設定圖">角色設定圖</option>
-                <option value="社群宣傳圖">社群宣傳圖</option>
-              </select>
-              <small id="image-purpose-hint">選用途只是幫你掌握重點；真正送去生成的是下一格的文字。</small>
-            </div>
-            <div class="field step-field">
-              <label for="image-prompt"><span class="step-number">2</span>用自己的話描述想看到的畫面</label>
-              <textarea id="image-prompt" name="prompt" required minlength="3" maxlength="4000" rows="9" aria-describedby="image-prompt-help image-prompt-count" placeholder="例如：雨後的公園裡，一位穿黃色雨衣的小女孩停在長椅旁，低頭觀察一把紅色雨傘；溫暖手繪水彩風，角色在左側，右側保留乾淨留白，不要文字與浮水印。"></textarea>
-              <div class="field-meta">
-                <small id="image-prompt-help">寫 3～4000 個字即可，不用寫滿。可包含人物、場景、動作、畫風、構圖及不要出現的內容。</small>
-                <output id="image-prompt-count" for="image-prompt">0 / 4000</output>
-              </div>
-              <button class="button secondary compact" id="open-style-library" type="button">選填：從風格大全加入畫風</button>
-            </div>
-            <section class="prompt-review-box" aria-labelledby="prompt-review-title">
-              <h4 id="prompt-review-title"><span class="step-number">3</span>請 AI 幫你檢查提示詞</h4>
-              <p>AI 會指出哪裡可以更清楚，並提供一份修正版；會使用一次個人文字額度。它不會直接改掉你的原文，也不會自動生成圖片。</p>
-              <button class="button secondary compact" id="review-prompt-button" type="button">請 AI 檢視目前文字</button>
-              <div id="prompt-review-result" class="review-feedback" role="status" aria-live="polite"></div>
-              <div id="prompt-review-suggestion" class="review-suggestion" hidden>
-                <label for="reviewed-prompt">AI 建議的修正版</label>
-                <textarea id="reviewed-prompt" rows="7" readonly maxlength="4000"></textarea>
-                <div class="prompt-choice-actions">
-                  <button class="button primary compact" id="use-reviewed-prompt" type="button">採用 AI 修正版</button>
-                  <button class="button secondary compact" id="keep-original-prompt" type="button">保留我的原文</button>
-                </div>
-              </div>
-            </section>
-            <p class="selected-prompt-state" id="selected-prompt-state" role="status">目前將使用：你在上方輸入的文字</p>
-            <button class="button primary full-button" type="submit"><span aria-hidden="true">4.</span> 用目前提示詞生成圖片</button>
-          </form>
 
-          <section class="result-panel" aria-labelledby="image-result-title">
-            <header>
-              <h4 id="image-result-title">圖片結果</h4>
-              <span class="generation-status" id="image-status">尚未生成</span>
-            </header>
-            <div id="image-feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true"></div>
-            <div class="empty-state image-empty" id="image-empty">
-              <strong>先描述一個清楚的單頁畫面</strong>
-              <p>結果會顯示在這裡。下載前請完成內容、文化與權利檢查。</p>
+        <template id="reference-card-template">
+          <article class="reference-card">
+            <img alt="參考圖預覽">
+            <div class="reference-card-fields">
+              <div class="field"><label>這張圖的用途<select data-ref-field="kind"><option value="character">角色外觀</option><option value="clothing-pattern">服飾／圖紋</option><option value="scene">場景</option><option value="object">重要物件</option><option value="style">媒材／畫風</option></select></label></div>
+              <div class="field"><label>來源或授權說明<input data-ref-field="source" maxlength="300" placeholder="例如：本人拍攝，已取得當事人同意"></label></div>
+              <div class="field"><label>只可參考哪些細節<textarea data-ref-field="notes" rows="2" maxlength="500" placeholder="例如：只參考正面服飾與紅黑配色，不補畫背面"></textarea></label></div>
             </div>
-            <div class="loading-state image-loading" id="image-loading" hidden aria-hidden="true">
-              <div class="image-skeleton"></div>
-              <p>正在建立候選圖，請勿重複送出。</p>
+            <button class="button secondary compact" data-action="remove-reference" type="button">移除</button>
+          </article>
+        </template>
+
+        <template id="book-page-template">
+          <article class="story-page-card">
+            <header class="story-page-head"><div><span class="page-number"></span><strong class="page-function"></strong></div><span class="page-status">尚未生成</span></header>
+            <div class="story-page-body">
+              <div class="page-editor">
+                <div class="field"><label>本頁功能<input data-page-field="function" maxlength="120"></label></div>
+                <div class="field"><label>旁白（後製文字）<textarea data-page-field="narration" rows="3" maxlength="500"></textarea></label></div>
+                <div class="field"><label>對白（沒有就留空）<textarea data-page-field="dialogue" rows="2" maxlength="300"></textarea></label></div>
+                <div class="field"><label>畫面與動作<textarea data-page-field="visual_prompt" rows="5" maxlength="1800"></textarea></label></div>
+                <div class="page-editor-row">
+                  <div class="field"><label>版面<select data-page-field="layout"><option value="single">單一主畫面</option><option value="two-panels">2 格漫畫</option><option value="three-panels">3 格漫畫</option><option value="four-panels">4 格漫畫</option><option value="spread">跨頁感構圖</option></select></label></div>
+                  <div class="field"><label>文字留白<select data-page-field="safe_area"><option value="upper-right">右上</option><option value="upper-left">左上</option><option value="bottom">下方</option><option value="none">不指定</option></select></label></div>
+                </div>
+                <div class="field"><label>必須看得到<input data-page-field="must_include" maxlength="500"></label></div>
+                <div class="field"><label>待真人確認<input data-page-field="pending_review" maxlength="500" placeholder="沒有就填：無"></label></div>
+                <div class="page-actions">
+                  <button class="button primary compact" data-action="generate-page" type="button">生成本頁候選圖</button>
+                  <button class="button secondary compact" data-action="download-page" type="button" hidden>下載本頁圖片</button>
+                </div>
+                <p class="page-message" role="status"></p>
+              </div>
+              <div class="page-preview">
+                <div class="page-preview-empty"><strong>無字圖片區</strong><span>生成後會出現在這裡</span></div>
+                <img alt="" hidden>
+              </div>
             </div>
-            <div class="error-state" id="image-error" hidden>
-              <strong>這次沒有完成</strong>
-              <p id="image-error-message"></p>
-              <small id="image-error-reference"></small>
-              <button class="button secondary compact" id="image-retry" type="button" hidden>沿用原請求重試</button>
-            </div>
-            <article class="success-state image-success" id="image-success" hidden>
-              <img id="image-output" alt="本次生成的繪本候選圖">
-              <p>這是候選圖，不代表已通過族語、文化、授權或公開審訂。</p>
-              <button class="button primary compact" id="download-image" type="button">下載圖片</button>
-              <small id="image-request-reference"></small>
-            </article>
-          </section>
-        </div>
+          </article>
+        </template>
+
+        <section id="book-print-area" class="book-print-area" aria-hidden="true"></section>
       </section>
     </section>
   </main>

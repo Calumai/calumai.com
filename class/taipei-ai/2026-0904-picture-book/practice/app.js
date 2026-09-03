@@ -5,38 +5,37 @@
   if (!core) return;
 
   const byId = (id) => document.getElementById(id);
+  const previewMode = ["127.0.0.1", "localhost"].includes(globalThis.location.hostname);
   const claimForm = byId("claim-form");
   const claimButton = byId("claim-button");
-  const claimMessage = byId("claim-message");
   const accessPanel = byId("access-panel");
   const workspace = byId("workspace");
-  const logoutButton = byId("logout-button");
   const textForm = byId("text-form");
-  const imageForm = byId("image-form");
-  const generationForms = { text: textForm, image: imageForm };
-  const generationStates = {
-    text: core.createGenerationState("text"),
-    image: core.createGenerationState("image")
-  };
+  const bookSetupForm = byId("book-setup-form");
+  const previewQuota = { text: 2, image: 10 };
+  const previewImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
   let currentSession = null;
-  const previewMode = ["127.0.0.1", "localhost"].includes(globalThis.location.hostname);
-  // Never retain classroom credentials or consent fields in a shareable URL.
+  let previewSessionActive = false;
+  let textState = core.createGenerationState("text");
+  let references = [];
+  let bookPages = [];
+  let activePageNumber = null;
+
   if (globalThis.history && globalThis.location.search) {
     const cleanUrl = new URL(globalThis.location.href);
     for (const key of ["class_code", "nickname", "consent", "test_mode"]) cleanUrl.searchParams.delete(key);
     globalThis.history.replaceState(null, "", cleanUrl.pathname + (previewMode ? "?preview=1" : "") + cleanUrl.hash);
   }
-  let previewSessionActive = false;
-  const previewQuota = { text: 2, image: 1 };
-  const previewImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
 
   function makeUuid() {
-    if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
-      return globalThis.crypto.randomUUID();
-    }
+    if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") return globalThis.crypto.randomUUID();
     const bytes = new Uint8Array(16);
     globalThis.crypto.getRandomValues(bytes);
     return Array.from(bytes, (value) => value.toString(16).padStart(2, "0")).join("");
+  }
+
+  function valuesOf(form) {
+    return Object.fromEntries(new FormData(form).entries());
   }
 
   function previewSessionPayload(nickname) {
@@ -44,9 +43,29 @@
       ok: true,
       session: { nickname: nickname || "本機學員", mode: "preview", expires_at: "2099-01-01T00:00:00Z" },
       classroom: { status: "open", opens_at: "2099-01-01T00:00:00Z", closes_at: "2099-01-01T23:59:59Z" },
-      remaining: { text: previewQuota.text, image: previewQuota.image },
-      classroom_remaining: { text: 80 - (2 - previewQuota.text), image: 40 - (1 - previewQuota.image) }
+      remaining: { ...previewQuota },
+      classroom_remaining: { text: 80, image: 40 },
     };
+  }
+
+  function previewBookPlan() {
+    const functions = [
+      "封面與故事承諾", "人物與地方", "事件開始", "第一次行動", "阻礙出現",
+      "角色停下思考", "重要發現", "做出選擇", "結果與改變", "收尾與讀者帶走的感受",
+    ];
+    return JSON.stringify({
+      pages: functions.map((pageFunction, index) => ({
+        page_no: index + 1,
+        function: pageFunction,
+        narration: `第 ${index + 1} 頁旁白草稿，請依來源修改。`,
+        dialogue: "",
+        visual_prompt: `呈現「${pageFunction}」的一個主要動作，延續同一角色與場景設定。`,
+        layout: "single",
+        safe_area: index % 2 === 0 ? "upper-right" : "upper-left",
+        must_include: "只包含來源已確認的人物、場景與物件",
+        pending_review: "無",
+      })),
+    }, null, 2);
   }
 
   function previewResponse(pathname, body) {
@@ -66,103 +85,98 @@
     if (!previewSessionActive) {
       return { ok: false, request_id: "local-preview", error: { code: "UNAUTHENTICATED", message: "請先輸入課堂碼登入。", retryable: false } };
     }
-    const kind = ["/generate/image", "/generate-image", "/api/generate-image"].includes(pathname) ? "image" : "text";
-    if (previewQuota[kind] <= 0) {
-      return { ok: false, request_id: "local-preview", error: { code: "SESSION_QUOTA_EXHAUSTED", message: "本機展示額度已用完。", retryable: false } };
+    if (previewQuota.text <= 0) {
+      return { ok: false, request_id: "local-preview", error: { code: "SESSION_QUOTA_EXHAUSTED", message: "本機展示文字額度已用完。", retryable: false } };
     }
-    previewQuota[kind] -= 1;
-    const remaining = { text: previewQuota.text, image: previewQuota.image };
-    const classroomRemaining = {
-      text: 80 - (2 - previewQuota.text),
-      image: 40 - (1 - previewQuota.image)
-    };
-    if (kind === "image") {
-      return {
-        ok: true,
-        request_id: "local-preview-image",
-        kind,
-        image: { mime_type: "image/png", data_base64: previewImageBase64, type: "base64", src: `data:image/png;base64,${previewImageBase64}` },
-        remaining,
-        classroom_remaining: classroomRemaining
-      };
-    }
-    const topic = body && body.topic ? body.topic : "本機展示教材";
-    const isPromptReview = topic.includes("提示詞檢視");
-    const reviewedSource = body && body.source_notes ? body.source_notes : "一個清楚的課堂畫面";
+    previewQuota.text -= 1;
+    const content = body && String(body.topic || "").includes("10 頁繪本")
+      ? previewBookPlan()
+      : `# ${body && body.topic ? body.topic : "本機展示教材"}\n\n這是本機預覽模式產生的範例文字，不會送到正式服務。`;
     return {
       ok: true,
       request_id: "local-preview-text",
-      kind,
-      content: isPromptReview
-        ? `【檢視建議】\n- 已有清楚主題，可再補充主體位置、光線和不要出現的內容。\n\n【修正版提示詞】\n${reviewedSource}；主體清楚，構圖有明確焦點，光線自然，不要文字、浮水印或 Logo。\n【修正版結束】`
-        : `# ${topic}\n\n## 本機展示草稿\n\n這是本機預覽模式產生的範例文字，不會送到正式服務。\n\n- 對象：${body && body.audience ? body.audience : "待填寫"}\n- 時間：${body && body.duration_minutes ? body.duration_minutes : "待填寫"} 分鐘\n- 下一步：檢查內容、文化脈絡與授權後再下載。`,
+      kind: "text",
+      content,
       usage: { input_tokens: 0, output_tokens: 0, total_tokens: 0 },
-      remaining,
-      classroom_remaining: classroomRemaining
+      remaining: { ...previewQuota },
+      classroom_remaining: { text: 80, image: 40 },
     };
   }
 
-  async function callService(pathname, method, body, timeoutMs) {
+  async function callJsonService(pathname, method, body, timeoutMs) {
     if (previewMode) return previewResponse(pathname, body);
-    const descriptor = core.createRequest(pathname === "/generate-image" ? "/generate/image" : pathname, method, body);
-    if (pathname === "/generate-image") descriptor.url = "/api/generate-image";
+    const descriptor = core.createRequest(pathname, method, body);
     const controller = new AbortController();
-    const timeout = globalThis.setTimeout(() => controller.abort(), timeoutMs);
-
+    const timer = globalThis.setTimeout(() => controller.abort(), timeoutMs);
     try {
-      const response = await fetch(descriptor.url, {
-        ...descriptor.options,
-        signal: controller.signal
-      });
+      const response = await fetch(descriptor.url, { ...descriptor.options, signal: controller.signal });
       let payload = null;
-      try {
-        payload = await response.json();
-      } catch {
-        payload = null;
-      }
-
-      if (!response.ok || !payload || payload.ok !== true) {
-        throw { practiceError: core.normalizeApiError(payload, response.status) };
-      }
+      try { payload = await response.json(); } catch { payload = null; }
+      if (!response.ok || !payload || payload.ok !== true) throw core.normalizeApiError(payload, response.status);
       return payload;
     } catch (error) {
-      if (error && error.practiceError) throw error.practiceError;
+      if (error && error.code) throw error;
       if (error && error.name === "AbortError") {
-        throw {
-          code: "CLIENT_TIMEOUT",
-          message: "等待時間已超過本頁上限。",
-          retryable: true,
-          requestId: "",
-          httpStatus: 0
-        };
+        throw { code: "CLIENT_TIMEOUT", message: "等待時間已超過本頁上限。", retryable: true, requestId: "", httpStatus: 0 };
       }
-      throw {
-        code: "NETWORK_ERROR",
-        message: "無法連上課堂服務，請檢查網路連線。",
-        retryable: true,
-        requestId: "",
-        httpStatus: 0
-      };
+      throw { code: "NETWORK_ERROR", message: "無法連上課堂服務，請檢查網路連線。", retryable: true, requestId: "", httpStatus: 0 };
     } finally {
-      globalThis.clearTimeout(timeout);
+      globalThis.clearTimeout(timer);
     }
   }
 
-  function valuesOf(form) {
-    return Object.fromEntries(new FormData(form).entries());
+  async function callBookPageService(formData) {
+    if (previewMode) {
+      if (previewQuota.image <= 0) {
+        throw { code: "SESSION_QUOTA_EXHAUSTED", message: "本機展示圖片額度已用完。", retryable: false, requestId: "", httpStatus: 429 };
+      }
+      previewQuota.image -= 1;
+      return {
+        ok: true,
+        request_id: `local-preview-page-${formData.get("page_no")}`,
+        kind: "image",
+        page_no: Number(formData.get("page_no")),
+        image: { mime_type: "image/png", data_base64: previewImageBase64, type: "base64", src: `data:image/png;base64,${previewImageBase64}` },
+        remaining: { ...previewQuota },
+        classroom_remaining: { text: 80, image: 40 },
+      };
+    }
+    const controller = new AbortController();
+    const timer = globalThis.setTimeout(() => controller.abort(), 180000);
+    try {
+      const response = await fetch("/api/classroom-ai/generate/book-page", {
+        method: "POST",
+        credentials: "include",
+        headers: { Accept: "application/json" },
+        body: formData,
+        signal: controller.signal,
+      });
+      let payload = null;
+      try { payload = await response.json(); } catch { payload = null; }
+      if (!response.ok || !payload || payload.ok !== true) throw core.normalizeApiError(payload, response.status);
+      return payload;
+    } catch (error) {
+      if (error && error.code) throw error;
+      if (error && error.name === "AbortError") {
+        throw { code: "IMAGE_API_TIMEOUT", message: "圖片生成逾時。", retryable: true, requestId: "", httpStatus: 0 };
+      }
+      throw { code: "NETWORK_ERROR", message: "無法連上課堂服務，請檢查網路連線。", retryable: true, requestId: "", httpStatus: 0 };
+    } finally {
+      globalThis.clearTimeout(timer);
+    }
   }
 
   function reportMeaningfulValidity(form) {
-    for (const field of form.querySelectorAll('input[required], textarea[required]')) {
+    for (const field of form.querySelectorAll('input[required], textarea[required], select[required]')) {
       if (field.type === "checkbox" || field.type === "number") continue;
-      field.setCustomValidity(field.value.trim() ? "" : "請填寫此欄位。");
+      field.setCustomValidity(String(field.value || "").trim() ? "" : "請填寫此欄位。");
     }
     return form.reportValidity();
   }
 
-  document.querySelectorAll('input[required], textarea[required]').forEach((field) => {
+  document.querySelectorAll('input[required], textarea[required], select[required]').forEach((field) => {
     field.addEventListener("input", () => {
-      if (field.type !== "checkbox" && field.value.trim()) field.setCustomValidity("");
+      if (field.type !== "checkbox" && String(field.value || "").trim()) field.setCustomValidity("");
     });
   });
 
@@ -175,431 +189,67 @@
     currentSession = null;
     accessPanel.hidden = false;
     workspace.hidden = true;
-    claimMessage.textContent = message || "";
-  }
-
-  function formatQuota(value) {
-    return Number.isFinite(value) ? String(value) : "-";
+    byId("claim-message").textContent = message || "";
   }
 
   function formatDateTime(value) {
-    if (!value) return "未提供";
     const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return value;
+    if (!value || Number.isNaN(date.getTime())) return "未提供";
     return new Intl.DateTimeFormat("zh-TW", {
-      timeZone: "Asia/Taipei",
-      month: "numeric",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false
+      timeZone: "Asia/Taipei", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false,
     }).format(date);
   }
 
-  function classroomLabel(status) {
-    return ({
-      open: "練習開放中",
-      not_open: "尚未開放",
-      scheduled: "尚未開放",
-      closed: "練習已關閉"
-    })[status] || "課堂狀態待確認";
-  }
-
   function updateQuotaDisplay(remaining, classroomRemaining) {
-    byId("personal-text-quota").textContent = formatQuota(remaining.text);
-    byId("personal-image-quota").textContent = formatQuota(remaining.image);
-    byId("class-text-quota").textContent = formatQuota(classroomRemaining.text);
-    byId("class-image-quota").textContent = formatQuota(classroomRemaining.image);
+    byId("personal-text-quota").textContent = Number.isFinite(remaining.text) ? remaining.text : "-";
+    byId("personal-image-quota").textContent = Number.isFinite(remaining.image) ? remaining.image : "-";
+    byId("class-text-quota").textContent = Number.isFinite(classroomRemaining.text) ? classroomRemaining.text : "-";
+    byId("class-image-quota").textContent = Number.isFinite(classroomRemaining.image) ? classroomRemaining.image : "-";
   }
 
   function updateSessionFromResult(result) {
     if (!currentSession || !result) return;
-    currentSession = {
-      ...currentSession,
-      remaining: result.remaining,
-      classroomRemaining: result.classroomRemaining
-    };
+    currentSession = { ...currentSession, remaining: result.remaining, classroomRemaining: result.classroomRemaining };
     updateQuotaDisplay(currentSession.remaining, currentSession.classroomRemaining);
-    updateSubmitAvailability();
+    updateAvailability();
   }
 
-  function updateSubmitAvailability() {
+  function updateAvailability() {
     if (!currentSession) return;
-    const isOpen = currentSession.classroom.status === "open";
-    for (const kind of ["text", "image"]) {
-      const submit = generationForms[kind].querySelector('button[type="submit"]');
-      const busy = generationStates[kind].phase === "loading";
-      const personalLeft = currentSession.remaining[kind];
-      const classLeft = currentSession.classroomRemaining[kind];
-      const quotaAvailable = (personalLeft === null || personalLeft > 0)
-        && (classLeft === null || classLeft > 0);
-      submit.disabled = busy || !isOpen || !quotaAvailable;
-      if (!isOpen) submit.title = "目前不在課堂開放時間內";
-      else if (!quotaAvailable) submit.title = "生成額度已用完";
-      else submit.removeAttribute("title");
+    const open = currentSession.classroom.status === "open";
+    const textAvailable = open && currentSession.remaining.text > 0 && currentSession.classroomRemaining.text > 0;
+    const imageAvailable = open && currentSession.remaining.image > 0 && currentSession.classroomRemaining.image > 0;
+    textForm.querySelector('button[type="submit"]').disabled = textState.phase === "loading" || !textAvailable;
+    byId("create-book-plan").disabled = byId("create-book-plan").dataset.busy === "true" || !textAvailable;
+    for (const button of document.querySelectorAll('[data-action="generate-page"]')) {
+      button.disabled = Boolean(activePageNumber) || !imageAvailable || Number(button.dataset.attempts || 0) >= 3;
     }
+    byId("generate-next-page").disabled = Boolean(activePageNumber) || !imageAvailable || !bookPages.length || bookPages.every((page) => page.result || page.attempts >= 3);
   }
 
   function showWorkspace(session) {
     currentSession = session;
     accessPanel.hidden = true;
     workspace.hidden = false;
-    claimMessage.textContent = "";
+    byId("claim-message").textContent = "";
     byId("session-nickname").textContent = session.nickname || "學員";
-
     const statusChip = byId("classroom-status-chip");
-    statusChip.textContent = classroomLabel(session.classroom.status);
+    statusChip.textContent = ({ open: "練習開放中", not_open: "尚未開放", scheduled: "尚未開放", closed: "練習已關閉" })[session.classroom.status] || "課堂狀態待確認";
     statusChip.dataset.status = session.classroom.status;
     byId("classroom-window").textContent = previewMode
-      ? "本機展示模式：這裡的課堂碼與生成結果只用於看版面，不會送到正式服務。"
+      ? "本機展示模式：不會把課堂碼、參考圖或生成內容送到正式服務。"
       : `開放 ${formatDateTime(session.classroom.opensAt)}，關閉 ${formatDateTime(session.classroom.closesAt)}。工作階段至 ${formatDateTime(session.expiresAt)}。`;
     updateQuotaDisplay(session.remaining, session.classroomRemaining);
-    updateSubmitAvailability();
-  }
-
-  let getSelectedImagePrompt = null;
-  let getImageSubmitLabel = () => "生成繪本圖片";
-  const canonicalImagePrompt = byId("image-prompt");
-  if (canonicalImagePrompt) {
-    const purposeField = byId("image-purpose");
-    const purposeHint = byId("image-purpose-hint");
-    const promptCount = byId("image-prompt-count");
-    const reviewButton = byId("review-prompt-button");
-    const reviewResult = byId("prompt-review-result");
-    const reviewSuggestion = byId("prompt-review-suggestion");
-    const reviewedPromptField = byId("reviewed-prompt");
-    const useReviewedButton = byId("use-reviewed-prompt");
-    const keepOriginalButton = byId("keep-original-prompt");
-    const selectedPromptState = byId("selected-prompt-state");
-    const imageSubmitButton = imageForm.querySelector('button[type="submit"]');
-    let reviewedPrompt = "";
-    let reviewedSource = "";
-    let selectedPromptVersion = "original";
-
-    const purposeGuidance = {
-      "繪本插圖": {
-        hint: "先說清楚誰、在哪裡、正在做什麼，以及希望讀者感受到什麼。",
-        example: "例如：雨後的公園裡，一位穿黃色雨衣的小女孩停在長椅旁，低頭觀察一把紅色雨傘；溫暖手繪水彩風，角色在左側，右側保留乾淨留白，不要文字與浮水印。"
-      },
-      "班級海報": {
-        hint: "描述班級主題、主要人物與要保留的標題位置；文字建議後製加入。",
-        example: "例如：五年甲班閱讀月海報主視覺，三位學生在樹下分享繪本，明亮扁平插畫；上方保留約四分之一留白供後製標題，不要生成文字與 Logo。"
-      },
-      "活動海報": {
-        hint: "描述活動氣氛、焦點與資訊留白；日期和標題建議後製加入。",
-        example: "例如：校園文化日活動海報主視覺，孩子與長者在廣場一起唱歌，歡樂、有交流感；直式構圖，上方與下方保留資訊區，不要生成文字。"
-      },
-      "課程封面": {
-        hint: "抓住一個明確主題焦點，並預留課名和單位識別的位置。",
-        example: "例如：AI 教學工作坊課程封面，一台平板從畫面左側展開繪本、圖卡與聲音圖示，藍白科技感搭配紅橘亮點；右側保留標題空間，不要文字。"
-      },
-      "教材或學習單插圖": {
-        hint: "畫面要簡單、輪廓清楚，避免太多裝飾搶走學習重點。",
-        example: "例如：給低年級學習單使用的河流生態插圖，清楚呈現魚、石頭、水草與河岸，平視角度、乾淨白底、柔和低彩度，不要標籤文字。"
-      },
-      "角色設定圖": {
-        hint: "交代角色年齡、外觀、服裝、配件與固定特徵，方便後續保持一致。",
-        example: "例如：八歲女孩角色設定圖，圓臉、短黑髮、黃色雨衣、紅色雨鞋，正面與側面全身，乾淨淺色背景，比例與服裝保持一致，不要文字。"
-      },
-      "社群宣傳圖": {
-        hint: "主體要能在手機上一眼看懂，四周保留安全邊界。",
-        example: "例如：教師研習招生社群直式配圖，一位老師帶著學生使用平板創作故事，明亮有活力、主體醒目；四周保留安全邊界，不要文字與浮水印。"
-      }
-    };
-
-    function updateSelectedPromptState() {
-      const active = selectedPromptVersion === "reviewed" && reviewedPrompt ? reviewedPrompt : canonicalImagePrompt.value.trim();
-      selectedPromptState.textContent = selectedPromptVersion === "reviewed" && reviewedPrompt
-        ? `目前將使用：AI 建議版（${active.length} 字）`
-        : `目前將使用：你的原始提示詞（${active.length} 字）`;
-      imageSubmitButton.textContent = getImageSubmitLabel();
-    }
-
-    function clearOutdatedReview() {
-      if (!reviewedSource || canonicalImagePrompt.value.trim() === reviewedSource) return;
-      reviewedPrompt = "";
-      reviewedSource = "";
-      selectedPromptVersion = "original";
-      reviewedPromptField.value = "";
-      reviewSuggestion.hidden = true;
-      reviewResult.textContent = "你已修改原稿；若需要新的建議，請再請 AI 檢視一次。";
-    }
-
-    function updatePromptInput() {
-      promptCount.textContent = `${canonicalImagePrompt.value.length} / 4000`;
-      clearOutdatedReview();
-      updateSelectedPromptState();
-    }
-
-    function extractReviewedPrompt(content) {
-      const match = String(content || "").match(/【修正版提示詞】\s*([\s\S]*?)(?:【修正版結束】|$)/u);
-      return match ? match[1].trim().slice(0, 4000) : "";
-    }
-
-    getSelectedImagePrompt = () => selectedPromptVersion === "reviewed" && reviewedPrompt
-      ? reviewedPrompt
-      : canonicalImagePrompt.value.trim();
-    getImageSubmitLabel = () => selectedPromptVersion === "reviewed" && reviewedPrompt
-      ? "4. 用 AI 建議版生成圖片"
-      : "4. 用我的原稿生成圖片";
-
-    purposeField.addEventListener("change", () => {
-      const guidance = purposeGuidance[purposeField.value];
-      if (guidance) {
-        purposeHint.textContent = guidance.hint;
-        canonicalImagePrompt.placeholder = guidance.example;
-      }
-    });
-    canonicalImagePrompt.addEventListener("input", updatePromptInput);
-
-    const styleLibrary = [
-      ["攝影", "DSLR style", "數位單眼相機質感"], ["攝影", "cinematic photo style", "電影劇照風格"], ["攝影", "macro lens", "微距細節"], ["攝影", "soft light", "柔和光線"],
-      ["角度效果", "face close-up", "臉部特寫"], ["角度效果", "full body shot", "全身畫面"], ["角度效果", "bird view", "鳥瞰視角"], ["角度效果", "low angle view", "低角度仰拍"], ["角度效果", "bokeh", "背景散景"],
-      ["繪畫媒材", "pencil", "鉛筆畫"], ["繪畫媒材", "charcoal", "炭筆畫"], ["繪畫媒材", "watercolor painting", "水彩畫"], ["繪畫媒材", "oil painting", "油畫"], ["繪畫媒材", "ink drawing", "水墨畫"], ["繪畫媒材", "clean outline drawing", "乾淨外框"],
-      ["材料質感", "paper art", "紙雕藝術"], ["材料質感", "paper cutting", "剪紙藝術"], ["材料質感", "origami art", "摺紙藝術"], ["材料質感", "stained glass", "彩繪玻璃"], ["材料質感", "mosaic", "馬賽克拼貼"], ["材料質感", "Play-Doh clay", "兒童黏土"], ["材料質感", "lego", "積木材質"], ["材料質感", "felt doll", "羊毛氈娃娃"],
-      ["動畫漫畫", "2D cartoon", "2D 卡通"], ["動畫漫畫", "3D cartoon", "3D 卡通"], ["動畫漫畫", "2D animation", "2D 動畫"], ["動畫漫畫", "American comic book", "美式漫畫"], ["動畫漫畫", "Manga", "日式漫畫"],
-      ["藝術流派", "Renaissance", "文藝復興"], ["藝術流派", "Baroque art", "巴洛克"], ["藝術流派", "Impressionnisme", "印象派"], ["藝術流派", "Surrealism", "超現實主義"], ["藝術流派", "Cubism", "立體主義"], ["藝術流派", "minimalism", "極簡主義"], ["藝術流派", "poster art", "海報藝術"], ["藝術流派", "street art", "街頭藝術"], ["藝術流派", "Ukiyo-e", "浮世繪"],
-      ["特色風格", "pixel art", "像素點陣畫"], ["特色風格", "Infographic", "資訊圖表"], ["特色風格", "low poly", "低多邊形"], ["特色風格", "knolling", "物件整齊排列"], ["特色風格", "diagrammatic drawing", "示意圖"], ["特色風格", "mascot logo", "吉祥物標誌"]
-    ].map(([category, prompt, description]) => ({ category, prompt, description }));
-    const libraryDialog = byId("style-library-dialog");
-    const libraryList = byId("style-library-list");
-    const librarySearch = byId("style-library-search");
-    const libraryCategory = byId("style-library-category");
-    const openStyleLibrary = byId("open-style-library");
-    [...new Set(styleLibrary.map((item) => item.category))].forEach((category) => libraryCategory.add(new Option(category, category)));
-
-    function renderStyleLibrary() {
-      const query = librarySearch.value.trim().toLowerCase();
-      const category = libraryCategory.value;
-      libraryList.replaceChildren();
-      styleLibrary.filter((item) => (category === "all" || item.category === category) && (!query || `${item.prompt} ${item.description} ${item.category}`.toLowerCase().includes(query))).forEach((item) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "style-library-item";
-        const title = document.createElement("strong"); title.textContent = item.description;
-        const prompt = document.createElement("small"); prompt.textContent = `${item.category}｜${item.prompt}`;
-        button.append(title, prompt);
-        button.addEventListener("click", () => {
-          const addition = `視覺風格：${item.description}（${item.prompt}）`;
-          const current = canonicalImagePrompt.value.trim();
-          if (!current.includes(addition)) canonicalImagePrompt.value = current ? `${current}；${addition}` : addition;
-          updatePromptInput();
-          libraryDialog.close();
-          canonicalImagePrompt.focus();
-        });
-        libraryList.append(button);
-      });
-    }
-
-    openStyleLibrary.addEventListener("click", () => { renderStyleLibrary(); libraryDialog.showModal(); });
-    librarySearch.addEventListener("input", renderStyleLibrary);
-    libraryCategory.addEventListener("change", renderStyleLibrary);
-
-    reviewButton.addEventListener("click", async () => {
-      const original = canonicalImagePrompt.value.trim();
-      if (original.length < 3) {
-        reviewResult.textContent = "請先在上方寫至少 3 個字，再請 AI 檢視。";
-        canonicalImagePrompt.focus();
-        return;
-      }
-      reviewButton.disabled = true;
-      reviewButton.textContent = "AI 檢視中…";
-      reviewResult.textContent = "AI 正在閱讀你的原稿，這不會自動改掉內容。";
-      reviewSuggestion.hidden = true;
-      try {
-        const request = core.buildTextPayload({
-          topic: `${purposeField.value || "圖片"}提示詞檢視`,
-          audience: "課堂學員",
-          duration_minutes: 5,
-          objective: "指出圖片提示詞可以更清楚的地方，並產生一份忠於原意的修正版",
-          source_notes: original,
-          requirements: "請用繁體中文。先輸出【檢視建議】並列出最多三點具體建議，再輸出【修正版提示詞】、一段可直接生圖且不超過 4000 字的完整提示詞，最後輸出【修正版結束】。不得捏造文化事實或改變原意。"
-        }, core.createIdempotencyKey("text", makeUuid()));
-        const payload = await callService("/generate/text", "POST", request, 120000);
-        const reviewGeneration = core.normalizeGenerationResult("text", payload);
-        updateSessionFromResult(reviewGeneration);
-        const content = reviewGeneration.content || "";
-        const suggestion = extractReviewedPrompt(content);
-        const advice = content.split("【修正版提示詞】", 1)[0].replace("【檢視建議】", "").trim();
-        reviewResult.textContent = advice || "AI 沒有回傳具體建議，你仍可直接使用原稿生成。";
-        if (suggestion.length >= 3) {
-          reviewedPrompt = suggestion;
-          reviewedSource = original;
-          reviewedPromptField.value = suggestion;
-          reviewSuggestion.hidden = false;
-          selectedPromptVersion = "original";
-          updateSelectedPromptState();
-        }
-      } catch (error) {
-        reviewResult.textContent = `${core.friendlyError(error)} 你仍可直接使用原稿生成。`;
-      } finally {
-        reviewButton.disabled = false;
-        reviewButton.textContent = "請 AI 檢視目前文字";
-      }
-    });
-
-    useReviewedButton.addEventListener("click", () => {
-      if (!reviewedPrompt) return;
-      selectedPromptVersion = "reviewed";
-      updateSelectedPromptState();
-    });
-    keepOriginalButton.addEventListener("click", () => {
-      selectedPromptVersion = "original";
-      updateSelectedPromptState();
-      canonicalImagePrompt.focus();
-    });
-    updatePromptInput();
-  } else {
-  const promptTemplateInstructions = {
-    picturebook: "請生成一張無字繪本插圖，讓畫面先說清楚一個動作與情緒。",
-    spec: "請把以下需求整理成可交給生圖工具執行的繪圖工作規格單。",
-    character: "請依參考資料保持同一角色的臉型、髮型、膚色、比例、服裝與配件，製作角色三視圖。",
-    series: "請記住以下固定設定，後續每一頁沿用同一角色、場景、畫風、色盤與比例。",
-    style: "請把媒材、線條、材質、人物比例、背景、色盤、光影與避免事項寫成完整畫風提示詞。",
-    review: "你是獨立驗收員，請依工單、參考資料與驗收標準逐項輸出 PASS 或 FAIL，不替作品找理由。",
-    poster: "請設計一張資訊清楚、適合遠距閱讀的班級或活動海報主視覺，預留標題與日期區域，不直接生成文字。",
-    cover: "請設計課程封面主視覺，建立明確主體、視覺焦點與品牌色彩，保留後製標題的乾淨留白。",
-    social: "請設計適合社群貼文的直式配圖，三秒內看懂主題，主體醒目並保留安全邊界。",
-    infographic: "請把教學概念轉成分區清楚的資訊圖表插畫，以圖像表達關係，文字交由後製加入。",
-    worksheet: "請設計適合學習單的黑白或低彩度輔助插圖，輪廓清楚、留白充足，不放文字。",
-    scene: "請先建立一個能傳達時間、地點、天氣與情緒的場景，讓角色動作自然且背景不搶主體。"
-  };
-
-  function readImagePromptFields() {
-    return {
-      purpose: byId("image-purpose").value || "待選擇生成用途",
-      scene: byId("image-scene").value || "待選擇場景與動作",
-      style: byId("image-style").value || "待選擇視覺風格",
-      composition: byId("image-composition").value || "待選擇畫面構圖",
-      safeArea: byId("image-safe-area").value || "待選擇文字安全區",
-      avoid: byId("image-avoid").value || "待選擇排除內容"
-    };
-  }
-
-  function refreshPromptPreview() {
-    const fields = readImagePromptFields();
-    const instruction = promptTemplateInstructions[byId("prompt-template").value] || promptTemplateInstructions.picturebook;
-    byId("prompt-preview").value = `${instruction}\n\n生成用途：${fields.purpose}\n內容與動作：${fields.scene}\n畫風與材質：${fields.style}\n構圖與鏡位：${fields.composition}\n文字安全區：${fields.safeArea}\n避免事項：${fields.avoid}\n\n驗收：圖中不要有文字或浮水印；角色、服飾、文化元素與語言內容需由教師或具備權限的人員確認。`;
-  }
-
-  function applyPromptTemplate() {
-    const template = byId("prompt-template").value;
-    const defaults = {
-      purpose: byId("image-purpose").value || "繪本單頁插圖",
-      scene: "雨後的公園，小晴看見長椅旁的紅雨傘，停下腳步仔細觀察。",
-      style: byId("prompt-style").value,
-      composition: "角色在左側，右側保留乾淨留白",
-      safeArea: "右上保留約三分之一乾淨天空，不放人物與重要物件",
-      avoid: "不要文字、浮水印、額外手指、錯誤服飾或未確認的文化圖紋。"
-    };
-    if (template === "character") defaults.scene = "角色站立於乾淨背景，依序呈現正面、側面與背面三個角度。";
-    if (template === "series") defaults.scene = "同一角色在課堂場景中翻閱繪本，畫面保留固定道具與背景地標。";
-    if (template === "poster") defaults.scene = "校園入口的活動宣傳場景，學生與老師一起布置主視覺，畫面上方與右側保留海報標題留白。";
-    if (template === "cover") defaults.scene = "課程主題的象徵性場景，單一視覺焦點置中，四周保留封面標題與單位識別的留白。";
-    if (template === "social") defaults.scene = "活動現場的高情緒瞬間，主體靠近畫面中央，適合手機直式瀏覽。";
-    if (template === "infographic") defaults.scene = "以三個視覺區塊呈現教學流程，箭頭與圖示位置清楚，右側保留說明留白。";
-    if (template === "worksheet") defaults.scene = "幾個可供學生觀察與塗色的簡單物件，輪廓清楚，背景乾淨。";
-    if (template === "review") defaults.avoid = "若角色、腳本、構圖、畫風、文字或文化元素任一硬條件失敗，標記 FAIL 並交回真人。";
-    const optionValues = {
-      "image-purpose": ["繪本單頁插圖", "班級海報", "活動宣傳海報", "課程封面", "社群貼文配圖"],
-      "image-scene": ["雨後的公園，小晴看見長椅旁的紅雨傘，停下腳步仔細觀察。", "清晨部落廣場，孩子們圍著長者安靜聽故事。", "河邊午後，孩子蹲下來觀察水面與周圍的植物。", "教室裡，學生一起翻閱繪本並討論畫面中的角色。"],
-      "image-style": ["溫暖手繪水彩繪本，柔和自然光，紙張肌理", "明亮扁平插畫，清楚色塊，兒童繪本風", "柔和蠟筆質感，簡潔線條，溫暖色調", "可愛卡通插畫，圓潤造型，明亮色彩", "北歐童書幾何插畫，簡潔構成，低飽和色彩", "粉彩鉛筆童書風，細緻筆觸，柔和留白", "分層紙雕插畫，立體陰影，清楚前後景", "剪紙動畫風，民間故事感，鮮明色塊", "刺繡線稿插畫，布料紋理，手作質感", "歐洲清線冒險漫畫，動態姿勢，明確輪廓", "知識型簡報插畫，扁平圖示，資訊分區清楚", "兒童科普圖鑑風，觀察視角，細節清楚", "低解析像素插畫，復古遊戲感，方格色塊", "螢光壓克力塗鴉，強烈筆觸，高對比色彩"],
-      "image-composition": ["角色置中，中景構圖，視線朝向畫面中央", "角色在左側，右側保留乾淨留白", "角色在右側，左側保留乾淨留白", "遠景環境優先，角色位於畫面下方", "俯視構圖，場景物件排列清楚"],
-      "image-safe-area": ["右上保留約三分之一乾淨天空，不放人物與重要物件", "左上保留乾淨留白，方便放置標題", "下方保留乾淨留白，方便放置說明文字", "不特別保留文字區，完整呈現整個畫面"],
-      "image-avoid": ["不要文字、浮水印、額外手指、錯誤服飾或未確認的文化圖紋。", "不要出現現代品牌、Logo、武器或血腥元素。", "不要加入未提供的族群符號、儀式或服飾細節。", "不要多餘角色、變形肢體或錯誤視線。"]
-    };
-    const desired = { "image-purpose": defaults.purpose, "image-scene": defaults.scene, "image-style": defaults.style, "image-composition": defaults.composition, "image-safe-area": defaults.safeArea, "image-avoid": defaults.avoid };
-    for (const [id, value] of Object.entries(desired)) {
-      const field = byId(id);
-      if (optionValues[id].includes(value)) field.value = value;
-      else field.selectedIndex = 1;
-    }
-    refreshPromptPreview();
-    byId("prompt-helper-message").textContent = "模板已套用到圖片欄位，仍可逐項調整。";
-  }
-
-  byId("apply-prompt-template").addEventListener("click", applyPromptTemplate);
-  const styleLibrary = [
-    ["攝影", "DSLR style", "數位單眼相機質感"], ["攝影", "cinematic photo style", "電影劇照風格"], ["攝影", "macro lens", "微距細節"], ["攝影", "soft light", "柔和光線"],
-    ["角度效果", "face close-up", "臉部特寫"], ["角度效果", "full body shot", "全身畫面"], ["角度效果", "bird view", "鳥瞰視角"], ["角度效果", "low angle view", "低角度仰拍"], ["角度效果", "bokeh", "背景散景"],
-    ["繪畫媒材", "pencil", "鉛筆畫"], ["繪畫媒材", "charcoal", "炭筆畫"], ["繪畫媒材", "watercolor painting", "水彩畫"], ["繪畫媒材", "oil painting", "油畫"], ["繪畫媒材", "ink drawing", "水墨畫"], ["繪畫媒材", "clean outline drawing", "乾淨外框"],
-    ["材料質感", "paper art", "紙雕藝術"], ["材料質感", "paper cutting", "剪紙藝術"], ["材料質感", "origami art", "摺紙藝術"], ["材料質感", "stained glass", "彩繪玻璃"], ["材料質感", "mosaic", "馬賽克拼貼"], ["材料質感", "Play-Doh clay", "兒童黏土"], ["材料質感", "lego", "積木材質"], ["材料質感", "felt doll", "羊毛氈娃娃"],
-    ["動畫漫畫", "2D cartoon", "2D 卡通"], ["動畫漫畫", "3D cartoon", "3D 卡通"], ["動畫漫畫", "2D animation", "2D 動畫"], ["動畫漫畫", "American comic book", "美式漫畫"], ["動畫漫畫", "Manga", "日式漫畫"],
-    ["藝術流派", "Renaissance", "文藝復興"], ["藝術流派", "Baroque art", "巴洛克"], ["藝術流派", "Impressionnisme", "印象派"], ["藝術流派", "Surrealism", "超現實主義"], ["藝術流派", "Cubism", "立體主義"], ["藝術流派", "minimalism", "極簡主義"], ["藝術流派", "poster art", "海報藝術"], ["藝術流派", "street art", "街頭藝術"], ["藝術流派", "Ukiyo-e", "浮世繪"],
-    ["特色風格", "pixel art", "像素點陣畫"], ["特色風格", "Infographic", "資訊圖表"], ["特色風格", "low poly", "低多邊形"], ["特色風格", "knolling", "物件整齊排列"], ["特色風格", "diagrammatic drawing", "示意圖"], ["特色風格", "mascot logo", "吉祥物標誌"]
-  ].map(([category, prompt, description]) => ({ category, prompt, description }));
-  const libraryDialog = byId("style-library-dialog");
-  const libraryList = byId("style-library-list");
-  const librarySearch = byId("style-library-search");
-  const libraryCategory = byId("style-library-category");
-  const openStyleLibrary = byId("open-style-library");
-  if (libraryDialog && libraryList && librarySearch && libraryCategory && openStyleLibrary) {
-    [...new Set(styleLibrary.map((item) => item.category))].forEach((category) => libraryCategory.add(new Option(category, category)));
-    function renderStyleLibrary() {
-      const query = librarySearch.value.trim().toLowerCase();
-      const category = libraryCategory.value;
-      libraryList.replaceChildren();
-      styleLibrary.filter((item) => (category === "all" || item.category === category) && (!query || `${item.prompt} ${item.description} ${item.category}`.toLowerCase().includes(query))).forEach((item) => {
-        const button = document.createElement("button"); button.type = "button"; button.className = "style-library-item";
-        const title = document.createElement("strong"); title.textContent = item.description;
-        const prompt = document.createElement("small"); prompt.textContent = `${item.category}｜${item.prompt}`;
-        button.append(title, prompt); button.addEventListener("click", () => { const select = byId("image-style"); const option = [...select.options].find((entry) => entry.value === item.prompt); if (!option) select.add(new Option(item.description, item.prompt)); select.value = item.prompt; refreshPromptPreview(); libraryDialog.close(); }); libraryList.append(button);
-      });
-    }
-    openStyleLibrary.addEventListener("click", () => { renderStyleLibrary(); libraryDialog.showModal(); });
-    librarySearch.addEventListener("input", renderStyleLibrary); libraryCategory.addEventListener("change", renderStyleLibrary);
-  }
-  const promptReviewButton = byId("review-prompt-button");
-  if (promptReviewButton) promptReviewButton.addEventListener("click", async () => {
-    const input = byId("prompt-review-input");
-    const preview = byId("prompt-preview");
-    const result = byId("prompt-review-result");
-    const button = byId("review-prompt-button");
-    if (!input || !preview || !result || !button) return;
-    const text = input.value.trim() || preview.value.trim();
-    if (text.length < 3) { result.textContent = "請先輸入至少 3 個字的提示詞。"; return; }
-    button.disabled = true;
-    result.textContent = "AI 正在檢視提示詞，請稍候…";
-    try {
-      const payload = await callService("/generate/text", "POST", core.buildTextPayload({
-        topic: "圖片提示詞檢視",
-        audience: "授課教師",
-        duration_minutes: 5,
-        objective: "找出提示詞缺漏並提供具體可直接修改的建議",
-        source_notes: text,
-        requirements: "請用繁體中文，以條列方式指出優點、缺漏與改寫示例；不要捏造文化事實。"
-      }, core.createIdempotencyKey("text", makeUuid())), 120000);
-      result.textContent = payload.content || "AI 沒有回傳建議。";
-    } catch (error) {
-      result.textContent = core.friendlyError(error);
-    } finally {
-      button.disabled = false;
-    }
-  });
-  byId("prompt-template").addEventListener("change", refreshPromptPreview);
-  byId("prompt-style").addEventListener("change", refreshPromptPreview);
-  ["image-purpose", "image-scene", "image-style", "image-composition", "image-safe-area", "image-avoid"].forEach((id) => {
-    byId(id).addEventListener("change", refreshPromptPreview);
-  });
-  byId("copy-prompt-preview").addEventListener("click", async () => {
-    try {
-      await copyText(byId("prompt-preview").value);
-      byId("prompt-helper-message").textContent = "完整提示詞已複製。";
-    } catch {
-      byId("prompt-helper-message").textContent = "無法自動複製，請選取提示詞後手動複製。";
-    }
-  });
-  refreshPromptPreview();
+    updateAvailability();
   }
 
   async function restoreSession() {
     setClaimBusy(true, "確認工作階段");
     try {
-      const payload = await callService("/session", "GET", undefined, 15000);
+      const payload = await callJsonService("/session", "GET", undefined, 15000);
       showWorkspace(core.normalizeSession(payload));
     } catch (error) {
-      const message = error.code === "SESSION_EXPIRED" ? "先前的工作階段已過期，請重新登入。" : "";
-      showAccess(message);
+      showAccess(error.code === "SESSION_EXPIRED" ? "先前的工作階段已過期，請重新登入。" : "");
     } finally {
       setClaimBusy(false);
     }
@@ -609,47 +259,39 @@
     event.preventDefault();
     if (!reportMeaningfulValidity(claimForm)) return;
     setClaimBusy(true, "正在登入");
-    claimMessage.textContent = "正在建立短期工作階段。";
-
+    byId("claim-message").textContent = "正在建立短期工作階段。";
     try {
       const raw = valuesOf(claimForm);
       raw.consent = byId("consent").checked;
-      const payload = await callService("/session/claim", "POST", core.buildClaimPayload(raw), 20000);
+      const payload = await callJsonService("/session/claim", "POST", core.buildClaimPayload(raw), 20000);
       showWorkspace(core.normalizeSession(payload));
     } catch (error) {
-      claimMessage.textContent = core.friendlyError(error);
+      byId("claim-message").textContent = core.friendlyError(error);
     } finally {
       setClaimBusy(false);
     }
   });
 
-  logoutButton.addEventListener("click", async () => {
-    const previousLabel = logoutButton.textContent;
-    logoutButton.disabled = true;
-    logoutButton.textContent = "正在結束";
+  byId("logout-button").addEventListener("click", async () => {
+    const button = byId("logout-button");
+    button.disabled = true;
     try {
-      await callService("/session/logout", "POST", {}, 15000);
-      if (previewMode) { previewQuota.text = 2; previewQuota.image = 1; }
-      for (const kind of ["text", "image"]) {
-        generationStates[kind] = core.transitionGeneration(generationStates[kind], { type: "reset" });
-        renderGeneration(kind);
-      }
+      await callJsonService("/session/logout", "POST", {}, 15000);
+      if (previewMode) Object.assign(previewQuota, { text: 2, image: 10 });
       showAccess("工作階段已結束。若要繼續練習，請重新輸入課堂碼。");
-      byId("class-code").focus();
     } catch (error) {
       byId("classroom-window").textContent = core.friendlyError(error);
     } finally {
-      logoutButton.disabled = false;
-      logoutButton.textContent = previousLabel;
+      button.disabled = false;
     }
   });
 
-  function selectTab(kind, shouldFocus) {
+  function selectTab(kind, focus) {
     for (const tab of document.querySelectorAll('[role="tab"]')) {
       const selected = tab.dataset.tab === kind;
       tab.setAttribute("aria-selected", String(selected));
       tab.tabIndex = selected ? 0 : -1;
-      if (selected && shouldFocus) tab.focus();
+      if (selected && focus) tab.focus();
     }
     byId("text-panel").hidden = kind !== "text";
     byId("image-panel").hidden = kind !== "image";
@@ -658,185 +300,76 @@
   document.querySelectorAll('[role="tab"]').forEach((tab) => {
     tab.addEventListener("click", () => selectTab(tab.dataset.tab, false));
     tab.addEventListener("keydown", (event) => {
-      const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
-      const currentIndex = tabs.indexOf(tab);
-      let nextIndex = currentIndex;
-      if (event.key === "ArrowRight") nextIndex = (currentIndex + 1) % tabs.length;
-      else if (event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
-      else if (event.key === "Home") nextIndex = 0;
-      else if (event.key === "End") nextIndex = tabs.length - 1;
-      else return;
+      const tabs = [...document.querySelectorAll('[role="tab"]')];
+      const current = tabs.indexOf(tab);
+      const delta = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+      if (!delta) return;
       event.preventDefault();
-      selectTab(tabs[nextIndex].dataset.tab, true);
+      selectTab(tabs[(current + delta + tabs.length) % tabs.length].dataset.tab, true);
     });
   });
 
-  function generationElements(kind) {
-    return {
-      status: byId(`${kind}-status`),
-      feedback: byId(`${kind}-feedback`),
-      empty: byId(`${kind}-empty`),
-      loading: byId(`${kind}-loading`),
-      error: byId(`${kind}-error`),
-      success: byId(`${kind}-success`),
-      errorMessage: byId(`${kind}-error-message`),
-      errorReference: byId(`${kind}-error-reference`),
-      retry: byId(`${kind}-retry`)
-    };
-  }
-
-  function renderGeneration(kind) {
-    const state = generationStates[kind];
-    const elements = generationElements(kind);
-    elements.status.textContent = core.statusLabel(state.phase);
-    elements.status.dataset.phase = state.phase;
-    elements.empty.hidden = state.phase !== "idle";
-    elements.loading.hidden = state.phase !== "loading";
-    elements.loading.setAttribute("aria-hidden", String(state.phase !== "loading"));
-    elements.error.hidden = !["error", "retryable"].includes(state.phase);
-    elements.success.hidden = state.phase !== "success";
-    elements.feedback.textContent = state.phase === "loading"
-      ? "請求已送出，完成前請勿重複按下生成。"
-      : state.phase === "success"
-        ? "生成完成，請先檢查內容再下載。"
-        : state.phase === "retryable"
-          ? "原請求可以安全重試，系統會沿用相同識別碼。"
-          : "";
-
-    if (state.error) {
-      elements.errorMessage.textContent = core.friendlyError(state.error);
-      const references = [`錯誤代碼 ${state.error.code}`];
-      if (state.error.requestId) references.push(`查詢編號 ${state.error.requestId}`);
-      if (state.error.httpStatus) references.push(`HTTP ${state.error.httpStatus}`);
-      elements.errorReference.textContent = references.join("，");
-      elements.retry.hidden = state.phase !== "retryable";
-    } else {
-      elements.errorMessage.textContent = "";
-      elements.errorReference.textContent = "";
-      elements.retry.hidden = true;
+  function renderTextState() {
+    const phase = textState.phase;
+    byId("text-status").textContent = core.statusLabel(phase);
+    byId("text-status").dataset.phase = phase;
+    byId("text-empty").hidden = phase !== "idle";
+    byId("text-loading").hidden = phase !== "loading";
+    byId("text-error").hidden = !["error", "retryable"].includes(phase);
+    byId("text-success").hidden = phase !== "success";
+    byId("text-retry").hidden = phase !== "retryable";
+    textForm.querySelector('button[type="submit"]').textContent = phase === "loading" ? "正在生成教材" : "生成教材草稿";
+    if (textState.error) {
+      byId("text-error-message").textContent = core.friendlyError(textState.error);
+      byId("text-error-reference").textContent = [
+        `錯誤代碼 ${textState.error.code}`,
+        textState.error.requestId ? `查詢編號 ${textState.error.requestId}` : "",
+      ].filter(Boolean).join("，");
     }
-
-    const submit = generationForms[kind].querySelector('button[type="submit"]');
-    if (state.phase === "loading") {
-      submit.disabled = true;
-      submit.textContent = kind === "text" ? "正在生成教材" : "正在生成圖片";
-    } else {
-      submit.textContent = kind === "text" ? "生成教材草稿" : getImageSubmitLabel();
-      updateSubmitAvailability();
-    }
+    updateAvailability();
   }
 
-  function buildGenerationRequest(kind, idempotencyKey) {
-    const input = valuesOf(generationForms[kind]);
-    if (kind === "text") return core.buildTextPayload(input, idempotencyKey);
-    const legacyPrompt = [
-      input.purpose,
-      input.scene,
-      input.style,
-      input.composition,
-      input.safe_area ? `文字安全區：${input.safe_area}` : "",
-      input.avoid ? `避免：${input.avoid}` : ""
-    ].filter(Boolean).join("；");
-    const prompt = (getSelectedImagePrompt ? getSelectedImagePrompt() : legacyPrompt).trim().replace(/\s+/gu, " ");
-    return { prompt };
-  }
-
-  async function performGeneration(kind, isRetry) {
-    const form = generationForms[kind];
-    if (!isRetry && !reportMeaningfulValidity(form)) return;
-
-    if (isRetry) {
-      generationStates[kind] = core.transitionGeneration(generationStates[kind], { type: "retry" });
-    } else {
-      const idempotencyKey = core.createIdempotencyKey(kind, makeUuid());
-      const request = buildGenerationRequest(kind, idempotencyKey);
-      if (kind === "image" && (!request.prompt || request.prompt.length < 3 || request.prompt.length > 4000)) {
-        byId("image-feedback").textContent = "請在圖片描述中輸入 3～4000 個字，不用寫滿。";
-        const promptField = byId("image-prompt");
-        if (promptField) {
-          promptField.setAttribute("aria-invalid", "true");
-          promptField.focus();
-        }
-        return;
-      }
-      const promptField = byId("image-prompt");
-      if (promptField) promptField.removeAttribute("aria-invalid");
-      generationStates[kind] = core.transitionGeneration(generationStates[kind], {
-        type: "start",
-        idempotencyKey,
-        request
+  async function performTextGeneration(isRetry) {
+    if (!isRetry && !reportMeaningfulValidity(textForm)) return;
+    if (isRetry) textState = core.transitionGeneration(textState, { type: "retry" });
+    else {
+      const key = core.createIdempotencyKey("text", makeUuid());
+      textState = core.transitionGeneration(textState, {
+        type: "start", idempotencyKey: key, request: core.buildTextPayload(valuesOf(textForm), key),
       });
     }
-    renderGeneration(kind);
-
+    renderTextState();
     try {
-      const payload = await callService(
-        kind === "image" ? "/generate-image" : "/generate/text",
-        "POST",
-        generationStates[kind].request,
-        kind === "image" ? 180000 : 120000
-      );
-      const result = core.normalizeGenerationResult(kind, payload);
-      generationStates[kind] = core.transitionGeneration(generationStates[kind], { type: "success", result });
-      if (kind === "text") renderTextSuccess(result);
-      else renderImageSuccess(result);
+      const payload = await callJsonService("/generate/text", "POST", textState.request, 120000);
+      const result = core.normalizeGenerationResult("text", payload);
+      textState = core.transitionGeneration(textState, { type: "success", result });
+      byId("text-output").textContent = result.content;
+      byId("text-request-reference").textContent = result.requestId ? `查詢編號 ${result.requestId}` : "";
       updateSessionFromResult(result);
     } catch (error) {
-      generationStates[kind] = core.transitionGeneration(generationStates[kind], { type: "failure", error });
-      if (["UNAUTHENTICATED", "SESSION_EXPIRED"].includes(error.code)) {
-        globalThis.setTimeout(() => showAccess(core.friendlyError(error)), 700);
-      }
+      textState = core.transitionGeneration(textState, { type: "failure", error });
     }
-    renderGeneration(kind);
+    renderTextState();
   }
 
-  textForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    performGeneration("text", false);
-  });
-
-  imageForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    performGeneration("image", false);
-  });
-
-  byId("text-retry").addEventListener("click", () => performGeneration("text", true));
-  byId("image-retry").addEventListener("click", () => performGeneration("image", true));
-
-  function renderTextSuccess(result) {
-    byId("text-output").textContent = result.content;
-    byId("text-request-reference").textContent = result.requestId ? `查詢編號 ${result.requestId}` : "";
-  }
-
-  function renderImageSuccess(result) {
-    const imageInput = valuesOf(imageForm);
-    const download = core.buildImageDownload(result, imageInput.purpose || imageInput.prompt || "圖片");
-    byId("image-output").src = download.dataUrl;
-    byId("image-request-reference").textContent = result.requestId ? `查詢編號 ${result.requestId}` : "";
-  }
+  textForm.addEventListener("submit", (event) => { event.preventDefault(); performTextGeneration(false); });
+  byId("text-retry").addEventListener("click", () => performTextGeneration(true));
 
   async function copyText(value) {
-    if (navigator.clipboard && globalThis.isSecureContext) {
-      await navigator.clipboard.writeText(value);
-      return;
-    }
+    if (navigator.clipboard && globalThis.isSecureContext) return navigator.clipboard.writeText(value);
     const helper = document.createElement("textarea");
     helper.value = value;
-    helper.setAttribute("readonly", "");
+    helper.readOnly = true;
     helper.className = "clipboard-helper";
-    document.body.appendChild(helper);
+    document.body.append(helper);
     helper.select();
     document.execCommand("copy");
     helper.remove();
   }
 
   byId("copy-text").addEventListener("click", async () => {
-    try {
-      await copyText(generationStates.text.result.content);
-      byId("text-feedback").textContent = "文字已複製到剪貼簿。";
-    } catch {
-      byId("text-feedback").textContent = "無法自動複製，請選取結果後手動複製。";
-    }
+    try { await copyText(textState.result.content); byId("text-feedback").textContent = "文字已複製到剪貼簿。"; }
+    catch { byId("text-feedback").textContent = "無法自動複製，請手動選取。"; }
   });
 
   function clickDownload(href, filename, revoke) {
@@ -844,38 +377,481 @@
     link.href = href;
     link.download = filename;
     link.hidden = true;
-    document.body.appendChild(link);
+    document.body.append(link);
     link.click();
     link.remove();
     if (revoke) globalThis.setTimeout(() => URL.revokeObjectURL(href), 1000);
   }
 
   byId("download-text").addEventListener("click", () => {
-    const spec = core.buildTextDownload(generationStates.text.result.content, valuesOf(textForm).topic);
-    const url = URL.createObjectURL(new Blob([spec.content], { type: spec.mimeType }));
-    clickDownload(url, spec.filename, true);
-    byId("text-feedback").textContent = "Markdown 檔已開始下載。";
+    const spec = core.buildTextDownload(textState.result.content, valuesOf(textForm).topic);
+    clickDownload(URL.createObjectURL(new Blob([spec.content], { type: spec.mimeType })), spec.filename, true);
   });
 
-  byId("download-image").addEventListener("click", () => {
-    const button = byId("download-image");
-    const previousLabel = button.textContent;
-    button.disabled = true;
-    button.textContent = "準備圖片";
+  function renderReferences() {
+    const list = byId("book-reference-list");
+    list.replaceChildren();
+    const template = byId("reference-card-template");
+    references.forEach((reference) => {
+      const fragment = template.content.cloneNode(true);
+      const card = fragment.querySelector(".reference-card");
+      card.dataset.referenceId = reference.id;
+      const image = card.querySelector("img");
+      image.src = reference.previewUrl;
+      image.alt = `${reference.file.name} 預覽`;
+      const kind = card.querySelector('[data-ref-field="kind"]');
+      const source = card.querySelector('[data-ref-field="source"]');
+      const notes = card.querySelector('[data-ref-field="notes"]');
+      kind.value = reference.kind;
+      source.value = reference.source;
+      notes.value = reference.notes;
+      kind.addEventListener("change", () => { reference.kind = kind.value; });
+      source.addEventListener("input", () => { reference.source = source.value; });
+      notes.addEventListener("input", () => { reference.notes = notes.value; });
+      card.querySelector('[data-action="remove-reference"]').addEventListener("click", () => {
+        URL.revokeObjectURL(reference.previewUrl);
+        references = references.filter((item) => item.id !== reference.id);
+        renderReferences();
+      });
+      list.append(fragment);
+    });
+    byId("book-reference-message").textContent = references.length
+      ? `已選 ${references.length} / 4 張。這些圖片只在你按下某一頁生成時送出，不會存進網站資料庫。`
+      : "尚未選擇參考圖。可使用課程提供的角色或場景備援圖。";
+  }
+
+  byId("book-reference-input").addEventListener("change", (event) => {
+    const incoming = [...event.target.files];
+    const allowed = new Set(["image/png", "image/jpeg", "image/webp"]);
+    let message = "";
+    for (const file of incoming) {
+      if (references.length >= 4) { message = "最多只能加入 4 張參考圖。"; break; }
+      if (!allowed.has(file.type) || file.size < 8 || file.size > 4 * 1024 * 1024) {
+        message = `${file.name} 不是可用的 PNG、JPG、WebP，或超過 4 MB。`;
+        continue;
+      }
+      references.push({ id: makeUuid(), file, previewUrl: URL.createObjectURL(file), kind: "character", source: "", notes: "" });
+    }
+    event.target.value = "";
+    renderReferences();
+    if (message) byId("book-reference-message").textContent = message;
+  });
+
+  function toggleCultureFields() {
+    const traditional = byId("culture-mode").value === "verified-traditional";
+    byId("culture-fields").hidden = !traditional;
+    byId("culture-scope").required = traditional;
+    byId("culture-rules").required = traditional;
+  }
+  byId("culture-mode").addEventListener("change", toggleCultureFields);
+
+  function toggleCustomStyle() {
+    const custom = byId("book-visual-style").value === "custom";
+    byId("custom-style-field").hidden = !custom;
+    byId("book-custom-style").required = custom;
+  }
+  byId("book-visual-style").addEventListener("change", toggleCustomStyle);
+
+  const styleLibrary = [
+    ["童書", "溫暖手繪水彩童書，柔和自然光，紙張肌理", "溫暖水彩童書"],
+    ["童書", "粉彩鉛筆童書，細緻筆觸，低飽和色彩", "粉彩鉛筆童書"],
+    ["童書", "分層紙雕插畫，立體陰影，清楚前後景", "分層紙雕"],
+    ["漫畫", "清楚線條的兒童漫畫，柔和色塊，表情易讀", "兒童漫畫清線風"],
+    ["漫畫", "歐洲清線冒險漫畫，動態姿勢，輪廓明確", "歐洲清線漫畫"],
+    ["漫畫", "黑白墨線漫畫，網點陰影，高可讀分鏡", "黑白墨線漫畫"],
+    ["媒材", "剪紙拼貼童書，分層紙張質感，鮮明色塊", "剪紙拼貼"],
+    ["媒材", "刺繡與布料質感插畫，紋樣只依核准參考圖", "刺繡布料插畫"],
+    ["媒材", "兒童黏土定格動畫質感，柔和圓潤造型", "黏土定格風"],
+    ["資訊", "兒童科普圖鑑風，觀察視角，細節清楚", "兒童科普圖鑑"],
+    ["資訊", "扁平資訊插畫，圖示清楚，資訊分區明確", "扁平資訊插畫"],
+    ["簡約", "北歐幾何童書，簡潔構成，留白清楚", "北歐幾何童書"],
+  ].map(([category, prompt, description]) => ({ category, prompt, description }));
+
+  function setupStyleLibrary() {
+    const dialog = byId("style-library-dialog");
+    const list = byId("style-library-list");
+    const search = byId("style-library-search");
+    const category = byId("style-library-category");
+    const opener = byId("open-style-library");
+    if (!dialog || !list || !search || !category || !opener) return;
+    [...new Set(styleLibrary.map((item) => item.category))].forEach((value) => category.add(new Option(value, value)));
+    function render() {
+      const query = search.value.trim().toLowerCase();
+      list.replaceChildren();
+      styleLibrary.filter((item) => (category.value === "all" || item.category === category.value) && (!query || `${item.category} ${item.description} ${item.prompt}`.toLowerCase().includes(query))).forEach((item) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "style-library-item";
+        const strong = document.createElement("strong");
+        strong.textContent = item.description;
+        const small = document.createElement("small");
+        small.textContent = `${item.category}｜${item.prompt}`;
+        button.append(strong, small);
+        button.addEventListener("click", () => {
+          const select = byId("book-visual-style");
+          let option = [...select.options].find((entry) => entry.value === item.prompt);
+          if (!option) { option = new Option(item.description, item.prompt); select.add(option); }
+          select.value = item.prompt;
+          toggleCustomStyle();
+          dialog.close();
+        });
+        list.append(button);
+      });
+    }
+    opener.addEventListener("click", () => { render(); dialog.showModal(); });
+    search.addEventListener("input", render);
+    category.addEventListener("change", render);
+  }
+
+  function validateReferenceMetadata() {
+    if (!references.length) return "請先加入至少一張參考圖。";
+    if (references.some((reference) => !reference.source.trim() || !reference.notes.trim())) {
+      return "每張參考圖都要填來源／授權說明，以及只可參考哪些細節。";
+    }
+    if (!byId("reference-rights").checked) return "請先確認你有權把參考圖送交 AI 處理。";
+    return "";
+  }
+
+  function buildPlanRequest() {
+    const data = valuesOf(bookSetupForm);
+    const sourceNotes = [
+      "【核准故事來源】", data.story_source,
+      "【不可改寫】", data.locked_facts,
+      "【參考圖說】", references.map((reference, index) => `${index + 1}. ${reference.kind}｜${reference.source}｜${reference.notes}`).join("\n"),
+    ].join("\n").slice(0, 8000);
+    const requirements = [
+      `讀者：${data.book_audience}。閱讀目標：${data.learning_goal}。成品形式：${data.book_format}。`,
+      "只回傳合法 JSON，不要 Markdown code fence，也不要任何 JSON 之外的文字。",
+      "格式為 {\"pages\":[10個物件]}。每個物件必須有 page_no(1-10)、function、narration、dialogue、visual_prompt、layout、safe_area、must_include、pending_review。",
+      "layout 只能是 single、two-panels、three-panels、four-panels、spread；safe_area 只能是 upper-right、upper-left、bottom、none。",
+      "每頁一個主要事件；旁白適合兒童閱讀；對白可空字串。視覺內容只用來源支持的事實，未確認內容寫入 pending_review，不要自行補文化細節。",
+      "第1頁建立故事承諾或封面感，第2-3頁設定與觸發，第4-7頁發展與轉折，第8頁高潮，第9頁結果，第10頁收尾。",
+    ].join("\n");
+    const key = core.createIdempotencyKey("text", makeUuid());
+    return core.buildTextPayload({
+      topic: `10 頁繪本分鏡｜${data.book_title}`,
+      audience: data.book_audience,
+      duration_minutes: 40,
+      objective: data.learning_goal,
+      source_notes: sourceNotes,
+      requirements,
+    }, key);
+  }
+
+  function extractJson(content) {
+    const raw = String(content || "").trim();
+    const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/iu);
+    return JSON.parse(fenced ? fenced[1].trim() : raw);
+  }
+
+  function normalizeBookPlan(content) {
+    const parsed = extractJson(content);
+    const rawPages = Array.isArray(parsed) ? parsed : parsed && parsed.pages;
+    if (!Array.isArray(rawPages) || rawPages.length !== 10) throw new Error("AI 沒有回傳完整 10 頁分鏡。");
+    const allowedLayouts = new Set(["single", "two-panels", "three-panels", "four-panels", "spread"]);
+    const allowedSafeAreas = new Set(["upper-right", "upper-left", "bottom", "none"]);
+    return rawPages.map((page, index) => ({
+      pageNo: index + 1,
+      function: String(page.function || `第 ${index + 1} 頁`).slice(0, 120),
+      narration: String(page.narration || "").slice(0, 500),
+      dialogue: String(page.dialogue || "").slice(0, 300),
+      visualPrompt: String(page.visual_prompt || "").slice(0, 1800),
+      layout: allowedLayouts.has(page.layout) ? page.layout : "single",
+      safeArea: allowedSafeAreas.has(page.safe_area) ? page.safe_area : (index % 2 ? "upper-left" : "upper-right"),
+      mustInclude: String(page.must_include || "").slice(0, 500),
+      pendingReview: String(page.pending_review || "無").slice(0, 500),
+      attempts: 0,
+      result: null,
+      error: null,
+      retryable: false,
+      idempotencyKey: "",
+    }));
+  }
+
+  bookSetupForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const message = byId("book-plan-message");
+    if (!reportMeaningfulValidity(bookSetupForm)) return;
+    const referenceError = validateReferenceMetadata();
+    if (referenceError) { message.textContent = referenceError; return; }
+    const button = byId("create-book-plan");
+    button.dataset.busy = "true";
+    button.textContent = "AI 正在拆成 10 頁";
+    message.textContent = "先整理故事節拍，再分配到每一頁；這一步不會生成圖片。";
+    updateAvailability();
     try {
-      const imageInput = valuesOf(imageForm);
-      const spec = core.buildImageDownload(generationStates.image.result, imageInput.purpose || imageInput.prompt || "圖片");
-      clickDownload(spec.dataUrl, spec.filename, false);
-      byId("image-feedback").textContent = "圖片已開始下載。";
-    } catch {
-      byId("image-feedback").textContent = "圖片下載準備失敗，請稍後再試。";
+      const payload = await callJsonService("/generate/text", "POST", buildPlanRequest(), 120000);
+      const result = core.normalizeGenerationResult("text", payload);
+      bookPages = normalizeBookPlan(result.content);
+      renderBookPages();
+      byId("book-plan-workspace").hidden = false;
+      byId("book-plan-workspace").scrollIntoView({ behavior: "smooth", block: "start" });
+      message.textContent = "10 頁分鏡已建立。請逐頁確認文字、動作與待審內容，再開始生圖。";
+      updateSessionFromResult(result);
+    } catch (error) {
+      message.textContent = error instanceof SyntaxError || !error.code
+        ? "AI 回傳的分鏡格式不完整，沒有送出任何圖片；請保留來源後再試一次。"
+        : core.friendlyError(error);
     } finally {
-      button.disabled = false;
-      button.textContent = previousLabel;
+      button.dataset.busy = "false";
+      button.textContent = "重新建立 10 頁分鏡";
+      updateAvailability();
     }
   });
 
-  renderGeneration("text");
-  renderGeneration("image");
+  function pageField(card, name) {
+    return card.querySelector(`[data-page-field="${name}"]`);
+  }
+
+  function renderBookPages() {
+    const list = byId("book-page-list");
+    list.replaceChildren();
+    const template = byId("book-page-template");
+    bookPages.forEach((page) => {
+      const fragment = template.content.cloneNode(true);
+      const card = fragment.querySelector(".story-page-card");
+      card.dataset.pageNo = page.pageNo;
+      card.querySelector(".page-number").textContent = `PAGE ${String(page.pageNo).padStart(2, "0")}`;
+      card.querySelector(".page-function").textContent = page.function;
+      const mappings = {
+        function: "function", narration: "narration", dialogue: "dialogue", visual_prompt: "visualPrompt",
+        layout: "layout", safe_area: "safeArea", must_include: "mustInclude", pending_review: "pendingReview",
+      };
+      for (const [fieldName, property] of Object.entries(mappings)) {
+        const field = pageField(card, fieldName);
+        field.value = page[property];
+        field.addEventListener("input", () => {
+          page[property] = field.value;
+          if (fieldName === "function") card.querySelector(".page-function").textContent = field.value || `第 ${page.pageNo} 頁`;
+          if (page.error && !page.result) { page.idempotencyKey = ""; page.retryable = false; }
+        });
+      }
+      card.querySelector('[data-action="generate-page"]').addEventListener("click", () => generatePage(page.pageNo));
+      card.querySelector('[data-action="download-page"]').addEventListener("click", () => downloadPage(page.pageNo));
+      list.append(fragment);
+      renderPageState(page);
+    });
+    updateBookProgress();
+    updateAvailability();
+  }
+
+  function renderPageState(page) {
+    const card = byId("book-page-list").querySelector(`[data-page-no="${page.pageNo}"]`);
+    if (!card) return;
+    const status = card.querySelector(".page-status");
+    const message = card.querySelector(".page-message");
+    const generate = card.querySelector('[data-action="generate-page"]');
+    const download = card.querySelector('[data-action="download-page"]');
+    const image = card.querySelector(".page-preview img");
+    const empty = card.querySelector(".page-preview-empty");
+    generate.dataset.attempts = page.attempts;
+    if (activePageNumber === page.pageNo) {
+      status.textContent = "生成中";
+      status.dataset.state = "loading";
+      generate.textContent = "AI 正在生成本頁";
+      message.textContent = "正在把同一組參考圖與本頁工單送交 AI，請勿重複按下。";
+    } else if (page.result) {
+      status.textContent = "已有候選圖";
+      status.dataset.state = "success";
+      generate.textContent = page.attempts >= 3 ? "已達 3 次上限" : "重新生成本頁";
+      message.textContent = "請與前後頁並排檢查角色、服飾、圖紋、場景與畫風；AI 候選圖不代表已通過文化審訂。";
+      image.src = page.result.src;
+      image.alt = `${byId("book-title").value || "繪本"}第 ${page.pageNo} 頁候選圖`;
+      image.hidden = false;
+      empty.hidden = true;
+      download.hidden = false;
+    } else if (page.error) {
+      status.textContent = page.retryable ? "失敗，可重試" : "需要修改";
+      status.dataset.state = "error";
+      generate.textContent = page.retryable ? "重試本頁" : "修改後再生成";
+      message.textContent = `${core.friendlyError(page.error)}${page.error.requestId ? `（查詢編號 ${page.error.requestId}）` : ""}`;
+    } else {
+      status.textContent = "尚未生成";
+      status.dataset.state = "idle";
+      generate.textContent = "生成本頁候選圖";
+      message.textContent = `第 ${page.pageNo} 頁尚未使用圖片額度。`;
+    }
+  }
+
+  function selectedVisualStyle() {
+    return byId("book-visual-style").value === "custom" ? byId("book-custom-style").value.trim() : byId("book-visual-style").value;
+  }
+
+  function buildPagePrompt(page) {
+    const data = valuesOf(bookSetupForm);
+    const layoutLabels = { single: "單一主畫面", "two-panels": "2 格漫畫", "three-panels": "3 格漫畫", "four-panels": "4 格漫畫", spread: "跨頁感構圖" };
+    const safeLabels = { "upper-right": "右上保留文字安全區", "upper-left": "左上保留文字安全區", bottom: "下方保留文字安全區", none: "不指定文字留白" };
+    return [
+      `整本固定畫風：${selectedVisualStyle()}。固定色盤與光線：${data.palette}。`,
+      `角色不可變特徵：${data.character_locks}。`,
+      `本頁功能：${page.function}。`,
+      `畫面與動作：${page.visualPrompt}。`,
+      `版面：${layoutLabels[page.layout] || layoutLabels.single}；${safeLabels[page.safeArea] || safeLabels.none}。`,
+      page.mustInclude ? `必須看得到：${page.mustInclude}。` : "",
+      `旁白與對白只供排版理解，不可畫成文字：${page.narration}${page.dialogue ? `／${page.dialogue}` : ""}。`,
+      `不可改寫：${data.locked_facts}。`,
+      page.pendingReview && page.pendingReview !== "無" ? `待真人確認、不可由 AI 補寫：${page.pendingReview}。` : "",
+      "只產生無字候選圖；不要文字、字母、數字、標誌、簽名、浮水印或頁碼。",
+    ].filter(Boolean).join("\n").slice(0, 4000);
+  }
+
+  function referenceMetadata() {
+    return references.map((reference, index) => ({ order: index + 1, kind: reference.kind, source: reference.source.trim(), allowed_details: reference.notes.trim() }));
+  }
+
+  function buildBookPageForm(page) {
+    const data = valuesOf(bookSetupForm);
+    const form = new FormData();
+    form.append("idempotency_key", page.idempotencyKey);
+    form.append("page_no", String(page.pageNo));
+    form.append("book_title", data.book_title);
+    form.append("book_format", data.book_format);
+    form.append("prompt", buildPagePrompt(page));
+    form.append("culture_mode", data.culture_mode);
+    form.append("culture_scope", byId("culture-scope").value.trim());
+    form.append("culture_rules", byId("culture-rules").value.trim());
+    form.append("culture_reviewed", byId("culture-mode").value === "general" || byId("culture-reviewed").checked ? "true" : "false");
+    form.append("reference_notes", references.map((reference) => reference.notes.trim()).join("；").slice(0, 1600));
+    form.append("reference_metadata", JSON.stringify(referenceMetadata()));
+    form.append("rights_confirmed", byId("reference-rights").checked ? "true" : "false");
+    references.forEach((reference) => form.append("reference_images", reference.file, reference.file.name));
+    return form;
+  }
+
+  async function generatePage(pageNo) {
+    const page = bookPages.find((item) => item.pageNo === pageNo);
+    if (!page || activePageNumber) return;
+    const message = byId("book-generation-message");
+    const referenceError = validateReferenceMetadata();
+    if (referenceError) { message.textContent = referenceError; return; }
+    if (byId("culture-mode").value === "verified-traditional" && !byId("culture-reviewed").checked) {
+      message.textContent = "這份分鏡可以繼續修改，但傳統服飾／圖紋尚未勾選真人審訂，所以不會送出圖片生成。";
+      byId("culture-reviewed").focus();
+      return;
+    }
+    if (!page.visualPrompt.trim() || page.visualPrompt.trim().length < 3) {
+      message.textContent = `第 ${page.pageNo} 頁的「畫面與動作」至少要有 3 個字。`;
+      return;
+    }
+    const sameRetry = page.error && page.retryable && page.idempotencyKey;
+    if (!sameRetry) {
+      if (page.attempts >= 3) { message.textContent = `第 ${page.pageNo} 頁已達 3 次嘗試上限，請改用現有圖或交由人工處理。`; return; }
+      page.idempotencyKey = core.createIdempotencyKey("image", makeUuid());
+      page.attempts += 1;
+    }
+    activePageNumber = page.pageNo;
+    page.error = null;
+    page.retryable = false;
+    renderPageState(page);
+    updateAvailability();
+    message.textContent = `正在生成第 ${page.pageNo} 頁；完成前不能同時送出其他頁。`;
+    try {
+      const payload = await callBookPageService(buildBookPageForm(page));
+      const normalized = core.normalizeGenerationResult("image", payload);
+      page.result = { ...normalized, src: normalized.dataBase64 ? `data:${normalized.mimeType};base64,${normalized.dataBase64}` : normalized.src };
+      page.error = null;
+      page.idempotencyKey = "";
+      updateSessionFromResult(normalized);
+      message.textContent = `第 ${page.pageNo} 頁已完成候選圖。請先檢查再做下一頁。`;
+    } catch (error) {
+      page.error = error;
+      page.retryable = error.retryable === true;
+      if (!page.retryable) page.idempotencyKey = "";
+      message.textContent = core.friendlyError(error);
+    } finally {
+      activePageNumber = null;
+      renderPageState(page);
+      updateBookProgress();
+      updateAvailability();
+    }
+  }
+
+  function updateBookProgress() {
+    const completed = bookPages.filter((page) => page.result).length;
+    byId("book-progress-label").textContent = `${completed} / 10 頁已有圖片`;
+    byId("book-progress-bar").value = completed;
+    byId("print-book").disabled = completed !== 10;
+  }
+
+  byId("generate-next-page").addEventListener("click", () => {
+    const next = bookPages.find((page) => !page.result && page.attempts < 3);
+    if (next) generatePage(next.pageNo);
+  });
+
+  function downloadPage(pageNo) {
+    const page = bookPages.find((item) => item.pageNo === pageNo);
+    if (!page || !page.result) return;
+    const spec = core.buildImageDownload(page.result, `${byId("book-title").value}-page-${String(pageNo).padStart(2, "0")}`);
+    clickDownload(spec.dataUrl, spec.filename, false);
+  }
+
+  byId("download-book-plan").addEventListener("click", () => {
+    const data = valuesOf(bookSetupForm);
+    const metadata = referenceMetadata();
+    const exportData = {
+      title: data.book_title,
+      audience: data.book_audience,
+      format: data.book_format,
+      learning_goal: data.learning_goal,
+      cultural_scope: data.culture_mode === "verified-traditional" ? byId("culture-scope").value.trim() : "not_applicable",
+      reference_files: references.map((reference, index) => ({ name: reference.file.name, ...metadata[index] })),
+      pages: bookPages.map((page) => ({
+        page_no: page.pageNo, function: page.function, narration: page.narration, dialogue: page.dialogue,
+        visual_prompt: page.visualPrompt, layout: page.layout, safe_area: page.safeArea,
+        must_include: page.mustInclude, pending_review: page.pendingReview,
+        image_status: page.result ? "candidate_generated" : "not_generated",
+        request_id: page.result ? page.result.requestId : null,
+      })),
+      notice: "圖片為候選稿；文化、語言、權利與公開狀態仍需真人確認。",
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json;charset=utf-8" });
+    clickDownload(URL.createObjectURL(blob), `${core.safeFilename(data.book_title, "ten-page-book")}-storyboard.json`, true);
+  });
+
+  function renderPrintBook() {
+    const container = byId("book-print-area");
+    container.replaceChildren();
+    const title = byId("book-title").value.trim();
+    bookPages.forEach((page) => {
+      const sheet = document.createElement("article");
+      sheet.className = "print-book-page";
+      const heading = document.createElement("header");
+      const pageLabel = document.createElement("span");
+      pageLabel.textContent = page.pageNo === 1 ? title : `${page.pageNo} / 10`;
+      heading.append(pageLabel);
+      const image = document.createElement("img");
+      image.src = page.result.src;
+      image.alt = "";
+      const copy = document.createElement("div");
+      copy.className = "print-page-copy";
+      const narration = document.createElement("p");
+      narration.textContent = page.narration;
+      copy.append(narration);
+      if (page.dialogue) {
+        const dialogue = document.createElement("p");
+        dialogue.className = "print-dialogue";
+        dialogue.textContent = page.dialogue;
+        copy.append(dialogue);
+      }
+      const note = document.createElement("small");
+      note.textContent = "課堂候選稿｜文化、語言、權利與公開狀態需真人確認";
+      sheet.append(heading, image, copy, note);
+      container.append(sheet);
+    });
+  }
+
+  byId("print-book").addEventListener("click", () => {
+    if (bookPages.filter((page) => page.result).length !== 10) return;
+    renderPrintBook();
+    byId("book-print-area").setAttribute("aria-hidden", "false");
+    globalThis.print();
+    byId("book-print-area").setAttribute("aria-hidden", "true");
+  });
+
+  renderReferences();
+  toggleCultureFields();
+  toggleCustomStyle();
+  setupStyleLibrary();
+  renderTextState();
   restoreSession();
 })();
