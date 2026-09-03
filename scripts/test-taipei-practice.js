@@ -25,7 +25,7 @@ assert.match(html, /<html lang="zh-Hant">/, "practice page language is missing")
 assert.match(html, /Content-Security-Policy[^>]+default-src 'self'/, "practice page needs a same-origin CSP");
 assert.match(html, /connect-src 'self'/, "practice page must only connect to the same origin");
 assert.match(html, /styles\.css\?v=20260903f/, "practice stylesheet cache key is stale");
-assert.match(html, /app\.js\?v=20260903p/, "practice app cache key is stale");
+assert.match(html, /app\.js\?v=20260903q/, "practice app cache key is stale");
 assert.match(html, /<a class="skip-link" href="#main">/, "practice page needs a skip link");
 assert.match(html, /id="claim-form"/, "practice page needs a classroom claim form");
 assert.match(html, /id="workspace"[^>]+hidden/, "workspace must stay hidden before a session is claimed");
@@ -39,6 +39,8 @@ assert.match(html, /最多 4 張/, "reference image count guidance is missing");
 assert.match(html, /每張不超過 4 MB/, "reference image size guidance is missing");
 assert.match(html, /傳統服飾與圖紋不是裝飾素材庫/, "cultural reference warning is missing");
 assert.match(html, /文字後製，不畫進圖片/, "editable-text policy is missing");
+assert.match(html, /value="comic">漫畫｜每頁可調整為 2～4 格/, "comic format must be an explicit learner choice");
+assert.match(html, /每一頁仍可自行改成 2、3 或 4 格/, "comic panel editing guidance is missing");
 assert.match(html, /id="text-feedback"[^>]+aria-live="polite"/, "text feedback must be announced");
 assert.match(html, /id="book-generation-message"[^>]+aria-live="polite"/, "book feedback must be announced");
 
@@ -206,6 +208,9 @@ for (const endpoint of ["/session", "/session/claim", "/session/logout"]) {
 assert.match(app, /\/api\/classroom-ai\/generate\/book-page/, "book pages must use the authenticated same-origin reference-image route");
 assert.match(app, /form\.append\("reference_images", reference\.file/, "reference images are not included in page generation");
 assert.match(app, /function buildPlanRequest\(\)/, "ten-page AI storyboard request is missing");
+assert.match(app, /comic: "漫畫：每頁使用 2～4 格/, "comic selection must instruct the storyboard AI to use panels");
+assert.match(app, /bookFormat === "comic"[^\n]+layout = "two-panels"/, "comic plans must not silently fall back to a single illustration");
+assert.match(app, /這是漫畫頁：分格邊界與閱讀順序要清楚/, "comic page generation prompt needs panel-flow guidance");
 assert.match(app, /\/generate\/text/, "app must route text generation through the service contract");
 assert.match(app, /performTextGeneration\(false\)/, "text generator submit is not wired");
 assert.match(app, /async function generatePage\(pageNo\)/, "per-page image generator is not wired");

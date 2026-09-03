@@ -11,7 +11,7 @@
   <link rel="preload" href="../assets/fonts/iansui-course-display.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20260903f">
   <script src="core.js" defer></script>
-  <script src="app.js?v=20260903p" defer></script>
+  <script src="app.js?v=20260903q" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -166,8 +166,8 @@
         <div class="panel-heading book-heading">
           <div>
             <p class="kicker">課堂作品線</p>
-            <h3>10 頁繪本製作室</h3>
-            <p>先用課程來源完成整本分鏡，再以同一組角色、服飾與圖紋參考圖逐頁生成。課堂先完成計畫與關鍵頁，課後可補齊全本。</p>
+            <h3>10 頁繪本／漫畫製作室</h3>
+            <p>可選單頁繪本、1～4 格漫畫或混合形式。先用課程來源完成整本分鏡，再以同一組角色、服飾與圖紋參考圖逐頁生成。</p>
           </div>
           <span class="book-badge">文字後製，不畫進圖片</span>
         </div>
@@ -175,7 +175,7 @@
         <ol class="book-flow" aria-label="十頁繪本製作流程">
           <li data-state="active"><b>1</b><span>故事與來源</span></li>
           <li><b>2</b><span>參考圖與權利</span></li>
-          <li><b>3</b><span>AI 拆成 10 頁</span></li>
+          <li><b>3</b><span>AI 拆成 10 頁分鏡</span></li>
           <li><b>4</b><span>逐頁生圖與檢查</span></li>
           <li><b>5</b><span>排版輸出</span></li>
         </ol>
@@ -202,12 +202,13 @@
                 </select>
               </div>
               <div class="field">
-                <label for="book-format">成品形式</label>
+                <label for="book-format">成品形式（可選漫畫）</label>
                 <select id="book-format" name="book_format" required>
-                  <option value="picture-book">單頁繪本｜每頁一個主畫面</option>
-                  <option value="comic">漫畫｜每頁 1～4 格</option>
-                  <option value="mixed">混合｜繪本跨頁＋漫畫格</option>
+                  <option value="picture-book">繪本｜每頁一個主畫面</option>
+                  <option value="comic">漫畫｜每頁可調整為 2～4 格</option>
+                  <option value="mixed">混合｜部分繪本頁＋部分漫畫頁</option>
                 </select>
+                <small>選漫畫後，AI 會先規劃分格；產生分鏡後，每一頁仍可自行改成 2、3 或 4 格。</small>
               </div>
               <div class="field">
                 <label for="book-learning-goal">希望讀者帶走什麼</label>
@@ -312,7 +313,7 @@
             <div>
               <p class="kicker">10 頁草稿</p>
               <h3 id="book-plan-title">逐頁修改，再決定哪一頁要生成</h3>
-              <p>每頁只放一個主要事件。漫畫可調格數；正式文字保留為可編輯欄位，不會畫進圖片。</p>
+              <p>繪本頁使用單一主畫面；漫畫頁可選 2、3、4 格，但整頁仍只推進一個主要事件。正式文字保留為可編輯欄位，不會畫進圖片。</p>
             </div>
             <div class="book-toolbar-actions">
               <button class="button secondary compact" id="download-book-plan" type="button">下載分鏡 JSON</button>
@@ -362,7 +363,7 @@
                 <div class="field"><label>必須看得到<input data-page-field="must_include" maxlength="500"></label></div>
                 <div class="field"><label>待真人確認<input data-page-field="pending_review" maxlength="500" placeholder="沒有就填：無"></label></div>
                 <div class="page-actions">
-                  <button class="button primary compact" data-action="generate-page" type="button">生成本頁候選圖</button>
+                  <button class="button primary compact" data-action="generate-page" type="button">生成本頁無字候選圖</button>
                   <button class="button secondary compact" data-action="download-page" type="button" hidden>下載本頁圖片</button>
                 </div>
                 <p class="page-message" role="status"></p>

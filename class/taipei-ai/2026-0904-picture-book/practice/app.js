@@ -514,13 +514,18 @@
 
   function buildPlanRequest() {
     const data = valuesOf(bookSetupForm);
+    const formatGuide = ({
+      "picture-book": "繪本：每頁使用單一主畫面或跨頁感構圖，layout 只用 single 或 spread。",
+      comic: "漫畫：每頁使用 2～4 格，layout 只用 two-panels、three-panels 或 four-panels；visual_prompt 要依閱讀順序寫出每格動作，但整頁只推進一個主要事件。",
+      mixed: "混合：依節奏選單一主畫面、跨頁感或 2～4 格漫畫；漫畫頁的 visual_prompt 要依閱讀順序寫出每格動作。",
+    })[data.book_format];
     const sourceNotes = [
       "【核准故事來源】", data.story_source,
       "【不可改寫】", data.locked_facts,
       "【參考圖說】", references.map((reference, index) => `${index + 1}. ${reference.kind}｜${reference.source}｜${reference.notes}`).join("\n"),
     ].join("\n").slice(0, 8000);
     const requirements = [
-      `讀者：${data.book_audience}。閱讀目標：${data.learning_goal}。成品形式：${data.book_format}。`,
+      `讀者：${data.book_audience}。閱讀目標：${data.learning_goal}。${formatGuide}`,
       "只回傳合法 JSON，不要 Markdown code fence，也不要任何 JSON 之外的文字。",
       "格式為 {\"pages\":[10個物件]}。每個物件必須有 page_no(1-10)、function、narration、dialogue、visual_prompt、layout、safe_area、must_include、pending_review。",
       "layout 只能是 single、two-panels、three-panels、four-panels、spread；safe_area 只能是 upper-right、upper-left、bottom、none。",
@@ -550,22 +555,28 @@
     if (!Array.isArray(rawPages) || rawPages.length !== 10) throw new Error("AI 沒有回傳完整 10 頁分鏡。");
     const allowedLayouts = new Set(["single", "two-panels", "three-panels", "four-panels", "spread"]);
     const allowedSafeAreas = new Set(["upper-right", "upper-left", "bottom", "none"]);
-    return rawPages.map((page, index) => ({
-      pageNo: index + 1,
-      function: String(page.function || `第 ${index + 1} 頁`).slice(0, 120),
-      narration: String(page.narration || "").slice(0, 500),
-      dialogue: String(page.dialogue || "").slice(0, 300),
-      visualPrompt: String(page.visual_prompt || "").slice(0, 1800),
-      layout: allowedLayouts.has(page.layout) ? page.layout : "single",
-      safeArea: allowedSafeAreas.has(page.safe_area) ? page.safe_area : (index % 2 ? "upper-left" : "upper-right"),
-      mustInclude: String(page.must_include || "").slice(0, 500),
-      pendingReview: String(page.pending_review || "無").slice(0, 500),
-      attempts: 0,
-      result: null,
-      error: null,
-      retryable: false,
-      idempotencyKey: "",
-    }));
+    const bookFormat = byId("book-format").value;
+    return rawPages.map((page, index) => {
+      let layout = allowedLayouts.has(page.layout) ? page.layout : (bookFormat === "comic" ? "two-panels" : "single");
+      if (bookFormat === "comic" && ["single", "spread"].includes(layout)) layout = "two-panels";
+      if (bookFormat === "picture-book" && ["two-panels", "three-panels", "four-panels"].includes(layout)) layout = "single";
+      return {
+        pageNo: index + 1,
+        function: String(page.function || `第 ${index + 1} 頁`).slice(0, 120),
+        narration: String(page.narration || "").slice(0, 500),
+        dialogue: String(page.dialogue || "").slice(0, 300),
+        visualPrompt: String(page.visual_prompt || "").slice(0, 1800),
+        layout,
+        safeArea: allowedSafeAreas.has(page.safe_area) ? page.safe_area : (index % 2 ? "upper-left" : "upper-right"),
+        mustInclude: String(page.must_include || "").slice(0, 500),
+        pendingReview: String(page.pending_review || "無").slice(0, 500),
+        attempts: 0,
+        result: null,
+        error: null,
+        retryable: false,
+        idempotencyKey: "",
+      };
+    });
   }
 
   bookSetupForm.addEventListener("submit", async (event) => {
@@ -668,7 +679,7 @@
     } else {
       status.textContent = "尚未生成";
       status.dataset.state = "idle";
-      generate.textContent = "生成本頁候選圖";
+      generate.textContent = "生成本頁無字候選圖";
       message.textContent = `第 ${page.pageNo} 頁尚未使用圖片額度。`;
     }
   }
@@ -687,6 +698,9 @@
       `本頁功能：${page.function}。`,
       `畫面與動作：${page.visualPrompt}。`,
       `版面：${layoutLabels[page.layout] || layoutLabels.single}；${safeLabels[page.safeArea] || safeLabels.none}。`,
+      ["two-panels", "three-panels", "four-panels"].includes(page.layout)
+        ? "這是漫畫頁：分格邊界與閱讀順序要清楚，每格只呈現一個動作節點，整頁仍只推進同一個主要事件。"
+        : "這是繪本頁：以一個清楚主畫面呈現本頁主要事件。",
       page.mustInclude ? `必須看得到：${page.mustInclude}。` : "",
       `旁白與對白只供排版理解，不可畫成文字：${page.narration}${page.dialogue ? `／${page.dialogue}` : ""}。`,
       `不可改寫：${data.locked_facts}。`,
