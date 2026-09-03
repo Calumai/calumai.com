@@ -20,6 +20,9 @@ for (const id of ["workflow", "schedule", "prompts", "yaml", "example", "gates",
   assert.match(html, new RegExp(`id=["']${id}["']`), `missing section #${id}`);
 }
 
+assert.doesNotMatch(html, /Captain|來源透明|原資料庫|實體 schema/i, "student page must not expose internal source notes");
+assert.doesNotMatch(promptLibrary, /Captain/i, "downloadable prompt library must not expose internal source notes");
+
 const promptHeadings = Array.from(promptLibrary.matchAll(/^##\s+(N-CLASS|N\d{2}|C\d{2})｜([^\r\n]+)$/gm));
 const promptCodes = promptHeadings.map((match) => match[1]);
 assert.equal(promptCodes.length, 20, "prompt library should expose 20 task prompts");
