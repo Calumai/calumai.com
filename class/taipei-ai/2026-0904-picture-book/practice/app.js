@@ -19,8 +19,7 @@
     image: core.createGenerationState("image")
   };
   let currentSession = null;
-  const previewMode = ["127.0.0.1", "localhost"].includes(globalThis.location.hostname)
-    && new URLSearchParams(globalThis.location.search).get("preview") === "1";
+  const previewMode = ["127.0.0.1", "localhost"].includes(globalThis.location.hostname);
   // Never retain classroom credentials or consent fields in a shareable URL.
   if (globalThis.history && globalThis.location.search) {
     const cleanUrl = new URL(globalThis.location.href);
