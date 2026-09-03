@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="北市府 AI 教學應用課堂練習室，使用課堂碼生成教材文字與繪本圖片。">
+  <meta name="theme-color" content="#005fb8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <title>AI 教材練習室｜北市府 AI 教學應用</title>
+  <link rel="icon" href="/assets/calumai-logo-mark.png">
+  <link rel="preload" href="../assets/fonts/iansui-course-display.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css?v=20260903a">
+  <script src="core.js" defer></script>
+  <script src="app.js?v=20260903a" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要內容</a>
+
+  <header class="practice-header">
+    <div class="shell header-inner">
+      <a class="brand" href="/class/" aria-label="回到 CALUMAI 課程首頁">CALUMAI <span>/ CLASS</span></a>
+      <a class="back-link" href="../">回到 9/4 課程</a>
+    </div>
+  </header>
+
+  <main id="main" class="shell">
+    <section class="practice-intro" aria-labelledby="page-title">
+      <div>
+        <p class="kicker">課堂限定練習</p>
+        <h1 id="page-title">AI 教材練習室</h1>
+        <p>輸入課堂碼後，練習生成教材文字或繪本圖片。每次送出都會計入個人與全班額度。</p>
+      </div>
+      <aside class="privacy-note">
+        <strong>安全連線說明</strong>
+        <p>敏感憑證只留在伺服器。瀏覽器僅取得本次課堂的短期工作階段。</p>
+      </aside>
+    </section>
+
+    <section class="access-panel" id="access-panel" aria-labelledby="access-title">
+      <div class="access-copy">
+        <h2 id="access-title">先加入本次課堂</h2>
+        <p>課堂碼由講師現場提供。請使用方便辨識的暱稱，不要填寫身分證字號、電話或其他敏感資料。</p>
+      </div>
+      <form id="claim-form" class="access-form">
+        <div class="field">
+          <label for="class-code">課堂碼</label>
+          <input id="class-code" name="class_code" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" required maxlength="128" aria-describedby="class-code-help">
+          <small id="class-code-help">請依講師投影畫面輸入，英文字母不分大小寫。</small>
+        </div>
+        <div class="field">
+          <label for="nickname">暱稱</label>
+          <input id="nickname" name="nickname" type="text" autocomplete="nickname" required minlength="1" maxlength="40" aria-describedby="nickname-help">
+          <small id="nickname-help">只用於課堂額度與問題排查，不會出現在生成內容中。</small>
+        </div>
+        <label class="consent-row" for="consent">
+          <input id="consent" name="consent" type="checkbox" required>
+          <span>我了解輸入內容會送交生成服務處理，且不會上傳未授權、敏感或可識別個人的資料。</span>
+        </label>
+        <button class="button primary" id="claim-button" type="submit">進入練習室</button>
+        <p class="form-message" id="claim-message" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="workspace" id="workspace" aria-labelledby="workspace-title" hidden>
+      <header class="workspace-header">
+        <div>
+          <p class="kicker">已進入課堂</p>
+          <h2 id="workspace-title"><span id="session-nickname">學員</span>的練習桌</h2>
+        </div>
+        <button class="button secondary compact" id="logout-button" type="button">結束工作階段</button>
+      </header>
+
+      <div class="classroom-status" aria-live="polite">
+        <div>
+          <span class="status-chip" id="classroom-status-chip">確認中</span>
+          <p id="classroom-window">正在取得課堂開放時間。</p>
+        </div>
+        <dl class="quota-grid" aria-label="剩餘生成額度">
+          <div><dt>個人文字</dt><dd id="personal-text-quota">-</dd></div>
+          <div><dt>個人圖片</dt><dd id="personal-image-quota">-</dd></div>
+          <div><dt>全班文字</dt><dd id="class-text-quota">-</dd></div>
+          <div><dt>全班圖片</dt><dd id="class-image-quota">-</dd></div>
+        </dl>
+      </div>
+
+      <aside class="review-alert">
+        <strong>文化與族語內容需要真人審訂</strong>
+        <p>生成結果只能當作課堂草稿。族語拼寫、文化敘事、服飾、圖紋、儀式與公開權限，都要交由具備權限與知識的人確認。</p>
+      </aside>
+
+      <div class="tool-tabs" role="tablist" aria-label="選擇生成練習">
+        <button id="text-tab" type="button" role="tab" aria-selected="true" aria-controls="text-panel" tabindex="0" data-tab="text">教材文字</button>
+        <button id="image-tab" type="button" role="tab" aria-selected="false" aria-controls="image-panel" tabindex="-1" data-tab="image">繪本圖片</button>
+      </div>
+
+      <section class="tool-panel" id="text-panel" role="tabpanel" aria-labelledby="text-tab">
+        <div class="panel-heading">
+          <h3>生成一份可修改的教材草稿</h3>
+          <p>先交代對象、時間與學習目標，生成後再依班級狀況調整。</p>
+        </div>
+        <div class="tool-layout">
+          <form id="text-form" class="generator-form">
+            <div class="field">
+              <label for="text-topic">教材主題</label>
+              <input id="text-topic" name="topic" type="text" required maxlength="200" placeholder="例如：用繪本認識部落地名">
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label for="text-audience">學習對象</label>
+                <input id="text-audience" name="audience" type="text" required maxlength="160" placeholder="例如：國小五年級">
+              </div>
+              <div class="field narrow-field">
+                <label for="text-duration">時間（分鐘）</label>
+                <input id="text-duration" name="duration_minutes" type="number" required min="5" max="240" step="5" value="40">
+              </div>
+            </div>
+            <div class="field">
+              <label for="text-objective">學習目標</label>
+              <textarea id="text-objective" name="objective" required maxlength="1000" rows="3" placeholder="完成後，學員能說出或做到什麼？"></textarea>
+            </div>
+            <div class="field">
+              <label for="text-source-notes">可依據的來源筆記</label>
+              <textarea id="text-source-notes" name="source_notes" required maxlength="8000" rows="5" placeholder="貼上已核對的事實、詞彙與引用範圍。若沒有來源，請填寫「無來源，僅作虛構練習」。"></textarea>
+              <small>不要貼入未授權全文、學生個資或尚未公開的敏感文化內容。</small>
+            </div>
+            <div class="field">
+              <label for="text-requirements">格式與限制</label>
+              <textarea id="text-requirements" name="requirements" required maxlength="3000" rows="3" placeholder="例如：包含暖身、活動、評量；用繁體中文；不自行補寫來源外的事實。"></textarea>
+            </div>
+            <button class="button primary full-button" type="submit">生成教材草稿</button>
+          </form>
+
+          <section class="result-panel" aria-labelledby="text-result-title">
+            <header>
+              <h4 id="text-result-title">文字結果</h4>
+              <span class="generation-status" id="text-status">尚未生成</span>
+            </header>
+            <div id="text-feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true"></div>
+            <div class="empty-state" id="text-empty">
+              <strong>填完左側欄位後開始生成</strong>
+              <p>完成後可一鍵複製，也能下載為 Markdown 檔繼續編輯。</p>
+            </div>
+            <div class="loading-state" id="text-loading" hidden aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+              <p>正在整理教材結構，請留在本頁。</p>
+            </div>
+            <div class="error-state" id="text-error" hidden>
+              <strong>這次沒有完成</strong>
+              <p id="text-error-message"></p>
+              <small id="text-error-reference"></small>
+              <button class="button secondary compact" id="text-retry" type="button" hidden>沿用原請求重試</button>
+            </div>
+            <article class="success-state text-success" id="text-success" hidden>
+              <pre id="text-output" tabindex="0"></pre>
+              <div class="result-actions">
+                <button class="button secondary compact" id="copy-text" type="button">複製文字</button>
+                <button class="button primary compact" id="download-text" type="button">下載 Markdown</button>
+              </div>
+              <small id="text-request-reference"></small>
+            </article>
+          </section>
+        </div>
+      </section>
+
+      <section class="tool-panel" id="image-panel" role="tabpanel" aria-labelledby="image-tab" hidden>
+        <div class="panel-heading">
+          <h3>生成一張無字繪本候選圖</h3>
+          <p>一次處理一個場景，先把構圖、留白與不要出現的內容說清楚。</p>
+        </div>
+        <div class="tool-layout">
+          <form id="image-form" class="generator-form">
+            <div class="field">
+              <label for="image-scene">場景與動作</label>
+              <textarea id="image-scene" name="scene" required maxlength="1800" rows="5" placeholder="例如：雨後的公園，小晴看見長椅旁的紅雨傘，停下腳步仔細觀察。"></textarea>
+            </div>
+            <div class="field">
+              <label for="image-style">視覺風格</label>
+              <input id="image-style" name="style" type="text" required maxlength="800" value="溫暖手繪水彩繪本，柔和自然光，紙張肌理">
+            </div>
+            <div class="field">
+              <label for="image-composition">畫面構圖</label>
+              <textarea id="image-composition" name="composition" required maxlength="800" rows="3" placeholder="交代景別、角色位置與視線方向。"></textarea>
+            </div>
+            <div class="field">
+              <label for="image-safe-area">文字安全區</label>
+              <input id="image-safe-area" name="safe_area" type="text" required maxlength="600" placeholder="例如：右上保留約三分之一乾淨天空，不放人物與重要物件">
+            </div>
+            <div class="field">
+              <label for="image-avoid">不要出現</label>
+              <textarea id="image-avoid" name="avoid" required maxlength="800" rows="3" placeholder="例如：不要文字、浮水印、額外手指、錯誤服飾或未確認的文化圖紋。"></textarea>
+            </div>
+            <button class="button primary full-button" type="submit">生成繪本圖片</button>
+          </form>
+
+          <section class="result-panel" aria-labelledby="image-result-title">
+            <header>
+              <h4 id="image-result-title">圖片結果</h4>
+              <span class="generation-status" id="image-status">尚未生成</span>
+            </header>
+            <div id="image-feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true"></div>
+            <div class="empty-state image-empty" id="image-empty">
+              <strong>先描述一個清楚的單頁畫面</strong>
+              <p>結果會顯示在這裡。下載前請完成內容、文化與權利檢查。</p>
+            </div>
+            <div class="loading-state image-loading" id="image-loading" hidden aria-hidden="true">
+              <div class="image-skeleton"></div>
+              <p>正在建立候選圖，請勿重複送出。</p>
+            </div>
+            <div class="error-state" id="image-error" hidden>
+              <strong>這次沒有完成</strong>
+              <p id="image-error-message"></p>
+              <small id="image-error-reference"></small>
+              <button class="button secondary compact" id="image-retry" type="button" hidden>沿用原請求重試</button>
+            </div>
+            <article class="success-state image-success" id="image-success" hidden>
+              <img id="image-output" alt="本次生成的繪本候選圖">
+              <p>這是候選圖，不代表已通過族語、文化、授權或公開審訂。</p>
+              <button class="button primary compact" id="download-image" type="button">下載圖片</button>
+              <small id="image-request-reference"></small>
+            </article>
+          </section>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell">
+      <span>CALUMAI / 臺北市政府 AI 教學應用課程</span>
+      <a href="../">回到 9/4 課程</a>
+    </div>
+  </footer>
+</body>
+</html>

@@ -10,6 +10,7 @@
 - `styles.css`：本路由專用響應式樣式；色票對齊「115年度 AI × 族語教學」封面的冷白、亮藍、深海軍藍、紅與橘。
 - `app.js`：提示詞解析／複製、YAML 載入／複製、個人關卡進度與閱讀進度。
 - `workbench/index.html`：可編輯三頁繪本，能下載自帶圖片的 HTML 或列印成 PDF。
+- `practice/`：課堂限定 AI 教材練習室；前端只呼叫同網域 `/api/classroom-ai`，不包含永久金鑰、模型或上游位址。
 - `materials/`：Markdown、7 份 YAML 模板與 9 份範例。
 - `assets/images/`：5 張課堂備援圖及排版預覽。
 - `assets/fonts/`：固定標題使用的 22 KB 芫荽字型子集及 SIL OFL 1.1 授權；學生可編輯內容仍使用繁中系統字型，避免子集缺字。
@@ -19,6 +20,7 @@
 
 ```powershell
 node scripts/test-taipei-picture-book.js
+node scripts/test-taipei-practice.js
 node scripts/check.js
 node scripts/test-lesson-04-code-generator.js
 git diff --check

@@ -35,6 +35,10 @@ const styles = read("styles.css");
 const app = read("app.js");
 const promptLibrary = read(path.join("materials", "docs", "prompt-library.md"));
 const workbench = read(path.join("workbench", "index.html"));
+const practiceHtml = read(path.join("practice", "index.html"));
+const practiceStyles = read(path.join("practice", "styles.css"));
+const practiceCore = read(path.join("practice", "core.js"));
+const practiceApp = read(path.join("practice", "app.js"));
 const classIndex = fs.readFileSync(path.join(root, "class", "index.html"), "utf8");
 
 const palette = {
@@ -65,7 +69,7 @@ for (const [token, value] of Object.entries({
 }
 
 assert.match(html, /<meta name="theme-color" content="#005fb8">/i, "theme color should use accessible brand blue");
-assert.match(html, /styles\.css\?v=20260903a/, "course stylesheet cache key is stale");
+assert.match(html, /styles\.css\?v=20260903b/, "course stylesheet cache key is stale");
 assert.match(html, /workbench-preview\.png\?v=20260903a" width="1280" height="960"/, "workbench preview cache key or dimensions are stale");
 assert.match(workbench, /--ink:\s*#0c2247/i, "workbench navy token is stale");
 assert.match(workbench, /--accent:\s*#005fb8/i, "workbench action blue is stale");
@@ -84,6 +88,7 @@ for (const oldColor of [
 }
 
 assert.doesNotMatch(`${html}\n${workbench}`, /[—–]/, "student-facing HTML should use regular hyphens");
+assert.doesNotMatch(`${practiceHtml}\n${practiceStyles}\n${practiceCore}\n${practiceApp}`, /[—–]/, "practice page should use regular hyphens");
 assert.match(styles, /\.button\.primary\s*{[\s\S]*?background:\s*var\(--blue-dark\)/, "primary CTA should use action blue");
 assert.match(styles, /\.prompt-item\.is-active\s*{[\s\S]*?background:\s*var\(--blue-dark\)/, "active prompt should use action blue");
 assert.match(styles, /\.course-boundary\s*{[\s\S]*?var\(--blue-dark\)[\s\S]*?var\(--blue\)/, "course boundary should use the blue brand gradient");
@@ -102,6 +107,16 @@ assertContrast(palette.controlBorder, palette.white, 3, "control border on white
 
 for (const id of ["workflow", "schedule", "prompts", "yaml", "example", "gates", "downloads"]) {
   assert.match(html, new RegExp(`id=["']${id}["']`), `missing section #${id}`);
+}
+
+assert.match(html, /<section class="practice-cta"[^>]+aria-labelledby="practice-cta-title">/, "course page needs a practice CTA after YAML");
+assert.match(html, /href="practice\/">開啟 AI 教材練習室<\/a>/, "practice CTA link is missing");
+assert(html.indexOf('id="yaml"') < html.indexOf('class="practice-cta"'), "practice CTA must follow the YAML lab");
+assert(html.indexOf('class="practice-cta"') < html.indexOf('id="example"'), "practice CTA must precede the classroom example");
+assert.match(styles, /\.practice-cta\s*{[\s\S]*?background:\s*var\(--blue-dark\)/, "practice CTA must use the course action color");
+assert.match(styles, /@media \(max-width: 620px\)[\s\S]*?\.practice-cta \.button\s*{\s*width:\s*100%/, "practice CTA must fit mobile width");
+for (const relative of ["index.html", "styles.css", "core.js", "app.js"]) {
+  assert(fs.existsSync(path.join(route, "practice", relative)), `missing practice/${relative}`);
 }
 
 assert.doesNotMatch(html, /Captain|來源透明|原資料庫|實體 schema/i, "student page must not expose internal source notes");
@@ -159,4 +174,4 @@ assert.equal((classIndex.match(/<!doctype html>/gi) || []).length, 1, "class ind
 assert.equal((classIndex.match(/\/class\/taipei-ai\/2026-0904-picture-book\//g) || []).length, 2, "class index should link the route and its preview image once each");
 assert.match(classIndex, /北市府四堂課 · 獨立系列/, "class index must label the course as an independent series");
 
-console.log("Taipei 9/4 picture-book course tests passed: palette, contrast, 20 prompts, 16 YAML files, assets, typography, responsive workbench, ZIP and class entry.");
+console.log("Taipei 9/4 picture-book course tests passed: palette, contrast, 20 prompts, 16 YAML files, assets, typography, responsive tools, practice CTA, ZIP and class entry.");
