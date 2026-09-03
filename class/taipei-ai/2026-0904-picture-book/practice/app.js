@@ -21,6 +21,12 @@
   let currentSession = null;
   const previewMode = ["127.0.0.1", "localhost"].includes(globalThis.location.hostname)
     && new URLSearchParams(globalThis.location.search).get("preview") === "1";
+  // Never retain classroom credentials or consent fields in a shareable URL.
+  if (globalThis.history && globalThis.location.search) {
+    const cleanUrl = new URL(globalThis.location.href);
+    for (const key of ["class_code", "nickname", "consent", "test_mode"]) cleanUrl.searchParams.delete(key);
+    globalThis.history.replaceState(null, "", cleanUrl.pathname + (previewMode ? "?preview=1" : "") + cleanUrl.hash);
+  }
   let previewSessionActive = false;
   const previewQuota = { text: 2, image: 1 };
   const previewImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
