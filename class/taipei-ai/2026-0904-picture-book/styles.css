@@ -1,11 +1,3 @@
-@font-face {
-  font-family: "Iansui";
-  src: url("assets/fonts/iansui-course-display.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-
 :root {
   color-scheme: light;
   --ink: #111827;
@@ -28,7 +20,7 @@
   --orange: var(--gold);
   --orange-soft: var(--gold-soft);
   --font-body: Arial, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-  --font-display: "Iansui", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --font-display: var(--font-body);
   --font-mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
   --radius-card: 16px;
   --radius-control: 8px;
@@ -196,7 +188,7 @@ a { -webkit-tap-highlight-color: transparent; }
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2.1rem, 4vw, 3.35rem);
-  font-weight: 400;
+  font-weight: 900;
   letter-spacing: -.04em;
   line-height: 1.1;
 }

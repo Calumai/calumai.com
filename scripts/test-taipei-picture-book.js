@@ -80,7 +80,7 @@ for (const [token, value] of Object.entries({
 }
 
 assert.match(html, /<meta name="theme-color" content="#147d7e">/i, "theme color should match /class teal");
-assert.match(html, /styles\.css\?v=20260904m/, "course stylesheet cache key is stale");
+assert.match(html, /styles\.css\?v=20260904n/, "course stylesheet cache key is stale");
 assert.match(html, /app\.js\?v=20260904h/, "course script cache key is stale");
 assert.match(workbench, /--ink:\s*#0c2247/i, "workbench navy token is stale");
 assert.match(workbench, /--accent:\s*#005fb8/i, "workbench action blue is stale");
@@ -310,13 +310,10 @@ assert(fs.existsSync(displayFont), "missing self-hosted Iansui display font");
 assert(fs.statSync(displayFont).size > 10_000, "display font is unexpectedly small");
 assert.equal(fs.readFileSync(displayFont).subarray(0, 4).toString("ascii"), "wOF2", "display font must be WOFF2");
 assert(fs.existsSync(fontLicense), "missing Iansui OFL license");
-assert.match(html, /rel="preload" href="assets\/fonts\/iansui-course-display\.woff2" as="font" type="font\/woff2" crossorigin/, "course should preload the section-heading display font");
-assert.match(styles, /@font-face\s*\{[\s\S]*?font-family:\s*"Iansui"[\s\S]*?iansui-course-display\.woff2/, "course should define the self-hosted Iansui face");
-assert.match(styles, /--font-display:\s*"Iansui"/, "course section headings should use Iansui");
-assert.doesNotMatch(promptIntroHtml + "\n" + promptIntroStyles, /iansui-course-display|font-family:\s*"Iansui"/i, "interactive introduction should retain the /class system type");
+assert.doesNotMatch(html + "\n" + styles + "\n" + promptIntroHtml + "\n" + promptIntroStyles, /iansui-course-display|font-family:\s*"Iansui"/i, "course and introduction should use the same system type as /class");
 assert.match(styles, /--font-body:\s*Arial,\s*"Noto Sans TC"/, "course should share the /class font stack");
 assert.match(styles, /\.course-intro h1\s*\{[\s\S]*?font-weight:\s*900/, "compact course title should use a clear sans heading");
-assert.match(styles, /\.section-heading h2\s*\{[\s\S]*?font-family:\s*var\(--font-display\)[\s\S]*?font-weight:\s*400/, "section headings should use the Iansui display face");
+assert.match(styles, /\.section-heading h2\s*\{[\s\S]*?font-family:\s*var\(--font-display\)[\s\S]*?font-weight:\s*900/, "section headings should use a clear sans heading");
 assert.doesNotMatch(styles, /DFKai-SB|BiauKai/, "legacy Kai font fallback should be removed");
 
 assert.match(workbench, /blobToDataUrl/, "workbench should embed images in downloaded HTML");
