@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Replaced the Taipei 9/4 oversized campaign hero with a compact course title and slide-deck action, aligned the lesson and interactive introduction to the existing `/class` ink, paper, teal and gold design tokens, and added a direct interactive-introduction button to the four-course hub.
+- Added a native interactive prompt introduction before the Taipei 9/4 image workflow, with before-and-after comparisons, click-to-build prompts, classroom examples, misconception feedback, a three-question quiz and a clear handoff to the existing warmup. It replaces the supplied CDN-dependent design runtime with same-site HTML, CSS and JavaScript for classroom reliability and responsive use.
 - Added the official 21-slide Taipei 9/4 classroom PPTX as a compact hero download without changing the source deck or expanding the opening layout.
 - Reduced the Taipei 9/4 opening hero from a near full-screen 1180px layout to a compact 960px course header, with a smaller title, illustration and mobile footprint so the three-stage lesson route appears sooner.
 - Restored the direct `AI 圖片工作室` link on the Taipei 9/4 course route and updated the four-course hub description to match the live five-gate image workflow before publication.

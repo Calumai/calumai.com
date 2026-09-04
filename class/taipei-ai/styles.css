@@ -225,6 +225,28 @@ a { -webkit-tap-highlight-color: transparent; }
   transition: background .18s ease, transform .18s ease;
 }
 
+.course-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: auto;
+  gap: 8px;
+}
+
+.course-actions .course-link { margin-top: 0; }
+
+.course-link-secondary {
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: var(--white);
+}
+
+.course-link.course-link-secondary:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: var(--white);
+}
+
 .course-link:hover {
   background: var(--teal);
   transform: translateY(-1px);
@@ -332,7 +354,12 @@ footer {
     border-left-width: 7px;
   }
 
-  .course-link { width: 100%; }
+  .course-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .course-actions .course-link { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

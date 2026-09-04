@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+  <meta name="description" content="給 AI 初學老師的提示詞互動入門，從比較、點選、實例與小測驗開始練習。">
+  <meta name="theme-color" content="#147d7e">
+  <meta property="og:title" content="提示詞互動入門｜CALUMAI CLASS">
+  <meta property="og:description" content="不用先會寫長提示詞，先學會把角色、任務、脈絡與格式交代清楚。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calumai.com/class/taipei-ai/2026-0904-picture-book/prompt-intro/">
+  <title>提示詞互動入門｜CALUMAI CLASS</title>
+  <link rel="icon" href="/assets/calumai-logo-mark.png">
+  <link rel="stylesheet" href="styles.css?v=20260904b">
+</head>
+<body>
+  <a class="skip-link" href="#lesson-stage">跳到互動關卡</a>
+
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="/class/taipei-ai/">CALUMAI <span>/ CLASS</span></a>
+      <span class="header-label">提示詞入門</span>
+      <a class="back-link" href="../">回到 9/4 課程</a>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <p>課程開場</p>
+        <h1 id="page-title">先把事情說清楚，再請 AI 動手</h1>
+      </div>
+      <p>跟著老師一起點選。六關走完，就知道提示詞要補什麼。</p>
+    </section>
+
+    <section class="lesson-stage" id="lesson-stage" aria-label="提示詞互動入門六關">
+      <div class="stage-topbar">
+        <div class="stage-count">
+          <strong id="stage-count">1 / 6</strong>
+          <span>目前關卡</span>
+        </div>
+        <div class="stage-tabs" role="tablist" aria-label="選擇互動關卡">
+          <button id="stage-tab-1" type="button" role="tab" data-stage="0" aria-selected="true" aria-controls="stage-panel-1" tabindex="0"><b>1</b><span>看差別</span></button>
+          <button id="stage-tab-2" type="button" role="tab" data-stage="1" aria-selected="false" aria-controls="stage-panel-2" tabindex="-1"><b>2</b><span>組一句</span></button>
+          <button id="stage-tab-3" type="button" role="tab" data-stage="2" aria-selected="false" aria-controls="stage-panel-3" tabindex="-1"><b>3</b><span>看實例</span></button>
+          <button id="stage-tab-4" type="button" role="tab" data-stage="3" aria-selected="false" aria-controls="stage-panel-4" tabindex="-1"><b>4</b><span>找問題</span></button>
+          <button id="stage-tab-5" type="button" role="tab" data-stage="4" aria-selected="false" aria-controls="stage-panel-5" tabindex="-1"><b>5</b><span>小測驗</span></button>
+          <button id="stage-tab-6" type="button" role="tab" data-stage="5" aria-selected="false" aria-controls="stage-panel-6" tabindex="-1"><b>6</b><span>帶走範本</span></button>
+        </div>
+      </div>
+
+      <div class="stage-body">
+        <section class="lesson-panel is-active" id="stage-panel-1" role="tabpanel" aria-labelledby="stage-tab-1" data-panel="0">
+          <header class="panel-heading">
+            <p>先看一眼</p>
+            <h2>同一件事，差在有沒有交代清楚</h2>
+            <span>切換兩種寫法，看看 AI 收到的資訊差在哪裡。</span>
+          </header>
+
+          <div class="compare-layout">
+            <div class="segment-control" aria-label="提示詞比較方式">
+              <button type="button" data-compare="bad" aria-pressed="true">隨手寫</button>
+              <button type="button" data-compare="good" aria-pressed="false">交代清楚</button>
+            </div>
+
+            <article class="compare-card is-bad" id="compare-card" aria-live="polite">
+              <div class="compare-card-head">
+                <span id="compare-state">現在看：隨手寫</span>
+                <b id="compare-count">只有任務</b>
+              </div>
+              <p class="prompt-copy" id="compare-prompt">幫我做一張介紹水循環的投影片。</p>
+              <p class="compare-result" id="compare-result">AI 得自己猜學生年齡、重點數量、文字多寡與呈現方式，結果很容易不合用。</p>
+            </article>
+
+            <div class="compare-check" aria-label="四個元件檢查">
+              <span data-check="role">角色</span>
+              <span data-check="task" class="is-on">任務</span>
+              <span data-check="context">脈絡</span>
+              <span data-check="format">格式</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-panel" id="stage-panel-2" role="tabpanel" aria-labelledby="stage-tab-2" data-panel="1" hidden>
+          <header class="panel-heading">
+            <p>動手點選</p>
+            <h2>點四下，組出一段能用的提示詞</h2>
+            <span>每一列挑一個答案。想換內容，直接點另一個。</span>
+          </header>
+
+          <div class="builder-layout">
+            <div class="builder-options">
+              <fieldset data-builder-group="role">
+                <legend><b>角色</b><span>AI 要用什麼身分回答？</span></legend>
+                <div class="choice-list">
+                  <button type="button" data-value="你是一位擅長把複雜內容說成白話的教學設計師。" aria-pressed="false">白話教學設計師</button>
+                  <button type="button" data-value="你是一位熟悉國小課堂的自然科老師。" aria-pressed="false">國小自然科老師</button>
+                  <button type="button" data-value="你是一位會設計互動活動的族語老師。" aria-pressed="false">互動活動設計老師</button>
+                </div>
+              </fieldset>
+
+              <fieldset data-builder-group="task">
+                <legend><b>任務</b><span>這次只請 AI 做哪一件事？</span></legend>
+                <div class="choice-list">
+                  <button type="button" data-value="請把這份教材整理成一頁投影片。" aria-pressed="false">整理一頁投影片</button>
+                  <button type="button" data-value="請設計一個 10 分鐘的課堂活動。" aria-pressed="false">設計課堂活動</button>
+                  <button type="button" data-value="請把課文改寫成學生看得懂的版本。" aria-pressed="false">改寫閱讀材料</button>
+                </div>
+              </fieldset>
+
+              <fieldset data-builder-group="context">
+                <legend><b>脈絡</b><span>學生是誰？上課有什麼限制？</span></legend>
+                <div class="choice-list">
+                  <button type="button" data-value="學生是第一次接觸這個主題的國中生。" aria-pressed="false">國中生第一次學</button>
+                  <button type="button" data-value="我要投影給全班看，畫面上的字不能太多。" aria-pressed="false">投影給全班看</button>
+                  <button type="button" data-value="這堂課只有 40 分鐘，活動要能當場完成。" aria-pressed="false">40 分鐘內完成</button>
+                </div>
+              </fieldset>
+
+              <fieldset data-builder-group="format">
+                <legend><b>格式</b><span>希望拿到什麼樣的成品？</span></legend>
+                <div class="choice-list">
+                  <button type="button" data-value="請用標題加三個重點，總字數 120 字內。" aria-pressed="false">標題加三個重點</button>
+                  <button type="button" data-value="請用步驟條列，並附上一題檢核問題。" aria-pressed="false">步驟加檢核問題</button>
+                  <button type="button" data-value="請先給範例，再說明老師要怎麼帶。" aria-pressed="false">範例加帶課說明</button>
+                </div>
+              </fieldset>
+            </div>
+
+            <aside class="builder-result" aria-labelledby="builder-result-title">
+              <div class="builder-result-head">
+                <div>
+                  <p>即時組句</p>
+                  <h3 id="builder-result-title">目前的提示詞</h3>
+                </div>
+                <span id="builder-count">已放入 0 個元件</span>
+              </div>
+              <p class="builder-empty" id="builder-empty">先從左邊挑一個選項，提示詞會出現在這裡。</p>
+              <pre id="builder-output" tabindex="0" aria-live="polite"></pre>
+              <div class="builder-actions">
+                <button class="copy-button" id="copy-builder" type="button" disabled>複製這一句</button>
+                <button class="reset-button" id="reset-builder" type="button" disabled>全部重選</button>
+              </div>
+              <p class="action-status" id="builder-status" aria-live="polite"></p>
+            </aside>
+          </div>
+        </section>
+
+        <section class="lesson-panel" id="stage-panel-3" role="tabpanel" aria-labelledby="stage-tab-3" data-panel="2" hidden>
+          <header class="panel-heading">
+            <p>換個情境</p>
+            <h2>老師常用的三種提示詞</h2>
+            <span>點選工作項目，比較短句和完整交代。</span>
+          </header>
+
+          <div class="examples" data-examples>
+            <div class="example-tabs" role="tablist" aria-label="提示詞實例">
+              <button id="example-tab-slide" type="button" role="tab" aria-selected="true" aria-controls="example-panel-slide" tabindex="0">教學簡報</button>
+              <button id="example-tab-activity" type="button" role="tab" aria-selected="false" aria-controls="example-panel-activity" tabindex="-1">課堂活動</button>
+              <button id="example-tab-reading" type="button" role="tab" aria-selected="false" aria-controls="example-panel-reading" tabindex="-1">閱讀材料</button>
+            </div>
+
+            <div class="example-panel" id="example-panel-slide" role="tabpanel" aria-labelledby="example-tab-slide">
+              <div class="example-rough"><span>少了關鍵資訊</span><p>幫我做一份水循環簡報。</p></div>
+              <div class="example-ready"><span>補完之後</span><p>你是一位國小自然科老師。請把水循環整理成 5 頁簡報，給第一次學這個概念的五年級學生看。每頁只講一個重點，用標題、兩句說明和一個生活例子，不要使用沒有解釋的專有名詞。</p></div>
+            </div>
+
+            <div class="example-panel" id="example-panel-activity" role="tabpanel" aria-labelledby="example-tab-activity" hidden>
+              <div class="example-rough"><span>少了關鍵資訊</span><p>幫我想一個好玩的活動。</p></div>
+              <div class="example-ready"><span>補完之後</span><p>你是一位擅長帶互動活動的老師。請為 24 位國中生設計一個 10 分鐘的小組活動，讓學生複習今天教過的 8 個族語單字。教室不能離座跑動。請列出準備物、帶領步驟和最後一題檢核問題。</p></div>
+            </div>
+
+            <div class="example-panel" id="example-panel-reading" role="tabpanel" aria-labelledby="example-tab-reading" hidden>
+              <div class="example-rough"><span>少了關鍵資訊</span><p>把這篇文章改簡單一點。</p></div>
+              <div class="example-ready"><span>補完之後</span><p>你是一位國中閱讀老師。請把下面的文章改寫成七年級學生能獨立閱讀的版本。保留原本事實，不新增內容。每段不超過 80 字，第一次出現的難詞請在括號內補一句白話解釋，最後出兩題閱讀理解題。</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-panel" id="stage-panel-4" role="tabpanel" aria-labelledby="stage-tab-4" data-panel="3" hidden>
+          <header class="panel-heading">
+            <p>卡住先看這裡</p>
+            <h2>結果不對時，先檢查這四件事</h2>
+            <span>點開問題，就能看到下一句要怎麼補。</span>
+          </header>
+
+          <div class="mistake-layout">
+            <div class="mistake-list">
+              <details>
+                <summary><span>一次叫 AI 做太多事</span><b aria-hidden="true"></b></summary>
+                <div><p>先把工作拆開。先整理內容，確認後再請 AI 改寫，最後才做版面。每次只給一個目標，比較容易看出哪一步需要調整。</p></div>
+              </details>
+              <details>
+                <summary><span>只說不要什麼，沒說想要什麼</span><b aria-hidden="true"></b></summary>
+                <div><p>「不要太難」可以改成「使用七年級學生看得懂的詞，每個難詞補一句解釋」。禁止事項可以留，但要再補一個正面標準。</p></div>
+              </details>
+              <details>
+                <summary><span>以為 AI 已經知道手上的資料</span><b aria-hidden="true"></b></summary>
+                <div><p>如果要根據課文、會議紀錄或學生作品回答，就把資料貼上去，或明確選取已授權的來源。不同工具能讀取的資料不一樣，送出前要先確認。</p></div>
+              </details>
+              <details>
+                <summary><span>第一版不好，就把同一句再送一次</span><b aria-hidden="true"></b></summary>
+                <div><p>直接指出哪裡不合用，例如「第二段太長，請縮成三句」或「這個例子離學生太遠，換成校園情境」。你給的修正越具體，下一版越容易接近需求。</p></div>
+              </details>
+            </div>
+            <aside class="fact-check-note"><b>送出前再看一次</b><p>人名、數字、日期、法規與文化內容，都要回到可信來源查證。</p></aside>
+          </div>
+        </section>
+
+        <section class="lesson-panel" id="stage-panel-5" role="tabpanel" aria-labelledby="stage-tab-5" data-panel="4" hidden>
+          <header class="panel-heading">
+            <p>輪到你判斷</p>
+            <h2>三題小測驗</h2>
+            <span>選完會立刻看到原因，答錯可以再選。</span>
+          </header>
+
+          <div class="quiz-workspace">
+            <div class="quiz-nav" role="tablist" aria-label="選擇題目">
+              <button id="quiz-tab-1" type="button" role="tab" data-quiz-tab="0" aria-selected="true" aria-controls="quiz-card-1" tabindex="0">第 1 題</button>
+              <button id="quiz-tab-2" type="button" role="tab" data-quiz-tab="1" aria-selected="false" aria-controls="quiz-card-2" tabindex="-1">第 2 題</button>
+              <button id="quiz-tab-3" type="button" role="tab" data-quiz-tab="2" aria-selected="false" aria-controls="quiz-card-3" tabindex="-1">第 3 題</button>
+            </div>
+
+            <article class="quiz-card" id="quiz-card-1" role="tabpanel" aria-labelledby="quiz-tab-1" data-quiz="q1" data-answer="b">
+              <h3>請 AI 寫一份 40 分鐘教案，最該先補什麼？</h3>
+              <div class="quiz-choices">
+                <button type="button" data-choice="a" aria-pressed="false">A　請它認真一點</button>
+                <button type="button" data-choice="b" aria-pressed="false">B　學生年級、教學目標與手上教材</button>
+                <button type="button" data-choice="c" aria-pressed="false">C　多打幾次同一句</button>
+              </div>
+              <p class="quiz-feedback" aria-live="polite"></p>
+            </article>
+
+            <article class="quiz-card" id="quiz-card-2" role="tabpanel" aria-labelledby="quiz-tab-2" data-quiz="q2" data-answer="b" hidden>
+              <h3>「不要寫得太難」還缺了什麼？</h3>
+              <div class="quiz-choices">
+                <button type="button" data-choice="a" aria-pressed="false">A　不缺，這樣就夠了</button>
+                <button type="button" data-choice="b" aria-pressed="false">B　讀者程度與具體的簡化標準</button>
+                <button type="button" data-choice="c" aria-pressed="false">C　請 AI 自己決定</button>
+              </div>
+              <p class="quiz-feedback" aria-live="polite"></p>
+            </article>
+
+            <article class="quiz-card" id="quiz-card-3" role="tabpanel" aria-labelledby="quiz-tab-3" data-quiz="q3" data-answer="c" hidden>
+              <h3>第一版方向不對，接下來怎麼做比較有效？</h3>
+              <div class="quiz-choices">
+                <button type="button" data-choice="a" aria-pressed="false">A　直接放棄</button>
+                <button type="button" data-choice="b" aria-pressed="false">B　原句不改，再送一次</button>
+                <button type="button" data-choice="c" aria-pressed="false">C　指出問題並補上新的方向</button>
+              </div>
+              <p class="quiz-feedback" aria-live="polite"></p>
+            </article>
+
+            <div class="quiz-summary" id="quiz-summary" aria-live="polite">完成三題後，這裡會顯示結果。</div>
+          </div>
+        </section>
+
+        <section class="lesson-panel" id="stage-panel-6" role="tabpanel" aria-labelledby="stage-tab-6" data-panel="5" hidden>
+          <header class="panel-heading">
+            <p>不用從空白開始</p>
+            <h2>把這份提示詞範本帶走</h2>
+            <span>複製後，把括號裡的提示換成你的課堂內容。</span>
+          </header>
+
+          <div class="template-layout">
+            <div class="template-actions">
+              <p>用不到的欄位可以刪掉。資料不夠時，也可以先請 AI 反問你。</p>
+              <button class="copy-button" id="copy-template" type="button">複製提示詞範本</button>
+              <p class="action-status" id="template-status" aria-live="polite"></p>
+            </div>
+            <pre class="template-box" id="template-text" tabindex="0">你是一位【熟悉什麼主題或教學方法的老師】。
+請幫我【只寫一件要完成的事】。
+
+學生與課堂狀況：
+【學生年級、先備知識、上課時間或其他限制】
+
+我提供的資料：
+【把課文、筆記、題目或資料貼在這裡】
+
+成品要求：
+【長度、段落、條列、表格或投影片頁數】
+【希望使用的語氣與難度】
+【不能自己補寫或改動的內容】
+
+如果資料不夠，請先問我最多三個問題，再開始製作。</pre>
+          </div>
+        </section>
+      </div>
+
+      <div class="stage-controls">
+        <button class="control-button secondary" id="previous-stage" type="button" disabled>上一關</button>
+        <p id="stage-help" aria-live="polite">先切換兩種寫法，看四個元件多了哪些。</p>
+        <button class="control-button primary" id="next-stage" type="button">下一關</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell">
+      <span>CALUMAI CLASS</span>
+      <p>這一頁不會上傳或保存你的選擇。</p>
+    </div>
+  </footer>
+
+  <noscript><p class="noscript-note">請開啟瀏覽器 JavaScript，才能操作關卡。</p></noscript>
+  <script src="app.js?v=20260904a"></script>
+</body>
+</html>
