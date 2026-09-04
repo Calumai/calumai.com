@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Reduced the Taipei 9/4 opening hero from a near full-screen 1180px layout to a compact 960px course header, with a smaller title, illustration and mobile footprint so the three-stage lesson route appears sooner.
 - Restored the direct `AI 圖片工作室` link on the Taipei 9/4 course route and updated the four-course hub description to match the live five-gate image workflow before publication.
 - Rewrote the learner-facing copy across the Taipei 9/4 lesson, prompt warmup, prompt library and five-gate image studio after an approved `speak-human-tw` review. Replaced stale multi-page instructions and internal terms, clarified friendly errors and classroom quotas, and added a collapsed slide/poster style lab with two NotebookLM methods plus eight original, copyable YAML presets. The new lesson content contains no attribution or copied branding from the internal reference articles.
 - Replaced the multi-page picture-book builder with one exact five-gate path: choose an image purpose, write a 3-4000 character description, receive genuine AI feedback, edit the AI revision, then generate only from that revision. Removed reference uploads, character/style/storyboard requirements from the main flow, restored the CALUMAI `/class` palette, and added fixed-view desktop plus 390px regression coverage. Local preview results are explicitly labeled as interface samples rather than AI output.

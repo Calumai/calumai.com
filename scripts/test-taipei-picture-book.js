@@ -78,7 +78,7 @@ for (const [token, value] of Object.entries({
 }
 
 assert.match(html, /<meta name="theme-color" content="#005fb8">/i, "theme color should use accessible brand blue");
-assert.match(html, /styles\.css\?v=20260904h/, "course stylesheet cache key is stale");
+assert.match(html, /styles\.css\?v=20260904j/, "course stylesheet cache key is stale");
 assert.match(html, /app\.js\?v=20260904h/, "course script cache key is stale");
 assert.match(workbench, /--ink:\s*#0c2247/i, "workbench navy token is stale");
 assert.match(workbench, /--accent:\s*#005fb8/i, "workbench action blue is stale");
@@ -105,6 +105,10 @@ assert.match(styles, /\.tool-drawer\s*{[\s\S]*?border:\s*1px solid var\(--line\)
 assert.match(styles, /\.prompt-viewer pre\s*{[\s\S]*?max-height:\s*50vh/, "prompt preview should not dominate the page height");
 assert.match(styles, /footer\s*{[\s\S]*?background:\s*var\(--ink\)/, "footer should use brand navy");
 assert.match(styles, /:focus-visible\s*{[\s\S]*?outline:\s*3px solid var\(--focus\)/, "focus ring should use the accessible focus token");
+
+assert.match(styles, /\.hero\s*\{[\s\S]*?width:\s*min\(960px, calc\(100% - 40px\)\)[\s\S]*?min-height:\s*0/, "course hero should stay compact instead of filling the viewport");
+assert.match(styles, /\.hero\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) minmax\(260px, 340px\)/, "course hero artwork should use the compact desktop width");
+assert.match(styles, /\.hero-art img\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*auto;/, "course hero image attributes must not force an oversized fixed height");
 
 assertContrast(palette.white, palette.blueDark, 4.5, "white on action blue");
 assertContrast(palette.white, palette.red, 4.5, "white on action red");

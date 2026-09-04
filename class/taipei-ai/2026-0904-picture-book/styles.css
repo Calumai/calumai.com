@@ -137,12 +137,13 @@ a { -webkit-tap-highlight-color: transparent; }
 .site-header nav a:hover { color: var(--blue-dark); }
 
 .hero {
+  width: min(960px, calc(100% - 40px));
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(330px, 470px);
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
   align-items: center;
-  min-height: min(560px, calc(100dvh - 70px));
-  padding-block: clamp(44px, 6vw, 72px);
-  gap: clamp(2rem, 6vw, 6rem);
+  min-height: 0;
+  padding-block: clamp(32px, 4vw, 52px);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
 }
 
 .hero-copy { min-width: 0; }
@@ -170,7 +171,7 @@ a { -webkit-tap-highlight-color: transparent; }
   margin: 0;
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: clamp(4rem, 8vw, 7rem);
+  font-size: clamp(3.4rem, 6.5vw, 5.35rem);
   font-weight: 400;
   letter-spacing: -.055em;
   line-height: .98;
@@ -196,6 +197,7 @@ a { -webkit-tap-highlight-color: transparent; }
 
 .hero-art img {
   width: 100%;
+  height: auto;
   aspect-ratio: 4 / 3;
   border-radius: 14px;
   object-fit: cover;
@@ -960,8 +962,8 @@ footer a:focus-visible { outline-color: var(--white); }
 
 @media (max-width: 940px) {
   .hero {
-    grid-template-columns: minmax(0, 1fr) minmax(290px, 380px);
-    gap: 2.5rem;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
+    gap: 2rem;
   }
 
   .route-grid { grid-template-columns: 1fr; }
@@ -998,12 +1000,12 @@ footer a:focus-visible { outline-color: var(--white); }
   .hero {
     grid-template-columns: 1fr;
     min-height: 0;
-    padding-block: 42px 54px;
-    gap: 2rem;
+    padding-block: 32px 42px;
+    gap: 1.4rem;
   }
 
-  .hero h1 { max-width: 8ch; font-size: clamp(3.6rem, 18vw, 5.5rem); }
-  .hero-art { width: min(92%, 460px); margin-inline: auto; transform: none; }
+  .hero h1 { max-width: 8ch; font-size: clamp(3.1rem, 15vw, 4.35rem); }
+  .hero-art { width: min(88%, 340px); margin-inline: auto; transform: none; }
 
   .route-section,
   .tools-section { padding-block: 52px; }
@@ -1065,7 +1067,7 @@ footer a:focus-visible { outline-color: var(--white); }
   .site-header nav a:first-child { display: none; }
   .kicker { align-items: flex-start; flex-direction: column; }
   .kicker time { padding-left: 0; border-left: 0; }
-  .hero h1 { font-size: clamp(3.2rem, 19vw, 4.45rem); }
+  .hero h1 { font-size: clamp(2.9rem, 15vw, 3.8rem); }
   .prompt-tabs { grid-template-columns: 1fr; }
   .prompt-tabs button { min-height: 40px; }
   .yaml-actions { grid-template-columns: 1fr; }
