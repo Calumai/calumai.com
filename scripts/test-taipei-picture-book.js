@@ -78,7 +78,7 @@ for (const [token, value] of Object.entries({
 }
 
 assert.match(html, /<meta name="theme-color" content="#005fb8">/i, "theme color should use accessible brand blue");
-assert.match(html, /styles\.css\?v=20260904j/, "course stylesheet cache key is stale");
+assert.match(html, /styles\.css\?v=20260904k/, "course stylesheet cache key is stale");
 assert.match(html, /app\.js\?v=20260904h/, "course script cache key is stale");
 assert.match(workbench, /--ink:\s*#0c2247/i, "workbench navy token is stale");
 assert.match(workbench, /--accent:\s*#005fb8/i, "workbench action blue is stale");
@@ -109,6 +109,9 @@ assert.match(styles, /:focus-visible\s*{[\s\S]*?outline:\s*3px solid var\(--focu
 assert.match(styles, /\.hero\s*\{[\s\S]*?width:\s*min\(960px, calc\(100% - 40px\)\)[\s\S]*?min-height:\s*0/, "course hero should stay compact instead of filling the viewport");
 assert.match(styles, /\.hero\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) minmax\(260px, 340px\)/, "course hero artwork should use the compact desktop width");
 assert.match(styles, /\.hero-art img\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*auto;/, "course hero image attributes must not force an oversized fixed height");
+assert.match(html, /class="hero-deck"[^>]+href="downloads\/taipei-0904-class-slides\.pptx"[^>]+download/, "course hero should offer the official classroom slide deck");
+assert.match(html, /本堂課簡報[\s\S]*?21 頁・逐字稿版・PPTX/, "course deck label should explain the download clearly");
+assert.match(styles, /\.hero-deck\s*\{[\s\S]*?width:\s*min\(100%, 370px\)/, "course deck control should stay compact");
 
 assertContrast(palette.white, palette.blueDark, 4.5, "white on action blue");
 assertContrast(palette.white, palette.red, 4.5, "white on action red");
@@ -276,6 +279,11 @@ assert.match(workbench, /href="\.\.\/"/, "workbench needs a return link");
 const courseZip = path.join(route, "downloads", "taipei-0904-picture-book-course-pack.zip");
 assert(fs.existsSync(courseZip), "missing downloadable course ZIP");
 assert(fs.statSync(courseZip).size > 10_000_000, "course ZIP is unexpectedly small");
+
+const classSlides = path.join(route, "downloads", "taipei-0904-class-slides.pptx");
+assert(fs.existsSync(classSlides), "missing official classroom slide deck");
+assert(fs.statSync(classSlides).size > 3_000_000, "classroom slide deck is unexpectedly small");
+assert.equal(fs.readFileSync(classSlides).subarray(0, 2).toString("ascii"), "PK", "classroom slide deck must be a valid PPTX container");
 
 assert.equal((classIndex.match(/<!doctype html>/gi) || []).length, 1, "class index must contain one HTML document");
 assert.match(classIndex, /href="\/class\/taipei-ai\/"/, "class index should lead to the Taipei four-course hub");

@@ -184,6 +184,27 @@ a { -webkit-tap-highlight-color: transparent; }
   font-style: normal;
 }
 
+.hero-deck {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(100%, 370px);
+  margin-top: 1.25rem;
+  padding: .7rem .8rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .86);
+  color: var(--ink);
+  gap: 1rem;
+  text-decoration: none;
+}
+
+.hero-deck span { display: grid; gap: .08rem; }
+.hero-deck b { font-size: .84rem; }
+.hero-deck small { color: var(--ink-soft); font-size: .72rem; }
+.hero-deck strong { color: var(--blue-dark); font-size: .8rem; white-space: nowrap; }
+.hero-deck:hover { border-color: var(--blue-dark); }
+
 .hero-art {
   position: relative;
   margin: 0;
