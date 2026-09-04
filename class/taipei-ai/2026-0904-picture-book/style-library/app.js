@@ -91,20 +91,52 @@
   ];
   const previewPositions = ["tl", "tr", "bl", "br"];
 
+  const previewGroups = [
+    [1, 4, "presets-01-04.webp"],
+    [5, 8, "presets-05-08.webp"],
+    [9, 12, "presets-09-12.webp"],
+    [13, 14, "presets-13-14-plus.webp"],
+    [15, 18, "modifiers-15-18.webp"],
+    [19, 22, "modifiers-19-22.webp"],
+    [23, 26, "modifiers-23-26.webp"],
+    [27, 30, "modifiers-27-30.webp"],
+    [31, 34, "modifiers-31-34.webp"],
+    [35, 38, "modifiers-35-38.webp"],
+    [39, 42, "modifiers-39-42.webp"],
+    [43, 46, "modifiers-43-46.webp"],
+    [47, 50, "modifiers-47-50.webp"],
+    [51, 54, "modifiers-51-54.webp"],
+    [55, 57, "modifiers-55-57.webp"]
+  ];
+
+  function previewFor(index) {
+    const number = index + 1;
+    const group = previewGroups.find(([start, end]) => number >= start && number <= end);
+    if (!group) return {};
+    const [start, , previewAsset] = group;
+    return {
+      previewAsset,
+      previewClass: `preview-asset-${previewAsset.replace(".webp", "")}`,
+      previewPosition: previewPositions[number - start]
+    };
+  }
+
   const catalog = completeStyles.concat(styleModifiers.map(([category, title, prompt]) => ({
     category,
     title,
     prompt,
     description: descriptions[category]
-  }))).map((style, index) => ({
-    ...style,
-    id: `style-${index + 1}`,
-    paletteIndex: index % 8,
-    pattern: style.category === "完整畫風" ? completePatterns[index] : patterns[style.category],
-    isPreset: style.category === "完整畫風",
-    previewSheet: style.category === "完整畫風" ? Math.floor(index / 4) + 1 : null,
-    previewPosition: style.category === "完整畫風" ? previewPositions[index % 4] : null
-  }));
+  }))).map((style, index) => {
+    const preview = previewFor(index);
+    return {
+      ...style,
+      ...preview,
+      id: `style-${index + 1}`,
+      paletteIndex: index % 8,
+      pattern: style.category === "完整畫風" ? completePatterns[index] : patterns[style.category],
+      isPreset: style.category === "完整畫風"
+    };
+  });
 
   const byId = (id) => document.getElementById(id);
   const grid = byId("style-grid");
@@ -233,8 +265,8 @@
     if (selected.has(style.id)) card.classList.add("is-selected");
 
     const preview = makeElement("div", "style-preview");
-    if (style.isPreset) {
-      preview.classList.add(`preview-sheet-${style.previewSheet}`, `preview-${style.previewPosition}`);
+    if (style.previewAsset) {
+      preview.classList.add("has-image", style.previewClass, `preview-${style.previewPosition}`);
       preview.setAttribute("role", "img");
       preview.setAttribute("aria-label", `${style.title}示範圖`);
     } else {

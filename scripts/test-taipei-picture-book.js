@@ -233,8 +233,8 @@ for (const relative of ["index.html", "styles.css", "app.js"]) {
 assert.match(styleLibraryHtml, /<html lang="zh-Hant">/, "style library needs the correct page language");
 assert.match(styleLibraryHtml, /<title>AI 圖片風格大全｜CALUMAI CLASS<\/title>/, "style library title is missing");
 assert.match(styleLibraryHtml, /Content-Security-Policy[^>]+connect-src 'none'/, "style library must not call an external API");
-assert.match(styleLibraryHtml, /styles\.css\?v=20260904d/, "style library stylesheet cache key is stale");
-assert.match(styleLibraryHtml, /app\.js\?v=20260904c/, "style library script cache key is stale");
+assert.match(styleLibraryHtml, /styles\.css\?v=20260904g/, "style library stylesheet cache key is stale");
+assert.match(styleLibraryHtml, /app\.js\?v=20260904d/, "style library script cache key is stale");
 assert.match(styleLibraryHtml, /href="\.\.\/">回到 9\/4 課程<\/a>/, "style library needs a return link to the lesson");
 assert.match(styleLibraryHtml, /id="style-search"[^>]+type="search"/, "style library needs keyword search");
 assert.match(styleLibraryHtml, /id="style-category"/, "style library needs a category selector");
@@ -250,7 +250,10 @@ for (const category of ["完整畫風", "攝影", "角度效果", "繪畫媒材"
 assert.match(styleLibraryApp, /selected\.size >= 3/, "style combinations must stop at three choices");
 assert.match(styleLibraryApp, /paletteIndex:\s*index % 8/, "each style should keep one stable preview palette across filters");
 assert.match(styleLibraryApp, /const completePatterns = \[[\s\S]*?"ink"[\s\S]*?"comic"[\s\S]*?"pixel"/, "complete presets should not all share one generic preview treatment");
-assert.match(styleLibraryApp, /previewSheet:\s*style\.category === "完整畫風"/, "complete presets should map to generated demonstration sheets");
+assert.equal((styleLibraryApp.match(/\[\d+, \d+, "(?:presets|modifiers)-[^\"]+\.webp"\]/g) || []).length, 15, "all 57 styles should map to generated demonstration sheets");
+assert.match(styleLibraryApp, /preview\.classList\.add\("has-image", style\.previewClass/, "style cards should render their generated demonstration image");
+assert.equal((styleLibraryStyles.match(/\.style-preview\.preview-asset-(?:presets|modifiers)-[^\s]+\s*\{\s*background-image:/g) || []).length, 15, "every generated comparison sheet should override its fallback pattern without an inline style");
+assert.equal((styleLibraryStyles.match(/\.style-card \.style-preview\.preview-(?:tl|tr|bl|br)\s*\{\s*background-position:/g) || []).length, 4, "each comparison-sheet quadrant should override its fallback pattern position");
 assert.match(styleLibraryApp, /preview\.setAttribute\("aria-label", `\$\{style\.title\}示範圖`\)/, "generated style examples need useful accessible labels");
 assert.match(styleLibraryApp, /function updateCardStates\(\)/, "selection updates should preserve the active card and keyboard focus");
 assert.match(styleLibraryApp, /const copied = document\.execCommand\("copy"\)[\s\S]*?helper\.remove\(\)[\s\S]*?if \(!copied\) throw/, "clipboard fallback must clean up and report a rejected copy");
@@ -270,7 +273,23 @@ assert.match(html, /id="style-library-entry"[^>]+href="style-library\/"[^>]*>開
 assert(html.indexOf('id="style-library-entry"') < html.indexOf("<details"), "style library entry should remain visible outside optional drawers");
 assert.match(styles, /\.section-heading > \.button\s*\{[\s\S]*?width:\s*fit-content/, "style library entry should not stretch across the lesson page");
 assert.doesNotMatch(`${practiceHtml}\n${practiceApp}`, /style-library|完整風格大全/, "style library must remain outside the classroom-code practice room");
-for (const image of ["presets-01-04.webp", "presets-05-08.webp", "presets-09-12.webp", "presets-13-14-plus.webp"]) {
+for (const image of [
+  "presets-01-04.webp",
+  "presets-05-08.webp",
+  "presets-09-12.webp",
+  "presets-13-14-plus.webp",
+  "modifiers-15-18.webp",
+  "modifiers-19-22.webp",
+  "modifiers-23-26.webp",
+  "modifiers-27-30.webp",
+  "modifiers-31-34.webp",
+  "modifiers-35-38.webp",
+  "modifiers-39-42.webp",
+  "modifiers-43-46.webp",
+  "modifiers-47-50.webp",
+  "modifiers-51-54.webp",
+  "modifiers-55-57.webp"
+]) {
   const target = path.join(route, "style-library", "assets", image);
   assert(fs.existsSync(target), `missing generated style example ${image}`);
   assert(fs.statSync(target).size > 200_000, `generated style example ${image} is unexpectedly small`);

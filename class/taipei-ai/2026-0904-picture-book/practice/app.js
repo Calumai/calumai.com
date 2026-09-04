@@ -7,7 +7,7 @@
   const byId = (id) => document.getElementById(id);
   const previewMode = ["127.0.0.1", "localhost"].includes(globalThis.location.hostname)
     || globalThis.location.protocol === "file:";
-  const previewQuota = { image: 1 };
+  const previewQuota = { image: null };
   const purposeLabels = {
     "picture-book": "繪本插畫",
     comic: "漫畫頁",
@@ -84,7 +84,7 @@
         closes_at: "2099-01-01T23:59:59Z"
       },
       remaining: { ...previewQuota },
-      classroom_remaining: { image: 40 }
+      classroom_remaining: { image: null }
     };
   }
 
@@ -184,17 +184,13 @@
       if (!previewSessionActive) {
         throw { code: "UNAUTHENTICATED", message: "請先輸入課堂碼，進入練習室。", retryable: false, requestId: "", httpStatus: 401 };
       }
-      if (previewQuota.image <= 0) {
-        throw { code: "SESSION_QUOTA_EXHAUSTED", message: "本機預覽的可用次數已用完。", retryable: false, requestId: "", httpStatus: 429 };
-      }
-      previewQuota.image -= 1;
       return {
         ok: true,
         request_id: "local-preview-image",
         kind: "image",
         image: { mime_type: "image/png", type: "url", src: "../assets/images/page-cover.png" },
         remaining: { ...previewQuota },
-        classroom_remaining: { text: 80, image: 40 }
+        classroom_remaining: { text: null, image: null }
       };
     }
 
@@ -284,9 +280,8 @@
   }
 
   function updateQuotaDisplay(remaining) {
-    const image = remaining && Number.isFinite(remaining.image) ? remaining.image : null;
     byId("personal-text-quota").textContent = "不限次";
-    byId("personal-image-quota").textContent = image === null ? "-" : String(image);
+    byId("personal-image-quota").textContent = "不限次";
   }
 
   function updateSessionFromResult(result) {
@@ -362,13 +357,12 @@
   function updateAvailability() {
     const textBusy = assistState.phase === "loading";
     const imageBusy = imageState.phase === "loading";
-    const imageRemaining = currentSession && currentSession.remaining ? currentSession.remaining.image : null;
     byId("review-prompt-button").disabled = textBusy || imageBusy;
     byId("feedback-retry").disabled = textBusy || imageBusy;
     byId("show-revised-prompt").disabled = textBusy || imageBusy;
     byId("confirm-revised-prompt").disabled = textBusy || imageBusy;
-    byId("generate-image-button").disabled = textBusy || imageBusy || imageRemaining === 0;
-    byId("image-retry").disabled = textBusy || imageBusy || imageRemaining === 0;
+    byId("generate-image-button").disabled = textBusy || imageBusy;
+    byId("image-retry").disabled = textBusy || imageBusy;
   }
 
   function errorReference(error) {

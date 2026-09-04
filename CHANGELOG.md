@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Changed the 9/4 practice room to show AI prompt suggestions as unlimited and removed the frontend text-quota lockout while preserving the separate image quota.
+- Replaced every abstract placeholder in the 9/4 image-style catalog with an original same-scene demonstration image. All 57 cards now show their actual visual effect across complete styles, photography, camera angles, drawing media, craft materials, comics, art movements and special formats; 11 new comparison sheets were optimized to WebP for classroom loading.
+- Changed the 9/4 practice room to show both AI prompt suggestions and image generation as unlimited accumulated totals. Removed both total-quota lockouts while preserving the classroom gate, request-in-progress button lock and server-side rate limiting.
 - Restored the removed image-style catalog as a standalone, classroom-code-free page with 14 complete presets shown through original same-scene comparison images, 43 searchable style modifiers, category filters, selection mixing and copy controls; it is linked from the 9/4 lesson rather than embedded in the practice room.
 - Restored a direct `8 關暖身` entry in the first stage of the Taipei 9/4 lesson; the warmup route itself had remained online and unchanged.
 - Added the live classroom attendance link to the Taipei four-course homepage and restored the 9/4 lesson's section headings to the same standard sans-serif type used across `/class`.

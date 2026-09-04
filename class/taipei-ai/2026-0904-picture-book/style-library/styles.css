@@ -481,26 +481,39 @@ a { color: inherit; }
   box-shadow: none;
 }
 
-.style-card.is-preset .style-preview,
-.style-card.is-preset:nth-child(9n + 1) .style-preview,
-.style-card.is-preset:nth-child(13n + 5) .style-preview {
+.style-card .style-preview.has-image,
+.style-card:nth-child(9n + 1) .style-preview.has-image,
+.style-card:nth-child(13n + 5) .style-preview.has-image {
   height: auto;
   aspect-ratio: 4 / 3;
   background-repeat: no-repeat;
   background-size: 200% auto;
+  background-color: #edf3f2;
 }
 
-.style-card.is-preset .style-preview::before,
-.style-card.is-preset .style-preview::after { display: none; }
+.style-card .style-preview.has-image::before,
+.style-card .style-preview.has-image::after { display: none; }
 
-.style-card.is-preset .preview-sheet-1 { background-image: url("assets/presets-01-04.webp"); }
-.style-card.is-preset .preview-sheet-2 { background-image: url("assets/presets-05-08.webp"); }
-.style-card.is-preset .preview-sheet-3 { background-image: url("assets/presets-09-12.webp"); }
-.style-card.is-preset .preview-sheet-4 { background-image: url("assets/presets-13-14-plus.webp"); }
-.style-card.is-preset .preview-tl { background-position: 0 10%; }
-.style-card.is-preset .preview-tr { background-position: 100% 10%; }
-.style-card.is-preset .preview-bl { background-position: 0 90%; }
-.style-card.is-preset .preview-br { background-position: 100% 90%; }
+.style-card .style-preview.preview-asset-presets-01-04 { background-image: url("assets/presets-01-04.webp"); }
+.style-card .style-preview.preview-asset-presets-05-08 { background-image: url("assets/presets-05-08.webp"); }
+.style-card .style-preview.preview-asset-presets-09-12 { background-image: url("assets/presets-09-12.webp"); }
+.style-card .style-preview.preview-asset-presets-13-14-plus { background-image: url("assets/presets-13-14-plus.webp"); }
+.style-card .style-preview.preview-asset-modifiers-15-18 { background-image: url("assets/modifiers-15-18.webp"); }
+.style-card .style-preview.preview-asset-modifiers-19-22 { background-image: url("assets/modifiers-19-22.webp"); }
+.style-card .style-preview.preview-asset-modifiers-23-26 { background-image: url("assets/modifiers-23-26.webp"); }
+.style-card .style-preview.preview-asset-modifiers-27-30 { background-image: url("assets/modifiers-27-30.webp"); }
+.style-card .style-preview.preview-asset-modifiers-31-34 { background-image: url("assets/modifiers-31-34.webp"); }
+.style-card .style-preview.preview-asset-modifiers-35-38 { background-image: url("assets/modifiers-35-38.webp"); }
+.style-card .style-preview.preview-asset-modifiers-39-42 { background-image: url("assets/modifiers-39-42.webp"); }
+.style-card .style-preview.preview-asset-modifiers-43-46 { background-image: url("assets/modifiers-43-46.webp"); }
+.style-card .style-preview.preview-asset-modifiers-47-50 { background-image: url("assets/modifiers-47-50.webp"); }
+.style-card .style-preview.preview-asset-modifiers-51-54 { background-image: url("assets/modifiers-51-54.webp"); }
+.style-card .style-preview.preview-asset-modifiers-55-57 { background-image: url("assets/modifiers-55-57.webp"); }
+
+.style-card .style-preview.preview-tl { background-position: 0 10%; }
+.style-card .style-preview.preview-tr { background-position: 100% 10%; }
+.style-card .style-preview.preview-bl { background-position: 0 90%; }
+.style-card .style-preview.preview-br { background-position: 100% 90%; }
 
 .style-card-body {
   display: grid;
@@ -638,9 +651,9 @@ footer {
   .style-preview,
   .style-card:nth-child(9n + 1) .style-preview,
   .style-card:nth-child(13n + 5) .style-preview { height: 180px; }
-  .style-card.is-preset .style-preview,
-  .style-card.is-preset:nth-child(9n + 1) .style-preview,
-  .style-card.is-preset:nth-child(13n + 5) .style-preview { height: auto; }
+  .style-card .style-preview.has-image,
+  .style-card:nth-child(9n + 1) .style-preview.has-image,
+  .style-card:nth-child(13n + 5) .style-preview.has-image { height: auto; }
   .selection-actions { align-items: stretch; flex-direction: column; }
   .selection-actions .button { width: 100%; }
   .footer-inner { align-items: flex-start; flex-direction: column; padding-block: 22px; }
