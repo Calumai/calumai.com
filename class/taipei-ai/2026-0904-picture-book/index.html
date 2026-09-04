@@ -3,310 +3,312 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="北市府 AI 教學應用 9/4 課程：進入 AI 繪本創作工作室，完成 4-6 頁小繪本，再把作品轉成教師教材。">
+  <meta name="description" content="北市府 AI 教學應用 9/4 課程：先用互動暖身看懂提示詞，再讓 AI 協助修正並完成第一張作品，最後轉成教師教材。">
   <meta name="theme-color" content="#005fb8">
   <meta property="og:title" content="自己的繪本自己生！｜北市府 AI 教學應用">
-  <meta property="og:description" content="從故事室、角色室、美術室、分鏡桌到生圖室，三小時完成一份可延伸的繪本教材包。">
+  <meta property="og:description" content="跟著老師走完三站：看懂提示詞、完成第一張作品，再轉成簡報、資訊圖表或課堂教材。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://calumai.com/class/taipei-ai/2026-0904-picture-book/">
   <meta property="og:image" content="https://calumai.com/class/taipei-ai/2026-0904-picture-book/assets/images/page-cover.png">
   <title>自己的繪本自己生！｜北市府 AI 教學應用</title>
   <link rel="icon" href="/assets/calumai-logo-mark.png">
   <link rel="preload" href="assets/fonts/iansui-course-display.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260904b">
+  <link rel="stylesheet" href="styles.css?v=20260904h">
   <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要內容</a>
-  <div class="reading-progress" aria-hidden="true"><span id="reading-progress-bar"></span></div>
 
   <header class="site-header">
     <div class="shell header-inner">
       <a class="brand" href="/class/taipei-ai/" aria-label="回到北市府四堂課首頁">CALUMAI <span>/ CLASS</span></a>
       <nav aria-label="本課程導覽">
-        <a href="#workflow">沉浸任務</a>
-        <a href="#prompts">提示詞</a>
-        <a href="#yaml">規格卡</a>
-        <a href="#example">範例</a>
-        <a href="#downloads">下載</a>
+        <a href="#route">今天怎麼走</a>
+        <a href="#teacher-tools">卡住再開</a>
       </nav>
-      <a class="header-cta" href="downloads/taipei-0904-picture-book-course-pack.zip" download>下載教材包</a>
     </div>
   </header>
 
   <main id="main">
-    <section class="hero shell">
+    <section class="hero shell" aria-labelledby="course-title">
       <div class="hero-copy">
-        <p class="kicker">臺北市政府 AI 教學應用課程 · 09.04 · 19:00-22:00</p>
-        <h1>自己的繪本<br><em>自己生！</em></h1>
+        <p class="kicker"><span>臺北市政府 AI 教學應用課程</span><time datetime="2026-09-04T19:00">9/4　19:00-22:00</time></p>
+        <h1 id="course-title">自己的繪本<br><em>自己生！</em></h1>
       </div>
 
-      <div class="hero-art" aria-label="課堂範例繪本預覽">
-        <div class="book-shadow"></div>
-        <figure class="book-cover">
-          <img src="assets/images/page-cover.png" width="1448" height="1086" alt="小晴在雨後公園發現紅雨傘的水彩繪本封面示意">
-          <figcaption><span>課堂低風險虛構範例</span><strong>紅雨傘回家了</strong></figcaption>
-        </figure>
-        <div class="art-note note-one"><b>01</b><span>先鎖來源</span></div>
-        <div class="art-note note-two"><b>02</b><span>一次一頁</span></div>
-      </div>
+      <figure class="hero-art">
+        <img src="assets/images/page-cover.png" width="1448" height="1086" alt="小晴在雨後公園發現紅雨傘的水彩繪本封面示意">
+        <figcaption><b>老師示範題</b><span>紅雨傘回家了</span></figcaption>
+      </figure>
     </section>
 
-    <section class="section shell" id="workflow">
-      <div class="section-heading">
-        <p class="eyebrow">IMMERSIVE STUDIO</p>
-        <h2>老師帶著學生，把作品一步一步做出來</h2>
-        <p>這一頁不是自學文章，而是你上課投影用的節奏圖。先示範一輪，再讓學生進練習室完成自己的作品。</p>
-      </div>
-
-      <div class="immersion-board" aria-label="AI 繪本創作工作室六個工作區">
-        <ol class="studio-steps">
-          <li class="is-active"><b>01</b><span>故事室</span></li>
-          <li><b>02</b><span>角色室</span></li>
-          <li><b>03</b><span>美術室</span></li>
-          <li><b>04</b><span>分鏡桌</span></li>
-          <li><b>05</b><span>生圖室</span></li>
-          <li><b>06</b><span>出版桌</span></li>
-        </ol>
-
-        <div class="studio-task">
-          <p class="task-label">老師現場帶做</p>
-          <h3>先跑一遍完整流程，再放學生自己做</h3>
-          <p>開場先展示完成品，接著示範如何從一個故事種子，固定角色、畫風與參考圖，再拆成 4-6 頁分鏡。學生跟做時，每次只完成當前工作區，不讓大家散掉。</p>
-          <div class="task-actions">
-            <a class="button primary" href="practice/">進入繪本工作室</a>
-            <a class="button secondary" href="#prompts">查看任務提示詞</a>
-          </div>
-        </div>
-
-        <aside class="studio-wall" aria-label="作品牆">
-          <p class="wall-label">作品會逐步累積</p>
-          <ul>
-            <li>故事種子</li>
-            <li>固定角色設定</li>
-            <li>固定美術風格</li>
-            <li>4-6 格分鏡腳本</li>
-            <li>每頁 AI 圖像 Prompt</li>
-            <li>可下載的繪本頁面</li>
-          </ul>
-        </aside>
-      </div>
-
-      <div class="outcome-strip">
-        <div><span>上半堂</span><b>完成 4-6 頁小繪本的故事、角色、美術與第一張候選圖</b></div>
-        <div><span>下半堂</span><b>用 NotebookLM 把作品轉成簡報、資訊圖表與課堂任務</b></div>
-      </div>
-
-      <div class="teaching-run" aria-label="老師帶課節奏">
-        <article>
-          <span>00:00-00:10</span>
-          <h3>先看成品</h3>
-          <p>不用先講工具，直接告訴學生：今天要完成一本 4-6 頁的小繪本或漫畫草稿。</p>
-        </article>
-        <article>
-          <span>00:10-00:30</span>
-          <h3>老師示範一輪</h3>
-          <p>你投影練習室，示範選作品類型、寫故事、上傳參考圖、固定畫風，再建立第一版分鏡。</p>
-        </article>
-        <article>
-          <span>00:30-01:40</span>
-          <h3>學生闖關製作</h3>
-          <p>全班照故事室、角色室、美術室、分鏡桌走；每一關只做一件事，老師巡場看卡點。</p>
-        </article>
-        <article>
-          <span>01:40-02:20</span>
-          <h3>生圖與修正</h3>
-          <p>一次只生成一頁，現場用失敗圖教學生怎麼改提示詞：角色、構圖、留白、不要出現的內容。</p>
-        </article>
-        <article>
-          <span>02:20-03:00</span>
-          <h3>轉成教師教材</h3>
-          <p>下半堂再進 NotebookLM，把作品變成簡報大綱、資訊圖表、閱讀提問或課堂活動。</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="section shell" id="prompts">
-      <div class="section-heading split-heading">
-        <div>
-          <p class="eyebrow">PROMPT LIBRARY</p>
-          <h2>不用背提示詞，照任務選就好</h2>
-        </div>
-        <p>繪本課堂先用 <b>N-CLASS</b>；老師製作教材可切到「教師教材」，先選簡報或資訊圖表，再挑一個用途。</p>
-      </div>
-
-      <div class="prompt-studio">
-        <aside class="prompt-sidebar">
-          <div class="prompt-howto"><strong>不用全部貼！</strong><p><b>做繪本：</b>先用 N-CLASS；N00-N08 是卡住時的拆開練習。</p><p><b>做教師教材：</b>①選簡報或資訊圖表 → ②選用途 → ③準備來源 → ④只把一組提示詞貼到工作室對應功能的自訂欄。</p><p><b>規劃創作：</b>C00-C09 也是一次選一組。</p></div>
-          <div class="prompt-tabs" role="tablist" aria-label="提示詞工具分類">
-            <button type="button" class="is-active" role="tab" aria-selected="true" data-prompt-group="notebook">NotebookLM</button>
-            <button type="button" role="tab" aria-selected="false" data-prompt-group="teacher">教師教材</button>
-            <button type="button" role="tab" aria-selected="false" data-prompt-group="chat">聊天機器人</button>
-          </div>
-          <label class="teacher-example-picker" for="teacher-example-select">
-            <span>老師常用範例｜一次選一個</span>
-            <select id="teacher-example-select">
-              <option value="">先選要做的教材</option>
-              <optgroup label="教學簡報｜貼到工作室的簡報">
-                <option value="T01">T01 一堂課上台簡報</option>
-                <option value="T02">T02 學生自學複習簡報</option>
-                <option value="T03">T03 分齡視覺比喻簡報</option>
-                <option value="T04">T04 迷思與問答簡報</option>
-                <option value="T05">T05 歷史文化時間軸</option>
-                <option value="T06">T06 概念比較與對照</option>
-              </optgroup>
-              <optgroup label="資訊圖表｜貼到工作室的資訊圖表">
-                <option value="T07">T07 課前預習圖</option>
-                <option value="T08">T08 步驟與安全圖</option>
-                <option value="T09">T09 概念關係圖</option>
-                <option value="T10">T10 匿名數據重點圖</option>
-              </optgroup>
-              <optgroup label="其他備課與 Studio 工具">
-                <option value="T11">T11 一堂課快速備課</option>
-                <option value="T12">T12 三種閱讀支援</option>
-                <option value="T13">T13 學習單與答案</option>
-                <option value="T14">T14 匿名評量診斷</option>
-                <option value="T15">T15 代課交接單</option>
-                <option value="T16">T16 核心詞彙表</option>
-                <option value="T17">T17 分層討論題</option>
-                <option value="T18">T18 備課音訊</option>
-                <option value="T19">T19 測驗與字卡</option>
-                <option value="T20">T20 分享安全檢查</option>
-              </optgroup>
-            </select>
-            <small>簡報與資訊圖表都貼在 NotebookLM 工作室的鉛筆／自訂欄，不是貼在聊天區。</small>
-          </label>
-          <label class="prompt-search">搜尋提示詞<input id="prompt-search" type="search" placeholder="例如：簡報、資訊圖表、時間軸、學習單"></label>
-          <div id="prompt-list" class="prompt-list" aria-label="提示詞清單"></div>
-        </aside>
-        <article class="prompt-viewer" aria-live="polite">
-          <header>
-            <div><span id="prompt-code">載入中</span><h3 id="prompt-title">正在準備提示詞庫</h3></div>
-            <button type="button" class="copy-button" id="copy-prompt" disabled>複製提示詞</button>
-          </header>
-          <p id="prompt-summary" class="prompt-summary">完整提示詞會從教材原稿載入。</p>
-          <pre id="prompt-content" tabindex="0">載入中…</pre>
-          <p id="prompt-status" class="assistive-status" aria-live="polite"></p>
-        </article>
-      </div>
-      <noscript><p class="noscript-note">瀏覽器未啟用 JavaScript，請直接下載<a href="materials/docs/prompt-library.md">完整提示詞 Markdown</a>。</p></noscript>
-    </section>
-
-    <section class="section yaml-section" id="yaml">
-      <div class="shell">
-        <div class="section-heading light-heading split-heading">
-          <div>
-            <p class="eyebrow">YAML CARD SYSTEM</p>
-            <h2>把故事拆成七張可以檢查的卡</h2>
-          </div>
-          <p>YAML 不是為了炫技，而是讓 AI、作者與審訂者看到同一份規格。</p>
-        </div>
-
-        <ol class="yaml-map">
-          <li><b>00</b><span>來源包</span><small>能證明什麼</small></li>
-          <li><b>01</b><span>故事內容</span><small>事件與分頁</small></li>
-          <li><b>02</b><span>視覺系統</span><small>角色、場景、畫風</small></li>
-          <li><b>03</b><span>權利／文化紅線</span><small>不可改與待確認</small></li>
-          <li><b>04</b><span>單頁工單</span><small>一次生成一頁</small></li>
-          <li><b>05</b><span>驗收規則</span><small>PASS／FAIL</small></li>
-          <li><b>06</b><span>製作紀錄</span><small>版本與修正</small></li>
-        </ol>
-
-        <div class="yaml-lab">
-          <div class="yaml-controls">
-            <label>選擇檔案
-              <select id="yaml-select" aria-label="選擇 YAML 模板或範例"></select>
-            </label>
-            <div class="yaml-actions">
-              <button type="button" id="copy-yaml" class="copy-button" disabled>複製 YAML</button>
-              <a id="download-yaml" class="download-link" href="materials/yaml/templates/00-source-pack.template.yaml" download>下載檔案</a>
-            </div>
-          </div>
-          <pre id="yaml-content" tabindex="0">載入中…</pre>
-          <p id="yaml-status" class="assistive-status" aria-live="polite"></p>
-        </div>
-      </div>
-    </section>
-
-    <section class="practice-cta" aria-labelledby="practice-cta-title">
-      <div class="shell practice-cta-inner">
-        <div>
-          <p class="eyebrow">CLASSROOM PRACTICE</p>
-          <h2 id="practice-cta-title">進入沉浸式 AI 繪本工作室</h2>
-          <p>輸入講師提供的課堂碼，在限定時間與額度內完成故事、角色、分鏡與候選圖。結果仍需真人審訂。</p>
-        </div>
-        <a class="button primary" href="practice/">開啟 AI 繪本工作室</a>
-      </div>
-    </section>
-
-    <section class="section shell" id="example">
-      <div class="section-heading split-heading">
-        <div>
-          <p class="eyebrow">CLASSROOM EXAMPLE</p>
-          <h2>紅雨傘回家了</h2>
-        </div>
-        <p>沒有自己的素材時，先用這個低文化風險虛構故事走完整條流程。</p>
-      </div>
-
-      <div class="story-gallery">
-        <figure>
-          <img src="assets/images/page-cover.png" width="1448" height="1086" loading="lazy" alt="小晴在雨後公園看見紅雨傘的範例封面">
-          <figcaption><b>封面</b><span>先建立故事焦點與角色基準</span></figcaption>
-        </figure>
-        <figure>
-          <img src="assets/images/page-discovery.png" width="1448" height="1086" loading="lazy" alt="小晴走近公園長椅旁紅雨傘的第 1 頁範例">
-          <figcaption><b>第 1 頁</b><span>單一動作、右上保留文字區</span></figcaption>
-        </figure>
-        <figure class="has-warning">
-          <img src="assets/images/page-return.png" width="1448" height="1086" loading="lazy" alt="小晴將紅雨傘交還陳奶奶的第 5 頁候選圖">
-          <figcaption><b>第 5 頁候選</b><span>C04：人物占到右上文字區，拿來練最小修正</span></figcaption>
-        </figure>
-      </div></section>
-
-    <section class="section gates-section" id="gates">
+    <section class="route-section" id="route" aria-labelledby="route-title">
       <div class="shell">
         <div class="section-heading">
-          <p class="eyebrow">HUMAN GATES</p>
-          <h2>AI 可以初審，不能替人簽名</h2>
-          <p>每一道關卡都要留下確認者、日期與待處理項目；沒有具名核准，就只能標示為課堂草稿。</p>
+          <h2 id="route-title">今天只走三站</h2>
+          <p>老師帶到哪裡，就開哪一站。提示詞與規格卡不用先看，也不用全部使用。</p>
         </div>
-        <div class="gate-grid">
-          <article><span>Gate 1 · 19:50</span><h3>來源可以用嗎？</h3><p>確認可上傳範圍、個資、授權紀錄與文化紅線。</p><label><input type="checkbox" data-gate="source"> 我已完成本關資料檢查</label></article>
-          <article><span>Gate 2 · 20:25</span><h3>故事可以往下做嗎？</h3><p>由作者核准節拍、不可改寫內容與允許創作的空間。</p><label><input type="checkbox" data-gate="story"> 我已完成本關資料檢查</label></article>
-          <article><span>Gate 3 · 21:55</span><h3>只能課堂看，還是能公開？</h3><p>記錄驗收結果、語言文化審訂與正式公開狀態。</p><label><input type="checkbox" data-gate="release"> 我已完成本關資料檢查</label></article>
-        </div>
-        <p class="gate-status" id="gate-status" aria-live="polite">尚未完成任何真人關卡。</p>
+
+        <ol class="route-grid">
+          <li class="route-card">
+            <span class="route-name">先看懂</span>
+            <h3>8 關提示詞暖身</h3>
+            <p>跟著選項補上人物、場景、構圖與畫風，不用先寫長句。</p>
+            <dl>
+              <div><dt>完成後</dt><dd>得到第一句圖片描述</dd></div>
+              <div><dt>卡住時</dt><dd>直接選最接近的答案</dd></div>
+            </dl>
+            <a class="button secondary" href="warmup/">進入暖身</a>
+          </li>
+
+          <li class="route-card is-featured">
+            <span class="route-name">再做出</span>
+            <h3>AI 圖片工作室</h3>
+            <p>先選圖片用途，寫一句短描述，看看 AI 的建議，再用修正版生成圖片。</p>
+            <dl>
+              <div><dt>完成後</dt><dd>帶走一張可預覽、可下載的圖片</dd></div>
+              <div><dt>怎麼進入</dt><dd>暖身完成後進入，或直接從這裡開啟</dd></div>
+            </dl>
+            <a class="button primary" href="practice/">進入 AI 圖片工作室</a>
+          </li>
+
+          <li class="route-card">
+            <span class="route-name">最後轉教材</span>
+            <h3>NotebookLM 教材站</h3>
+            <p>把完成的故事和可靠來源整理成老師常用的簡報或資訊圖表。</p>
+            <dl>
+              <div><dt>完成後</dt><dd>帶走一份教師教材草稿</dd></div>
+              <div><dt>卡住時</dt><dd>一次複製一組教材提示詞</dd></div>
+            </dl>
+            <a class="button secondary" href="#prompts" data-open-tool="prompts" data-prompt-code="T01">選教材提示詞</a>
+          </li>
+        </ol>
       </div>
     </section>
 
-    <section class="section shell" id="downloads">
-      <div class="section-heading split-heading">
-        <div>
-          <p class="eyebrow">TAKE IT WITH YOU</p>
-          <h2>課堂素材全部帶走</h2>
-        </div>
-        <p>保留 Markdown、YAML、HTML 與圖片源稿，方便課後繼續修改。</p>
-      </div>
-
-      <div class="download-grid">
-        <a class="download-card featured" href="downloads/taipei-0904-picture-book-course-pack.zip" download><span>完整包</span><h3>9/4 全部教材 ZIP</h3><p>講師教案、學員講義、提示詞、YAML、範例、圖片與排版起始檔。</p><b>下載約 14 MB ↓</b></a>
-        <a class="download-card" href="materials/docs/student-handout.md" download><span>上課用</span><h3>學員操作講義</h3><p>跟著步驟完成來源、故事、YAML、生圖與驗收。</p><b>下載 Markdown ↓</b></a>
-        <a class="download-card" href="materials/docs/prompt-library.md" download><span>提示詞</span><h3>完整提示詞庫</h3><p>繪本核對、教師備課與聊天規劃三組任務全部收錄。</p><b>下載 Markdown ↓</b></a>
-        <a class="download-card" href="materials/docs/notebooklm-teacher-examples.md" download><span>教師用</span><h3>NotebookLM 教師範例包</h3><p>20 種實例；簡報與資訊圖表優先，另含備課、評量與 Studio 工具。</p><b>下載 Markdown ↓</b></a>
-        <a class="download-card" href="materials/docs/immersive-practice-plan.md" download><span>規劃稿</span><h3>沉浸式練習網頁規劃</h3><p>單堂完成型設計，六個工作區與上下半堂教學節奏。</p><b>下載 Markdown ↓</b></a>
-        <a class="download-card" href="materials/docs/red-umbrella-example.md" download><span>備援</span><h3>紅雨傘完整故事</h3><p>原始六頁節拍與設定已整理，可作為 4-6 頁練習的低風險範例。</p><b>下載 Markdown ↓</b></a>
-        <a class="download-card" href="materials/docs/preclass-release-checklist.md" download><span>必填</span><h3>上課前放行單</h3><p>授權、語言文化與公開範圍必須由具名真人確認。</p><b>下載 Markdown ↓</b></a>
-        <a class="download-card" href="materials/docs/teacher-guide.md" download><span>講師用</span><h3>完整三小時教案</h3><p>時間、示範重點、停損規則與交付標準。</p><b>下載 Markdown ↓</b></a>
-      </div>
-    </section>
-
-    <section class="reference-strip">
+    <section class="tools-section" id="teacher-tools" aria-labelledby="tools-title">
       <div class="shell">
-        <p><b>NotebookLM（Google 現名 Gemini Notebook）提醒：</b>以已加入、已勾選的來源為核心；來源沒有寫到就標示待確認。Slide Deck 逐頁修改目前不會重新參考來源，修改後要重新上傳核對。</p>
-        <div>
-          <a href="https://support.google.com/gemininotebook/answer/16215270" target="_blank" rel="noopener">Google 來源說明 ↗</a>
-          <a href="https://support.google.com/gemininotebook/answer/16757456?hl=zh-Hant" target="_blank" rel="noopener">簡報官方說明 ↗</a>
-          <a href="https://support.google.com/gemininotebook/answer/16758265?hl=zh-Hant" target="_blank" rel="noopener">資訊圖表官方說明 ↗</a>
+        <div class="section-heading">
+          <h2 id="tools-title">卡住時，再打開工具箱</h2>
+          <p>這些不是必做步驟。現在需要哪一個，就只開哪一個。</p>
+        </div>
+
+        <div class="tool-list">
+          <details class="tool-drawer" id="prompts">
+            <summary>
+              <span><b>提示詞助手</b><small>要整理來源、製作教材或規劃故事時使用，一次選一個任務就好。</small></span>
+              <span class="summary-action" aria-hidden="true">打開</span>
+            </summary>
+            <div class="tool-body">
+              <div class="prompt-studio">
+                <aside class="prompt-sidebar">
+                  <div class="prompt-howto">
+                    <strong>先選現在要完成的東西</strong>
+                    <p>右側只會顯示一組提示詞。複製這一組就好，不必複製整個資料庫。</p>
+                  </div>
+
+                  <div class="prompt-tabs" role="tablist" aria-label="提示詞用途">
+                    <button type="button" role="tab" aria-selected="false" data-prompt-group="notebook">整理來源</button>
+                    <button type="button" class="is-active" role="tab" aria-selected="true" data-prompt-group="teacher">簡報與圖表</button>
+                    <button type="button" role="tab" aria-selected="false" data-prompt-group="chat">故事與規劃</button>
+                  </div>
+
+                  <label class="teacher-example-picker" for="teacher-example-select">
+                    <span>我要完成</span>
+                    <select id="teacher-example-select">
+                      <option value="">先選一種教材</option>
+                      <optgroup label="教學簡報">
+                        <option value="T01">一堂課上台簡報</option>
+                        <option value="T02">學生自學複習簡報</option>
+                        <option value="T03">分齡視覺比喻簡報</option>
+                        <option value="T04">迷思與問答簡報</option>
+                        <option value="T05">歷史文化時間軸</option>
+                        <option value="T06">概念比較與對照</option>
+                      </optgroup>
+                      <optgroup label="資訊圖表">
+                        <option value="T07">課前預習圖</option>
+                        <option value="T08">步驟與安全圖</option>
+                        <option value="T09">概念關係圖</option>
+                        <option value="T10">去識別化資料重點圖</option>
+                      </optgroup>
+                      <optgroup label="其他備課工具">
+                        <option value="T11">一堂課快速備課</option>
+                        <option value="T12">三種閱讀支援</option>
+                        <option value="T13">學習單與答案</option>
+                        <option value="T14">匿名評量診斷</option>
+                        <option value="T15">代課交接單</option>
+                        <option value="T16">核心詞彙表</option>
+                        <option value="T17">分層討論題</option>
+                        <option value="T18">備課音訊</option>
+                        <option value="T19">測驗與字卡</option>
+                        <option value="T20">分享安全檢查</option>
+                      </optgroup>
+                    </select>
+                    <small>在 NotebookLM 開啟「工作室」，選「簡報」或「資訊圖表」，再點鉛筆圖示貼上提示詞。</small>
+                  </label>
+
+                  <details class="prompt-index" id="prompt-index">
+                    <summary>查看完整提示詞清單</summary>
+                    <label class="prompt-search">搜尋提示詞<input id="prompt-search" type="search" placeholder="例如：時間軸、學習單"></label>
+                    <div id="prompt-list" class="prompt-list" aria-label="提示詞清單"></div>
+                  </details>
+                </aside>
+
+                <article class="prompt-viewer" aria-live="polite">
+                  <header>
+                    <div><span id="prompt-code">載入中</span><h3 id="prompt-title">正在準備提示詞</h3></div>
+                    <button type="button" class="copy-button" id="copy-prompt" disabled>複製這組</button>
+                  </header>
+                  <p id="prompt-summary" class="prompt-summary">選好任務後，這裡會顯示可直接複製的提示詞。</p>
+                  <pre id="prompt-content" tabindex="0">載入中…</pre>
+                  <p id="prompt-status" class="assistive-status" aria-live="polite"></p>
+                </article>
+              </div>
+
+              <noscript><p class="noscript-note">瀏覽器未啟用 JavaScript，請直接開啟<a href="materials/docs/prompt-library.md">完整提示詞檔</a>。</p></noscript>
+
+              <div class="official-note">
+                <p><b>NotebookLM 使用提醒：</b>先加入並勾選可靠來源。來源沒有寫到的內容，請標示待確認。</p>
+                <div>
+                  <a href="https://support.google.com/gemininotebook/answer/16215270" target="_blank" rel="noopener">來源說明 ↗</a>
+                  <a href="https://support.google.com/gemininotebook/answer/16757456?hl=zh-Hant" target="_blank" rel="noopener">簡報說明 ↗</a>
+                  <a href="https://support.google.com/gemininotebook/answer/16758265?hl=zh-Hant" target="_blank" rel="noopener">資訊圖表說明 ↗</a>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="tool-drawer" id="style-switcher">
+            <summary>
+              <span><b>簡報與海報換風格</b><small>內容已經確認，只想換版面、配色與視覺語氣時使用。</small></span>
+              <span class="summary-action" aria-hidden="true">打開</span>
+            </summary>
+            <div class="tool-body">
+              <div class="style-switcher-intro">
+                <span class="tool-eyebrow">內容固定，只換風格</span>
+                <h3>先選你手上有沒有參考圖</h3>
+                <p>文字風格設定適合從零開始；參考圖適合已經有明確方向時使用。兩種方法擇一即可，不必全部貼上。</p>
+              </div>
+
+              <section class="style-section" aria-labelledby="notebook-style-title">
+                <div class="style-section-heading">
+                  <span>A</span>
+                  <div>
+                    <h3 id="notebook-style-title">NotebookLM 簡報換風格</h3>
+                    <p>保留主題、事實、數字與頁面順序，只調整看起來的感覺。</p>
+                  </div>
+                </div>
+
+                <div class="style-method-grid">
+                  <article class="style-method-card">
+                    <span class="style-method-label">沒有參考圖</span>
+                    <h4>貼文字風格設定</h4>
+                    <p>用配色、字體感受、圖像與留白描述你想要的樣子，最容易微調。</p>
+                    <pre id="notebook-text-style-prompt" tabindex="0" aria-label="NotebookLM 文字風格提示詞">正在準備提示詞…</pre>
+                    <button type="button" class="copy-button" data-copy-style-prompt="notebook-text">複製文字設定</button>
+                    <p class="assistive-status" data-style-status="notebook-text" aria-live="polite"></p>
+                  </article>
+
+                  <article class="style-method-card">
+                    <span class="style-method-label">已有明確方向</span>
+                    <h4>上傳有權使用的參考圖</h4>
+                    <p>只參考圖片可觀察的配色、材質與版面，不複製標誌、文字、人物或文化圖紋。</p>
+                    <pre id="notebook-reference-style-prompt" tabindex="0" aria-label="NotebookLM 參考圖風格提示詞">正在準備提示詞…</pre>
+                    <button type="button" class="copy-button" data-copy-style-prompt="notebook-reference">複製參考圖設定</button>
+                    <p class="assistive-status" data-style-status="notebook-reference" aria-live="polite"></p>
+                  </article>
+                </div>
+              </section>
+
+              <section class="style-section poster-style-section" aria-labelledby="poster-style-title">
+                <div class="style-section-heading">
+                  <span>B</span>
+                  <div>
+                    <h3 id="poster-style-title">YAML 海報風格設定</h3>
+                    <p>先選一種風格，再複製 YAML。它只調整視覺，原本的標題、內文、數字與必要標誌都要保留。</p>
+                  </div>
+                </div>
+
+                <div class="poster-style-lab">
+                  <label for="poster-style-select">選擇海報風格
+                    <select id="poster-style-select" aria-describedby="poster-style-help"></select>
+                  </label>
+                  <p id="poster-style-help">八種設定都能再改色票或材質；一次選一種即可。</p>
+                  <pre id="poster-style-content" tabindex="0" aria-label="目前選取的海報 YAML 風格設定">正在準備 YAML…</pre>
+                  <button type="button" id="copy-poster-style" class="copy-button">複製這個 YAML</button>
+                  <p id="poster-style-status" class="assistive-status" aria-live="polite"></p>
+                </div>
+              </section>
+
+              <aside class="style-safety-note" aria-label="文化與權利提醒">
+                <b>交給 AI 前，先確認兩件事</b>
+                <ul>
+                  <li>參考圖必須是你有權使用的圖片。</li>
+                  <li>族語要逐字核對；傳統服飾、圖紋與器物需由熟悉該族文化者確認。</li>
+                </ul>
+              </aside>
+            </div>
+          </details>
+
+          <details class="tool-drawer" id="example">
+            <summary>
+              <span><b>完整示範</b><small>沒有素材，或老師想示範怎麼修圖時，再使用「紅雨傘回家了」。</small></span>
+              <span class="summary-action" aria-hidden="true">打開</span>
+            </summary>
+            <div class="tool-body">
+              <div class="story-gallery">
+                <figure>
+                  <img src="assets/images/page-cover.png" width="1448" height="1086" loading="lazy" alt="小晴在雨後公園看見紅雨傘的範例封面">
+                  <figcaption><b>封面</b><span>先建立故事焦點與角色基準</span></figcaption>
+                </figure>
+                <figure>
+                  <img src="assets/images/page-discovery.png" width="1448" height="1086" loading="lazy" alt="小晴走近公園長椅旁紅雨傘的第 1 頁範例">
+                  <figcaption><b>第 1 頁</b><span>單一動作，右上保留文字區</span></figcaption>
+                </figure>
+                <figure class="has-warning">
+                  <img src="assets/images/page-return.png" width="1448" height="1086" loading="lazy" alt="小晴將紅雨傘交還陳奶奶的第 5 頁第一版圖片">
+                  <figcaption><b>第 5 頁第一版</b><span>人物佔到右上文字區，示範只修正這一個問題</span></figcaption>
+                </figure>
+              </div>
+            </div>
+          </details>
+
+          <details class="tool-drawer" id="yaml">
+            <summary>
+              <span><b>進階規格卡</b><small>講師示範、文化審訂或課後整理時才需要，不是第一堂必做。</small></span>
+              <span class="summary-action" aria-hidden="true">打開</span>
+            </summary>
+            <div class="tool-body">
+              <div class="yaml-intro">
+                <h3>把故事拆成七張可以檢查的卡</h3>
+                <p>YAML 是把故事、畫面與檢查規則分欄寫清楚的格式；第一次接觸可先看範例，不必自己從零撰寫。</p>
+              </div>
+
+              <ol class="yaml-map">
+                <li><b>來源包</b><small>能證明什麼</small></li>
+                <li><b>故事內容</b><small>事件與分頁</small></li>
+                <li><b>視覺系統</b><small>角色、場景、畫風</small></li>
+                <li><b>權利與文化</b><small>不能改與待確認</small></li>
+                <li><b>單頁生圖設定</b><small>一次生成一頁</small></li>
+                <li><b>驗收規則</b><small>通過或修改</small></li>
+                <li><b>製作紀錄</b><small>版本與修正</small></li>
+              </ol>
+
+              <div class="yaml-lab">
+                <div class="yaml-controls">
+                  <label>選擇檔案
+                    <select id="yaml-select" aria-label="選擇 YAML 模板或範例"></select>
+                  </label>
+                  <div class="yaml-actions">
+                    <button type="button" id="copy-yaml" class="copy-button" disabled>複製 YAML</button>
+                    <a id="download-yaml" class="download-link" href="materials/yaml/templates/00-source-pack.template.yaml" download>下載檔案</a>
+                  </div>
+                </div>
+                <pre id="yaml-content" tabindex="0">載入中…</pre>
+                <p id="yaml-status" class="assistive-status" aria-live="polite"></p>
+              </div>
+            </div>
+          </details>
         </div>
       </div>
     </section>
@@ -319,9 +321,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=20260904b"></script>
+  <script src="app.js?v=20260904h"></script>
 </body>
 </html>
-
-
-

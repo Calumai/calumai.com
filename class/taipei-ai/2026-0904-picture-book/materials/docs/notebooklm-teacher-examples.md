@@ -115,6 +115,5 @@
 - [Google Classroom 指派筆記本](https://support.google.com/edu/classroom/answer/16534159?hl=zh-Hant)
 - [公開筆記本與來源可見性](https://support.google.com/gemininotebook/answer/16322204?hl=zh-Hant)
 
-延伸靈感：[NotebookLM 簡報的多種提示詞與視覺結構示例](https://www.kocpc.com.tw/archives/630020)。這篇用於觀察簡報用途與版型寫法，不是 Google 官方規格；本教材的提示詞已重新依教師情境、來源核對及課堂安全原則編寫。
 
 查核日期：2026-09-03。

@@ -5,33 +5,58 @@
   if (!core) return;
 
   const byId = (id) => document.getElementById(id);
-  const previewMode = ["127.0.0.1", "localhost"].includes(globalThis.location.hostname);
+  const previewMode = ["127.0.0.1", "localhost"].includes(globalThis.location.hostname)
+    || globalThis.location.protocol === "file:";
+  const previewQuota = { text: 2, image: 1 };
+  const purposeLabels = {
+    "picture-book": "繪本插畫",
+    comic: "漫畫頁",
+    "class-poster": "班級海報",
+    "event-poster": "活動海報",
+    "teaching-card": "教學圖卡"
+  };
+  const stepNames = {
+    1: "選擇圖片用途",
+    2: "寫下圖片描述",
+    3: "查看 AI 回饋",
+    4: "確認 AI 修改版",
+    5: "用修改版生成圖片"
+  };
+
   const claimForm = byId("claim-form");
-  const claimButton = byId("claim-button");
   const accessPanel = byId("access-panel");
   const workspace = byId("workspace");
-  const textForm = byId("text-form");
-  const bookSetupForm = byId("book-setup-form");
-  const previewQuota = { text: 2, image: 6 };
-  const previewImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
+  const purposeForm = byId("purpose-form");
+  const promptForm = byId("prompt-form");
+
   let currentSession = null;
   let previewSessionActive = false;
-  let textState = core.createGenerationState("text");
-  let references = [];
-  let bookPages = [];
-  let activePageNumber = null;
-  let selectedPageNumber = null;
-  let activeStudioStep = 1;
-  let highestStudioStep = 1;
+  let activeStep = 1;
+  let highestStep = 1;
+  let assistState = core.createGenerationState("text");
+  let imageState = core.createGenerationState("image");
+  let promptDraft = {
+    purpose: "",
+    originalPrompt: "",
+    feedback: "",
+    revisedPrompt: ""
+  };
 
   if (globalThis.history && globalThis.location.search) {
     const cleanUrl = new URL(globalThis.location.href);
-    for (const key of ["class_code", "nickname", "consent", "test_mode"]) cleanUrl.searchParams.delete(key);
-    globalThis.history.replaceState(null, "", cleanUrl.pathname + (previewMode ? "?preview=1" : "") + cleanUrl.hash);
+    for (const key of ["class_code", "nickname", "consent", "test_mode"]) {
+      cleanUrl.searchParams.delete(key);
+    }
+    const search = previewMode ? "?preview=1" : cleanUrl.search;
+    globalThis.history.replaceState(null, "", cleanUrl.pathname + search + cleanUrl.hash);
   }
 
+  if (previewMode && !byId("class-code").value) byId("class-code").value = "20260904";
+
   function makeUuid() {
-    if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") return globalThis.crypto.randomUUID();
+    if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
+      return globalThis.crypto.randomUUID();
+    }
     const bytes = new Uint8Array(16);
     globalThis.crypto.getRandomValues(bytes);
     return Array.from(bytes, (value) => value.toString(16).padStart(2, "0")).join("");
@@ -41,46 +66,37 @@
     return Object.fromEntries(new FormData(form).entries());
   }
 
+  function purposeLabel() {
+    return purposeLabels[promptDraft.purpose] || "圖片";
+  }
+
   function previewSessionPayload(nickname) {
     return {
       ok: true,
-      session: { nickname: nickname || "本機學員", mode: "preview", expires_at: "2099-01-01T00:00:00Z" },
-      classroom: { status: "open", opens_at: "2099-01-01T00:00:00Z", closes_at: "2099-01-01T23:59:59Z" },
+      session: {
+        nickname: nickname || "本機學員",
+        mode: "preview",
+        expires_at: "2099-01-01T00:00:00Z"
+      },
+      classroom: {
+        status: "open",
+        opens_at: "2099-01-01T00:00:00Z",
+        closes_at: "2099-01-01T23:59:59Z"
+      },
       remaining: { ...previewQuota },
-      classroom_remaining: { text: 80, image: 40 },
+      classroom_remaining: { text: 80, image: 40 }
     };
   }
 
-  function plannedPageCount() {
-    const value = Number.parseInt(byId("book-page-count").value, 10);
-    return [4, 5, 6].includes(value) ? value : 5;
-  }
-
-  function previewBookPlan(pageCount = 5) {
-    const functions = [
-      "封面與故事承諾", "人物與地方", "事件開始", "第一次行動",
-      "阻礙與選擇", "收尾與讀者帶走的感受",
-    ].slice(0, pageCount);
-    return JSON.stringify({
-      pages: functions.map((pageFunction, index) => ({
-        page_no: index + 1,
-        function: pageFunction,
-        narration: `第 ${index + 1} 頁旁白草稿，請依來源修改。`,
-        dialogue: "",
-        visual_prompt: `呈現「${pageFunction}」的一個主要動作，延續同一角色與場景設定。`,
-        layout: "single",
-        safe_area: index % 2 === 0 ? "upper-right" : "upper-left",
-        must_include: "只包含來源已確認的人物、場景與物件",
-        pending_review: "無",
-      })),
-    }, null, 2);
-  }
-
-  function previewResponse(pathname, body) {
+  function previewJsonResponse(pathname, body) {
     if (pathname === "/session") {
       return previewSessionActive
         ? previewSessionPayload()
-        : { ok: false, request_id: "local-preview", error: { code: "UNAUTHENTICATED", message: "請先輸入課堂碼登入。", retryable: false } };
+        : {
+          ok: false,
+          request_id: "local-preview",
+          error: { code: "UNAUTHENTICATED", message: "請先輸入課堂碼，進入練習室。", retryable: false }
+        };
     }
     if (pathname === "/session/claim") {
       previewSessionActive = true;
@@ -91,1022 +107,582 @@
       return { ok: true };
     }
     if (!previewSessionActive) {
-      return { ok: false, request_id: "local-preview", error: { code: "UNAUTHENTICATED", message: "請先輸入課堂碼登入。", retryable: false } };
+      return {
+        ok: false,
+        request_id: "local-preview",
+        error: { code: "UNAUTHENTICATED", message: "請先輸入課堂碼，進入練習室。", retryable: false }
+      };
     }
-    if (previewQuota.text <= 0) {
-      return { ok: false, request_id: "local-preview", error: { code: "SESSION_QUOTA_EXHAUSTED", message: "本機展示文字額度已用完。", retryable: false } };
+    if (pathname === "/generate/text") {
+      if (previewQuota.text <= 0) {
+        return {
+          ok: false,
+          request_id: "local-preview",
+          error: { code: "SESSION_QUOTA_EXHAUSTED", message: "本機預覽的可用次數已用完。", retryable: false }
+        };
+      }
+      previewQuota.text -= 1;
+      const original = String(body && body.source_notes || "一個清楚的主題").trim();
+      return {
+        ok: true,
+        request_id: "local-preview-text",
+        kind: "text",
+        content: JSON.stringify({
+          feedback: "這是本機預覽文字，不是 AI 回覆。可以再補上主角、所在位置、正在做的事與畫面重點。",
+          revised_prompt: `${original}。主體清楚，動作自然，構圖有明確焦點，畫面不要出現無關文字或浮水印。`
+        }),
+        usage: { input_tokens: 0, output_tokens: 0, total_tokens: 0 },
+        remaining: { ...previewQuota },
+        classroom_remaining: { text: 80, image: 40 }
+      };
     }
-    previewQuota.text -= 1;
-    const pageCountMatch = body && String(body.topic || "").match(/([4-6])\s*頁繪本/u);
-    const content = pageCountMatch
-      ? previewBookPlan(Number.parseInt(pageCountMatch[1], 10))
-      : `# ${body && body.topic ? body.topic : "本機展示教材"}\n\n這是本機預覽模式產生的範例文字，不會送到正式服務。`;
     return {
-      ok: true,
-      request_id: "local-preview-text",
-      kind: "text",
-      content,
-      usage: { input_tokens: 0, output_tokens: 0, total_tokens: 0 },
-      remaining: { ...previewQuota },
-      classroom_remaining: { text: 80, image: 40 },
+      ok: false,
+      request_id: "local-preview",
+      error: { code: "HTTP_404", message: "本機預覽發生錯誤。", retryable: false }
     };
   }
 
   async function callJsonService(pathname, method, body, timeoutMs) {
-    if (previewMode) return previewResponse(pathname, body);
+    if (previewMode) {
+      const payload = previewJsonResponse(pathname, body);
+      if (!payload || payload.ok !== true) throw core.normalizeApiError(payload, 400);
+      return payload;
+    }
     const descriptor = core.createRequest(pathname, method, body);
     const controller = new AbortController();
     const timer = globalThis.setTimeout(() => controller.abort(), timeoutMs);
     try {
       const response = await fetch(descriptor.url, { ...descriptor.options, signal: controller.signal });
       let payload = null;
-      try { payload = await response.json(); } catch { payload = null; }
-      if (!response.ok || !payload || payload.ok !== true) throw core.normalizeApiError(payload, response.status);
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload || payload.ok !== true) {
+        throw core.normalizeApiError(payload, response.status);
+      }
       return payload;
     } catch (error) {
       if (error && error.code) throw error;
       if (error && error.name === "AbortError") {
-        throw { code: "CLIENT_TIMEOUT", message: "等待時間已超過本頁上限。", retryable: true, requestId: "", httpStatus: 0 };
+        throw {
+          code: "CLIENT_TIMEOUT",
+          message: "等待時間過久，請再試一次。",
+          retryable: true,
+          requestId: "",
+          httpStatus: 0
+        };
       }
-      throw { code: "NETWORK_ERROR", message: "無法連上課堂服務，請檢查網路連線。", retryable: true, requestId: "", httpStatus: 0 };
+      throw {
+        code: "NETWORK_ERROR",
+        message: "無法連上課堂服務，請檢查網路連線。",
+        retryable: true,
+        requestId: "",
+        httpStatus: 0
+      };
     } finally {
       globalThis.clearTimeout(timer);
     }
   }
 
-  async function callBookPageService(formData) {
+  async function callImageService(prompt) {
     if (previewMode) {
+      if (!previewSessionActive) {
+        throw { code: "UNAUTHENTICATED", message: "請先輸入課堂碼，進入練習室。", retryable: false, requestId: "", httpStatus: 401 };
+      }
       if (previewQuota.image <= 0) {
-        throw { code: "SESSION_QUOTA_EXHAUSTED", message: "本機展示圖片額度已用完。", retryable: false, requestId: "", httpStatus: 429 };
+        throw { code: "SESSION_QUOTA_EXHAUSTED", message: "本機預覽的可用次數已用完。", retryable: false, requestId: "", httpStatus: 429 };
       }
       previewQuota.image -= 1;
       return {
         ok: true,
-        request_id: `local-preview-page-${formData.get("page_no")}`,
+        request_id: "local-preview-image",
         kind: "image",
-        page_no: Number(formData.get("page_no")),
-        image: { mime_type: "image/png", data_base64: previewImageBase64, type: "base64", src: `data:image/png;base64,${previewImageBase64}` },
+        image: { mime_type: "image/png", type: "url", src: "../assets/images/page-cover.png" },
         remaining: { ...previewQuota },
-        classroom_remaining: { text: 80, image: 40 },
+        classroom_remaining: { text: 80, image: 40 }
       };
     }
+
     const controller = new AbortController();
     const timer = globalThis.setTimeout(() => controller.abort(), 180000);
     try {
-      const response = await fetch("/api/classroom-ai/generate/book-page", {
+      const response = await fetch("/api/generate-image", {
         method: "POST",
         credentials: "include",
-        headers: { Accept: "application/json" },
-        body: formData,
-        signal: controller.signal,
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: prompt.trim() }),
+        signal: controller.signal
       });
       let payload = null;
-      try { payload = await response.json(); } catch { payload = null; }
-      if (!response.ok || !payload || payload.ok !== true) throw core.normalizeApiError(payload, response.status);
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload || payload.ok !== true) {
+        throw core.normalizeApiError(payload, response.status);
+      }
       return payload;
     } catch (error) {
       if (error && error.code) throw error;
       if (error && error.name === "AbortError") {
-        throw { code: "IMAGE_API_TIMEOUT", message: "圖片生成逾時。", retryable: true, requestId: "", httpStatus: 0 };
+        throw {
+          code: "IMAGE_API_TIMEOUT",
+          message: "圖片生成逾時。",
+          retryable: true,
+          requestId: "",
+          httpStatus: 0
+        };
       }
-      throw { code: "NETWORK_ERROR", message: "無法連上課堂服務，請檢查網路連線。", retryable: true, requestId: "", httpStatus: 0 };
+      throw {
+        code: "NETWORK_ERROR",
+        message: "無法連上課堂服務，請檢查網路連線。",
+        retryable: true,
+        requestId: "",
+        httpStatus: 0
+      };
     } finally {
       globalThis.clearTimeout(timer);
     }
   }
 
-  function reportMeaningfulValidity(container, messageTarget) {
-    const fields = [...container.querySelectorAll('input[required], textarea[required], select[required]')];
-    for (const field of fields) {
-      if (field.type === "checkbox" || field.type === "number") continue;
-      field.setCustomValidity(String(field.value || "").trim() ? "" : "請填寫此欄位。");
-    }
-    const invalid = fields.find((field) => !field.checkValidity());
-    if (!invalid) {
-      if (messageTarget) messageTarget.textContent = "";
-      return true;
-    }
-    const label = invalid.labels && invalid.labels[0]
-      ? invalid.labels[0].textContent.replace(/\s+/gu, " ").trim()
-      : "這個欄位";
-    if (messageTarget) messageTarget.textContent = `請完成「${label}」。${invalid.validationMessage}`;
-    invalid.focus({ preventScroll: true });
-    return false;
+  function formatDateTime(value) {
+    const date = new Date(value);
+    if (!Number.isFinite(date.getTime())) return "";
+    return new Intl.DateTimeFormat("zh-TW", {
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    }).format(date);
   }
 
-  document.querySelectorAll('input[required], textarea[required], select[required]').forEach((field) => {
-    field.addEventListener("input", () => {
-      if (field.type !== "checkbox" && String(field.value || "").trim()) field.setCustomValidity("");
-    });
-  });
-
   function setClaimBusy(isBusy, label) {
-    claimButton.disabled = isBusy;
-    claimButton.textContent = label || "進入練習室";
+    byId("claim-button").disabled = isBusy;
+    byId("claim-button").textContent = isBusy ? label : "進入練習室";
   }
 
   function showAccess(message) {
     currentSession = null;
     accessPanel.hidden = false;
     workspace.hidden = true;
+    byId("practice-intro").hidden = false;
     byId("claim-message").textContent = message || "";
-  }
-
-  function formatDateTime(value) {
-    const date = new Date(value);
-    if (!value || Number.isNaN(date.getTime())) return "未提供";
-    return new Intl.DateTimeFormat("zh-TW", {
-      timeZone: "Asia/Taipei", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false,
-    }).format(date);
-  }
-
-  function updateQuotaDisplay(remaining, classroomRemaining) {
-    byId("personal-text-quota").textContent = Number.isFinite(remaining.text) ? remaining.text : "-";
-    byId("personal-image-quota").textContent = Number.isFinite(remaining.image) ? remaining.image : "-";
-    byId("class-text-quota").textContent = Number.isFinite(classroomRemaining.text) ? classroomRemaining.text : "-";
-    byId("class-image-quota").textContent = Number.isFinite(classroomRemaining.image) ? classroomRemaining.image : "-";
-  }
-
-  function updateSessionFromResult(result) {
-    if (!currentSession || !result) return;
-    currentSession = { ...currentSession, remaining: result.remaining, classroomRemaining: result.classroomRemaining };
-    updateQuotaDisplay(currentSession.remaining, currentSession.classroomRemaining);
-    updateAvailability();
-  }
-
-  function updateAvailability() {
-    if (!currentSession) return;
-    const open = currentSession.classroom.status === "open";
-    const textAvailable = open && currentSession.remaining.text > 0 && currentSession.classroomRemaining.text > 0;
-    const imageAvailable = open && currentSession.remaining.image > 0 && currentSession.classroomRemaining.image > 0;
-    textForm.querySelector('button[type="submit"]').disabled = textState.phase === "loading" || !textAvailable;
-    byId("create-book-plan").disabled = byId("create-book-plan").dataset.busy === "true" || !textAvailable;
-    for (const button of document.querySelectorAll('[data-action="generate-page"]')) {
-      button.disabled = Boolean(activePageNumber) || !imageAvailable || Number(button.dataset.attempts || 0) >= 3;
-    }
-    byId("generate-next-page").disabled = Boolean(activePageNumber) || !imageAvailable || !bookPages.length || bookPages.every((page) => page.result || page.attempts >= 3);
   }
 
   function showWorkspace(session) {
     currentSession = session;
     accessPanel.hidden = true;
     workspace.hidden = false;
-    byId("claim-message").textContent = "";
+    byId("practice-intro").hidden = true;
     byId("session-nickname").textContent = session.nickname || "學員";
-    const statusChip = byId("classroom-status-chip");
-    statusChip.textContent = ({ open: "練習開放中", not_open: "尚未開放", scheduled: "尚未開放", closed: "練習已關閉" })[session.classroom.status] || "課堂狀態待確認";
-    statusChip.dataset.status = session.classroom.status;
+    byId("classroom-status-chip").textContent = previewMode ? "本機預覽" : "課堂開放中";
+    const closesAt = formatDateTime(session.classroom.closesAt);
     byId("classroom-window").textContent = previewMode
-      ? "本機展示模式：不會把課堂碼、參考圖或生成內容送到正式服務。"
-      : `開放 ${formatDateTime(session.classroom.opensAt)}，關閉 ${formatDateTime(session.classroom.closesAt)}。工作階段至 ${formatDateTime(session.expiresAt)}。`;
-    updateQuotaDisplay(session.remaining, session.classroomRemaining);
+      ? "目前是本機預覽模式；畫面中的回饋與圖片都不是 AI 生成結果。"
+      : closesAt
+        ? `本次課堂開放至 ${closesAt}。`
+        : "課堂已開放；結束時間請以老師公告為準。";
+    updateQuotaDisplay(session.remaining);
+    updateAvailability();
+    setStudioStep(activeStep, false);
+  }
+
+  function updateQuotaDisplay(remaining) {
+    const text = remaining && Number.isFinite(remaining.text) ? remaining.text : null;
+    const image = remaining && Number.isFinite(remaining.image) ? remaining.image : null;
+    byId("personal-text-quota").textContent = text === null ? "-" : String(text);
+    byId("personal-image-quota").textContent = image === null ? "-" : String(image);
+  }
+
+  function updateSessionFromResult(result) {
+    if (!currentSession || !result || !result.remaining) return;
+    currentSession.remaining = result.remaining;
+    if (result.classroomRemaining) currentSession.classroomRemaining = result.classroomRemaining;
+    updateQuotaDisplay(currentSession.remaining);
     updateAvailability();
   }
 
   async function restoreSession() {
-    setClaimBusy(true, "確認工作階段");
     try {
-      const payload = await callJsonService("/session", "GET", undefined, 15000);
+      const payload = await callJsonService("/session", "GET", undefined, 10000);
       showWorkspace(core.normalizeSession(payload));
     } catch (error) {
-      showAccess(error.code === "SESSION_EXPIRED" ? "先前的工作階段已過期，請重新登入。" : "");
-    } finally {
-      setClaimBusy(false);
+      showAccess(error && error.code === "SESSION_EXPIRED" ? "本次使用期限已到，請重新輸入課堂碼。" : "");
     }
+  }
+
+  function resetImage() {
+    imageState = core.transitionGeneration(imageState, { type: "reset" });
+    renderImageState();
+  }
+
+  function resetAssistantAndImage() {
+    assistState = core.transitionGeneration(assistState, { type: "reset" });
+    promptDraft.feedback = "";
+    promptDraft.revisedPrompt = "";
+    byId("revised-prompt").value = "";
+    byId("final-prompt-output").textContent = "";
+    highestStep = Math.min(highestStep, 2);
+    resetImage();
+    renderAssistantState();
+    updateDraftSummary();
+    updateStepNavigation();
+  }
+
+  function updateDraftSummary() {
+    byId("preview-purpose").textContent = promptDraft.purpose
+      ? `目前用途：${purposeLabel()}`
+      : "先選擇圖片用途";
+    byId("original-prompt-status").textContent = promptDraft.originalPrompt ? "已填寫" : "未填寫";
+    byId("revised-prompt-status").textContent = promptDraft.revisedPrompt ? "已準備" : "尚未產生";
+    byId("prompt-count").textContent = `${byId("original-prompt").value.length} / 4000`;
+    byId("revised-count").textContent = `${byId("revised-prompt").value.length} / 4000`;
+  }
+
+  function updateStepNavigation() {
+    document.querySelectorAll("[data-studio-step-target]").forEach((button) => {
+      const step = Number(button.dataset.studioStepTarget);
+      const item = button.closest("li");
+      button.disabled = step > highestStep;
+      button.setAttribute("aria-current", step === activeStep ? "step" : "false");
+      item.dataset.state = step === activeStep ? "active" : step < activeStep ? "complete" : "upcoming";
+    });
+    byId("current-step-name").textContent = `現在：${stepNames[activeStep]}`;
+  }
+
+  function setStudioStep(step, focusHeading = true) {
+    const nextStep = Number(step);
+    if (!Number.isInteger(nextStep) || nextStep < 1 || nextStep > 5 || nextStep > highestStep) return;
+    activeStep = nextStep;
+    document.querySelectorAll("[data-studio-panel]").forEach((panel) => {
+      panel.hidden = Number(panel.dataset.studioPanel) !== activeStep;
+    });
+    updateStepNavigation();
+    if (focusHeading) {
+      const heading = document.querySelector(`[data-studio-panel="${activeStep}"] h4`);
+      if (heading) heading.focus({ preventScroll: true });
+    }
+  }
+
+  function updateAvailability() {
+    const textBusy = assistState.phase === "loading";
+    const imageBusy = imageState.phase === "loading";
+    const textRemaining = currentSession && currentSession.remaining ? currentSession.remaining.text : null;
+    const imageRemaining = currentSession && currentSession.remaining ? currentSession.remaining.image : null;
+    byId("review-prompt-button").disabled = textBusy || imageBusy || textRemaining === 0;
+    byId("feedback-retry").disabled = textBusy || imageBusy || textRemaining === 0;
+    byId("show-revised-prompt").disabled = textBusy || imageBusy;
+    byId("confirm-revised-prompt").disabled = textBusy || imageBusy;
+    byId("generate-image-button").disabled = textBusy || imageBusy || imageRemaining === 0;
+    byId("image-retry").disabled = textBusy || imageBusy || imageRemaining === 0;
+  }
+
+  function errorReference(error) {
+    const details = [];
+    if (error && error.code) details.push(`錯誤代碼：${error.code}`);
+    if (error && error.requestId) details.push(`查詢編號：${error.requestId}`);
+    if (error && error.httpStatus) details.push(`HTTP 狀態碼：${error.httpStatus}`);
+    return details.join("；");
+  }
+
+  function renderAssistantState() {
+    const loading = assistState.phase === "loading";
+    const failed = assistState.phase === "error" || assistState.phase === "retryable";
+    const succeeded = assistState.phase === "success";
+    byId("feedback-loading").hidden = !loading;
+    byId("feedback-loading").setAttribute("aria-hidden", String(!loading));
+    byId("feedback-error").hidden = !failed;
+    byId("feedback-success").hidden = !succeeded;
+    byId("feedback-retry").hidden = !failed || !assistState.error || !assistState.error.retryable;
+    byId("show-revised-prompt").hidden = !succeeded;
+    if (failed) {
+      byId("feedback-error-message").textContent = core.friendlyError(assistState.error);
+      byId("feedback-error-reference").textContent = errorReference(assistState.error);
+    } else {
+      byId("feedback-error-message").textContent = "";
+      byId("feedback-error-reference").textContent = "";
+    }
+    if (succeeded) byId("feedback-output").textContent = promptDraft.feedback;
+    updateAvailability();
+  }
+
+  function renderImageState() {
+    const loading = imageState.phase === "loading";
+    const failed = imageState.phase === "error" || imageState.phase === "retryable";
+    const succeeded = imageState.phase === "success";
+    byId("image-preview-empty").hidden = loading || failed || succeeded;
+    byId("image-loading").hidden = !loading;
+    byId("image-loading").setAttribute("aria-hidden", String(!loading));
+    byId("image-error").hidden = !failed;
+    byId("image-success").hidden = !succeeded;
+    byId("image-retry").hidden = !failed || !imageState.error || !imageState.error.retryable;
+    byId("generate-image-button").hidden = succeeded || failed;
+    byId("download-image").hidden = !succeeded;
+
+    if (loading) {
+      byId("preview-title").textContent = "正在生成圖片";
+      byId("image-message").textContent = "生成中，通常需要一至三分鐘。";
+    } else if (failed) {
+      byId("preview-title").textContent = "圖片沒有生成成功";
+      byId("image-message").textContent = "";
+      byId("image-error-message").textContent = core.friendlyError(imageState.error);
+      byId("image-error-reference").textContent = errorReference(imageState.error);
+    } else if (succeeded) {
+      const result = imageState.result;
+      const src = result.dataBase64
+        ? `data:${result.mimeType};base64,${result.dataBase64}`
+        : result.src;
+      byId("preview-title").textContent = previewMode ? "本機預覽圖片" : "圖片完成了";
+      byId("image-message").textContent = previewMode
+        ? "這是本機預覽圖片，不是 AI 生成結果。"
+        : "圖片已完成，可以在作品預覽區查看與下載。";
+      byId("generated-image").src = src;
+      byId("generated-image").alt = `${purposeLabel()}生成結果`;
+      byId("image-request-reference").textContent = previewMode
+        ? "本機預覽圖片"
+        : result.requestId ? `查詢編號：${result.requestId}` : "";
+    } else {
+      byId("preview-title").textContent = "還沒生成圖片";
+      byId("image-message").textContent = "";
+      byId("image-error-message").textContent = "";
+      byId("image-error-reference").textContent = "";
+      byId("generated-image").removeAttribute("src");
+      byId("generated-image").alt = "";
+      byId("image-request-reference").textContent = "";
+    }
+    updateAvailability();
+  }
+
+  function buildAssistantRequest() {
+    const request = {
+      topic: `圖片提示詞檢視｜${purposeLabel()}`,
+      audience: "AI 繪圖初學教師",
+      duration_minutes: 5,
+      objective: "讓使用者看懂原始描述缺少什麼，並取得可直接生圖的修正版",
+      source_notes: promptDraft.originalPrompt,
+      requirements: "只回傳一個 JSON 物件，欄位只能有 feedback 與 revised_prompt。feedback 請用白話說明最優先調整的兩至三點；revised_prompt 要保留原意，補足主體、場景、動作、構圖與必要限制。不得捏造族語、族群文化、服飾、圖紋、器物、儀式或事實。資料不足時，請在修正版寫明不要自行添加未確認細節。"
+    };
+    const idempotencyKey = core.createIdempotencyKey("text", makeUuid());
+    return {
+      idempotencyKey,
+      payload: core.buildTextPayload(request, idempotencyKey)
+    };
+  }
+
+  async function performPromptReview(isRetry) {
+    if (!isRetry) {
+      const request = buildAssistantRequest();
+      assistState = core.transitionGeneration(assistState, {
+        type: "start",
+        idempotencyKey: request.idempotencyKey,
+        request: request.payload
+      });
+    } else {
+      assistState = core.transitionGeneration(assistState, { type: "retry" });
+    }
+    renderAssistantState();
+    try {
+      const payload = await callJsonService("/generate/text", "POST", assistState.request, 70000);
+      const result = core.normalizeGenerationResult("text", payload);
+      let parsed;
+      try {
+        parsed = core.parsePromptAssistantResult(result.content);
+      } catch {
+        throw {
+          code: "AI_RESPONSE_INVALID",
+          message: "AI 回覆格式不完整。",
+          retryable: true,
+          requestId: result.requestId,
+          httpStatus: 0
+        };
+      }
+      promptDraft.feedback = parsed.feedback;
+      promptDraft.revisedPrompt = parsed.revisedPrompt;
+      byId("revised-prompt").value = parsed.revisedPrompt;
+      assistState = core.transitionGeneration(assistState, { type: "success", result });
+      highestStep = Math.max(highestStep, 4);
+      updateSessionFromResult(result);
+      updateDraftSummary();
+    } catch (error) {
+      assistState = core.transitionGeneration(assistState, { type: "failure", error });
+    }
+    renderAssistantState();
+    updateStepNavigation();
+  }
+
+  async function performImageGeneration(isRetry) {
+    const prompt = promptDraft.revisedPrompt.trim();
+    if (prompt.length < 3 || prompt.length > 4000) {
+      byId("image-message").textContent = "圖片描述至少寫 3 個字，最多 4000 個字即可。";
+      return;
+    }
+    if (!isRetry) {
+      imageState = core.transitionGeneration(imageState, {
+        type: "start",
+        idempotencyKey: core.createIdempotencyKey("image", makeUuid()),
+        request: { prompt }
+      });
+    } else {
+      imageState = core.transitionGeneration(imageState, { type: "retry" });
+    }
+    renderImageState();
+    try {
+      const payload = await callImageService(imageState.request.prompt);
+      const result = core.normalizeGenerationResult("image", payload);
+      imageState = core.transitionGeneration(imageState, { type: "success", result });
+      updateSessionFromResult(result);
+    } catch (error) {
+      imageState = core.transitionGeneration(imageState, { type: "failure", error });
+    }
+    renderImageState();
+  }
+
+  function clickDownload(href, filename, revoke) {
+    const anchor = document.createElement("a");
+    anchor.href = href;
+    anchor.download = filename;
+    anchor.rel = "noopener";
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    if (revoke) globalThis.setTimeout(() => URL.revokeObjectURL(href), 0);
   }
 
   claimForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (!reportMeaningfulValidity(claimForm, byId("claim-message"))) return;
-    setClaimBusy(true, "正在登入");
-    byId("claim-message").textContent = "正在建立短期工作階段。";
+    byId("claim-message").textContent = "";
+    if (!claimForm.reportValidity()) return;
+    setClaimBusy(true, "正在加入課堂");
     try {
-      const raw = valuesOf(claimForm);
-      raw.consent = byId("consent").checked;
-      const payload = await callJsonService("/session/claim", "POST", core.buildClaimPayload(raw), 20000);
+      const payload = await callJsonService(
+        "/session/claim",
+        "POST",
+        core.buildClaimPayload({ ...valuesOf(claimForm), consent: byId("consent").checked }),
+        10000
+      );
       showWorkspace(core.normalizeSession(payload));
     } catch (error) {
       byId("claim-message").textContent = core.friendlyError(error);
     } finally {
-      setClaimBusy(false);
+      setClaimBusy(false, "");
     }
   });
 
   byId("logout-button").addEventListener("click", async () => {
-    const button = byId("logout-button");
-    button.disabled = true;
     try {
-      await callJsonService("/session/logout", "POST", {}, 15000);
-      if (previewMode) Object.assign(previewQuota, { text: 2, image: 10 });
-      showAccess("工作階段已結束。若要繼續練習，請重新輸入課堂碼。");
+      await callJsonService("/session/logout", "POST", {}, 10000);
+      showAccess("你已離開練習室。若要繼續，請重新輸入課堂碼。");
     } catch (error) {
       byId("classroom-window").textContent = core.friendlyError(error);
-    } finally {
-      button.disabled = false;
     }
   });
 
-  function selectTab(kind, focus) {
-    for (const tab of document.querySelectorAll('.tool-tabs [role="tab"]')) {
-      const selected = tab.dataset.tab === kind;
-      tab.setAttribute("aria-selected", String(selected));
-      tab.tabIndex = selected ? 0 : -1;
-      if (selected && focus) tab.focus({ preventScroll: true });
+  purposeForm.addEventListener("change", () => {
+    const selected = valuesOf(purposeForm).image_purpose || "";
+    if (selected !== promptDraft.purpose) {
+      promptDraft.purpose = selected;
+      resetAssistantAndImage();
     }
-    byId("text-panel").hidden = kind !== "text";
-    byId("image-panel").hidden = kind !== "image";
-  }
-
-  document.querySelectorAll('.tool-tabs [role="tab"]').forEach((tab) => {
-    tab.addEventListener("click", () => selectTab(tab.dataset.tab, false));
-    tab.addEventListener("keydown", (event) => {
-      const tabs = [...document.querySelectorAll('.tool-tabs [role="tab"]')];
-      const current = tabs.indexOf(tab);
-      const delta = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
-      if (!delta) return;
-      event.preventDefault();
-      selectTab(tabs[(current + delta + tabs.length) % tabs.length].dataset.tab, true);
-    });
+    byId("purpose-message").textContent = "";
+    updateDraftSummary();
   });
 
-  const studioStepLabels = {
-    1: "選成品",
-    2: "固定角色與參考圖",
-    3: "AI 建議修正",
-    4: "建立分鏡／版面",
-    5: "逐頁生圖與輸出",
-  };
-
-  function currentBookFormatLabel() {
-    const select = byId("book-format");
-    const option = select.options[select.selectedIndex];
-    return String(option ? option.textContent : "繪本").split("｜")[0].trim();
-  }
-
-  function updatePlanSummary() {
-    byId("plan-summary-product").textContent = byId("book-title").value.trim() || "尚未命名";
-    byId("plan-summary-references").textContent = `${references.length} 張`;
-    byId("plan-summary-pages").textContent = `${plannedPageCount()} 個畫面`;
-  }
-
-  function selectedBookPage() {
-    return bookPages.find((page) => page.pageNo === selectedPageNumber) || null;
-  }
-
-  function updateStudioPreview() {
-    const title = byId("book-title").value.trim() || "尚未命名";
-    const page = selectedBookPage();
-    const image = byId("studio-preview-image");
-    const empty = byId("studio-preview-empty");
-    const pagePanel = byId("studio-current-page");
-    byId("studio-preview-title").textContent = title;
-    byId("studio-preview-meta").textContent = `${currentBookFormatLabel()}｜${plannedPageCount()} 個畫面`;
-    byId("studio-preview-step").textContent = studioStepLabels[activeStudioStep];
-    byId("studio-preview-references").textContent = `${references.length} / 4`;
-    updatePlanSummary();
-
-    pagePanel.hidden = !page;
-    if (!page) {
-      image.hidden = true;
-      image.removeAttribute("src");
-      image.alt = "";
-      empty.hidden = false;
+  purposeForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const selected = valuesOf(purposeForm).image_purpose || "";
+    if (!selected) {
+      byId("purpose-message").textContent = "請先選一種圖片用途。";
       return;
     }
+    promptDraft.purpose = selected;
+    highestStep = Math.max(highestStep, 2);
+    updateDraftSummary();
+    setStudioStep(2);
+  });
 
-    byId("studio-current-page-number").textContent = `PAGE ${String(page.pageNo).padStart(2, "0")}`;
-    byId("studio-current-page-function").textContent = page.function || `第 ${page.pageNo} 頁`;
-    byId("studio-current-page-copy").textContent = page.narration || "尚未填寫旁白。";
-    byId("studio-current-page-status").textContent = activePageNumber === page.pageNo
-      ? "生成中"
-      : page.result
-        ? "已有候選圖"
-        : page.error
-          ? "需要修改或重試"
-          : "尚未生成";
-    if (page.result) {
-      image.src = page.result.src;
-      image.alt = `${title}第 ${page.pageNo} 頁候選圖`;
-      image.hidden = false;
-      empty.hidden = true;
-    } else {
-      image.hidden = true;
-      image.removeAttribute("src");
-      image.alt = "";
-      empty.hidden = false;
+  byId("original-prompt").addEventListener("input", () => {
+    const nextPrompt = byId("original-prompt").value.trim();
+    if (nextPrompt !== promptDraft.originalPrompt) {
+      promptDraft.originalPrompt = nextPrompt;
+      resetAssistantAndImage();
     }
-  }
+    byId("prompt-message").textContent = "";
+    updateDraftSummary();
+  });
 
-  function setStudioStep(step) {
-    const targetStep = Number(step);
-    if (!studioStepLabels[targetStep]) return;
-    if (targetStep >= 4 && !bookPages.length) return;
-    activeStudioStep = targetStep;
-    highestStudioStep = Math.max(highestStudioStep, targetStep);
-    for (const button of document.querySelectorAll("[data-studio-step-target]")) {
-      const buttonStep = Number(button.dataset.studioStepTarget);
-      const item = button.closest("li");
-      const active = buttonStep === targetStep;
-      button.disabled = buttonStep >= 4 && !bookPages.length;
-      if (active) button.setAttribute("aria-current", "step");
-      else button.removeAttribute("aria-current");
-      item.dataset.state = active ? "active" : buttonStep < highestStudioStep ? "complete" : "";
+  promptForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const prompt = byId("original-prompt").value.trim();
+    promptDraft.originalPrompt = prompt;
+    if (prompt.length < 3 || prompt.length > 4000) {
+      byId("prompt-message").textContent = "請用至少 3 個字描述圖片，不需要寫很長。";
+      return;
     }
-    for (const panel of document.querySelectorAll("[data-studio-panel]")) {
-      const panelSteps = panel.dataset.studioPanel.split(/\s+/u).map(Number);
-      panel.hidden = !panelSteps.includes(targetStep);
+    byId("prompt-message").textContent = "";
+    byId("feedback-original-prompt").textContent = prompt;
+    promptDraft.feedback = "";
+    promptDraft.revisedPrompt = "";
+    resetImage();
+    highestStep = Math.max(highestStep, 3);
+    setStudioStep(3);
+    performPromptReview(false);
+  });
+
+  byId("feedback-retry").addEventListener("click", () => performPromptReview(true));
+  byId("show-revised-prompt").addEventListener("click", () => {
+    byId("revised-prompt").value = promptDraft.revisedPrompt;
+    updateDraftSummary();
+    setStudioStep(4);
+  });
+
+  byId("revised-prompt").addEventListener("input", () => {
+    promptDraft.revisedPrompt = byId("revised-prompt").value;
+    byId("revision-message").textContent = "";
+    highestStep = Math.min(highestStep, 4);
+    resetImage();
+    updateDraftSummary();
+    updateStepNavigation();
+  });
+
+  byId("confirm-revised-prompt").addEventListener("click", () => {
+    const revised = byId("revised-prompt").value.trim();
+    if (revised.length < 3 || revised.length > 4000) {
+      byId("revision-message").textContent = "修改版至少要有 3 個字，最多 4000 個字。";
+      return;
     }
-    bookSetupForm.hidden = targetStep >= 4;
-    byId("book-plan-workspace").dataset.mode = targetStep === 5 ? "generate" : "review";
-    if (globalThis.matchMedia("(min-width: 921px)").matches) byId("studio-stage").scrollTop = 0;
-    updateStudioPreview();
-  }
+    promptDraft.revisedPrompt = revised;
+    byId("revised-prompt").value = revised;
+    byId("final-prompt-output").textContent = revised;
+    byId("revision-message").textContent = "";
+    highestStep = 5;
+    updateDraftSummary();
+    setStudioStep(5);
+  });
 
-  function studioStepMessage(step) {
-    return document.querySelector(`[data-step-message="${step}"]`);
-  }
+  byId("generate-image-button").addEventListener("click", () => performImageGeneration(false));
+  byId("image-retry").addEventListener("click", () => performImageGeneration(true));
 
-  function validateStudioStep(step) {
-    const panel = document.querySelector(`[data-studio-panel~="${step}"]`);
-    const message = studioStepMessage(step);
-    if (!panel || !reportMeaningfulValidity(panel, message)) return false;
-    if (step === 2) {
-      const referenceError = validateReferenceMetadata();
-      if (referenceError) {
-        message.textContent = referenceError;
-        const target = !references.length
-          ? byId("book-reference-input")
-          : document.querySelector(".reference-card input:placeholder-shown, .reference-card textarea:placeholder-shown") || byId("reference-rights");
-        target.focus({ preventScroll: true });
-        return false;
-      }
-    }
-    message.textContent = "";
-    return true;
-  }
-
-  function moveToStudioStep(targetStep) {
-    const target = Number(targetStep);
-    if (target > activeStudioStep && activeStudioStep <= 3 && !validateStudioStep(activeStudioStep)) return;
-    setStudioStep(target > activeStudioStep + 1 && target <= 3 ? activeStudioStep + 1 : target);
-  }
+  byId("download-image").addEventListener("click", () => {
+    if (imageState.phase !== "success") return;
+    const spec = core.buildImageDownload(imageState.result, `${purposeLabel()}-${promptDraft.originalPrompt}`);
+    clickDownload(spec.dataUrl, spec.filename, false);
+  });
 
   document.querySelectorAll("[data-studio-step-target]").forEach((button) => {
-    button.addEventListener("click", () => moveToStudioStep(button.dataset.studioStepTarget));
+    button.addEventListener("click", () => setStudioStep(button.dataset.studioStepTarget));
   });
-  document.querySelectorAll("[data-step-next]").forEach((button) => {
-    button.addEventListener("click", () => moveToStudioStep(button.dataset.stepNext));
-  });
+
   document.querySelectorAll("[data-step-previous]").forEach((button) => {
     button.addEventListener("click", () => setStudioStep(button.dataset.stepPrevious));
   });
-  byId("start-book-generation").addEventListener("click", () => setStudioStep(5));
-  bookSetupForm.addEventListener("input", updateStudioPreview);
-  bookSetupForm.addEventListener("change", updateStudioPreview);
 
-  function renderTextState() {
-    const phase = textState.phase;
-    byId("text-status").textContent = core.statusLabel(phase);
-    byId("text-status").dataset.phase = phase;
-    byId("text-empty").hidden = phase !== "idle";
-    byId("text-loading").hidden = phase !== "loading";
-    byId("text-error").hidden = !["error", "retryable"].includes(phase);
-    byId("text-success").hidden = phase !== "success";
-    byId("text-retry").hidden = phase !== "retryable";
-    textForm.querySelector('button[type="submit"]').textContent = phase === "loading" ? "正在生成教材" : "生成教材草稿";
-    if (textState.error) {
-      byId("text-error-message").textContent = core.friendlyError(textState.error);
-      byId("text-error-reference").textContent = [
-        `錯誤代碼 ${textState.error.code}`,
-        textState.error.requestId ? `查詢編號 ${textState.error.requestId}` : "",
-      ].filter(Boolean).join("，");
-    }
-    updateAvailability();
-  }
-
-  async function performTextGeneration(isRetry) {
-    if (!isRetry && !reportMeaningfulValidity(textForm, byId("text-feedback"))) return;
-    if (isRetry) textState = core.transitionGeneration(textState, { type: "retry" });
-    else {
-      const key = core.createIdempotencyKey("text", makeUuid());
-      textState = core.transitionGeneration(textState, {
-        type: "start", idempotencyKey: key, request: core.buildTextPayload(valuesOf(textForm), key),
-      });
-    }
-    renderTextState();
-    try {
-      const payload = await callJsonService("/generate/text", "POST", textState.request, 120000);
-      const result = core.normalizeGenerationResult("text", payload);
-      textState = core.transitionGeneration(textState, { type: "success", result });
-      byId("text-output").textContent = result.content;
-      byId("text-request-reference").textContent = result.requestId ? `查詢編號 ${result.requestId}` : "";
-      updateSessionFromResult(result);
-    } catch (error) {
-      textState = core.transitionGeneration(textState, { type: "failure", error });
-    }
-    renderTextState();
-  }
-
-  textForm.addEventListener("submit", (event) => { event.preventDefault(); performTextGeneration(false); });
-  byId("text-retry").addEventListener("click", () => performTextGeneration(true));
-
-  async function copyText(value) {
-    if (navigator.clipboard && globalThis.isSecureContext) return navigator.clipboard.writeText(value);
-    const helper = document.createElement("textarea");
-    helper.value = value;
-    helper.readOnly = true;
-    helper.className = "clipboard-helper";
-    document.body.append(helper);
-    helper.select();
-    document.execCommand("copy");
-    helper.remove();
-  }
-
-  byId("copy-text").addEventListener("click", async () => {
-    try { await copyText(textState.result.content); byId("text-feedback").textContent = "文字已複製到剪貼簿。"; }
-    catch { byId("text-feedback").textContent = "無法自動複製，請手動選取。"; }
-  });
-
-  function clickDownload(href, filename, revoke) {
-    const link = document.createElement("a");
-    link.href = href;
-    link.download = filename;
-    link.hidden = true;
-    document.body.append(link);
-    link.click();
-    link.remove();
-    if (revoke) globalThis.setTimeout(() => URL.revokeObjectURL(href), 1000);
-  }
-
-  byId("download-text").addEventListener("click", () => {
-    const spec = core.buildTextDownload(textState.result.content, valuesOf(textForm).topic);
-    clickDownload(URL.createObjectURL(new Blob([spec.content], { type: spec.mimeType })), spec.filename, true);
-  });
-
-  function renderReferences() {
-    const list = byId("book-reference-list");
-    list.replaceChildren();
-    const template = byId("reference-card-template");
-    references.forEach((reference) => {
-      const fragment = template.content.cloneNode(true);
-      const card = fragment.querySelector(".reference-card");
-      card.dataset.referenceId = reference.id;
-      const image = card.querySelector("img");
-      image.src = reference.previewUrl;
-      image.alt = `${reference.file.name} 預覽`;
-      const kind = card.querySelector('[data-ref-field="kind"]');
-      const source = card.querySelector('[data-ref-field="source"]');
-      const notes = card.querySelector('[data-ref-field="notes"]');
-      kind.value = reference.kind;
-      source.value = reference.source;
-      notes.value = reference.notes;
-      kind.addEventListener("change", () => { reference.kind = kind.value; });
-      source.addEventListener("input", () => { reference.source = source.value; });
-      notes.addEventListener("input", () => { reference.notes = notes.value; });
-      card.querySelector('[data-action="remove-reference"]').addEventListener("click", () => {
-        URL.revokeObjectURL(reference.previewUrl);
-        references = references.filter((item) => item.id !== reference.id);
-        renderReferences();
-      });
-      list.append(fragment);
-    });
-    byId("book-reference-message").textContent = references.length
-      ? `已選 ${references.length} / 4 張。這些圖片只在你按下某一頁生成時送出，不會存進網站資料庫。`
-      : "尚未選擇參考圖。請先上傳角色、場景、物件或媒材參考圖，並填寫來源與可參考細節。";
-    updateStudioPreview();
-  }
-
-  byId("book-reference-input").addEventListener("change", (event) => {
-    const incoming = [...event.target.files];
-    const allowed = new Set(["image/png", "image/jpeg", "image/webp"]);
-    let message = "";
-    for (const file of incoming) {
-      if (references.length >= 4) { message = "最多只能加入 4 張參考圖。"; break; }
-      if (!allowed.has(file.type) || file.size < 8 || file.size > 4 * 1024 * 1024) {
-        message = `${file.name} 不是可用的 PNG、JPG、WebP，或超過 4 MB。`;
-        continue;
-      }
-      references.push({ id: makeUuid(), file, previewUrl: URL.createObjectURL(file), kind: "character", source: "", notes: "" });
-    }
-    event.target.value = "";
-    renderReferences();
-    if (message) byId("book-reference-message").textContent = message;
-  });
-
-  function toggleCultureFields() {
-    const traditional = byId("culture-mode").value === "verified-traditional";
-    byId("culture-fields").hidden = !traditional;
-    byId("culture-scope").required = traditional;
-    byId("culture-rules").required = traditional;
-  }
-  byId("culture-mode").addEventListener("change", toggleCultureFields);
-
-  function toggleCustomStyle() {
-    const custom = byId("book-visual-style").value === "custom";
-    byId("custom-style-field").hidden = !custom;
-    byId("book-custom-style").required = custom;
-  }
-  byId("book-visual-style").addEventListener("change", toggleCustomStyle);
-
-  const styleLibrary = [
-    ["童書", "溫暖手繪水彩童書，柔和自然光，紙張肌理", "溫暖水彩童書"],
-    ["童書", "粉彩鉛筆童書，細緻筆觸，低飽和色彩", "粉彩鉛筆童書"],
-    ["童書", "分層紙雕插畫，立體陰影，清楚前後景", "分層紙雕"],
-    ["漫畫", "清楚線條的兒童漫畫，柔和色塊，表情易讀", "兒童漫畫清線風"],
-    ["漫畫", "歐洲清線冒險漫畫，動態姿勢，輪廓明確", "歐洲清線漫畫"],
-    ["漫畫", "黑白墨線漫畫，網點陰影，高可讀分鏡", "黑白墨線漫畫"],
-    ["媒材", "剪紙拼貼童書，分層紙張質感，鮮明色塊", "剪紙拼貼"],
-    ["媒材", "刺繡與布料質感插畫，紋樣只依核准參考圖", "刺繡布料插畫"],
-    ["媒材", "兒童黏土定格動畫質感，柔和圓潤造型", "黏土定格風"],
-    ["資訊", "兒童科普圖鑑風，觀察視角，細節清楚", "兒童科普圖鑑"],
-    ["資訊", "扁平資訊插畫，圖示清楚，資訊分區明確", "扁平資訊插畫"],
-    ["簡約", "北歐幾何童書，簡潔構成，留白清楚", "北歐幾何童書"],
-  ].map(([category, prompt, description]) => ({ category, prompt, description }));
-
-  function setupStyleLibrary() {
-    const dialog = byId("style-library-dialog");
-    const list = byId("style-library-list");
-    const search = byId("style-library-search");
-    const category = byId("style-library-category");
-    const opener = byId("open-style-library");
-    if (!dialog || !list || !search || !category || !opener) return;
-    [...new Set(styleLibrary.map((item) => item.category))].forEach((value) => category.add(new Option(value, value)));
-    function render() {
-      const query = search.value.trim().toLowerCase();
-      list.replaceChildren();
-      styleLibrary.filter((item) => (category.value === "all" || item.category === category.value) && (!query || `${item.category} ${item.description} ${item.prompt}`.toLowerCase().includes(query))).forEach((item) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "style-library-item";
-        const strong = document.createElement("strong");
-        strong.textContent = item.description;
-        const small = document.createElement("small");
-        small.textContent = `${item.category}｜${item.prompt}`;
-        button.append(strong, small);
-        button.addEventListener("click", () => {
-          const select = byId("book-visual-style");
-          let option = [...select.options].find((entry) => entry.value === item.prompt);
-          if (!option) { option = new Option(item.description, item.prompt); select.add(option); }
-          select.value = item.prompt;
-          toggleCustomStyle();
-          dialog.close();
-        });
-        list.append(button);
-      });
-    }
-    opener.addEventListener("click", () => { render(); dialog.showModal(); });
-    search.addEventListener("input", render);
-    category.addEventListener("change", render);
-  }
-
-  function validateReferenceMetadata() {
-    if (!references.length) return "請先加入至少一張參考圖。";
-    if (references.some((reference) => !reference.source.trim() || !reference.notes.trim())) {
-      return "每張參考圖都要填來源／授權說明，以及只可參考哪些細節。";
-    }
-    if (!byId("reference-rights").checked) return "請先確認你有權把參考圖送交 AI 處理。";
-    return "";
-  }
-
-  function buildPlanRequest() {
-    const data = valuesOf(bookSetupForm);
-    const pageCount = plannedPageCount();
-    const formatGuide = ({
-      "picture-book": "繪本：每頁使用單一主畫面或跨頁感構圖，layout 只用 single 或 spread。",
-      comic: "漫畫：每頁使用 2～4 格，layout 只用 two-panels、three-panels 或 four-panels；visual_prompt 要依閱讀順序寫出每格動作，但整頁只推進一個主要事件。",
-      "class-poster": "班級海報：把每一頁當成一張不同構圖候選海報，layout 以 single 為主；visual_prompt 要描述主視覺、主要物件、留白位置與可後製放文字的安全區。",
-      "event-poster": "活動海報：把每一頁當成一張不同構圖候選海報，layout 以 single 為主；visual_prompt 要描述主視覺、活動氣氛、資訊留白區與不可出現的文字內容。",
-      mixed: "混合：依節奏選單一主畫面、跨頁感或 2～4 格漫畫；漫畫頁的 visual_prompt 要依閱讀順序寫出每格動作。",
-    })[data.book_format];
-    const sourceNotes = [
-      "【核准故事來源】", data.story_source,
-      "【不可改寫】", data.locked_facts,
-      "【參考圖說】", references.map((reference, index) => `${index + 1}. ${reference.kind}｜${reference.source}｜${reference.notes}`).join("\n"),
-    ].join("\n").slice(0, 8000);
-    const requirements = [
-      `讀者：${data.book_audience}。閱讀目標：${data.learning_goal}。${formatGuide}`,
-      "只回傳合法 JSON，不要 Markdown code fence，也不要任何 JSON 之外的文字。",
-      `格式為 {"pages":[${pageCount}個物件]}。每個物件必須有 page_no(1-${pageCount})、function、narration、dialogue、visual_prompt、layout、safe_area、must_include、pending_review。`,
-      "layout 只能是 single、two-panels、three-panels、four-panels、spread；safe_area 只能是 upper-right、upper-left、bottom、none。",
-      "每頁一個主要事件；旁白適合兒童閱讀；對白可空字串。視覺內容只用來源支持的事實，未確認內容寫入 pending_review，不要自行補文化細節。",
-      `第1頁建立故事承諾或封面感，中段安排設定、觸發、發展與轉折，最後第${pageCount}頁收尾並留下讀者感受。`,
-      ["class-poster", "event-poster"].includes(data.book_format) ? "若為海報，pages 代表不同構圖候選稿，不是連續故事；narration 請改寫為這張海報可後製放入的短文案建議。" : "",
-    ].join("\n");
-    const key = core.createIdempotencyKey("text", makeUuid());
-    return core.buildTextPayload({
-      topic: `${pageCount} 頁繪本分鏡｜${data.book_title}`,
-      audience: data.book_audience,
-      duration_minutes: 40,
-      objective: data.learning_goal,
-      source_notes: sourceNotes,
-      requirements,
-    }, key);
-  }
-
-  function extractJson(content) {
-    const raw = String(content || "").trim();
-    const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/iu);
-    return JSON.parse(fenced ? fenced[1].trim() : raw);
-  }
-
-  function normalizeBookPlan(content) {
-    const parsed = extractJson(content);
-    const rawPages = Array.isArray(parsed) ? parsed : parsed && parsed.pages;
-    const pageCount = plannedPageCount();
-    if (!Array.isArray(rawPages) || rawPages.length !== pageCount) throw new Error(`AI 沒有回傳完整 ${pageCount} 頁分鏡。`);
-    const allowedLayouts = new Set(["single", "two-panels", "three-panels", "four-panels", "spread"]);
-    const allowedSafeAreas = new Set(["upper-right", "upper-left", "bottom", "none"]);
-    const bookFormat = byId("book-format").value;
-    return rawPages.map((page, index) => {
-      let layout = allowedLayouts.has(page.layout) ? page.layout : (bookFormat === "comic" ? "two-panels" : "single");
-      if (bookFormat === "comic" && ["single", "spread"].includes(layout)) layout = "two-panels";
-      if (bookFormat === "picture-book" && ["two-panels", "three-panels", "four-panels"].includes(layout)) layout = "single";
-      if (["class-poster", "event-poster"].includes(bookFormat)) layout = "single";
-      return {
-        pageNo: index + 1,
-        function: String(page.function || `第 ${index + 1} 頁`).slice(0, 120),
-        narration: String(page.narration || "").slice(0, 500),
-        dialogue: String(page.dialogue || "").slice(0, 300),
-        visualPrompt: String(page.visual_prompt || "").slice(0, 1800),
-        layout,
-        safeArea: allowedSafeAreas.has(page.safe_area) ? page.safe_area : (index % 2 ? "upper-left" : "upper-right"),
-        mustInclude: String(page.must_include || "").slice(0, 500),
-        pendingReview: String(page.pending_review || "無").slice(0, 500),
-        attempts: 0,
-        result: null,
-        error: null,
-        retryable: false,
-        idempotencyKey: "",
-      };
-    });
-  }
-
-  bookSetupForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (activeStudioStep < 3) {
-      if (validateStudioStep(activeStudioStep)) setStudioStep(activeStudioStep + 1);
-      return;
-    }
-    const message = byId("book-plan-message");
-    for (const step of [1, 2]) {
-      if (!validateStudioStep(step)) {
-        setStudioStep(step);
-        const panel = document.querySelector(`[data-studio-panel~="${step}"]`);
-        const invalid = panel.querySelector(":invalid");
-        if (invalid) invalid.focus({ preventScroll: true });
-        return;
-      }
-    }
-    const button = byId("create-book-plan");
-    const pageCount = plannedPageCount();
-    button.dataset.busy = "true";
-    button.textContent = `AI 正在拆成 ${pageCount} 頁`;
-    message.textContent = "先整理故事節拍，再分配到每一頁；這一步不會生成圖片。";
-    updateAvailability();
-    try {
-      const payload = await callJsonService("/generate/text", "POST", buildPlanRequest(), 120000);
-      const result = core.normalizeGenerationResult("text", payload);
-      bookPages = normalizeBookPlan(result.content);
-      renderBookPages();
-      setStudioStep(4);
-      byId("book-generation-message").textContent = `${pageCount} 頁分鏡已建立。請用頁碼逐頁確認，再開始生圖。`;
-      message.textContent = "";
-      updateSessionFromResult(result);
-    } catch (error) {
-      message.textContent = error instanceof SyntaxError || !error.code
-        ? "AI 回傳的分鏡格式不完整，沒有送出任何圖片；請保留來源後再試一次。"
-        : core.friendlyError(error);
-    } finally {
-      button.dataset.busy = "false";
-      button.textContent = `重新建立 ${plannedPageCount()} 頁分鏡`;
-      updateAvailability();
-    }
-  });
-
-  function pageField(card, name) {
-    return card.querySelector(`[data-page-field="${name}"]`);
-  }
-
-  function renderBookPageTabs() {
-    const tabs = byId("book-page-tabs");
-    tabs.replaceChildren();
-    bookPages.forEach((page, index) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.setAttribute("role", "tab");
-      button.textContent = String(page.pageNo);
-      button.dataset.pageNo = page.pageNo;
-      button.setAttribute("aria-label", `查看第 ${page.pageNo} 頁`);
-      button.setAttribute("aria-controls", "book-page-list");
-      button.addEventListener("click", () => setActiveBookPage(page.pageNo));
-      button.addEventListener("keydown", (event) => {
-        const delta = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
-        if (!delta) return;
-        event.preventDefault();
-        const next = bookPages[(index + delta + bookPages.length) % bookPages.length];
-        setActiveBookPage(next.pageNo);
-        tabs.querySelector(`[data-page-no="${next.pageNo}"]`).focus({ preventScroll: true });
-      });
-      tabs.append(button);
-    });
-  }
-
-  function setActiveBookPage(pageNo) {
-    const page = bookPages.find((item) => item.pageNo === Number(pageNo));
-    if (!page) return;
-    selectedPageNumber = page.pageNo;
-    for (const card of byId("book-page-list").querySelectorAll("[data-page-no]")) {
-      card.hidden = Number(card.dataset.pageNo) !== selectedPageNumber;
-    }
-    for (const tab of byId("book-page-tabs").querySelectorAll("[data-page-no]")) {
-      const selected = Number(tab.dataset.pageNo) === selectedPageNumber;
-      tab.setAttribute("aria-selected", String(selected));
-      tab.tabIndex = selected ? 0 : -1;
-    }
-    const index = bookPages.findIndex((item) => item.pageNo === selectedPageNumber);
-    byId("previous-book-page").disabled = index <= 0;
-    byId("next-book-page").disabled = index < 0 || index >= bookPages.length - 1;
-    if (globalThis.matchMedia("(min-width: 921px)").matches) byId("studio-stage").scrollTop = 0;
-    updateStudioPreview();
-  }
-
-  function renderBookPages() {
-    const list = byId("book-page-list");
-    list.replaceChildren();
-    const template = byId("book-page-template");
-    if (!bookPages.some((page) => page.pageNo === selectedPageNumber)) selectedPageNumber = bookPages[0] ? bookPages[0].pageNo : null;
-    bookPages.forEach((page) => {
-      const fragment = template.content.cloneNode(true);
-      const card = fragment.querySelector(".story-page-card");
-      card.dataset.pageNo = page.pageNo;
-      card.querySelector(".page-number").textContent = `PAGE ${String(page.pageNo).padStart(2, "0")}`;
-      card.querySelector(".page-function").textContent = page.function;
-      const mappings = {
-        function: "function", narration: "narration", dialogue: "dialogue", visual_prompt: "visualPrompt",
-        layout: "layout", safe_area: "safeArea", must_include: "mustInclude", pending_review: "pendingReview",
-      };
-      for (const [fieldName, property] of Object.entries(mappings)) {
-        const field = pageField(card, fieldName);
-        field.value = page[property];
-        field.addEventListener("input", () => {
-          page[property] = field.value;
-          if (fieldName === "function") card.querySelector(".page-function").textContent = field.value || `第 ${page.pageNo} 頁`;
-          if (page.error && !page.result) { page.idempotencyKey = ""; page.retryable = false; }
-          if (selectedPageNumber === page.pageNo) updateStudioPreview();
-        });
-      }
-      card.querySelector('[data-action="generate-page"]').addEventListener("click", () => generatePage(page.pageNo));
-      card.querySelector('[data-action="download-page"]').addEventListener("click", () => downloadPage(page.pageNo));
-      list.append(fragment);
-      renderPageState(page);
-    });
-    renderBookPageTabs();
-    if (selectedPageNumber) setActiveBookPage(selectedPageNumber);
-    updateBookProgress();
-    updateAvailability();
-  }
-
-  function renderPageState(page) {
-    const card = byId("book-page-list").querySelector(`[data-page-no="${page.pageNo}"]`);
-    if (!card) return;
-    const status = card.querySelector(".page-status");
-    const message = card.querySelector(".page-message");
-    const generate = card.querySelector('[data-action="generate-page"]');
-    const download = card.querySelector('[data-action="download-page"]');
-    generate.dataset.attempts = page.attempts;
-    if (activePageNumber === page.pageNo) {
-      status.textContent = "生成中";
-      status.dataset.state = "loading";
-      generate.textContent = "AI 正在生成本頁";
-      message.textContent = "正在把同一組參考圖與本頁工單送交 AI，請勿重複按下。";
-    } else if (page.result) {
-      status.textContent = "已有候選圖";
-      status.dataset.state = "success";
-      generate.textContent = page.attempts >= 3 ? "已達 3 次上限" : "重新生成本頁";
-      message.textContent = "請與前後頁並排檢查角色、服飾、圖紋、場景與畫風；AI 候選圖不代表已通過文化審訂。";
-      download.hidden = false;
-    } else if (page.error) {
-      status.textContent = page.retryable ? "失敗，可重試" : "需要修改";
-      status.dataset.state = "error";
-      generate.textContent = page.retryable ? "重試本頁" : "修改後再生成";
-      message.textContent = `${core.friendlyError(page.error)}${page.error.requestId ? `（查詢編號 ${page.error.requestId}）` : ""}`;
-    } else {
-      status.textContent = "尚未生成";
-      status.dataset.state = "idle";
-      generate.textContent = "生成本頁無字候選圖";
-      message.textContent = `第 ${page.pageNo} 頁尚未使用圖片額度。`;
-    }
-    const tab = byId("book-page-tabs").querySelector(`[data-page-no="${page.pageNo}"]`);
-    if (tab) tab.dataset.state = page.result ? "complete" : activePageNumber === page.pageNo ? "loading" : page.error ? "error" : "idle";
-    if (selectedPageNumber === page.pageNo) updateStudioPreview();
-  }
-
-  function selectedVisualStyle() {
-    return byId("book-visual-style").value === "custom" ? byId("book-custom-style").value.trim() : byId("book-visual-style").value;
-  }
-
-  function buildPagePrompt(page) {
-    const data = valuesOf(bookSetupForm);
-    const layoutLabels = { single: "單一主畫面", "two-panels": "2 格漫畫", "three-panels": "3 格漫畫", "four-panels": "4 格漫畫", spread: "跨頁感構圖" };
-    const safeLabels = { "upper-right": "右上保留文字安全區", "upper-left": "左上保留文字安全區", bottom: "下方保留文字安全區", none: "不指定文字留白" };
-    return [
-      `整本固定畫風：${selectedVisualStyle()}。固定色盤與光線：${data.palette}。`,
-      `角色不可變特徵：${data.character_locks}。`,
-      `本頁功能：${page.function}。`,
-      `畫面與動作：${page.visualPrompt}。`,
-      `版面：${layoutLabels[page.layout] || layoutLabels.single}；${safeLabels[page.safeArea] || safeLabels.none}。`,
-      ["two-panels", "three-panels", "four-panels"].includes(page.layout)
-        ? "這是漫畫頁：分格邊界與閱讀順序要清楚，每格只呈現一個動作節點，整頁仍只推進同一個主要事件。"
-        : ["class-poster", "event-poster"].includes(data.book_format)
-          ? "這是海報候選圖：以一個清楚主視覺呈現活動或班級氛圍，保留可後製放標題、日期與資訊的空白區。"
-          : "這是繪本頁：以一個清楚主畫面呈現本頁主要事件。",
-      page.mustInclude ? `必須看得到：${page.mustInclude}。` : "",
-      `旁白與對白只供排版理解，不可畫成文字：${page.narration}${page.dialogue ? `／${page.dialogue}` : ""}。`,
-      `不可改寫：${data.locked_facts}。`,
-      page.pendingReview && page.pendingReview !== "無" ? `待真人確認、不可由 AI 補寫：${page.pendingReview}。` : "",
-      "只產生無字候選圖；不要文字、字母、數字、標誌、簽名、浮水印或頁碼。",
-    ].filter(Boolean).join("\n").slice(0, 4000);
-  }
-
-  function referenceMetadata() {
-    return references.map((reference, index) => ({ order: index + 1, kind: reference.kind, source: reference.source.trim(), allowed_details: reference.notes.trim() }));
-  }
-
-  function buildBookPageForm(page) {
-    const data = valuesOf(bookSetupForm);
-    const form = new FormData();
-    form.append("idempotency_key", page.idempotencyKey);
-    form.append("page_no", String(page.pageNo));
-    form.append("book_title", data.book_title);
-    form.append("book_format", data.book_format);
-    form.append("prompt", buildPagePrompt(page));
-    form.append("culture_mode", data.culture_mode);
-    form.append("culture_scope", byId("culture-scope").value.trim());
-    form.append("culture_rules", byId("culture-rules").value.trim());
-    form.append("culture_reviewed", byId("culture-mode").value === "general" || byId("culture-reviewed").checked ? "true" : "false");
-    form.append("reference_notes", references.map((reference) => reference.notes.trim()).join("；").slice(0, 1600));
-    form.append("reference_metadata", JSON.stringify(referenceMetadata()));
-    form.append("rights_confirmed", byId("reference-rights").checked ? "true" : "false");
-    references.forEach((reference) => form.append("reference_images", reference.file, reference.file.name));
-    return form;
-  }
-
-  async function generatePage(pageNo) {
-    const page = bookPages.find((item) => item.pageNo === pageNo);
-    if (!page || activePageNumber) return;
-    setStudioStep(5);
-    setActiveBookPage(page.pageNo);
-    const message = byId("book-generation-message");
-    const referenceError = validateReferenceMetadata();
-    if (referenceError) { message.textContent = referenceError; return; }
-    if (byId("culture-mode").value === "verified-traditional" && !byId("culture-reviewed").checked) {
-      setStudioStep(2);
-      studioStepMessage(2).textContent = "傳統服飾／圖紋尚未勾選真人審訂，所以不會送出圖片生成。";
-      byId("culture-reviewed").focus({ preventScroll: true });
-      return;
-    }
-    if (!page.visualPrompt.trim() || page.visualPrompt.trim().length < 3) {
-      const card = byId("book-page-list").querySelector(`[data-page-no="${page.pageNo}"]`);
-      card.querySelector(".page-message").textContent = "「畫面與動作」至少要有 3 個字。";
-      pageField(card, "visual_prompt").focus({ preventScroll: true });
-      return;
-    }
-    const sameRetry = page.error && page.retryable && page.idempotencyKey;
-    if (!sameRetry) {
-      if (page.attempts >= 3) { message.textContent = `第 ${page.pageNo} 頁已達 3 次嘗試上限，請改用現有圖或交由人工處理。`; return; }
-      page.idempotencyKey = core.createIdempotencyKey("image", makeUuid());
-      page.attempts += 1;
-    }
-    activePageNumber = page.pageNo;
-    page.error = null;
-    page.retryable = false;
-    renderPageState(page);
-    updateAvailability();
-    message.textContent = `正在生成第 ${page.pageNo} 頁；完成前不能同時送出其他頁。`;
-    try {
-      const payload = await callBookPageService(buildBookPageForm(page));
-      const normalized = core.normalizeGenerationResult("image", payload);
-      page.result = { ...normalized, src: normalized.dataBase64 ? `data:${normalized.mimeType};base64,${normalized.dataBase64}` : normalized.src };
-      page.error = null;
-      page.idempotencyKey = "";
-      updateSessionFromResult(normalized);
-      message.textContent = `第 ${page.pageNo} 頁已完成候選圖。請先檢查再做下一頁。`;
-    } catch (error) {
-      page.error = error;
-      page.retryable = error.retryable === true;
-      if (!page.retryable) page.idempotencyKey = "";
-      message.textContent = core.friendlyError(error);
-    } finally {
-      activePageNumber = null;
-      renderPageState(page);
-      updateBookProgress();
-      updateAvailability();
-    }
-  }
-
-  function updateBookProgress() {
-    const completed = bookPages.filter((page) => page.result).length;
-    const total = bookPages.length || plannedPageCount();
-    byId("book-progress-label").textContent = `${completed} / ${total} 頁已有圖片`;
-    byId("book-progress-bar").value = completed;
-    byId("book-progress-bar").max = total;
-    byId("book-progress-bar").textContent = `${completed} / ${total}`;
-    byId("print-book").disabled = completed !== total;
-  }
-
-  byId("generate-next-page").addEventListener("click", () => {
-    const next = bookPages.find((page) => !page.result && page.attempts < 3);
-    if (next) {
-      setActiveBookPage(next.pageNo);
-      generatePage(next.pageNo);
-    }
-  });
-
-  byId("previous-book-page").addEventListener("click", () => {
-    const index = bookPages.findIndex((page) => page.pageNo === selectedPageNumber);
-    if (index > 0) setActiveBookPage(bookPages[index - 1].pageNo);
-  });
-
-  byId("next-book-page").addEventListener("click", () => {
-    const index = bookPages.findIndex((page) => page.pageNo === selectedPageNumber);
-    if (index >= 0 && index < bookPages.length - 1) setActiveBookPage(bookPages[index + 1].pageNo);
-  });
-
-  function downloadPage(pageNo) {
-    const page = bookPages.find((item) => item.pageNo === pageNo);
-    if (!page || !page.result) return;
-    const spec = core.buildImageDownload(page.result, `${byId("book-title").value}-page-${String(pageNo).padStart(2, "0")}`);
-    clickDownload(spec.dataUrl, spec.filename, false);
-  }
-
-  byId("download-book-plan").addEventListener("click", () => {
-    const data = valuesOf(bookSetupForm);
-    const metadata = referenceMetadata();
-    const exportData = {
-      title: data.book_title,
-      audience: data.book_audience,
-      format: data.book_format,
-      learning_goal: data.learning_goal,
-      cultural_scope: data.culture_mode === "verified-traditional" ? byId("culture-scope").value.trim() : "not_applicable",
-      reference_files: references.map((reference, index) => ({ name: reference.file.name, ...metadata[index] })),
-      pages: bookPages.map((page) => ({
-        page_no: page.pageNo, function: page.function, narration: page.narration, dialogue: page.dialogue,
-        visual_prompt: page.visualPrompt, layout: page.layout, safe_area: page.safeArea,
-        must_include: page.mustInclude, pending_review: page.pendingReview,
-        image_status: page.result ? "candidate_generated" : "not_generated",
-        request_id: page.result ? page.result.requestId : null,
-      })),
-      notice: "圖片為候選稿；文化、語言、權利與公開狀態仍需真人確認。",
-    };
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json;charset=utf-8" });
-    clickDownload(URL.createObjectURL(blob), `${core.safeFilename(data.book_title, "picture-book")}-storyboard.json`, true);
-  });
-
-  function renderPrintBook() {
-    const container = byId("book-print-area");
-    container.replaceChildren();
-    const title = byId("book-title").value.trim();
-    bookPages.forEach((page) => {
-      const sheet = document.createElement("article");
-      sheet.className = "print-book-page";
-      const heading = document.createElement("header");
-      const pageLabel = document.createElement("span");
-      pageLabel.textContent = page.pageNo === 1 ? title : `${page.pageNo} / ${bookPages.length}`;
-      heading.append(pageLabel);
-      const image = document.createElement("img");
-      image.src = page.result.src;
-      image.alt = "";
-      const copy = document.createElement("div");
-      copy.className = "print-page-copy";
-      const narration = document.createElement("p");
-      narration.textContent = page.narration;
-      copy.append(narration);
-      if (page.dialogue) {
-        const dialogue = document.createElement("p");
-        dialogue.className = "print-dialogue";
-        dialogue.textContent = page.dialogue;
-        copy.append(dialogue);
-      }
-      const note = document.createElement("small");
-      note.textContent = "課堂候選稿｜文化、語言、權利與公開狀態需真人確認";
-      sheet.append(heading, image, copy, note);
-      container.append(sheet);
-    });
-  }
-
-  byId("print-book").addEventListener("click", () => {
-    if (bookPages.filter((page) => page.result).length !== bookPages.length) return;
-    renderPrintBook();
-    byId("book-print-area").setAttribute("aria-hidden", "false");
-    globalThis.print();
-    byId("book-print-area").setAttribute("aria-hidden", "true");
-  });
-
-  renderReferences();
-  toggleCultureFields();
-  toggleCustomStyle();
-  setupStyleLibrary();
-  setStudioStep(1);
-  renderTextState();
+  updateDraftSummary();
+  renderAssistantState();
+  renderImageState();
+  updateStepNavigation();
   restoreSession();
 })();

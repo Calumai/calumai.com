@@ -77,7 +77,7 @@
       : {};
     return {
       code: clean(detail.code) || (httpStatus ? `HTTP_${httpStatus}` : "NETWORK_ERROR"),
-      message: clean(detail.message) || "目前無法完成請求，請稍後再試。",
+      message: clean(detail.message) || "目前無法完成這項操作，請稍後再試。",
       retryable: detail.retryable === true,
       requestId: clean(payload && payload.request_id),
       httpStatus: Number(httpStatus) || 0
@@ -138,10 +138,32 @@
     const mimeType = clean(payload.image && payload.image.mime_type || "image/png").toLowerCase();
     const dataBase64 = clean(payload.image && payload.image.data_base64).replace(/\s/g, "");
     const src = clean(payload.image && payload.image.src);
-    if (!ALLOWED_IMAGE_TYPES.has(mimeType) || (!dataBase64 && !/^https:\/\//u.test(src))) {
+    const safeRelativeSrc = /^(?:\.{0,2}\/|\/)[^\\:]*$/u.test(src);
+    if (!ALLOWED_IMAGE_TYPES.has(mimeType) || (!dataBase64 && !/^https:\/\//u.test(src) && !safeRelativeSrc)) {
       throw new Error("圖片生成結果格式不支援");
     }
     return { ...shared, kind, mimeType, dataBase64, src };
+  }
+
+  function parsePromptAssistantResult(content) {
+    if (typeof content !== "string") throw new Error("AI 回覆格式不完整");
+    let source = content.trim();
+    source = source.replace(/^```(?:json)?\s*/iu, "").replace(/\s*```$/u, "").trim();
+    const firstBrace = source.indexOf("{");
+    const lastBrace = source.lastIndexOf("}");
+    if (firstBrace >= 0 && lastBrace > firstBrace) source = source.slice(firstBrace, lastBrace + 1);
+    let parsed;
+    try {
+      parsed = JSON.parse(source);
+    } catch {
+      throw new Error("AI 回覆格式不完整");
+    }
+    const feedback = clean(parsed && parsed.feedback);
+    const revisedPrompt = clean(parsed && parsed.revised_prompt);
+    if (!feedback || feedback.length > 6000 || revisedPrompt.length < 3 || revisedPrompt.length > 4000) {
+      throw new Error("AI 回覆格式不完整");
+    }
+    return { feedback, revisedPrompt };
   }
 
   function createGenerationState(kind) {
@@ -199,33 +221,36 @@
   function friendlyError(error) {
     const code = clean(error && error.code);
     const fixed = {
-      VALIDATION_FAILED: "請檢查欄位是否填寫完整。",
-      CLASSROOM_NOT_OPEN: "練習尚未開放，請依講師公布時間再試。",
+      VALIDATION_FAILED: "還有必填內容沒完成，請回到畫面上標示的位置補上。",
+      CLASSROOM_NOT_OPEN: "練習還沒開放，請依老師公布的時間再試。",
       CLASSROOM_CLOSED: "本次練習已關閉。",
-      INVALID_CLASS_CODE: "課堂碼不正確，請向講師確認。",
-      UNAUTHENTICATED: "請先輸入課堂碼登入。",
-      SESSION_EXPIRED: "工作階段已過期，請重新登入。",
-      SESSION_QUOTA_EXHAUSTED: "你的本次生成額度已用完。",
-      CLASS_QUOTA_EXHAUSTED: "全班生成額度已用完，請通知講師。",
-      DUPLICATE_SUCCEEDED: "這筆請求先前已成功，請勿重複送出。",
-      REQUEST_IN_PROGRESS: "相同請求仍在處理中，請稍候再試。",
-      RETRY_EXHAUSTED: "此請求已達重試上限，請修改內容後重新生成。",
-      IDEMPOTENCY_CONFLICT: "這筆識別碼已用於其他內容，請重新按下生成。",
-      RATE_LIMITED: "目前請求較多，請稍候再試。",
-      CONTENT_BLOCKED: "內容或參考圖未通過安全檢查，請調整後再試。",
-      REFERENCE_IMAGE_REQUIRED: "請先上傳至少一張有權使用的參考圖。",
-      INVALID_REFERENCE_IMAGE: "參考圖只接受 PNG、JPG 或 WebP，單張不可超過 4 MB。",
-      REFERENCE_UPLOAD_TOO_LARGE: "參考圖總量太大，請減少張數或壓縮後再試。",
-      CULTURE_REVIEW_REQUIRED: "傳統服飾或圖紋必須先補齊明確來源與真人審訂。",
-      IMAGE_API_AUTH_FAILED: "圖片服務驗證失敗，請通知講師。",
+      INVALID_CLASS_CODE: "課堂碼不正確，請向老師確認。",
+      UNAUTHENTICATED: "請先輸入課堂碼，進入練習室。",
+      SESSION_EXPIRED: "本次使用期限已到，請重新輸入課堂碼。",
+      SESSION_QUOTA_EXHAUSTED: "你這堂課可使用 AI 的次數已用完。",
+      CLASS_QUOTA_EXHAUSTED: "全班可使用 AI 的次數已用完，請通知老師。",
+      DUPLICATE_SUCCEEDED: "這份內容已處理完成，不用再送一次。",
+      REQUEST_IN_PROGRESS: "同一份內容還在處理中，請稍候。",
+      RETRY_EXHAUSTED: "這份內容已重試多次，請修改後再送出。",
+      IDEMPOTENCY_CONFLICT: "內容已變更，請重新送出。",
+      RATE_LIMITED: "操作太頻繁，請稍等一下再試。",
+      CONTENT_BLOCKED: "文字內容未通過安全檢查，請調整後再試。",
+      REFERENCE_IMAGE_REQUIRED: "目前的練習設定有問題，請通知老師。",
+      INVALID_REFERENCE_IMAGE: "目前的練習設定有問題，請通知老師。",
+      REFERENCE_UPLOAD_TOO_LARGE: "目前的練習設定有問題，請通知老師。",
+      CULTURE_REVIEW_REQUIRED: "傳統服飾或圖紋的來源還不清楚，請先補上族群與資料來源；生成後再請熟悉內容的人確認。",
+      IMAGE_API_AUTH_FAILED: "圖片服務設定有問題，請通知老師。",
       IMAGE_API_RATE_LIMITED: "圖片服務目前忙碌，請稍候再試。",
-      IMAGE_API_EMPTY_RESULT: "圖片服務沒有回傳可用圖片。",
-      IMAGE_API_FAILED: "這次圖片生成沒有完成，請檢查內容後再試。"
+      IMAGE_API_EMPTY_RESULT: "這次沒有產生可用圖片，請再試一次。",
+      IMAGE_API_FAILED: "圖片沒有生成成功，請稍後再試。",
+      INVALID_PROMPT: "圖片描述至少寫 3 個字，最多 4000 個字即可。",
+      AI_RESPONSE_INVALID: "AI 這次沒有產生可用的建議，請再試一次。",
+      NETWORK_ERROR: "無法連上課堂服務，請檢查網路連線。"
     };
     if (fixed[code]) return fixed[code];
-    if (code.endsWith("_TIMEOUT")) return "生成逾時，原請求可以再試一次。";
+    if (code.endsWith("_TIMEOUT")) return "等候時間太久，請用同一份內容再試一次。";
     if (code.endsWith("_UNAVAILABLE")) return "生成服務暫時無法使用，請稍後再試。";
-    return clean(error && error.message) || "目前無法完成請求，請稍後再試。";
+    return "目前無法完成這項操作，請稍後再試。";
   }
 
   function safeFilename(value, fallback) {
@@ -267,6 +292,7 @@
     normalizeApiError,
     normalizeSession,
     normalizeGenerationResult,
+    parsePromptAssistantResult,
     createGenerationState,
     transitionGeneration,
     statusLabel,
