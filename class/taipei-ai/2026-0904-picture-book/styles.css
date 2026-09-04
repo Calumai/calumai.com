@@ -208,20 +208,6 @@ footer a:focus-visible { outline-color: #fff; }
   letter-spacing: .04em;
 }
 
-.hero-lede {
-  max-width: 650px;
-  margin: 2rem 0 0;
-  color: var(--ink-soft);
-  font-size: clamp(1.05rem, 1.8vw, 1.28rem);
-}
-
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .85rem;
-  margin-top: 2rem;
-}
-
 .button {
   display: inline-flex;
   min-height: 48px;
@@ -251,29 +237,6 @@ footer a:focus-visible { outline-color: #fff; }
 }
 
 .button.secondary:hover { background: #fff; }
-
-.hero-stats {
-  display: flex;
-  gap: 2.2rem;
-  margin: 2.8rem 0 0;
-}
-
-.hero-stats div {
-  display: grid;
-  gap: .15rem;
-}
-
-.hero-stats dt {
-  font-size: 1.7rem;
-  font-weight: 950;
-  line-height: 1;
-}
-
-.hero-stats dd {
-  margin: 0;
-  color: var(--ink-soft);
-  font-size: .83rem;
-}
 
 .hero-art {
   position: relative;
@@ -492,6 +455,119 @@ footer a:focus-visible { outline-color: #fff; }
   text-align: center;
 }
 
+.immersion-board {
+  display: grid;
+  grid-template-columns: minmax(220px, .72fr) minmax(0, 1.15fr) minmax(240px, .72fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.studio-steps {
+  display: grid;
+  gap: .65rem;
+  margin: 0;
+  padding: 1.1rem;
+  list-style: none;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--white);
+  box-shadow: 0 14px 35px rgba(0, 95, 184, .08);
+}
+
+.studio-steps li {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: .75rem;
+  align-items: center;
+  padding: .72rem .8rem;
+  border-radius: 14px;
+  color: var(--ink-soft);
+  font-weight: 900;
+}
+
+.studio-steps li.is-active {
+  color: var(--white);
+  background: var(--blue-dark);
+}
+
+.studio-steps b {
+  display: inline-grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--blue-soft);
+  color: var(--blue-dark);
+  font-size: .78rem;
+}
+
+.studio-steps li.is-active b {
+  background: var(--orange);
+  color: var(--ink);
+}
+
+.studio-task,
+.studio-wall {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--white);
+  box-shadow: 0 14px 35px rgba(0, 95, 184, .08);
+}
+
+.studio-task {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(1.5rem, 3vw, 2.4rem);
+}
+
+.task-label,
+.wall-label {
+  margin: 0 0 .7rem;
+  color: var(--blue-dark);
+  font-size: .78rem;
+  font-weight: 950;
+  letter-spacing: .12em;
+}
+
+.studio-task h3 {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  line-height: 1.2;
+}
+
+.studio-task p:not(.task-label) {
+  margin: 1rem 0 0;
+  color: var(--ink-soft);
+}
+
+.task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-top: 1.5rem;
+}
+
+.studio-wall {
+  padding: 1.25rem;
+}
+
+.studio-wall ul {
+  display: grid;
+  gap: .6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.studio-wall li {
+  padding: .72rem .8rem;
+  border-radius: 14px;
+  background: var(--blue-soft);
+  color: var(--ink);
+  font-weight: 850;
+}
+
 .outcome-strip {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -514,6 +590,49 @@ footer a:focus-visible { outline-color: #fff; }
   color: var(--blue-dark);
   font-size: .75rem;
   font-weight: 900;
+}
+
+.teaching-run {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: .85rem;
+  margin-top: 1rem;
+}
+
+.teaching-run article {
+  display: grid;
+  align-content: start;
+  gap: .45rem;
+  min-height: 170px;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(180deg, var(--white), var(--blue-soft));
+}
+
+.teaching-run span {
+  width: fit-content;
+  padding: .22rem .55rem;
+  border-radius: 999px;
+  color: var(--white);
+  background: var(--blue-dark);
+  font-family: var(--mono);
+  font-size: .72rem;
+  font-weight: 900;
+}
+
+.teaching-run h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.teaching-run p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: .82rem;
+  line-height: 1.58;
 }
 
 .schedule-section {
@@ -1157,6 +1276,10 @@ footer a { color: #fff; }
   .role-flow { grid-template-columns: 1fr; gap: 1rem; }
   .flow-arrow { transform: rotate(90deg); }
   .role-card { min-height: 0; }
+  .immersion-board { grid-template-columns: 1fr 1fr; }
+  .teaching-run { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .studio-task { grid-column: 1 / -1; }
+  .studio-wall { grid-row: 1; grid-column: 2; }
   .yaml-map { grid-template-columns: repeat(4, 1fr); }
 }
 
@@ -1173,6 +1296,10 @@ footer a { color: #fff; }
   .story-gallery { grid-template-columns: 1fr 1fr; }
   .story-gallery figure:last-child { grid-column: 1 / -1; }
   .workbench-card { grid-template-columns: 1fr; }
+  .immersion-board { grid-template-columns: 1fr; }
+  .teaching-run { grid-template-columns: 1fr; }
+  .studio-task,
+  .studio-wall { grid-column: auto; grid-row: auto; }
   .practice-cta-inner { grid-template-columns: 1fr; }
   .practice-cta .button { width: fit-content; }
   .gate-grid,
@@ -1188,10 +1315,6 @@ footer a { color: #fff; }
   .hero { padding-block: 3.5rem 4.5rem; }
   .hero-copy { min-width: 0; }
   .hero h1 { max-width: 100%; font-size: clamp(3rem, 14.5vw, 4.35rem); }
-  .hero-lede { font-size: 1rem; }
-  .hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
-  .hero-stats dt { font-size: 1.35rem; }
-  .hero-stats dd { font-size: .75rem; line-height: 1.4; }
   .hero-art { min-height: 370px; }
   .book-cover { width: 88%; border-width: 7px; }
   .art-note { padding: .45rem .6rem; }
@@ -1201,6 +1324,10 @@ footer a { color: #fff; }
   .section { padding-block: 4.5rem; }
   .section-heading { margin-bottom: 2rem; }
   .section-heading h2 { font-size: clamp(2.15rem, 11vw, 3.3rem); }
+  .studio-steps,
+  .studio-task,
+  .studio-wall { border-radius: 16px; }
+  .task-actions .button { width: 100%; }
   .outcome-strip { grid-template-columns: 1fr; }
   .phase-list li { grid-template-columns: 84px 1fr; gap: .8rem; padding-block: 1rem; }
   .phase-list em { grid-column: 2; width: fit-content; }

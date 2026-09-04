@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="北市府 AI 教學應用課堂練習室，使用課堂碼生成教材文字與繪本圖片。">
+  <meta name="description" content="北市府 AI 教學應用沉浸式練習室，使用課堂碼完成 4-6 頁繪本或漫畫。">
   <meta name="theme-color" content="#005fb8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
-  <title>AI 教材練習室｜北市府 AI 教學應用</title>
+  <title>AI 繪本工作室｜北市府 AI 教學應用</title>
   <link rel="icon" href="/assets/calumai-logo-mark.png">
   <link rel="preload" href="../assets/fonts/iansui-course-display.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260903f">
+  <link rel="stylesheet" href="styles.css?v=20260904c">
   <script src="core.js" defer></script>
-  <script src="app.js?v=20260903q" defer></script>
+  <script src="app.js?v=20260904c" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -27,8 +27,8 @@
     <section class="practice-intro" aria-labelledby="page-title">
       <div>
         <p class="kicker">課堂限定練習</p>
-        <h1 id="page-title">AI 教材練習室</h1>
-        <p>輸入課堂碼後，練習生成教材文字或繪本圖片。每次送出都會計入個人與全班額度。</p>
+        <h1 id="page-title">AI 繪本工作室</h1>
+        <p>輸入課堂碼後，先選今天要做的作品，再照著故事室、角色室、美術室、分鏡桌與生圖室完成一版可以帶走的草稿。每次送出都會計入個人與全班額度。</p>
       </div>
       <aside class="privacy-note">
         <strong>安全連線說明</strong>
@@ -41,7 +41,7 @@
         <h2 id="access-title">先加入本次課堂</h2>
         <p>課堂碼由講師現場提供。請使用方便辨識的暱稱，不要填寫身分證字號、電話或其他敏感資料。</p>
       </div>
-      <form id="claim-form" class="access-form">
+      <form id="claim-form" class="access-form" novalidate>
         <div class="field">
           <label for="class-code">課堂碼</label>
           <input id="class-code" name="class_code" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" required maxlength="128" aria-describedby="class-code-help">
@@ -89,17 +89,17 @@
       </aside>
 
       <div class="tool-tabs" role="tablist" aria-label="選擇生成練習">
-        <button id="text-tab" type="button" role="tab" aria-selected="true" aria-controls="text-panel" tabindex="0" data-tab="text">教材文字</button>
-        <button id="image-tab" type="button" role="tab" aria-selected="false" aria-controls="image-panel" tabindex="-1" data-tab="image">10 頁繪本</button>
+        <button id="image-tab" type="button" role="tab" aria-selected="true" aria-controls="image-panel" tabindex="0" data-tab="image">繪本工作室</button>
+        <button id="text-tab" type="button" role="tab" aria-selected="false" aria-controls="text-panel" tabindex="-1" data-tab="text">下半堂教材文字</button>
       </div>
 
-      <section class="tool-panel" id="text-panel" role="tabpanel" aria-labelledby="text-tab">
+      <section class="tool-panel" id="text-panel" role="tabpanel" aria-labelledby="text-tab" hidden>
         <div class="panel-heading">
           <h3>生成一份可修改的教材草稿</h3>
           <p>先交代對象、時間與學習目標，生成後再依班級狀況調整。</p>
         </div>
         <div class="tool-layout">
-          <form id="text-form" class="generator-form">
+          <form id="text-form" class="generator-form" novalidate>
             <div class="field">
               <label for="text-topic">教材主題</label>
               <input id="text-topic" name="topic" type="text" required maxlength="200" placeholder="例如：用繪本認識部落地名">
@@ -162,34 +162,51 @@
         </div>
       </section>
 
-      <section class="tool-panel book-studio" id="image-panel" role="tabpanel" aria-labelledby="image-tab" hidden>
+      <section class="tool-panel book-studio" id="image-panel" role="tabpanel" aria-labelledby="image-tab">
         <div class="panel-heading book-heading">
           <div>
             <p class="kicker">課堂作品線</p>
-            <h3>10 頁繪本／漫畫製作室</h3>
-            <p>可選單頁繪本、1～4 格漫畫或混合形式。先用課程來源完成整本分鏡，再以同一組角色、服飾與圖紋參考圖逐頁生成。</p>
+            <h3>先選成品，再讓 AI 幫你拆成可生成的頁面</h3>
+            <p>今天可以做繪本、漫畫、班級海報或活動海報。先完成固定設定，再一頁一頁生成，文字最後再排版，不直接畫進圖片。</p>
           </div>
           <span class="book-badge">文字後製，不畫進圖片</span>
         </div>
 
-        <ol class="book-flow" aria-label="十頁繪本製作流程">
-          <li data-state="active"><b>1</b><span>故事與來源</span></li>
-          <li><b>2</b><span>參考圖與權利</span></li>
-          <li><b>3</b><span>AI 拆成 10 頁分鏡</span></li>
-          <li><b>4</b><span>逐頁生圖與檢查</span></li>
-          <li><b>5</b><span>排版輸出</span></li>
-        </ol>
+        <div class="studio-workbench">
+          <nav class="studio-step-rail" aria-label="作品製作步驟">
+            <p class="studio-rail-label">製作步驟</p>
+            <ol class="book-flow" aria-label="沉浸式作品製作流程">
+              <li data-state="active"><button type="button" data-studio-step-target="1" aria-current="step"><b>1</b><span>選成品</span></button></li>
+              <li><button type="button" data-studio-step-target="2"><b>2</b><span>固定角色與參考圖</span></button></li>
+              <li><button type="button" data-studio-step-target="3"><b>3</b><span>AI 建議修正</span></button></li>
+              <li><button type="button" data-studio-step-target="4" disabled><b>4</b><span>建立分鏡／版面</span></button></li>
+              <li><button type="button" data-studio-step-target="5" disabled><b>5</b><span>逐頁生圖與輸出</span></button></li>
+            </ol>
+            <p class="studio-rail-hint">每次只完成眼前這一步，資料會留在工作檯，不必來回找位置。</p>
+          </nav>
 
-        <form id="book-setup-form" class="book-setup-form">
-          <section class="book-step-card" aria-labelledby="book-story-title">
+          <div class="studio-stage" id="studio-stage">
+            <form id="book-setup-form" class="book-setup-form" novalidate>
+          <section class="book-step-card" data-studio-panel="1" aria-labelledby="book-story-title">
             <header class="book-step-head">
               <span>01</span>
-              <div><h4 id="book-story-title">先決定這本書要說什麼</h4><p>AI 只能依你貼入的課程來源拆故事；找不到依據的內容要標「待確認」。</p></div>
+              <div><h4 id="book-story-title">先選你要做的作品</h4><p>這裡先決定成品形式和內容主題。繪本／漫畫會拆成 4-6 頁；海報會用同一套欄位整理成單張主視覺。</p></div>
             </header>
             <div class="book-form-grid">
               <div class="field">
+                <label for="book-format">今天要做什麼？</label>
+                <select id="book-format" name="book_format" required>
+                  <option value="picture-book">繪本｜每頁一個主畫面</option>
+                  <option value="comic">漫畫｜每頁可調整為 2～4 格</option>
+                  <option value="class-poster">班級海報｜課程成果或班級活動主視覺</option>
+                  <option value="event-poster">活動海報｜研習、營隊、成果展主視覺</option>
+                  <option value="mixed">混合｜部分繪本頁＋部分漫畫頁</option>
+                </select>
+                <small>選漫畫後，AI 會先規劃分格；產生分鏡後，每一頁仍可自行改成 2、3 或 4 格。選海報時，請把頁數選 4，先做不同版面候選稿。</small>
+              </div>
+              <div class="field">
                 <label for="book-title">書名（可先用暫名）</label>
-                <input id="book-title" name="book_title" required maxlength="160" placeholder="例如：山風帶來的名字">
+                <input id="book-title" name="book_title" required maxlength="160" placeholder="例如：雨後公園的紅雨傘／四年甲班閱讀週海報">
               </div>
               <div class="field">
                 <label for="book-audience">閱讀對象</label>
@@ -202,31 +219,34 @@
                 </select>
               </div>
               <div class="field">
-                <label for="book-format">成品形式（可選漫畫）</label>
-                <select id="book-format" name="book_format" required>
-                  <option value="picture-book">繪本｜每頁一個主畫面</option>
-                  <option value="comic">漫畫｜每頁可調整為 2～4 格</option>
-                  <option value="mixed">混合｜部分繪本頁＋部分漫畫頁</option>
+                <label for="book-page-count">本堂課要產出幾個畫面</label>
+                <select id="book-page-count" name="page_count" required>
+                  <option value="4">4 頁｜第一次練習最穩</option>
+                  <option value="5" selected>5 頁｜故事節奏較完整</option>
+                  <option value="6">6 頁｜想多做一個轉折</option>
                 </select>
-                <small>選漫畫後，AI 會先規劃分格；產生分鏡後，每一頁仍可自行改成 2、3 或 4 格。</small>
               </div>
               <div class="field">
-                <label for="book-learning-goal">希望讀者帶走什麼</label>
-                <input id="book-learning-goal" name="learning_goal" required maxlength="300" placeholder="例如：理解地名故事要查來源，也要尊重說故事的人">
+                <label for="book-learning-goal">希望看的人記住什麼</label>
+                <input id="book-learning-goal" name="learning_goal" required maxlength="300" placeholder="例如：理解地名故事要查來源／知道活動時間地點／感受到班級閱讀氣氛">
               </div>
             </div>
             <div class="field">
-              <label for="book-story-source">課程來源／故事事實包</label>
-              <textarea id="book-story-source" name="story_source" required minlength="20" maxlength="8000" rows="7" placeholder="貼上已核對的故事、訪談摘要、人物、地點、事件因果與來源說明。不要貼未授權全文或學生個資。"></textarea>
-              <small>這一格是整本書的事實邊界。沒有來源的創作請明確寫「虛構設定」。</small>
+              <label for="book-story-source">你的故事或海報內容</label>
+              <textarea id="book-story-source" name="story_source" required minlength="20" maxlength="8000" rows="7" placeholder="繪本／漫畫：寫故事、角色、地點、事件。海報：寫活動名稱、對象、時間地點、主視覺想法。沒有正式來源時，請寫「虛構練習」。"></textarea>
+              <small>先用自己的話寫，不用一開始就像正式提示詞。下一步 AI 會幫你檢查缺什麼。</small>
             </div>
             <div class="field">
-              <label for="book-locked-facts">不能被 AI 改寫的內容</label>
-              <textarea id="book-locked-facts" name="locked_facts" required maxlength="2000" rows="4" placeholder="例如：人物關係、事件順序、族語正確拼寫、服飾所屬年代與場合；未確認項目一律不寫入。"></textarea>
+              <label for="book-locked-facts">不能被 AI 改掉的重點</label>
+              <textarea id="book-locked-facts" name="locked_facts" required maxlength="2000" rows="4" placeholder="例如：主角身分、活動名稱、時間地點、族語拼寫、服飾來源；不確定的內容請寫「不要自行補」。"></textarea>
             </div>
+            <div class="studio-panel-actions">
+              <button class="button primary" type="button" data-step-next="2">下一步：固定角色與參考圖</button>
+            </div>
+            <p class="studio-step-message" data-step-message="1" role="status" aria-live="polite"></p>
           </section>
 
-          <section class="book-step-card" aria-labelledby="book-reference-title">
+          <section class="book-step-card" data-studio-panel="2" aria-labelledby="book-reference-title" hidden>
             <header class="book-step-head">
               <span>02</span>
               <div><h4 id="book-reference-title">上傳 AI 真正會看到的參考圖</h4><p>可放角色、服飾／圖紋、場景或重要物件，最多 4 張；每張都要標用途與來源。</p></div>
@@ -296,38 +316,81 @@
               <input id="reference-rights" type="checkbox" required>
               <span>我有權把這些參考圖送交 AI 處理；圖中沒有未經同意的兒童、個資或限制上傳內容。</span>
             </label>
+            <div class="studio-panel-actions">
+              <button class="button secondary" type="button" data-step-previous="1">上一步</button>
+              <button class="button primary" type="button" data-step-next="3">下一步：確認並建立分鏡</button>
+            </div>
+            <p class="studio-step-message" data-step-message="2" role="status" aria-live="polite"></p>
           </section>
 
-          <section class="book-step-card plan-action-card" aria-labelledby="book-plan-action-title">
+          <section class="book-step-card plan-action-card" data-studio-panel="3" aria-labelledby="book-plan-action-title" hidden>
             <header class="book-step-head">
               <span>03</span>
-              <div><h4 id="book-plan-action-title">先產生 10 頁文字分鏡，不先燒圖片額度</h4><p>AI 會拆出每頁功能、旁白、動作、構圖與待審項目；你仍可逐頁修改。</p></div>
+              <div><h4 id="book-plan-action-title">先產生 4-6 頁文字分鏡，不先燒圖片額度</h4><p>AI 會拆出每頁功能、旁白、動作、構圖與待審項目；你仍可逐頁修改。</p></div>
             </header>
-            <button class="button primary full-button" id="create-book-plan" type="submit">建立 10 頁分鏡</button>
+            <div class="plan-checklist" aria-label="送出前摘要">
+              <p><strong>作品</strong><span id="plan-summary-product">尚未命名</span></p>
+              <p><strong>參考圖</strong><span id="plan-summary-references">0 張</span></p>
+              <p><strong>輸出</strong><span id="plan-summary-pages">5 個畫面</span></p>
+            </div>
+            <div class="studio-panel-actions">
+              <button class="button secondary" type="button" data-step-previous="2">上一步</button>
+              <button class="button primary" id="create-book-plan" type="submit">建立繪本分鏡</button>
+            </div>
             <p id="book-plan-message" class="form-message" role="status" aria-live="polite"></p>
           </section>
         </form>
 
-        <section id="book-plan-workspace" class="book-plan-workspace" hidden aria-labelledby="book-plan-title">
+        <section id="book-plan-workspace" class="book-plan-workspace" data-studio-panel="4 5" data-mode="review" hidden aria-labelledby="book-plan-title">
           <header class="book-plan-toolbar">
             <div>
-              <p class="kicker">10 頁草稿</p>
+              <p class="kicker">作品草稿</p>
               <h3 id="book-plan-title">逐頁修改，再決定哪一頁要生成</h3>
               <p>繪本頁使用單一主畫面；漫畫頁可選 2、3、4 格，但整頁仍只推進一個主要事件。正式文字保留為可編輯欄位，不會畫進圖片。</p>
             </div>
             <div class="book-toolbar-actions">
               <button class="button secondary compact" id="download-book-plan" type="button">下載分鏡 JSON</button>
-              <button class="button primary compact" id="generate-next-page" type="button">生成下一個未完成頁</button>
-              <button class="button secondary compact" id="print-book" type="button" disabled>預覽／列印全本</button>
+              <button class="button primary compact review-only" id="start-book-generation" type="button">確認分鏡，開始逐頁生圖</button>
+              <button class="button primary compact generation-only" id="generate-next-page" type="button">生成下一個未完成頁</button>
+              <button class="button secondary compact generation-only" id="print-book" type="button" disabled>預覽／列印全本</button>
             </div>
           </header>
           <div class="book-progress" aria-live="polite">
-            <div><span id="book-progress-label">0 / 10 頁已有圖片</span><small>每頁最多嘗試 3 次；先修正失敗頁，不整本重生。</small></div>
-            <progress id="book-progress-bar" value="0" max="10">0 / 10</progress>
+            <div><span id="book-progress-label">0 / 5 頁已有圖片</span><small>每頁最多嘗試 3 次；先修正失敗頁，不整本重生。</small></div>
+            <progress id="book-progress-bar" value="0" max="5">0 / 5</progress>
           </div>
+          <nav class="book-page-navigation" aria-label="切換分鏡頁面">
+            <button class="button secondary compact" id="previous-book-page" type="button">上一頁</button>
+            <div class="book-page-tabs" id="book-page-tabs" role="tablist" aria-label="分鏡頁碼"></div>
+            <button class="button secondary compact" id="next-book-page" type="button">下一頁</button>
+          </nav>
           <div id="book-page-list" class="book-page-list"></div>
           <p id="book-generation-message" class="form-message book-generation-message" role="status" aria-live="polite"></p>
         </section>
+          </div>
+
+          <aside class="studio-preview-rail" aria-labelledby="studio-preview-title">
+            <header class="studio-preview-head">
+              <p class="studio-rail-label">作品預覽</p>
+              <h4 id="studio-preview-title">尚未命名</h4>
+              <p id="studio-preview-meta">繪本｜5 個畫面</p>
+            </header>
+            <dl class="studio-summary-list">
+              <div><dt>目前步驟</dt><dd id="studio-preview-step">選成品</dd></div>
+              <div><dt>參考圖</dt><dd id="studio-preview-references">0 / 4</dd></div>
+            </dl>
+            <div class="studio-preview-media">
+              <div id="studio-preview-empty" class="studio-preview-empty"><strong>固定預覽區</strong><span>建立分鏡後，目前頁面的候選圖會留在這裡。</span></div>
+              <img id="studio-preview-image" alt="" hidden>
+            </div>
+            <div class="studio-current-page" id="studio-current-page" hidden>
+              <span id="studio-current-page-number">PAGE 01</span>
+              <strong id="studio-current-page-function"></strong>
+              <p id="studio-current-page-copy"></p>
+              <small id="studio-current-page-status">尚未生成</small>
+            </div>
+          </aside>
+        </div>
 
         <dialog id="style-library-dialog" class="style-library-dialog" aria-labelledby="style-library-title">
           <form method="dialog" class="style-library-head"><div><h3 id="style-library-title">視覺風格大全</h3><p>風格只控制媒材與視覺語言，不會提供或驗證文化內容。</p></div><button class="button secondary compact" value="cancel">關閉</button></form>
@@ -367,10 +430,6 @@
                   <button class="button secondary compact" data-action="download-page" type="button" hidden>下載本頁圖片</button>
                 </div>
                 <p class="page-message" role="status"></p>
-              </div>
-              <div class="page-preview">
-                <div class="page-preview-empty"><strong>無字圖片區</strong><span>生成後會出現在這裡</span></div>
-                <img alt="" hidden>
               </div>
             </div>
           </article>

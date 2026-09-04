@@ -12,7 +12,7 @@
   const workspace = byId("workspace");
   const textForm = byId("text-form");
   const bookSetupForm = byId("book-setup-form");
-  const previewQuota = { text: 2, image: 10 };
+  const previewQuota = { text: 2, image: 6 };
   const previewImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
   let currentSession = null;
   let previewSessionActive = false;
@@ -20,6 +20,9 @@
   let references = [];
   let bookPages = [];
   let activePageNumber = null;
+  let selectedPageNumber = null;
+  let activeStudioStep = 1;
+  let highestStudioStep = 1;
 
   if (globalThis.history && globalThis.location.search) {
     const cleanUrl = new URL(globalThis.location.href);
@@ -48,11 +51,16 @@
     };
   }
 
-  function previewBookPlan() {
+  function plannedPageCount() {
+    const value = Number.parseInt(byId("book-page-count").value, 10);
+    return [4, 5, 6].includes(value) ? value : 5;
+  }
+
+  function previewBookPlan(pageCount = 5) {
     const functions = [
-      "封面與故事承諾", "人物與地方", "事件開始", "第一次行動", "阻礙出現",
-      "角色停下思考", "重要發現", "做出選擇", "結果與改變", "收尾與讀者帶走的感受",
-    ];
+      "封面與故事承諾", "人物與地方", "事件開始", "第一次行動",
+      "阻礙與選擇", "收尾與讀者帶走的感受",
+    ].slice(0, pageCount);
     return JSON.stringify({
       pages: functions.map((pageFunction, index) => ({
         page_no: index + 1,
@@ -89,8 +97,9 @@
       return { ok: false, request_id: "local-preview", error: { code: "SESSION_QUOTA_EXHAUSTED", message: "本機展示文字額度已用完。", retryable: false } };
     }
     previewQuota.text -= 1;
-    const content = body && String(body.topic || "").includes("10 頁繪本")
-      ? previewBookPlan()
+    const pageCountMatch = body && String(body.topic || "").match(/([4-6])\s*頁繪本/u);
+    const content = pageCountMatch
+      ? previewBookPlan(Number.parseInt(pageCountMatch[1], 10))
       : `# ${body && body.topic ? body.topic : "本機展示教材"}\n\n這是本機預覽模式產生的範例文字，不會送到正式服務。`;
     return {
       ok: true,
@@ -166,12 +175,23 @@
     }
   }
 
-  function reportMeaningfulValidity(form) {
-    for (const field of form.querySelectorAll('input[required], textarea[required], select[required]')) {
+  function reportMeaningfulValidity(container, messageTarget) {
+    const fields = [...container.querySelectorAll('input[required], textarea[required], select[required]')];
+    for (const field of fields) {
       if (field.type === "checkbox" || field.type === "number") continue;
       field.setCustomValidity(String(field.value || "").trim() ? "" : "請填寫此欄位。");
     }
-    return form.reportValidity();
+    const invalid = fields.find((field) => !field.checkValidity());
+    if (!invalid) {
+      if (messageTarget) messageTarget.textContent = "";
+      return true;
+    }
+    const label = invalid.labels && invalid.labels[0]
+      ? invalid.labels[0].textContent.replace(/\s+/gu, " ").trim()
+      : "這個欄位";
+    if (messageTarget) messageTarget.textContent = `請完成「${label}」。${invalid.validationMessage}`;
+    invalid.focus({ preventScroll: true });
+    return false;
   }
 
   document.querySelectorAll('input[required], textarea[required], select[required]').forEach((field) => {
@@ -257,7 +277,7 @@
 
   claimForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (!reportMeaningfulValidity(claimForm)) return;
+    if (!reportMeaningfulValidity(claimForm, byId("claim-message"))) return;
     setClaimBusy(true, "正在登入");
     byId("claim-message").textContent = "正在建立短期工作階段。";
     try {
@@ -287,20 +307,20 @@
   });
 
   function selectTab(kind, focus) {
-    for (const tab of document.querySelectorAll('[role="tab"]')) {
+    for (const tab of document.querySelectorAll('.tool-tabs [role="tab"]')) {
       const selected = tab.dataset.tab === kind;
       tab.setAttribute("aria-selected", String(selected));
       tab.tabIndex = selected ? 0 : -1;
-      if (selected && focus) tab.focus();
+      if (selected && focus) tab.focus({ preventScroll: true });
     }
     byId("text-panel").hidden = kind !== "text";
     byId("image-panel").hidden = kind !== "image";
   }
 
-  document.querySelectorAll('[role="tab"]').forEach((tab) => {
+  document.querySelectorAll('.tool-tabs [role="tab"]').forEach((tab) => {
     tab.addEventListener("click", () => selectTab(tab.dataset.tab, false));
     tab.addEventListener("keydown", (event) => {
-      const tabs = [...document.querySelectorAll('[role="tab"]')];
+      const tabs = [...document.querySelectorAll('.tool-tabs [role="tab"]')];
       const current = tabs.indexOf(tab);
       const delta = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
       if (!delta) return;
@@ -308,6 +328,141 @@
       selectTab(tabs[(current + delta + tabs.length) % tabs.length].dataset.tab, true);
     });
   });
+
+  const studioStepLabels = {
+    1: "選成品",
+    2: "固定角色與參考圖",
+    3: "AI 建議修正",
+    4: "建立分鏡／版面",
+    5: "逐頁生圖與輸出",
+  };
+
+  function currentBookFormatLabel() {
+    const select = byId("book-format");
+    const option = select.options[select.selectedIndex];
+    return String(option ? option.textContent : "繪本").split("｜")[0].trim();
+  }
+
+  function updatePlanSummary() {
+    byId("plan-summary-product").textContent = byId("book-title").value.trim() || "尚未命名";
+    byId("plan-summary-references").textContent = `${references.length} 張`;
+    byId("plan-summary-pages").textContent = `${plannedPageCount()} 個畫面`;
+  }
+
+  function selectedBookPage() {
+    return bookPages.find((page) => page.pageNo === selectedPageNumber) || null;
+  }
+
+  function updateStudioPreview() {
+    const title = byId("book-title").value.trim() || "尚未命名";
+    const page = selectedBookPage();
+    const image = byId("studio-preview-image");
+    const empty = byId("studio-preview-empty");
+    const pagePanel = byId("studio-current-page");
+    byId("studio-preview-title").textContent = title;
+    byId("studio-preview-meta").textContent = `${currentBookFormatLabel()}｜${plannedPageCount()} 個畫面`;
+    byId("studio-preview-step").textContent = studioStepLabels[activeStudioStep];
+    byId("studio-preview-references").textContent = `${references.length} / 4`;
+    updatePlanSummary();
+
+    pagePanel.hidden = !page;
+    if (!page) {
+      image.hidden = true;
+      image.removeAttribute("src");
+      image.alt = "";
+      empty.hidden = false;
+      return;
+    }
+
+    byId("studio-current-page-number").textContent = `PAGE ${String(page.pageNo).padStart(2, "0")}`;
+    byId("studio-current-page-function").textContent = page.function || `第 ${page.pageNo} 頁`;
+    byId("studio-current-page-copy").textContent = page.narration || "尚未填寫旁白。";
+    byId("studio-current-page-status").textContent = activePageNumber === page.pageNo
+      ? "生成中"
+      : page.result
+        ? "已有候選圖"
+        : page.error
+          ? "需要修改或重試"
+          : "尚未生成";
+    if (page.result) {
+      image.src = page.result.src;
+      image.alt = `${title}第 ${page.pageNo} 頁候選圖`;
+      image.hidden = false;
+      empty.hidden = true;
+    } else {
+      image.hidden = true;
+      image.removeAttribute("src");
+      image.alt = "";
+      empty.hidden = false;
+    }
+  }
+
+  function setStudioStep(step) {
+    const targetStep = Number(step);
+    if (!studioStepLabels[targetStep]) return;
+    if (targetStep >= 4 && !bookPages.length) return;
+    activeStudioStep = targetStep;
+    highestStudioStep = Math.max(highestStudioStep, targetStep);
+    for (const button of document.querySelectorAll("[data-studio-step-target]")) {
+      const buttonStep = Number(button.dataset.studioStepTarget);
+      const item = button.closest("li");
+      const active = buttonStep === targetStep;
+      button.disabled = buttonStep >= 4 && !bookPages.length;
+      if (active) button.setAttribute("aria-current", "step");
+      else button.removeAttribute("aria-current");
+      item.dataset.state = active ? "active" : buttonStep < highestStudioStep ? "complete" : "";
+    }
+    for (const panel of document.querySelectorAll("[data-studio-panel]")) {
+      const panelSteps = panel.dataset.studioPanel.split(/\s+/u).map(Number);
+      panel.hidden = !panelSteps.includes(targetStep);
+    }
+    bookSetupForm.hidden = targetStep >= 4;
+    byId("book-plan-workspace").dataset.mode = targetStep === 5 ? "generate" : "review";
+    if (globalThis.matchMedia("(min-width: 921px)").matches) byId("studio-stage").scrollTop = 0;
+    updateStudioPreview();
+  }
+
+  function studioStepMessage(step) {
+    return document.querySelector(`[data-step-message="${step}"]`);
+  }
+
+  function validateStudioStep(step) {
+    const panel = document.querySelector(`[data-studio-panel~="${step}"]`);
+    const message = studioStepMessage(step);
+    if (!panel || !reportMeaningfulValidity(panel, message)) return false;
+    if (step === 2) {
+      const referenceError = validateReferenceMetadata();
+      if (referenceError) {
+        message.textContent = referenceError;
+        const target = !references.length
+          ? byId("book-reference-input")
+          : document.querySelector(".reference-card input:placeholder-shown, .reference-card textarea:placeholder-shown") || byId("reference-rights");
+        target.focus({ preventScroll: true });
+        return false;
+      }
+    }
+    message.textContent = "";
+    return true;
+  }
+
+  function moveToStudioStep(targetStep) {
+    const target = Number(targetStep);
+    if (target > activeStudioStep && activeStudioStep <= 3 && !validateStudioStep(activeStudioStep)) return;
+    setStudioStep(target > activeStudioStep + 1 && target <= 3 ? activeStudioStep + 1 : target);
+  }
+
+  document.querySelectorAll("[data-studio-step-target]").forEach((button) => {
+    button.addEventListener("click", () => moveToStudioStep(button.dataset.studioStepTarget));
+  });
+  document.querySelectorAll("[data-step-next]").forEach((button) => {
+    button.addEventListener("click", () => moveToStudioStep(button.dataset.stepNext));
+  });
+  document.querySelectorAll("[data-step-previous]").forEach((button) => {
+    button.addEventListener("click", () => setStudioStep(button.dataset.stepPrevious));
+  });
+  byId("start-book-generation").addEventListener("click", () => setStudioStep(5));
+  bookSetupForm.addEventListener("input", updateStudioPreview);
+  bookSetupForm.addEventListener("change", updateStudioPreview);
 
   function renderTextState() {
     const phase = textState.phase;
@@ -330,7 +485,7 @@
   }
 
   async function performTextGeneration(isRetry) {
-    if (!isRetry && !reportMeaningfulValidity(textForm)) return;
+    if (!isRetry && !reportMeaningfulValidity(textForm, byId("text-feedback"))) return;
     if (isRetry) textState = core.transitionGeneration(textState, { type: "retry" });
     else {
       const key = core.createIdempotencyKey("text", makeUuid());
@@ -417,7 +572,8 @@
     });
     byId("book-reference-message").textContent = references.length
       ? `已選 ${references.length} / 4 張。這些圖片只在你按下某一頁生成時送出，不會存進網站資料庫。`
-      : "尚未選擇參考圖。可使用課程提供的角色或場景備援圖。";
+      : "尚未選擇參考圖。請先上傳角色、場景、物件或媒材參考圖，並填寫來源與可參考細節。";
+    updateStudioPreview();
   }
 
   byId("book-reference-input").addEventListener("change", (event) => {
@@ -514,9 +670,12 @@
 
   function buildPlanRequest() {
     const data = valuesOf(bookSetupForm);
+    const pageCount = plannedPageCount();
     const formatGuide = ({
       "picture-book": "繪本：每頁使用單一主畫面或跨頁感構圖，layout 只用 single 或 spread。",
       comic: "漫畫：每頁使用 2～4 格，layout 只用 two-panels、three-panels 或 four-panels；visual_prompt 要依閱讀順序寫出每格動作，但整頁只推進一個主要事件。",
+      "class-poster": "班級海報：把每一頁當成一張不同構圖候選海報，layout 以 single 為主；visual_prompt 要描述主視覺、主要物件、留白位置與可後製放文字的安全區。",
+      "event-poster": "活動海報：把每一頁當成一張不同構圖候選海報，layout 以 single 為主；visual_prompt 要描述主視覺、活動氣氛、資訊留白區與不可出現的文字內容。",
       mixed: "混合：依節奏選單一主畫面、跨頁感或 2～4 格漫畫；漫畫頁的 visual_prompt 要依閱讀順序寫出每格動作。",
     })[data.book_format];
     const sourceNotes = [
@@ -527,14 +686,15 @@
     const requirements = [
       `讀者：${data.book_audience}。閱讀目標：${data.learning_goal}。${formatGuide}`,
       "只回傳合法 JSON，不要 Markdown code fence，也不要任何 JSON 之外的文字。",
-      "格式為 {\"pages\":[10個物件]}。每個物件必須有 page_no(1-10)、function、narration、dialogue、visual_prompt、layout、safe_area、must_include、pending_review。",
+      `格式為 {"pages":[${pageCount}個物件]}。每個物件必須有 page_no(1-${pageCount})、function、narration、dialogue、visual_prompt、layout、safe_area、must_include、pending_review。`,
       "layout 只能是 single、two-panels、three-panels、four-panels、spread；safe_area 只能是 upper-right、upper-left、bottom、none。",
       "每頁一個主要事件；旁白適合兒童閱讀；對白可空字串。視覺內容只用來源支持的事實，未確認內容寫入 pending_review，不要自行補文化細節。",
-      "第1頁建立故事承諾或封面感，第2-3頁設定與觸發，第4-7頁發展與轉折，第8頁高潮，第9頁結果，第10頁收尾。",
+      `第1頁建立故事承諾或封面感，中段安排設定、觸發、發展與轉折，最後第${pageCount}頁收尾並留下讀者感受。`,
+      ["class-poster", "event-poster"].includes(data.book_format) ? "若為海報，pages 代表不同構圖候選稿，不是連續故事；narration 請改寫為這張海報可後製放入的短文案建議。" : "",
     ].join("\n");
     const key = core.createIdempotencyKey("text", makeUuid());
     return core.buildTextPayload({
-      topic: `10 頁繪本分鏡｜${data.book_title}`,
+      topic: `${pageCount} 頁繪本分鏡｜${data.book_title}`,
       audience: data.book_audience,
       duration_minutes: 40,
       objective: data.learning_goal,
@@ -552,7 +712,8 @@
   function normalizeBookPlan(content) {
     const parsed = extractJson(content);
     const rawPages = Array.isArray(parsed) ? parsed : parsed && parsed.pages;
-    if (!Array.isArray(rawPages) || rawPages.length !== 10) throw new Error("AI 沒有回傳完整 10 頁分鏡。");
+    const pageCount = plannedPageCount();
+    if (!Array.isArray(rawPages) || rawPages.length !== pageCount) throw new Error(`AI 沒有回傳完整 ${pageCount} 頁分鏡。`);
     const allowedLayouts = new Set(["single", "two-panels", "three-panels", "four-panels", "spread"]);
     const allowedSafeAreas = new Set(["upper-right", "upper-left", "bottom", "none"]);
     const bookFormat = byId("book-format").value;
@@ -560,6 +721,7 @@
       let layout = allowedLayouts.has(page.layout) ? page.layout : (bookFormat === "comic" ? "two-panels" : "single");
       if (bookFormat === "comic" && ["single", "spread"].includes(layout)) layout = "two-panels";
       if (bookFormat === "picture-book" && ["two-panels", "three-panels", "four-panels"].includes(layout)) layout = "single";
+      if (["class-poster", "event-poster"].includes(bookFormat)) layout = "single";
       return {
         pageNo: index + 1,
         function: String(page.function || `第 ${index + 1} 頁`).slice(0, 120),
@@ -581,13 +743,24 @@
 
   bookSetupForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (activeStudioStep < 3) {
+      if (validateStudioStep(activeStudioStep)) setStudioStep(activeStudioStep + 1);
+      return;
+    }
     const message = byId("book-plan-message");
-    if (!reportMeaningfulValidity(bookSetupForm)) return;
-    const referenceError = validateReferenceMetadata();
-    if (referenceError) { message.textContent = referenceError; return; }
+    for (const step of [1, 2]) {
+      if (!validateStudioStep(step)) {
+        setStudioStep(step);
+        const panel = document.querySelector(`[data-studio-panel~="${step}"]`);
+        const invalid = panel.querySelector(":invalid");
+        if (invalid) invalid.focus({ preventScroll: true });
+        return;
+      }
+    }
     const button = byId("create-book-plan");
+    const pageCount = plannedPageCount();
     button.dataset.busy = "true";
-    button.textContent = "AI 正在拆成 10 頁";
+    button.textContent = `AI 正在拆成 ${pageCount} 頁`;
     message.textContent = "先整理故事節拍，再分配到每一頁；這一步不會生成圖片。";
     updateAvailability();
     try {
@@ -595,9 +768,9 @@
       const result = core.normalizeGenerationResult("text", payload);
       bookPages = normalizeBookPlan(result.content);
       renderBookPages();
-      byId("book-plan-workspace").hidden = false;
-      byId("book-plan-workspace").scrollIntoView({ behavior: "smooth", block: "start" });
-      message.textContent = "10 頁分鏡已建立。請逐頁確認文字、動作與待審內容，再開始生圖。";
+      setStudioStep(4);
+      byId("book-generation-message").textContent = `${pageCount} 頁分鏡已建立。請用頁碼逐頁確認，再開始生圖。`;
+      message.textContent = "";
       updateSessionFromResult(result);
     } catch (error) {
       message.textContent = error instanceof SyntaxError || !error.code
@@ -605,7 +778,7 @@
         : core.friendlyError(error);
     } finally {
       button.dataset.busy = "false";
-      button.textContent = "重新建立 10 頁分鏡";
+      button.textContent = `重新建立 ${plannedPageCount()} 頁分鏡`;
       updateAvailability();
     }
   });
@@ -614,10 +787,54 @@
     return card.querySelector(`[data-page-field="${name}"]`);
   }
 
+  function renderBookPageTabs() {
+    const tabs = byId("book-page-tabs");
+    tabs.replaceChildren();
+    bookPages.forEach((page, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.setAttribute("role", "tab");
+      button.textContent = String(page.pageNo);
+      button.dataset.pageNo = page.pageNo;
+      button.setAttribute("aria-label", `查看第 ${page.pageNo} 頁`);
+      button.setAttribute("aria-controls", "book-page-list");
+      button.addEventListener("click", () => setActiveBookPage(page.pageNo));
+      button.addEventListener("keydown", (event) => {
+        const delta = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+        if (!delta) return;
+        event.preventDefault();
+        const next = bookPages[(index + delta + bookPages.length) % bookPages.length];
+        setActiveBookPage(next.pageNo);
+        tabs.querySelector(`[data-page-no="${next.pageNo}"]`).focus({ preventScroll: true });
+      });
+      tabs.append(button);
+    });
+  }
+
+  function setActiveBookPage(pageNo) {
+    const page = bookPages.find((item) => item.pageNo === Number(pageNo));
+    if (!page) return;
+    selectedPageNumber = page.pageNo;
+    for (const card of byId("book-page-list").querySelectorAll("[data-page-no]")) {
+      card.hidden = Number(card.dataset.pageNo) !== selectedPageNumber;
+    }
+    for (const tab of byId("book-page-tabs").querySelectorAll("[data-page-no]")) {
+      const selected = Number(tab.dataset.pageNo) === selectedPageNumber;
+      tab.setAttribute("aria-selected", String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+    }
+    const index = bookPages.findIndex((item) => item.pageNo === selectedPageNumber);
+    byId("previous-book-page").disabled = index <= 0;
+    byId("next-book-page").disabled = index < 0 || index >= bookPages.length - 1;
+    if (globalThis.matchMedia("(min-width: 921px)").matches) byId("studio-stage").scrollTop = 0;
+    updateStudioPreview();
+  }
+
   function renderBookPages() {
     const list = byId("book-page-list");
     list.replaceChildren();
     const template = byId("book-page-template");
+    if (!bookPages.some((page) => page.pageNo === selectedPageNumber)) selectedPageNumber = bookPages[0] ? bookPages[0].pageNo : null;
     bookPages.forEach((page) => {
       const fragment = template.content.cloneNode(true);
       const card = fragment.querySelector(".story-page-card");
@@ -635,6 +852,7 @@
           page[property] = field.value;
           if (fieldName === "function") card.querySelector(".page-function").textContent = field.value || `第 ${page.pageNo} 頁`;
           if (page.error && !page.result) { page.idempotencyKey = ""; page.retryable = false; }
+          if (selectedPageNumber === page.pageNo) updateStudioPreview();
         });
       }
       card.querySelector('[data-action="generate-page"]').addEventListener("click", () => generatePage(page.pageNo));
@@ -642,6 +860,8 @@
       list.append(fragment);
       renderPageState(page);
     });
+    renderBookPageTabs();
+    if (selectedPageNumber) setActiveBookPage(selectedPageNumber);
     updateBookProgress();
     updateAvailability();
   }
@@ -653,8 +873,6 @@
     const message = card.querySelector(".page-message");
     const generate = card.querySelector('[data-action="generate-page"]');
     const download = card.querySelector('[data-action="download-page"]');
-    const image = card.querySelector(".page-preview img");
-    const empty = card.querySelector(".page-preview-empty");
     generate.dataset.attempts = page.attempts;
     if (activePageNumber === page.pageNo) {
       status.textContent = "生成中";
@@ -666,10 +884,6 @@
       status.dataset.state = "success";
       generate.textContent = page.attempts >= 3 ? "已達 3 次上限" : "重新生成本頁";
       message.textContent = "請與前後頁並排檢查角色、服飾、圖紋、場景與畫風；AI 候選圖不代表已通過文化審訂。";
-      image.src = page.result.src;
-      image.alt = `${byId("book-title").value || "繪本"}第 ${page.pageNo} 頁候選圖`;
-      image.hidden = false;
-      empty.hidden = true;
       download.hidden = false;
     } else if (page.error) {
       status.textContent = page.retryable ? "失敗，可重試" : "需要修改";
@@ -682,6 +896,9 @@
       generate.textContent = "生成本頁無字候選圖";
       message.textContent = `第 ${page.pageNo} 頁尚未使用圖片額度。`;
     }
+    const tab = byId("book-page-tabs").querySelector(`[data-page-no="${page.pageNo}"]`);
+    if (tab) tab.dataset.state = page.result ? "complete" : activePageNumber === page.pageNo ? "loading" : page.error ? "error" : "idle";
+    if (selectedPageNumber === page.pageNo) updateStudioPreview();
   }
 
   function selectedVisualStyle() {
@@ -700,7 +917,9 @@
       `版面：${layoutLabels[page.layout] || layoutLabels.single}；${safeLabels[page.safeArea] || safeLabels.none}。`,
       ["two-panels", "three-panels", "four-panels"].includes(page.layout)
         ? "這是漫畫頁：分格邊界與閱讀順序要清楚，每格只呈現一個動作節點，整頁仍只推進同一個主要事件。"
-        : "這是繪本頁：以一個清楚主畫面呈現本頁主要事件。",
+        : ["class-poster", "event-poster"].includes(data.book_format)
+          ? "這是海報候選圖：以一個清楚主視覺呈現活動或班級氛圍，保留可後製放標題、日期與資訊的空白區。"
+          : "這是繪本頁：以一個清楚主畫面呈現本頁主要事件。",
       page.mustInclude ? `必須看得到：${page.mustInclude}。` : "",
       `旁白與對白只供排版理解，不可畫成文字：${page.narration}${page.dialogue ? `／${page.dialogue}` : ""}。`,
       `不可改寫：${data.locked_facts}。`,
@@ -735,16 +954,21 @@
   async function generatePage(pageNo) {
     const page = bookPages.find((item) => item.pageNo === pageNo);
     if (!page || activePageNumber) return;
+    setStudioStep(5);
+    setActiveBookPage(page.pageNo);
     const message = byId("book-generation-message");
     const referenceError = validateReferenceMetadata();
     if (referenceError) { message.textContent = referenceError; return; }
     if (byId("culture-mode").value === "verified-traditional" && !byId("culture-reviewed").checked) {
-      message.textContent = "這份分鏡可以繼續修改，但傳統服飾／圖紋尚未勾選真人審訂，所以不會送出圖片生成。";
-      byId("culture-reviewed").focus();
+      setStudioStep(2);
+      studioStepMessage(2).textContent = "傳統服飾／圖紋尚未勾選真人審訂，所以不會送出圖片生成。";
+      byId("culture-reviewed").focus({ preventScroll: true });
       return;
     }
     if (!page.visualPrompt.trim() || page.visualPrompt.trim().length < 3) {
-      message.textContent = `第 ${page.pageNo} 頁的「畫面與動作」至少要有 3 個字。`;
+      const card = byId("book-page-list").querySelector(`[data-page-no="${page.pageNo}"]`);
+      card.querySelector(".page-message").textContent = "「畫面與動作」至少要有 3 個字。";
+      pageField(card, "visual_prompt").focus({ preventScroll: true });
       return;
     }
     const sameRetry = page.error && page.retryable && page.idempotencyKey;
@@ -782,14 +1006,30 @@
 
   function updateBookProgress() {
     const completed = bookPages.filter((page) => page.result).length;
-    byId("book-progress-label").textContent = `${completed} / 10 頁已有圖片`;
+    const total = bookPages.length || plannedPageCount();
+    byId("book-progress-label").textContent = `${completed} / ${total} 頁已有圖片`;
     byId("book-progress-bar").value = completed;
-    byId("print-book").disabled = completed !== 10;
+    byId("book-progress-bar").max = total;
+    byId("book-progress-bar").textContent = `${completed} / ${total}`;
+    byId("print-book").disabled = completed !== total;
   }
 
   byId("generate-next-page").addEventListener("click", () => {
     const next = bookPages.find((page) => !page.result && page.attempts < 3);
-    if (next) generatePage(next.pageNo);
+    if (next) {
+      setActiveBookPage(next.pageNo);
+      generatePage(next.pageNo);
+    }
+  });
+
+  byId("previous-book-page").addEventListener("click", () => {
+    const index = bookPages.findIndex((page) => page.pageNo === selectedPageNumber);
+    if (index > 0) setActiveBookPage(bookPages[index - 1].pageNo);
+  });
+
+  byId("next-book-page").addEventListener("click", () => {
+    const index = bookPages.findIndex((page) => page.pageNo === selectedPageNumber);
+    if (index >= 0 && index < bookPages.length - 1) setActiveBookPage(bookPages[index + 1].pageNo);
   });
 
   function downloadPage(pageNo) {
@@ -819,7 +1059,7 @@
       notice: "圖片為候選稿；文化、語言、權利與公開狀態仍需真人確認。",
     };
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json;charset=utf-8" });
-    clickDownload(URL.createObjectURL(blob), `${core.safeFilename(data.book_title, "ten-page-book")}-storyboard.json`, true);
+    clickDownload(URL.createObjectURL(blob), `${core.safeFilename(data.book_title, "picture-book")}-storyboard.json`, true);
   });
 
   function renderPrintBook() {
@@ -831,7 +1071,7 @@
       sheet.className = "print-book-page";
       const heading = document.createElement("header");
       const pageLabel = document.createElement("span");
-      pageLabel.textContent = page.pageNo === 1 ? title : `${page.pageNo} / 10`;
+      pageLabel.textContent = page.pageNo === 1 ? title : `${page.pageNo} / ${bookPages.length}`;
       heading.append(pageLabel);
       const image = document.createElement("img");
       image.src = page.result.src;
@@ -855,7 +1095,7 @@
   }
 
   byId("print-book").addEventListener("click", () => {
-    if (bookPages.filter((page) => page.result).length !== 10) return;
+    if (bookPages.filter((page) => page.result).length !== bookPages.length) return;
     renderPrintBook();
     byId("book-print-area").setAttribute("aria-hidden", "false");
     globalThis.print();
@@ -866,6 +1106,7 @@
   toggleCultureFields();
   toggleCustomStyle();
   setupStyleLibrary();
+  setStudioStep(1);
   renderTextState();
   restoreSession();
 })();

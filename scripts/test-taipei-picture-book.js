@@ -43,6 +43,8 @@ const practiceStyles = read(path.join("practice", "styles.css"));
 const practiceCore = read(path.join("practice", "core.js"));
 const practiceApp = read(path.join("practice", "app.js"));
 const classIndex = fs.readFileSync(path.join(root, "class", "index.html"), "utf8");
+const seriesIndex = fs.readFileSync(path.join(root, "class", "taipei-ai", "index.html"), "utf8");
+const seriesStyles = fs.readFileSync(path.join(root, "class", "taipei-ai", "styles.css"), "utf8");
 
 const palette = {
   ink: "#0c2247",
@@ -72,8 +74,8 @@ for (const [token, value] of Object.entries({
 }
 
 assert.match(html, /<meta name="theme-color" content="#005fb8">/i, "theme color should use accessible brand blue");
-assert.match(html, /styles\.css\?v=20260903e/, "course stylesheet cache key is stale");
-assert.match(html, /app\.js\?v=20260903c/, "course script cache key is stale");
+assert.match(html, /styles\.css\?v=20260904b/, "course stylesheet cache key is stale");
+assert.match(html, /app\.js\?v=20260904b/, "course script cache key is stale");
 assert.match(workbench, /--ink:\s*#0c2247/i, "workbench navy token is stale");
 assert.match(workbench, /--accent:\s*#005fb8/i, "workbench action blue is stale");
 assert.match(workbench, /--orange:\s*#fca116/i, "workbench orange token is stale");
@@ -101,6 +103,8 @@ assert.match(styles, /\.reference-strip\s*{[\s\S]*?background:\s*var\(--blue-dar
 assert.match(styles, /\.reference-strip div div\s*{[^}]*flex-wrap:\s*wrap/, "reference links should wrap on narrow screens");
 assert.match(styles, /footer\s*{[\s\S]*?background:\s*var\(--ink\)/, "footer should use brand navy");
 assert.match(styles, /:focus-visible\s*{[\s\S]*?outline:\s*3px solid var\(--focus\)/, "focus ring should use the accessible focus token");
+assert.match(styles, /\.immersion-board\s*{[\s\S]*?grid-template-columns:\s*minmax\(220px, \.72fr\) minmax\(0, 1\.15fr\) minmax\(240px, \.72fr\)/, "immersive studio needs a three-column desktop layout");
+assert.match(styles, /@media \(max-width: 860px\)[\s\S]*?\.immersion-board\s*{\s*grid-template-columns:\s*1fr/, "immersive studio must collapse on mobile");
 
 assertContrast(palette.white, palette.blueDark, 4.5, "white on action blue");
 assertContrast(palette.white, palette.red, 4.5, "white on action red");
@@ -113,9 +117,15 @@ for (const id of ["workflow", "prompts", "yaml", "example", "gates", "downloads"
   assert.match(html, new RegExp(`id=["']${id}["']`), `missing section #${id}`);
 }
 assert.doesNotMatch(html, /3-HOUR ROUTE|三小時，先求走完整條線|查看完整 12 段時間表|本頁屬於北市府四堂/u, "internal schedule or boundary copy must not be public");
+assert.match(html, /IMMERSIVE STUDIO/, "course page should lead with immersive studio framing");
+for (const label of ["故事室", "角色室", "美術室", "分鏡桌", "生圖室", "出版桌"]) {
+  assert.match(html, new RegExp(label), `missing immersive studio step ${label}`);
+}
+assert.match(html, /4-6 頁小繪本/, "course page should use the single-class 4-6 page target");
+assert.match(html, /materials\/docs\/immersive-practice-plan\.md/, "immersive practice plan download is missing");
 
 assert.match(html, /<section class="practice-cta"[^>]+aria-labelledby="practice-cta-title">/, "course page needs a practice CTA after YAML");
-assert.match(html, /href="practice\/">開啟 AI 教材練習室<\/a>/, "practice CTA link is missing");
+assert.match(html, /href="practice\/">開啟 AI 繪本工作室<\/a>/, "practice CTA link is missing");
 assert(html.indexOf('id="yaml"') < html.indexOf('class="practice-cta"'), "practice CTA must follow the YAML lab");
 assert(html.indexOf('class="practice-cta"') < html.indexOf('id="example"'), "practice CTA must precede the classroom example");
 assert.match(styles, /\.practice-cta\s*{[\s\S]*?background:\s*var\(--blue-dark\)/, "practice CTA must use the course action color");
@@ -150,7 +160,7 @@ assert.match(teacherExamples, /answer\/16757456/, "teacher guide should cite off
 assert.match(teacherExamples, /answer\/16758265/, "teacher guide should cite official infographic guidance");
 assert.match(teacherExamples, /support\.google\.com\/gemininotebook\/answer\/16179559/, "teacher guide should cite official source-grounded chat guidance");
 assert.doesNotMatch(teacherExamples, /Captain|來源透明|原資料庫|實體 schema/i, "teacher guide must not expose internal source notes");
-assert.doesNotMatch(`${promptLibrary}\n${teacherGuide}\n${studentHandout}`, /6[–-]8 頁|6、7、8 頁/, "course planning should consistently use the fixed 10-page studio");
+assert.doesNotMatch(`${promptLibrary}\n${teacherGuide}\n${studentHandout}`, /固定 10 頁|10 頁故事|10 頁完整|線上 10 頁|10 張精修/, "course planning should consistently use the 4-6 page studio");
 
 const yamlPaths = Array.from(app.matchAll(/path:\s*"([^"]+\.yaml)"/g), (match) => match[1]);
 assert.equal(yamlPaths.length, 16, "YAML viewer should list 16 files");
@@ -193,7 +203,20 @@ assert(fs.existsSync(courseZip), "missing downloadable course ZIP");
 assert(fs.statSync(courseZip).size > 10_000_000, "course ZIP is unexpectedly small");
 
 assert.equal((classIndex.match(/<!doctype html>/gi) || []).length, 1, "class index must contain one HTML document");
-assert.equal((classIndex.match(/\/class\/taipei-ai\/2026-0904-picture-book\//g) || []).length, 2, "class index should link the route and its preview image once each");
-assert.match(classIndex, /北市府四堂課 · 獨立系列/, "class index must label the course as an independent series");
+assert.match(classIndex, /href="\/class\/taipei-ai\/"/, "class index should lead to the Taipei four-course hub");
+assert.match(classIndex, /2026 秋季四堂課/, "class index must label the Taipei series");
+assert.match(html, /href="\/class\/taipei-ai\/" aria-label="回到北市府四堂課首頁"/, "lesson page should return to the Taipei series hub");
 
-console.log("Taipei 9/4 picture-book course tests passed: palette, contrast, 40 prompts, teacher slide/infographic examples, 16 YAML files, assets, typography, responsive tools, practice CTA, ZIP and class entry.");
+assert.equal((seriesIndex.match(/class="course-card(?:\s|")/g) || []).length, 4, "Taipei series hub must show exactly four courses");
+for (const date of ["2026/9/4", "2026/9/11", "2026/9/18", "2026/10/2"]) {
+  assert.match(seriesIndex, new RegExp(date.replaceAll("/", "\\/")), `Taipei series hub is missing ${date}`);
+}
+assert.match(seriesIndex, /自己的繪本自己生！用 AI 生成專屬部落故事/, "first Taipei course title is missing");
+assert.equal((seriesIndex.match(/遊戲化教學術：把靜態教材變成超好玩的互動闖關/g) || []).length, 2, "the two game-based teaching sessions are missing");
+assert.match(seriesIndex, /拒絕加班！把 Gemini 訓練成最懂你的 AI 備課助理/, "fourth Taipei course title is missing");
+assert.equal((seriesIndex.match(/<button[^>]+class="course-status"[^>]+disabled/g) || []).length, 3, "future Taipei sessions must use three disabled building-state buttons");
+assert.doesNotMatch(seriesIndex, /2026-0911|2026-0918|2026-1002/, "building sessions must not link to nonexistent routes");
+assert.match(seriesStyles, /@media \(max-width: 480px\)[\s\S]*?\.course-card\s*{/, "Taipei series hub needs a 390px card layout");
+assert.doesNotMatch(`${seriesIndex}\n${seriesStyles}`, /Captain|船長|—|–/, "Taipei series hub must not expose internal labels or long dash characters");
+
+console.log("Taipei course tests passed: four-course hub, 9/4 immersive lesson, palette, contrast, 40 prompts, teacher examples, YAML files, assets, responsive tools, practice CTA and ZIP.");

@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="北市府 AI 教學應用 9/4 課程：用 NotebookLM、聊天機器人與 YAML 工作流，完成可核對、可修改的 AI 繪本素材。">
+  <meta name="description" content="北市府 AI 教學應用 9/4 課程：進入 AI 繪本創作工作室，完成 4-6 頁小繪本，再把作品轉成教師教材。">
   <meta name="theme-color" content="#005fb8">
   <meta property="og:title" content="自己的繪本自己生！｜北市府 AI 教學應用">
-  <meta property="og:description" content="從來源事實包、故事節拍、YAML 到單頁繪圖工單，三小時完成一頁可編輯的繪本作品。">
+  <meta property="og:description" content="從故事室、角色室、美術室、分鏡桌到生圖室，三小時完成一份可延伸的繪本教材包。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://calumai.com/class/taipei-ai/2026-0904-picture-book/">
   <meta property="og:image" content="https://calumai.com/class/taipei-ai/2026-0904-picture-book/assets/images/page-cover.png">
   <title>自己的繪本自己生！｜北市府 AI 教學應用</title>
   <link rel="icon" href="/assets/calumai-logo-mark.png">
   <link rel="preload" href="assets/fonts/iansui-course-display.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260903e">
+  <link rel="stylesheet" href="styles.css?v=20260904b">
   <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
@@ -22,11 +22,11 @@
 
   <header class="site-header">
     <div class="shell header-inner">
-      <a class="brand" href="/class/" aria-label="回到 CALUMAI 課程首頁">CALUMAI <span>/ CLASS</span></a>
+      <a class="brand" href="/class/taipei-ai/" aria-label="回到北市府四堂課首頁">CALUMAI <span>/ CLASS</span></a>
       <nav aria-label="本課程導覽">
-        <a href="#workflow">流程</a>
+        <a href="#workflow">沉浸任務</a>
         <a href="#prompts">提示詞</a>
-        <a href="#yaml">YAML</a>
+        <a href="#yaml">規格卡</a>
         <a href="#example">範例</a>
         <a href="#downloads">下載</a>
       </nav>
@@ -39,15 +39,6 @@
       <div class="hero-copy">
         <p class="kicker">臺北市政府 AI 教學應用課程 · 09.04 · 19:00-22:00</p>
         <h1>自己的繪本<br><em>自己生！</em></h1>
-        <p class="hero-lede">用 AI 生成專屬故事之前，先學會把來源、創作決定與真人審訂分清楚。這堂課會帶你做出能繼續修改、也知道怎麼驗收的繪本素材。</p>
-        <div class="hero-actions">
-          <a class="button primary" href="#workflow">開始上課</a>
-        </div>
-        <dl class="hero-stats" aria-label="課程摘要">
-          <div><dt>180</dt><dd>分鐘實作</dd></div>
-          <div><dt>3</dt><dd>道人工作業關卡</dd></div>
-          <div><dt>7</dt><dd>類 YAML 卡片</dd></div>
-        </dl>
       </div>
 
       <div class="hero-art" aria-label="課堂範例繪本預覽">
@@ -59,54 +50,79 @@
         <div class="art-note note-one"><b>01</b><span>先鎖來源</span></div>
         <div class="art-note note-two"><b>02</b><span>一次一頁</span></div>
       </div>
-    </section><section class="section shell" id="workflow">
+    </section>
+
+    <section class="section shell" id="workflow">
       <div class="section-heading">
-        <p class="eyebrow">THE WORKFLOW</p>
-        <h2>三種角色，各做擅長的事</h2>
-        <p>不是把同一個問題丟給三個工具，而是讓每一步都有明確責任。</p>
+        <p class="eyebrow">IMMERSIVE STUDIO</p>
+        <h2>老師帶著學生，把作品一步一步做出來</h2>
+        <p>這一頁不是自學文章，而是你上課投影用的節奏圖。先示範一輪，再讓學生進練習室完成自己的作品。</p>
       </div>
 
-      <div class="role-flow" aria-label="NotebookLM、聊天機器人與人類的工作分工">
-        <article class="role-card notebook-card">
-          <span class="role-no">01</span>
-          <p class="role-tool">NotebookLM</p>
-          <h3>查、拆、對</h3>
+      <div class="immersion-board" aria-label="AI 繪本創作工作室六個工作區">
+        <ol class="studio-steps">
+          <li class="is-active"><b>01</b><span>故事室</span></li>
+          <li><b>02</b><span>角色室</span></li>
+          <li><b>03</b><span>美術室</span></li>
+          <li><b>04</b><span>分鏡桌</span></li>
+          <li><b>05</b><span>生圖室</span></li>
+          <li><b>06</b><span>出版桌</span></li>
+        </ol>
+
+        <div class="studio-task">
+          <p class="task-label">老師現場帶做</p>
+          <h3>先跑一遍完整流程，再放學生自己做</h3>
+          <p>開場先展示完成品，接著示範如何從一個故事種子，固定角色、畫風與參考圖，再拆成 4-6 頁分鏡。學生跟做時，每次只完成當前工作區，不讓大家散掉。</p>
+          <div class="task-actions">
+            <a class="button primary" href="practice/">進入繪本工作室</a>
+            <a class="button secondary" href="#prompts">查看任務提示詞</a>
+          </div>
+        </div>
+
+        <aside class="studio-wall" aria-label="作品牆">
+          <p class="wall-label">作品會逐步累積</p>
           <ul>
-            <li>盤點來源與授權紀錄</li>
-            <li>拆出事件、人物與因果</li>
-            <li>找衝突、缺口並附引用</li>
+            <li>故事種子</li>
+            <li>固定角色設定</li>
+            <li>固定美術風格</li>
+            <li>4-6 格分鏡腳本</li>
+            <li>每頁 AI 圖像 Prompt</li>
+            <li>可下載的繪本頁面</li>
           </ul>
-          <p class="role-output">產出：故事事實包</p>
-        </article>
-        <span class="flow-arrow" aria-hidden="true">→</span>
-        <article class="role-card chat-card">
-          <span class="role-no">02</span>
-          <p class="role-tool">聊天機器人</p>
-          <h3>想、寫、規劃</h3>
-          <ul>
-            <li>提出故事節拍與分頁方案</li>
-            <li>把白話整理成 YAML</li>
-            <li>組成單頁無字生圖工單</li>
-          </ul>
-          <p class="role-output">產出：可執行規格</p>
-        </article>
-        <span class="flow-arrow" aria-hidden="true">→</span>
-        <article class="role-card human-card">
-          <span class="role-no">03</span>
-          <p class="role-tool">作者與審訂者</p>
-          <h3>審、改、定</h3>
-          <ul>
-            <li>決定故事與創作空間</li>
-            <li>確認語言、文化與權利</li>
-            <li>判斷作品能否公開</li>
-          </ul>
-          <p class="role-output">產出：具名決定</p>
-        </article>
+        </aside>
       </div>
 
       <div class="outcome-strip">
-        <div><span>當堂保底</span><b>10 頁文字分鏡＋1 頁依參考圖完成生成與驗收</b></div>
-        <div><span>挑戰目標</span><b>逐頁審訂並完成一本 10 頁繪本或漫畫</b></div>
+        <div><span>上半堂</span><b>完成 4-6 頁小繪本的故事、角色、美術與第一張候選圖</b></div>
+        <div><span>下半堂</span><b>用 NotebookLM 把作品轉成簡報、資訊圖表與課堂任務</b></div>
+      </div>
+
+      <div class="teaching-run" aria-label="老師帶課節奏">
+        <article>
+          <span>00:00-00:10</span>
+          <h3>先看成品</h3>
+          <p>不用先講工具，直接告訴學生：今天要完成一本 4-6 頁的小繪本或漫畫草稿。</p>
+        </article>
+        <article>
+          <span>00:10-00:30</span>
+          <h3>老師示範一輪</h3>
+          <p>你投影練習室，示範選作品類型、寫故事、上傳參考圖、固定畫風，再建立第一版分鏡。</p>
+        </article>
+        <article>
+          <span>00:30-01:40</span>
+          <h3>學生闖關製作</h3>
+          <p>全班照故事室、角色室、美術室、分鏡桌走；每一關只做一件事，老師巡場看卡點。</p>
+        </article>
+        <article>
+          <span>01:40-02:20</span>
+          <h3>生圖與修正</h3>
+          <p>一次只生成一頁，現場用失敗圖教學生怎麼改提示詞：角色、構圖、留白、不要出現的內容。</p>
+        </article>
+        <article>
+          <span>02:20-03:00</span>
+          <h3>轉成教師教材</h3>
+          <p>下半堂再進 NotebookLM，把作品變成簡報大綱、資訊圖表、閱讀提問或課堂活動。</p>
+        </article>
       </div>
     </section>
 
@@ -216,10 +232,10 @@
       <div class="shell practice-cta-inner">
         <div>
           <p class="eyebrow">CLASSROOM PRACTICE</p>
-          <h2 id="practice-cta-title">把 YAML 卡帶進 AI 練習室</h2>
-          <p>輸入講師提供的課堂碼，在限定時間與額度內製作 10 頁繪本或漫畫，逐頁生成無字候選圖。結果仍需真人審訂。</p>
+          <h2 id="practice-cta-title">進入沉浸式 AI 繪本工作室</h2>
+          <p>輸入講師提供的課堂碼，在限定時間與額度內完成故事、角色、分鏡與候選圖。結果仍需真人審訂。</p>
         </div>
-        <a class="button primary" href="practice/">開啟 AI 教材練習室</a>
+        <a class="button primary" href="practice/">開啟 AI 繪本工作室</a>
       </div>
     </section>
 
@@ -277,7 +293,8 @@
         <a class="download-card" href="materials/docs/student-handout.md" download><span>上課用</span><h3>學員操作講義</h3><p>跟著步驟完成來源、故事、YAML、生圖與驗收。</p><b>下載 Markdown ↓</b></a>
         <a class="download-card" href="materials/docs/prompt-library.md" download><span>提示詞</span><h3>完整提示詞庫</h3><p>繪本核對、教師備課與聊天規劃三組任務全部收錄。</p><b>下載 Markdown ↓</b></a>
         <a class="download-card" href="materials/docs/notebooklm-teacher-examples.md" download><span>教師用</span><h3>NotebookLM 教師範例包</h3><p>20 種實例；簡報與資訊圖表優先，另含備課、評量與 Studio 工具。</p><b>下載 Markdown ↓</b></a>
-        <a class="download-card" href="materials/docs/red-umbrella-example.md" download><span>備援</span><h3>紅雨傘完整故事</h3><p>原始六頁節拍與設定已整理，可再拆成練習室固定 10 頁。</p><b>下載 Markdown ↓</b></a>
+        <a class="download-card" href="materials/docs/immersive-practice-plan.md" download><span>規劃稿</span><h3>沉浸式練習網頁規劃</h3><p>單堂完成型設計，六個工作區與上下半堂教學節奏。</p><b>下載 Markdown ↓</b></a>
+        <a class="download-card" href="materials/docs/red-umbrella-example.md" download><span>備援</span><h3>紅雨傘完整故事</h3><p>原始六頁節拍與設定已整理，可作為 4-6 頁練習的低風險範例。</p><b>下載 Markdown ↓</b></a>
         <a class="download-card" href="materials/docs/preclass-release-checklist.md" download><span>必填</span><h3>上課前放行單</h3><p>授權、語言文化與公開範圍必須由具名真人確認。</p><b>下載 Markdown ↓</b></a>
         <a class="download-card" href="materials/docs/teacher-guide.md" download><span>講師用</span><h3>完整三小時教案</h3><p>時間、示範重點、停損規則與交付標準。</p><b>下載 Markdown ↓</b></a>
       </div>
@@ -302,7 +319,7 @@
     </div>
   </footer>
 
-  <script src="app.js?v=20260903c"></script>
+  <script src="app.js?v=20260904b"></script>
 </body>
 </html>
 
