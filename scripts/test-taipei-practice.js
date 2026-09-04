@@ -174,6 +174,14 @@ const session = core.normalizeSession({
 assert.equal(session.nickname, "小晴");
 assert.equal(session.classroom.status, "open");
 assert.deepEqual(session.remaining, { text: 2, image: 1 });
+const unlimitedSession = core.normalizeSession({
+  ok: true,
+  session: { nickname: "老師", mode: "production", expires_at: "2026-09-04T14:00:00Z" },
+  classroom: { status: "open", opens_at: "2026-09-04T11:00:00Z", closes_at: "2026-09-04T14:00:00Z" },
+  remaining: { text: null, image: 9 },
+  classroom_remaining: { text: null, image: 959 }
+});
+assert.deepEqual(unlimitedSession.remaining, { text: null, image: 9 }, "an unlimited text quota must not be normalized to zero");
 
 // The prompt assistant accepts clean or fenced JSON and rejects incomplete AI output.
 assert.deepEqual(core.parsePromptAssistantResult(JSON.stringify({
@@ -275,7 +283,7 @@ assert.match(app, /highestStep\s*=\s*5[\s\S]*?setStudioStep\(5\)/, "confirming t
 assert.match(app, /buildImageDownload\(/, "successful images must remain downloadable");
 
 // Learner-facing copy must match the five-gate classroom flow on every viewport.
-assert.match(html, /剩餘 AI 建議次數/, "text quota label must say what the number means");
+assert.match(html, /<dt>AI 建議<\/dt><dd id="personal-text-quota">不限次<\/dd>/, "AI suggestions must be labelled as unlimited");
 assert.match(html, /剩餘圖片生成次數/, "image quota label must say what the number means");
 assert.match(html, /AI 產出先當草稿/, "AI output must be presented as a draft");
 assert.match(html, /扣掉 1 次圖片生成次數/, "the image action must explain its quota cost");
@@ -284,6 +292,12 @@ assert.match(app, /錯誤代碼：/, "error details must keep a plain-language c
 assert.match(app, /查詢編號：/, "error details must keep a plain-language request ID label");
 assert.match(app, /HTTP 狀態碼：/, "error details must keep a plain-language HTTP label");
 assert.match(app, /結束時間請以老師公告為準/, "a missing classroom end time needs a useful fallback");
+assert.doesNotMatch(app, /previewQuota\.text/, "local preview must not check or decrement a text quota");
+const availabilityBlock = sourceBlock(app, "function updateAvailability", "function errorReference");
+assert.doesNotMatch(availabilityBlock, /textRemaining|remaining\.text/, "prompt review availability must not depend on a text quota");
+assert.match(availabilityBlock, /review-prompt-button"\)\.disabled\s*=\s*textBusy\s*\|\|\s*imageBusy/, "prompt review must only be disabled while generation is busy");
+assert.match(app, /personal-text-quota"\)\.textContent\s*=\s*"不限次"/, "quota display must always show unlimited AI suggestions");
+assert.match(app, /previewQuota\.image\s*-=\s*1/, "image quota behaviour must stay intact");
 assert.doesNotMatch(`${html}\n${app}`, /課堂碼登入|重新登入|工作階段|右側預覽/, "learner copy contains account, system-session, or desktop-only wording");
 assert.doesNotMatch(coreSource, /請先上傳至少一張有權使用的參考圖|參考圖只接受 PNG|參考圖總量太大/, "obsolete reference-image instructions must not point to a missing field");
 

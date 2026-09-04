@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Changed the 9/4 practice room to show AI prompt suggestions as unlimited and removed the frontend text-quota lockout while preserving the separate image quota.
+- Restored the removed image-style catalog as a standalone, classroom-code-free page with 14 complete presets shown through original same-scene comparison images, 43 searchable style modifiers, category filters, selection mixing and copy controls; it is linked from the 9/4 lesson rather than embedded in the practice room.
+- Restored a direct `8 關暖身` entry in the first stage of the Taipei 9/4 lesson; the warmup route itself had remained online and unchanged.
 - Added the live classroom attendance link to the Taipei four-course homepage and restored the 9/4 lesson's section headings to the same standard sans-serif type used across `/class`.
 - Replaced the Taipei 9/4 oversized campaign hero with a compact course title and slide-deck action, aligned the lesson and interactive introduction to the existing `/class` ink, paper, teal and gold design tokens, and added a direct interactive-introduction button to the four-course hub.
 - Added a native interactive prompt introduction before the Taipei 9/4 image workflow, with before-and-after comparisons, click-to-build prompts, classroom examples, misconception feedback, a three-question quiz and a clear handoff to the existing warmup. It replaces the supplied CDN-dependent design runtime with same-site HTML, CSS and JavaScript for classroom reliability and responsive use.

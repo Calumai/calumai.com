@@ -7,7 +7,7 @@
   const byId = (id) => document.getElementById(id);
   const previewMode = ["127.0.0.1", "localhost"].includes(globalThis.location.hostname)
     || globalThis.location.protocol === "file:";
-  const previewQuota = { text: 2, image: 1 };
+  const previewQuota = { image: 1 };
   const purposeLabels = {
     "picture-book": "繪本插畫",
     comic: "漫畫頁",
@@ -84,7 +84,7 @@
         closes_at: "2099-01-01T23:59:59Z"
       },
       remaining: { ...previewQuota },
-      classroom_remaining: { text: 80, image: 40 }
+      classroom_remaining: { image: 40 }
     };
   }
 
@@ -114,14 +114,6 @@
       };
     }
     if (pathname === "/generate/text") {
-      if (previewQuota.text <= 0) {
-        return {
-          ok: false,
-          request_id: "local-preview",
-          error: { code: "SESSION_QUOTA_EXHAUSTED", message: "本機預覽的可用次數已用完。", retryable: false }
-        };
-      }
-      previewQuota.text -= 1;
       const original = String(body && body.source_notes || "一個清楚的主題").trim();
       return {
         ok: true,
@@ -133,7 +125,7 @@
         }),
         usage: { input_tokens: 0, output_tokens: 0, total_tokens: 0 },
         remaining: { ...previewQuota },
-        classroom_remaining: { text: 80, image: 40 }
+        classroom_remaining: { image: 40 }
       };
     }
     return {
@@ -292,9 +284,8 @@
   }
 
   function updateQuotaDisplay(remaining) {
-    const text = remaining && Number.isFinite(remaining.text) ? remaining.text : null;
     const image = remaining && Number.isFinite(remaining.image) ? remaining.image : null;
-    byId("personal-text-quota").textContent = text === null ? "-" : String(text);
+    byId("personal-text-quota").textContent = "不限次";
     byId("personal-image-quota").textContent = image === null ? "-" : String(image);
   }
 
@@ -371,10 +362,9 @@
   function updateAvailability() {
     const textBusy = assistState.phase === "loading";
     const imageBusy = imageState.phase === "loading";
-    const textRemaining = currentSession && currentSession.remaining ? currentSession.remaining.text : null;
     const imageRemaining = currentSession && currentSession.remaining ? currentSession.remaining.image : null;
-    byId("review-prompt-button").disabled = textBusy || imageBusy || textRemaining === 0;
-    byId("feedback-retry").disabled = textBusy || imageBusy || textRemaining === 0;
+    byId("review-prompt-button").disabled = textBusy || imageBusy;
+    byId("feedback-retry").disabled = textBusy || imageBusy;
     byId("show-revised-prompt").disabled = textBusy || imageBusy;
     byId("confirm-revised-prompt").disabled = textBusy || imageBusy;
     byId("generate-image-button").disabled = textBusy || imageBusy || imageRemaining === 0;

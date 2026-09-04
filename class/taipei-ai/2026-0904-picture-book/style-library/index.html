@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="給老師使用的 AI 圖片風格大全，可搜尋、分類、組合並複製風格提示詞。">
+  <meta name="theme-color" content="#147d7e">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta property="og:title" content="AI 圖片風格大全｜CALUMAI CLASS">
+  <meta property="og:description" content="從圖卡挑選喜歡的畫面感，一鍵組合成可直接使用的風格提示詞。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calumai.com/class/taipei-ai/2026-0904-picture-book/style-library/">
+  <title>AI 圖片風格大全｜CALUMAI CLASS</title>
+  <link rel="icon" href="/assets/calumai-logo-mark.png">
+  <link rel="stylesheet" href="styles.css?v=20260904d">
+  <script src="app.js?v=20260904c" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#style-grid">跳到風格圖卡</a>
+
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="/class/taipei-ai/">CALUMAI <span>/ CLASS</span></a>
+      <nav aria-label="風格大全導覽">
+        <a href="../">回到 9/4 課程</a>
+        <a href="../practice/">AI 圖片工作室</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="library-intro shell" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <p class="kicker">先找感覺，再寫提示詞</p>
+        <h1 id="page-title">AI 圖片風格大全</h1>
+        <p>先用同一個雨後公園場景比較 14 組完整畫風，再挑鏡位、媒材與質感加進去。</p>
+      </div>
+
+      <aside class="selection-panel" aria-labelledby="selection-title">
+        <div class="selection-heading">
+          <h2 id="selection-title">我的風格組合</h2>
+          <span id="selection-count">尚未選擇</span>
+        </div>
+        <p id="selection-empty">可以只選一個，也能混搭兩到三個。</p>
+        <div class="selection-tags" id="selection-tags" aria-label="已選風格"></div>
+        <textarea id="combined-prompt" rows="3" readonly aria-label="組合後的英文風格提示詞" hidden></textarea>
+        <div class="selection-actions">
+          <button type="button" class="button primary" id="copy-combined" disabled>複製組合提示詞</button>
+          <button type="button" class="button quiet" id="clear-selection" disabled>全部清除</button>
+        </div>
+        <p class="status" id="copy-status" role="status" aria-live="polite"></p>
+      </aside>
+    </section>
+
+    <section class="catalog-section" aria-labelledby="catalog-title">
+      <div class="catalog-tools">
+        <div class="shell tools-inner">
+          <h2 id="catalog-title" class="visually-hidden">搜尋圖片風格</h2>
+          <label class="search-field" for="style-search">
+            <span>搜尋風格</span>
+            <input id="style-search" type="search" autocomplete="off" placeholder="例如：水彩、漫畫、紙雕、cinematic">
+          </label>
+          <label class="category-field" for="style-category">
+            <span>分類</span>
+            <select id="style-category">
+              <option value="全部">全部分類</option>
+            </select>
+          </label>
+          <p class="result-count" id="result-count" aria-live="polite">正在整理風格...</p>
+        </div>
+        <div class="shell category-strip" id="category-strip" aria-label="快速分類"></div>
+      </div>
+
+      <div class="shell catalog-body">
+        <div class="style-grid" id="style-grid" aria-label="圖片風格圖卡"></div>
+        <div class="empty-state" id="empty-state" hidden>
+          <h2>沒有找到相符的風格</h2>
+          <p>換一個關鍵字，或切回全部分類。</p>
+          <button type="button" class="button secondary" id="reset-search">顯示全部風格</button>
+        </div>
+        <noscript><p class="empty-state">請開啟瀏覽器 JavaScript，才能搜尋與組合風格提示詞。</p></noscript>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-inner">
+      <span>CALUMAI / AI 圖片風格大全</span>
+      <a href="../">回到 9/4 課程</a>
+    </div>
+  </footer>
+</body>
+</html>

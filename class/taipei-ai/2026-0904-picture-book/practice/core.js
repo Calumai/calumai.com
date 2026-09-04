@@ -103,9 +103,13 @@
   }
 
   function normalizeRemaining(value) {
+    const quotaValue = (raw) => {
+      if (raw === null || raw === undefined || raw === "") return null;
+      return Number.isFinite(Number(raw)) ? Number(raw) : null;
+    };
     return {
-      text: Number.isFinite(Number(value && value.text)) ? Number(value.text) : null,
-      image: Number.isFinite(Number(value && value.image)) ? Number(value.image) : null
+      text: quotaValue(value && value.text),
+      image: quotaValue(value && value.image)
     };
   }
 

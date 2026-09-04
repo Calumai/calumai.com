@@ -199,6 +199,11 @@ a { -webkit-tap-highlight-color: transparent; }
   color: var(--ink-soft);
 }
 
+.section-heading > .button {
+  width: fit-content;
+  margin-top: .8rem;
+}
+
 .route-section {
   padding-block: clamp(60px, 7vw, 88px);
   border-block: 1px solid var(--line);
@@ -316,6 +321,15 @@ a { -webkit-tap-highlight-color: transparent; }
 .button.secondary:hover { background: var(--blue-soft); }
 
 .route-card .button { width: 100%; margin-top: auto; }
+
+.route-actions {
+  display: grid;
+  align-self: stretch;
+  margin-top: auto;
+  gap: .6rem;
+}
+
+.route-card .route-actions .button { margin-top: 0; }
 
 .route-card.is-featured .button.primary {
   color: var(--blue-dark);
@@ -942,6 +956,16 @@ footer a:focus-visible { outline-color: var(--white); }
     grid-row: 1 / span 4;
   }
 
+  .route-card .route-actions {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+  }
+
+  .route-card .route-actions .button {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
   .prompt-studio { grid-template-columns: 1fr; }
   .prompt-sidebar { border-right: 0; border-bottom: 1px solid var(--line); }
   .style-method-grid { grid-template-columns: 1fr; }
@@ -975,6 +999,7 @@ footer a:focus-visible { outline-color: var(--white); }
   }
 
   .route-card .button { width: 100%; }
+  .route-card .route-actions { width: 100%; }
 
   .tool-drawer > summary {
     align-items: flex-start;

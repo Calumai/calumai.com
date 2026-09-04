@@ -48,6 +48,9 @@ const warmupApp = read(path.join("warmup", "app.js"));
 const promptIntroHtml = read(path.join("prompt-intro", "index.html"));
 const promptIntroStyles = read(path.join("prompt-intro", "styles.css"));
 const promptIntroApp = read(path.join("prompt-intro", "app.js"));
+const styleLibraryHtml = read(path.join("style-library", "index.html"));
+const styleLibraryStyles = read(path.join("style-library", "styles.css"));
+const styleLibraryApp = read(path.join("style-library", "app.js"));
 const classIndex = fs.readFileSync(path.join(root, "class", "index.html"), "utf8");
 const classStyles = fs.readFileSync(path.join(root, "class", "styles.css"), "utf8");
 const seriesIndex = fs.readFileSync(path.join(root, "class", "taipei-ai", "index.html"), "utf8");
@@ -80,7 +83,7 @@ for (const [token, value] of Object.entries({
 }
 
 assert.match(html, /<meta name="theme-color" content="#147d7e">/i, "theme color should match /class teal");
-assert.match(html, /styles\.css\?v=20260904n/, "course stylesheet cache key is stale");
+assert.match(html, /styles\.css\?v=20260904o/, "course stylesheet cache key is stale");
 assert.match(html, /app\.js\?v=20260904h/, "course script cache key is stale");
 assert.match(workbench, /--ink:\s*#0c2247/i, "workbench navy token is stale");
 assert.match(workbench, /--accent:\s*#005fb8/i, "workbench action blue is stale");
@@ -141,6 +144,8 @@ for (const stage of ["先看懂", "再做出", "最後轉教材"]) {
 }
 assert.match(html, /<h3>提示詞入門互動教學<\/h3>/, "first stage should introduce the interactive prompt lesson");
 assert.match(html, /href="prompt-intro\/">開始互動教學<\/a>/, "first stage should link to the prompt introduction");
+assert.match(html, /href="warmup\/">直接進入 8 關暖身<\/a>/, "first stage should retain a direct link to the eight-step warmup");
+assert.match(styles, /\.route-actions\s*\{[\s\S]*?display:\s*grid;[\s\S]*?gap:\s*\.6rem;/, "multiple first-stage actions need a stable stacked layout");
 assert.match(html, /class="route-card is-featured"[\s\S]*?<h3>AI 圖片工作室<\/h3>/, "second stage should match the live five-gate image workflow");
 assert.doesNotMatch(html, /class="route-card[^\"]*no-action/, "linked course stages must not keep the obsolete no-action layout");
 assert.match(html, /看看 AI 的建議，再用修正版生成圖片/, "second stage should explain the current AI review flow");
@@ -221,6 +226,56 @@ assert.doesNotMatch(`${promptIntroHtml}\n${promptIntroStyles}\n${promptIntroApp}
 assert.doesNotMatch(`${promptIntroHtml}\n${promptIntroApp}`, /fetch\s*\(|XMLHttpRequest|Authorization|API[_ -]?Key|localStorage/i, "prompt introduction must stay local and private");
 assert.doesNotMatch(`${promptIntroHtml}\n${promptIntroStyles}\n${promptIntroApp}`, /[—–]/, "prompt introduction must not use long dash characters");
 assert.match(warmupStyles, /@media \(prefers-reduced-motion: reduce\)/, "warmup must respect reduced motion");
+
+for (const relative of ["index.html", "styles.css", "app.js"]) {
+  assert(fs.existsSync(path.join(route, "style-library", relative)), `missing style-library/${relative}`);
+}
+assert.match(styleLibraryHtml, /<html lang="zh-Hant">/, "style library needs the correct page language");
+assert.match(styleLibraryHtml, /<title>AI 圖片風格大全｜CALUMAI CLASS<\/title>/, "style library title is missing");
+assert.match(styleLibraryHtml, /Content-Security-Policy[^>]+connect-src 'none'/, "style library must not call an external API");
+assert.match(styleLibraryHtml, /styles\.css\?v=20260904d/, "style library stylesheet cache key is stale");
+assert.match(styleLibraryHtml, /app\.js\?v=20260904c/, "style library script cache key is stale");
+assert.match(styleLibraryHtml, /href="\.\.\/">回到 9\/4 課程<\/a>/, "style library needs a return link to the lesson");
+assert.match(styleLibraryHtml, /id="style-search"[^>]+type="search"/, "style library needs keyword search");
+assert.match(styleLibraryHtml, /id="style-category"/, "style library needs a category selector");
+assert.match(styleLibraryHtml, /id="category-strip"[^>]+aria-label="快速分類"/, "style library needs quick category controls");
+assert.match(styleLibraryHtml, /id="result-count"[^>]+aria-live="polite"/, "style library needs an accessible result count");
+assert.match(styleLibraryHtml, /id="copy-combined"/, "style library needs a combined-copy action");
+assert.match(styleLibraryHtml, /id="empty-state"[^>]+hidden/, "style library needs a no-results state");
+assert.equal((styleLibraryApp.match(/\{ category: "完整畫風"/g) || []).length, 14, "style library should expose 14 ready-to-use presets");
+assert.equal((styleLibraryApp.match(/^\s*\["(?:攝影|角度效果|繪畫媒材|材料質感|動畫漫畫|藝術流派|特色風格)"/gm) || []).length, 43, "style library should expose 43 mixable modifiers");
+for (const category of ["完整畫風", "攝影", "角度效果", "繪畫媒材", "材料質感", "動畫漫畫", "藝術流派", "特色風格"]) {
+  assert.match(styleLibraryApp, new RegExp(`"${category}"`), `style library is missing category ${category}`);
+}
+assert.match(styleLibraryApp, /selected\.size >= 3/, "style combinations must stop at three choices");
+assert.match(styleLibraryApp, /paletteIndex:\s*index % 8/, "each style should keep one stable preview palette across filters");
+assert.match(styleLibraryApp, /const completePatterns = \[[\s\S]*?"ink"[\s\S]*?"comic"[\s\S]*?"pixel"/, "complete presets should not all share one generic preview treatment");
+assert.match(styleLibraryApp, /previewSheet:\s*style\.category === "完整畫風"/, "complete presets should map to generated demonstration sheets");
+assert.match(styleLibraryApp, /preview\.setAttribute\("aria-label", `\$\{style\.title\}示範圖`\)/, "generated style examples need useful accessible labels");
+assert.match(styleLibraryApp, /function updateCardStates\(\)/, "selection updates should preserve the active card and keyboard focus");
+assert.match(styleLibraryApp, /const copied = document\.execCommand\("copy"\)[\s\S]*?helper\.remove\(\)[\s\S]*?if \(!copied\) throw/, "clipboard fallback must clean up and report a rejected copy");
+assert.match(styleLibraryApp, /normalized\(`\$\{style\.title\} \$\{style\.prompt\} \$\{style\.description\} \$\{style\.category\}`\)/, "style search should cover Chinese labels and English prompts");
+assert.match(styleLibraryApp, /copyText\(combinedPrompt\.value\)/, "combined styles should use the copy helper");
+assert.doesNotMatch(styleLibraryApp, /\.innerHTML|fetch\s*\(|XMLHttpRequest|localStorage|sessionStorage/, "style library must not inject HTML, call an API or persist visitor content");
+assert.doesNotMatch(`${styleLibraryHtml}\n${styleLibraryStyles}\n${styleLibraryApp}`, /Authorization|API[_ -]?Key|OPENAI|VECTORENGINE|Captain|船長|Balung|youmind|oxxostudio|來源透明/i, "style library must not expose secrets or internal source labels");
+assert.doesNotMatch(`${styleLibraryHtml}\n${styleLibraryApp}`, /[—–]/, "style library learner copy should use regular hyphens");
+assert.match(styleLibraryStyles, /grid-template-columns:\s*repeat\(12, minmax\(0, 1fr\)\)/, "style library should use a responsive gallery grid");
+assert.match(styleLibraryStyles, /@media \(max-width: 390px\)/, "style library needs a 390px layout check");
+assert.match(styleLibraryStyles, /@media \(max-width: 620px\)[\s\S]*?\.catalog-tools\s*\{\s*position:\s*static/, "style search controls must not occupy half the mobile viewport while scrolling");
+assert.match(styleLibraryStyles, /@media \(prefers-reduced-motion: reduce\)/, "style library must respect reduced motion");
+assert.match(styleLibraryStyles, /--font-body:\s*Arial,\s*"Noto Sans TC"/, "style library should share the /class font stack");
+assert.match(styleLibraryStyles, /\.style-prompt\s*\{[\s\S]*?font-size:\s*\.82rem;[\s\S]*?overflow-wrap:\s*anywhere/, "English style prompts should stay readable instead of being cut off");
+assert.doesNotMatch(`${styleLibraryHtml}\n${styleLibraryStyles}`, /Iansui|DFKai-SB|BiauKai|fonts\.googleapis/i, "style library must use the standard system sans stack");
+assert.match(html, /id="style-library-entry"[^>]+href="style-library\/"[^>]*>開啟完整風格大全<\/a>/, "lesson page should expose the standalone style library");
+assert(html.indexOf('id="style-library-entry"') < html.indexOf("<details"), "style library entry should remain visible outside optional drawers");
+assert.match(styles, /\.section-heading > \.button\s*\{[\s\S]*?width:\s*fit-content/, "style library entry should not stretch across the lesson page");
+assert.doesNotMatch(`${practiceHtml}\n${practiceApp}`, /style-library|完整風格大全/, "style library must remain outside the classroom-code practice room");
+for (const image of ["presets-01-04.webp", "presets-05-08.webp", "presets-09-12.webp", "presets-13-14-plus.webp"]) {
+  const target = path.join(route, "style-library", "assets", image);
+  assert(fs.existsSync(target), `missing generated style example ${image}`);
+  assert(fs.statSync(target).size > 200_000, `generated style example ${image} is unexpectedly small`);
+  assert.equal(fs.readFileSync(target).subarray(8, 12).toString("ascii"), "WEBP", `generated style example ${image} must be WebP`);
+}
 
 assert.doesNotMatch(html, /Captain|來源透明|原資料庫|實體 schema/i, "student page must not expose internal source notes");
 assert.doesNotMatch(promptLibrary, /Captain/i, "downloadable prompt library must not expose internal source notes");
