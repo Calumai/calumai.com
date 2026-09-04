@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added the live classroom attendance link to the Taipei four-course homepage and restored the self-hosted Iansui face for the 9/4 lesson's section headings without changing its compact title or shared `/class` palette.
 - Replaced the Taipei 9/4 oversized campaign hero with a compact course title and slide-deck action, aligned the lesson and interactive introduction to the existing `/class` ink, paper, teal and gold design tokens, and added a direct interactive-introduction button to the four-course hub.
 - Added a native interactive prompt introduction before the Taipei 9/4 image workflow, with before-and-after comparisons, click-to-build prompts, classroom examples, misconception feedback, a three-question quiz and a clear handoff to the existing warmup. It replaces the supplied CDN-dependent design runtime with same-site HTML, CSS and JavaScript for classroom reliability and responsive use.
 - Added the official 21-slide Taipei 9/4 classroom PPTX as a compact hero download without changing the source deck or expanding the opening layout.
