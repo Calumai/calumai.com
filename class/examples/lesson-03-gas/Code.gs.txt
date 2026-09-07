@@ -1,5 +1,7 @@
+// 新工作表請保持空白，程式會依照這個順序建立欄位。
+// 已有資料時，請勿刪除、插入或交換欄位順序。
 const SHEET_NAME = '測驗紀錄';
-const HEADERS = ['提交時間', '姓名', '班級', '座號', '測驗名稱', '答對題數', '總題數', '百分比', '作答內容'];
+const HEADERS = ['提交時間', '姓名', '班級', '座號', '測驗名稱', '答對題數', '總題數', '百分比', '作答內容（JSON）'];
 
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('Index')
