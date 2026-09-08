@@ -1,0 +1,79 @@
+// 進階第三課：族語聽力測驗
+// 只要修改這一行：貼入 Google Drive「音檔資料夾」的 ID。
+const AUDIO_FOLDER_ID = '請貼上音檔資料夾 ID';
+const QUIZ_SHEET_NAME = '題庫';
+const QUIZ_HEADERS = ['族語', '中文', '例句', '級別', '音檔連結'];
+
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile('quiz')
+    .setTitle('族語聽力測驗')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+function getQuizData() {
+  const sheet = getQuizSheet_();
+  return sheet.getDataRange().getValues().slice(1).filter(row => row[0]).map(row => ({
+    indigenous: String(row[0] || '').trim(),
+    chinese: String(row[1] || '').trim(),
+    example: String(row[2] || '').trim(),
+    level: String(row[3] || '').trim(),
+    audioUrl: String(row[4] || '').trim()
+  }));
+}
+
+function getAudioBase64(url) {
+  try {
+    const fileId = extractDriveFileId_(url);
+    if (!fileId) return null;
+    const blob = DriveApp.getFileById(fileId).getBlob();
+    return 'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes());
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+// 依中文欄尋找同名音檔，自動填入 E 欄。
+// 例：中文是「你好」，音檔可命名為「你好.mp3」或「001_你好.mp3」。
+function autoFillAudioLinks() {
+  if (AUDIO_FOLDER_ID === '請貼上音檔資料夾 ID') throw new Error('請先設定 AUDIO_FOLDER_ID。');
+  const files = DriveApp.getFolderById(AUDIO_FOLDER_ID).getFiles();
+  const audioMap = {};
+  while (files.hasNext()) {
+    const file = files.next();
+    const key = normalizeAudioName_(file.getName());
+    if (key) audioMap[key] = file.getId();
+  }
+  const sheet = getQuizSheet_();
+  const data = sheet.getDataRange().getValues();
+  let updated = 0;
+  for (let row = 1; row < data.length; row++) {
+    const chinese = normalizeAudioName_(data[row][1]);
+    if (chinese && audioMap[chinese]) {
+      sheet.getRange(row + 1, 5).setValue('https://drive.google.com/uc?export=download&id=' + audioMap[chinese]);
+      updated++;
+    }
+  }
+  SpreadsheetApp.getActive().toast('已自動填入 ' + updated + ' 筆音檔連結。');
+  return updated;
+}
+
+function getQuizSheet_() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = spreadsheet.getSheetByName(QUIZ_SHEET_NAME);
+  if (!sheet) {
+    sheet = spreadsheet.insertSheet(QUIZ_SHEET_NAME);
+    sheet.getRange(1, 1, 1, QUIZ_HEADERS.length).setValues([QUIZ_HEADERS]);
+  }
+  return sheet;
+}
+
+function extractDriveFileId_(url) {
+  const match = String(url || '').match(/[-\w]{20,}/);
+  return match ? match[0] : '';
+}
+
+function normalizeAudioName_(value) {
+  return String(value || '').replace(/\.[^.]+$/, '').replace(/^\d+[_\-\s]*/, '').trim();
+}
