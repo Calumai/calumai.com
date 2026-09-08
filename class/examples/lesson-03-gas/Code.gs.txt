@@ -1,17 +1,56 @@
-// 新工作表請保持空白，程式會依照這個順序建立欄位。
-// 已有資料時，請勿刪除、插入或交換欄位順序。
-const SHEET_NAME = '測驗紀錄';
-const HEADERS = ['提交時間', '姓名', '班級', '座號', '測驗名稱', '答對題數', '總題數', '百分比', '作答內容（JSON）'];
+// 第一次使用前，請把這一行改成只有老師知道的 PIN。
+const TEACHER_PIN = '請改成自己的教師 PIN';
+const RESULT_SHEET_NAME = '測驗紀錄';
+const QUESTION_SHEET_NAME = '題庫';
+const RESULT_HEADERS = ['提交時間', '姓名', '班級', '座號', '測驗名稱', '答對題數', '總題數', '百分比', '作答內容（JSON）'];
+const QUESTION_HEADERS = ['題型', '題目', '選項（JSON）', '正確選項序號', '解析'];
+const DEFAULT_QUESTIONS = [
+  { type: '單詞題', question: '「book」最適合翻成哪一個中文意思？', options: ['書', '桌子', '老師', '朋友'], answer: 0, explanation: 'book 是「書」。' },
+  { type: '句子題', question: '「I like reading books.」最適合的意思是？', options: ['我正在買書。', '我喜歡讀書。', '我把書借給你。', '我今天沒有帶書。'], answer: 1, explanation: '請依課堂教材改成自己的句子題。' }
+];
 
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('學生測驗');
+    .setTitle('單詞與句子測驗');
+}
+
+function getQuizData() {
+  return { title: getQuizTitle_(), questions: readQuestions_() };
+}
+
+function getTeacherQuiz(pin) {
+  assertTeacher_(pin);
+  return getQuizData();
+}
+
+function saveTeacherQuiz(pin, quiz) {
+  assertTeacher_(pin);
+  if (!quiz || typeof quiz !== 'object') throw new Error('找不到題庫資料。');
+
+  const title = cleanText_(quiz.title, 80);
+  const questions = Array.isArray(quiz.questions) ? quiz.questions.map(normalizeQuestion_) : [];
+  if (!title) throw new Error('請填寫測驗名稱。');
+  if (!questions.length) throw new Error('至少要保留一題。');
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sheet = getQuestionSheet_();
+    sheet.clearContents();
+    sheet.getRange(1, 1, 1, QUESTION_HEADERS.length).setValues([QUESTION_HEADERS]);
+    sheet.getRange(2, 1, questions.length, QUESTION_HEADERS.length).setValues(questions.map(question => [
+      question.type, question.question, JSON.stringify(question.options), question.answer, question.explanation
+    ]));
+    PropertiesService.getDocumentProperties().setProperty('QUIZ_TITLE', title);
+  } finally {
+    lock.releaseLock();
+  }
+
+  return { success: true, message: '已儲存 ' + questions.length + ' 題。' };
 }
 
 function saveQuizResult(payload) {
-  if (!payload || typeof payload !== 'object') {
-    throw new Error('沒有收到作答資料，請重新整理後再試一次。');
-  }
+  if (!payload || typeof payload !== 'object') throw new Error('沒有收到作答資料，請重新整理後再試一次。');
 
   const name = cleanText_(payload.name, 40);
   const className = cleanText_(payload.className, 30);
@@ -19,44 +58,93 @@ function saveQuizResult(payload) {
   const quizTitle = cleanText_(payload.quizTitle, 80);
   const score = Number(payload.score);
   const total = Number(payload.total);
-
-  if (!name || !className || !seat) {
-    throw new Error('姓名、班級與座號都必須填寫。');
-  }
+  if (!name || !className || !seat) throw new Error('姓名、班級與座號都必須填寫。');
   if (!Number.isFinite(score) || !Number.isFinite(total) || total <= 0 || score < 0 || score > total) {
     throw new Error('分數資料不正確，請重新完成測驗。');
-  }
-
-  const percent = Math.round((score / total) * 100);
-  const answersJson = JSON.stringify(Array.isArray(payload.answers) ? payload.answers : []);
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  if (!spreadsheet) {
-    throw new Error('找不到綁定的 Google 試算表。');
   }
 
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
-    let sheet = spreadsheet.getSheetByName(SHEET_NAME);
-    if (!sheet) sheet = spreadsheet.insertSheet(SHEET_NAME);
-    if (sheet.getLastRow() === 0) sheet.appendRow(HEADERS);
-
+    const sheet = getResultSheet_();
     sheet.appendRow([
-      new Date(),
-      name,
-      className,
-      seat,
-      quizTitle,
-      score,
-      total,
-      percent,
-      answersJson
+      new Date(), name, className, seat, quizTitle, score, total,
+      Math.round((score / total) * 100),
+      JSON.stringify(Array.isArray(payload.answers) ? payload.answers : [])
     ]);
   } finally {
     lock.releaseLock();
   }
 
-  return { success: true, message: '成績已送出', percent: percent };
+  return { success: true, message: '成績已送出。' };
+}
+
+function getQuestionSheet_() {
+  const spreadsheet = getSpreadsheet_();
+  let sheet = spreadsheet.getSheetByName(QUESTION_SHEET_NAME);
+  if (!sheet) {
+    sheet = spreadsheet.insertSheet(QUESTION_SHEET_NAME);
+    sheet.getRange(1, 1, 1, QUESTION_HEADERS.length).setValues([QUESTION_HEADERS]);
+    sheet.getRange(2, 1, DEFAULT_QUESTIONS.length, QUESTION_HEADERS.length).setValues(DEFAULT_QUESTIONS.map(question => [
+      question.type, question.question, JSON.stringify(question.options), question.answer, question.explanation
+    ]));
+  }
+  return sheet;
+}
+
+function getResultSheet_() {
+  const spreadsheet = getSpreadsheet_();
+  let sheet = spreadsheet.getSheetByName(RESULT_SHEET_NAME);
+  if (!sheet) {
+    sheet = spreadsheet.insertSheet(RESULT_SHEET_NAME);
+    sheet.appendRow(RESULT_HEADERS);
+  }
+  return sheet;
+}
+
+function readQuestions_() {
+  const rows = getQuestionSheet_().getDataRange().getValues().slice(1);
+  const questions = rows.map(row => {
+    try {
+      return normalizeQuestion_({
+        type: row[0], question: row[1], options: JSON.parse(row[2]),
+        answer: Number(row[3]), explanation: row[4]
+      });
+    } catch (error) {
+      return null;
+    }
+  }).filter(Boolean);
+  if (!questions.length) throw new Error('題庫沒有可用題目，請由老師新增至少一題。');
+  return questions;
+}
+
+function normalizeQuestion_(question) {
+  const type = cleanText_(question.type || '單詞題', 20);
+  const prompt = cleanText_(question.question, 300);
+  const options = Array.isArray(question.options)
+    ? question.options.map(option => cleanText_(option, 120)).filter(Boolean)
+    : [];
+  const answer = Number(question.answer);
+  const explanation = cleanText_(question.explanation, 500);
+  if (!prompt) throw new Error('每一題都要有題目。');
+  if (options.length < 2 || options.length > 4) throw new Error('每題需要 2 到 4 個選項。');
+  if (!Number.isInteger(answer) || answer < 0 || answer >= options.length) throw new Error('請為每題選擇正確答案。');
+  return { type, question: prompt, options, answer, explanation };
+}
+
+function getQuizTitle_() {
+  return PropertiesService.getDocumentProperties().getProperty('QUIZ_TITLE') || '單詞與句子小測驗';
+}
+
+function assertTeacher_(pin) {
+  if (TEACHER_PIN === '請改成自己的教師 PIN') throw new Error('請先在 Code.gs 設定 TEACHER_PIN，再使用教師題庫管理。');
+  if (String(pin || '') !== TEACHER_PIN) throw new Error('教師 PIN 不正確。');
+}
+
+function getSpreadsheet_() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  if (!spreadsheet) throw new Error('找不到綁定的 Google 試算表。');
+  return spreadsheet;
 }
 
 function cleanText_(value, maxLength) {

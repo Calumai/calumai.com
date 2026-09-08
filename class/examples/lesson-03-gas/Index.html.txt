@@ -4,37 +4,94 @@
   <base target="_top">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>學生測驗</title>
+  <title>單詞與句子測驗</title>
   <style>
-    :root{--ink:#152033;--muted:#627086;--blue:#3d8dff;--good:#16805d;--bad:#c53c45;--bg:#f3f6fa}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,"Noto Sans TC",sans-serif;color:var(--ink);line-height:1.55}.app{width:min(760px,calc(100% - 28px));margin:24px auto}.card{background:#fff;border:1px solid #dce4ee;border-radius:22px;padding:clamp(22px,5vw,42px);box-shadow:0 18px 50px rgba(21,32,51,.08)}h1{font-size:clamp(2rem,7vw,3.4rem);line-height:1.08;margin:0 0 12px}h2{font-size:clamp(1.45rem,5vw,2.1rem);line-height:1.25}.lead{color:var(--muted)}.question-type{margin:0 0 8px;color:var(--blue);font-size:.9rem;font-weight:900;letter-spacing:.06em}.grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}label{display:block;font-weight:800;margin:14px 0 6px}input{width:100%;font:inherit;padding:13px 14px;border:1px solid #cbd5e1;border-radius:11px}button{border:0;border-radius:12px;padding:14px 20px;font:inherit;font-weight:900;cursor:pointer;background:var(--blue);color:#fff}button.secondary{background:#e7edf5;color:var(--ink)}button:disabled{opacity:.55}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.meta{display:flex;justify-content:space-between;color:var(--muted);font-weight:800}.progress{height:10px;background:#e5eaf1;border-radius:99px;overflow:hidden;margin:8px 0 26px}.progress i{display:block;height:100%;background:var(--blue)}.options{display:grid;gap:11px}.option{background:#f8fafc;color:var(--ink);border:2px solid #dbe3ed;text-align:left}.option.correct{border-color:var(--good);background:#e7f7f0}.option.wrong{border-color:var(--bad);background:#fff0f1}.feedback,.sendState{margin-top:16px;padding:14px 16px;border-radius:12px;background:#eef3f8}.score{font-size:clamp(3rem,14vw,6rem);font-weight:950;color:var(--blue);line-height:1;margin:16px 0}.hidden{display:none!important}@media(max-width:580px){.grid{grid-template-columns:1fr}.actions button{width:100%}}
+    :root{--ink:#152033;--muted:#627086;--blue:#3d8dff;--good:#16805d;--bad:#c53c45;--bg:#f3f6fa;--line:#dbe3ed}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,"Noto Sans TC",sans-serif;color:var(--ink);line-height:1.55}.app{width:min(820px,calc(100% - 28px));margin:24px auto}.card{background:#fff;border:1px solid #dce4ee;border-radius:22px;padding:clamp(22px,5vw,42px);box-shadow:0 18px 50px rgba(21,32,51,.08);margin-bottom:18px}h1{font-size:clamp(2rem,7vw,3.4rem);line-height:1.08;margin:0 0 12px}h2{font-size:clamp(1.45rem,5vw,2.1rem);line-height:1.25;margin:0 0 12px}.lead,.muted{color:var(--muted)}.question-type{margin:0 0 8px;color:var(--blue);font-size:.9rem;font-weight:900;letter-spacing:.06em}.grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}.teacher-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{display:block;font-weight:800;margin:14px 0 6px}input,textarea,select{width:100%;font:inherit;padding:12px 13px;border:1px solid #cbd5e1;border-radius:11px;background:#fff}textarea{min-height:82px;resize:vertical}button{border:0;border-radius:12px;padding:14px 20px;font:inherit;font-weight:900;cursor:pointer;background:var(--blue);color:#fff}button.secondary{background:#e7edf5;color:var(--ink)}button.danger{background:#fff0f1;color:var(--bad)}button:disabled{opacity:.55}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.meta{display:flex;justify-content:space-between;color:var(--muted);font-weight:800}.progress{height:10px;background:#e5eaf1;border-radius:99px;overflow:hidden;margin:8px 0 26px}.progress i{display:block;height:100%;background:var(--blue)}.options{display:grid;gap:11px}.option{background:#f8fafc;color:var(--ink);border:2px solid var(--line);text-align:left}.option.correct{border-color:var(--good);background:#e7f7f0}.option.wrong{border-color:var(--bad);background:#fff0f1}.feedback,.send-state,.notice{margin-top:16px;padding:14px 16px;border-radius:12px;background:#eef3f8}.notice{border-left:5px solid var(--blue)}.score{font-size:clamp(3rem,14vw,6rem);font-weight:950;color:var(--blue);line-height:1;margin:16px 0}.hidden{display:none!important}.editor-card{border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px}.editor-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.choice-row{display:grid;grid-template-columns:32px 1fr;gap:8px;align-items:center;margin-top:8px}.choice-row input[type="radio"]{width:18px;height:18px;justify-self:center}.choice-row input[type="text"]{margin:0}.small{font-size:.92rem}@media(max-width:580px){.grid,.teacher-grid{grid-template-columns:1fr}.actions button{width:100%}.editor-head{align-items:flex-start;flex-direction:column}.editor-head button{width:100%}}
   </style>
 </head>
 <body>
   <main class="app">
-    <section class="card" id="startView"><h1 id="title"></h1><p class="lead">這是單詞與句子測驗範例。完成後會將姓名、班級、座號與作答結果送到老師的 Google 試算表。</p><div class="grid"><div><label for="name">姓名或暱稱</label><input id="name" maxlength="40"></div><div><label for="className">班級</label><input id="className" maxlength="30" placeholder="七年一班"></div><div><label for="seat">座號</label><input id="seat" maxlength="12" inputmode="numeric"></div></div><div class="actions"><button id="startBtn">開始測驗</button></div></section>
+    <section class="card" id="startView">
+      <h1 id="title"></h1>
+      <p class="lead">完成測驗後，姓名、班級、座號與作答結果會送到老師的 Google 試算表。</p>
+      <div class="grid"><div><label for="name">姓名或暱稱</label><input id="name" maxlength="40"></div><div><label for="className">班級</label><input id="className" maxlength="30" placeholder="七年一班"></div><div><label for="seat">座號</label><input id="seat" maxlength="12" inputmode="numeric"></div></div>
+      <div class="actions"><button id="startBtn">開始測驗</button><button class="secondary" id="teacherBtn">教師題庫管理</button></div>
+    </section>
+
     <section class="card hidden" id="quizView"><div class="meta"><span id="count"></span><span id="scoreNow"></span></div><div class="progress"><i id="bar"></i></div><p class="question-type" id="qtype"></p><h2 id="question"></h2><div class="options" id="options"></div><div class="feedback hidden" id="feedback"></div><div class="actions"><button class="hidden" id="nextBtn">下一題</button></div></section>
-    <section class="card hidden" id="resultView"><h2>完成測驗</h2><div class="score" id="finalScore"></div><p class="lead" id="resultText"></p><div class="actions"><button id="sendBtn">送出成績</button><button class="secondary" id="restartBtn">重新挑戰</button></div><div class="sendState hidden" id="sendState" role="status" aria-live="polite"></div></section>
+    <section class="card hidden" id="resultView"><h2>完成測驗</h2><div class="score" id="finalScore"></div><p class="lead" id="resultText"></p><div class="actions"><button id="sendBtn">送出成績</button><button class="secondary" id="restartBtn">重新挑戰</button></div><div class="send-state hidden" id="sendState" role="status" aria-live="polite"></div></section>
+
+    <section class="card hidden" id="teacherLoginView"><h2>教師題庫管理</h2><p class="lead">輸入你在 <strong>Code.gs</strong> 設定的教師 PIN，才能新增、修改或刪除題目。</p><label for="teacherPin">教師 PIN</label><input id="teacherPin" type="password" autocomplete="current-password"><div class="actions"><button id="teacherLoginBtn">進入題庫管理</button><button class="secondary" data-back>回學生測驗</button></div><div class="send-state hidden" id="teacherLoginState" role="status" aria-live="polite"></div></section>
+
+    <section class="card hidden" id="teacherView"><div class="editor-head"><div><h2>題庫管理</h2><p class="lead">可自由新增單詞或句子題；每題至少要有 2 個選項，並勾選 1 個正確答案。</p></div><button class="secondary" data-back>回學生測驗</button></div><div class="notice small">題目會儲存在同一份 Google Sheet 的「題庫」工作表。學生只能作答，無法進入這個管理區。</div><label for="teacherTitle">測驗名稱</label><input id="teacherTitle" maxlength="80"><div id="questionEditors"></div><div class="actions"><button class="secondary" id="addQuestionBtn">＋ 新增一題</button><button id="saveQuestionsBtn">儲存題庫</button></div><div class="send-state hidden" id="teacherSaveState" role="status" aria-live="polite"></div></section>
   </main>
+
   <script>
-    // 只要替換 title 與 QUIZ_DATA，就能改成自己的單詞或句子測驗。
-    // type、question、options、answer、explanation 這五個欄位請保留。
-    const QUIZ_INFO={title:'單詞與句子小測驗'};
-    const QUIZ_DATA=[
-      {type:'單詞題',question:'「book」最適合翻成哪一個中文意思？',options:['書','桌子','老師','朋友'],answer:0,explanation:'book 是「書」。請依自己的教材替換單詞與選項。'},
-      {type:'單詞題',question:'「happy」最接近哪一個意思？',options:['疲累','開心','安靜','寒冷'],answer:1,explanation:'happy 是「開心」。選項可以改成你的族語、英語或其他課堂詞彙。'},
-      {type:'句子題',question:'「I like reading books.」最適合的意思是？',options:['我正在買書。','我喜歡讀書。','我把書借給你。','我今天沒有帶書。'],answer:1,explanation:'先讓學生練習理解完整句子，再依程度加入情境或語法提示。'},
-      {type:'句子題',question:'要表達「我明天會去學校」，哪一句最合適？',options:['I went to school yesterday.','I am at school now.','I will go to school tomorrow.','I like my school.'],answer:2,explanation:'will go 表示未來要去，tomorrow 表示明天。'},
-      {type:'句子題',question:'看到「Thank you for your help.」時，最適合的回應是？',options:['You are welcome.','Good night.','I am hungry.','See you yesterday.'],answer:0,explanation:'You are welcome. 是回應感謝的常用句子。'}
-    ];
-    const $=id=>document.getElementById(id);const views=['startView','quizView','resultView'];let state={index:0,score:0,locked:false,answers:[],sent:false};$('title').textContent=QUIZ_INFO.title;
-    function show(id){views.forEach(v=>$(v).classList.toggle('hidden',v!==id));window.scrollTo({top:0,behavior:'smooth'})}
-    function start(){if(!$('name').value.trim()||!$('className').value.trim()||!$('seat').value.trim()){alert('請填寫姓名、班級與座號。');return}state={index:0,score:0,locked:false,answers:[],sent:false};show('quizView');render()}
-    function render(){const q=QUIZ_DATA[state.index];state.locked=false;$('count').textContent=`第 ${state.index+1} / ${QUIZ_DATA.length} 題`;$('scoreNow').textContent=`目前 ${state.score} 分`;$('bar').style.width=`${(state.index+1)/QUIZ_DATA.length*100}%`;$('qtype').textContent=q.type||'測驗題';$('question').textContent=q.question;$('feedback').classList.add('hidden');$('nextBtn').classList.add('hidden');$('options').innerHTML='';q.options.forEach((text,i)=>{const b=document.createElement('button');b.className='option';b.textContent=`${String.fromCharCode(65+i)}. ${text}`;b.onclick=()=>answer(i,b);$('options').appendChild(b)})}
-    function answer(choice,button){if(state.locked)return;state.locked=true;const q=QUIZ_DATA[state.index];const ok=choice===q.answer;if(ok)state.score++;state.answers.push({type:q.type||'測驗題',question:q.question,choice:q.options[choice],correct:q.options[q.answer],isCorrect:ok});[...$('options').children].forEach((b,i)=>{b.disabled=true;if(i===q.answer)b.classList.add('correct')});if(!ok)button.classList.add('wrong');$('feedback').textContent=`${ok?'答對了！':'再看一次。'} ${q.explanation}`;$('feedback').classList.remove('hidden');$('scoreNow').textContent=`目前 ${state.score} 分`;$('nextBtn').textContent=state.index===QUIZ_DATA.length-1?'查看結果':'下一題';$('nextBtn').classList.remove('hidden')}
-    function next(){if(state.index<QUIZ_DATA.length-1){state.index++;render()}else finish()}
-    function finish(){const percent=Math.round(state.score/QUIZ_DATA.length*100);$('finalScore').textContent=`${percent}%`;$('resultText').textContent=`答對 ${state.score} / ${QUIZ_DATA.length} 題。確認資料後送出給老師。`;$('sendBtn').disabled=false;$('sendBtn').textContent='送出成績';$('sendState').classList.add('hidden');show('resultView')}
-    function send(){if(state.sent)return;const button=$('sendBtn');button.disabled=true;button.textContent='傳送中…';const payload={name:$('name').value.trim(),className:$('className').value.trim(),seat:$('seat').value.trim(),quizTitle:QUIZ_INFO.title,score:state.score,total:QUIZ_DATA.length,answers:state.answers};const success=result=>{state.sent=true;button.textContent='已送出';$('sendState').textContent=result&&result.message?result.message:'成績已送出';$('sendState').classList.remove('hidden')};const failure=error=>{button.disabled=false;button.textContent='重新送出';$('sendState').textContent=`傳送失敗：${error&&error.message?error.message:'請稍後再試'}`;$('sendState').classList.remove('hidden')};if(window.google&&google.script&&google.script.run){google.script.run.withSuccessHandler(success).withFailureHandler(failure).saveQuizResult(payload)}else{setTimeout(()=>success({message:'公開預覽模式：流程成功，但不會寫入試算表。'}),500)}}
-    $('startBtn').onclick=start;$('nextBtn').onclick=next;$('sendBtn').onclick=send;$('restartBtn').onclick=()=>show('startView');
+    const $ = id => document.getElementById(id);
+    const viewIds = ['startView','quizView','resultView','teacherLoginView','teacherView'];
+    const defaultQuiz = {title:'單詞與句子小測驗',questions:[
+      {type:'單詞題',question:'「book」最適合翻成哪一個中文意思？',options:['書','桌子','老師','朋友'],answer:0,explanation:'book 是「書」。'},
+      {type:'句子題',question:'「I like reading books.」最適合的意思是？',options:['我正在買書。','我喜歡讀書。','我把書借給你。','我今天沒有帶書。'],answer:1,explanation:'請依課堂教材改成自己的句子題。'}
+    ]};
+    const isGas = () => window.google && google.script && google.script.run;
+    let quiz = JSON.parse(sessionStorage.getItem('teacherQuiz') || JSON.stringify(defaultQuiz));
+    let teacherPin = '';
+    let state = {index:0,score:0,locked:false,answers:[],sent:false};
+
+    function show(id){viewIds.forEach(view => $(view).classList.toggle('hidden',view !== id));window.scrollTo({top:0,behavior:'smooth'})}
+    function setMessage(id,text){$(id).textContent=text;$(id).classList.remove('hidden')}
+    function clearMessage(id){$(id).classList.add('hidden');$(id).textContent=''}
+    function callGas(method,args){return new Promise((resolve,reject)=>{let runner=google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);runner[method].apply(runner,args)})}
+    async function api(method,...args){
+      if(isGas()) return callGas(method,args);
+      if(method === 'getQuizData') return quiz;
+      if(method === 'getTeacherQuiz'){if(!args[0]) throw new Error('公開預覽請輸入任意 PIN。');return quiz}
+      if(method === 'saveTeacherQuiz'){quiz=args[1];sessionStorage.setItem('teacherQuiz',JSON.stringify(quiz));return {success:true,message:'公開預覽已暫存題庫；正式部署後會寫入 Google Sheet。'}}
+      if(method === 'saveQuizResult') return {success:true,message:'公開預覽模式：流程成功，但不會寫入試算表。'};
+    }
+    async function loadQuiz(){quiz=await api('getQuizData');$('title').textContent=quiz.title}
+
+    function start(){if(!$('name').value.trim()||!$('className').value.trim()||!$('seat').value.trim()){alert('請填寫姓名、班級與座號。');return}if(!quiz.questions.length){alert('題庫沒有題目，請先請老師新增。');return}state={index:0,score:0,locked:false,answers:[],sent:false};show('quizView');renderQuestion()}
+    function renderQuestion(){const q=quiz.questions[state.index];state.locked=false;$('count').textContent='第 '+(state.index+1)+' / '+quiz.questions.length+' 題';$('scoreNow').textContent='目前 '+state.score+' 分';$('bar').style.width=((state.index+1)/quiz.questions.length*100)+'%';$('qtype').textContent=q.type||'測驗題';$('question').textContent=q.question;$('feedback').classList.add('hidden');$('nextBtn').classList.add('hidden');$('options').innerHTML='';q.options.forEach((text,i)=>{const b=document.createElement('button');b.className='option';b.textContent=String.fromCharCode(65+i)+'. '+text;b.onclick=()=>answer(i,b);$('options').appendChild(b)})}
+    function answer(choice,button){if(state.locked)return;state.locked=true;const q=quiz.questions[state.index],ok=choice===q.answer;if(ok)state.score++;state.answers.push({type:q.type||'測驗題',question:q.question,choice:q.options[choice],correct:q.options[q.answer],isCorrect:ok});[...$('options').children].forEach((b,i)=>{b.disabled=true;if(i===q.answer)b.classList.add('correct')});if(!ok)button.classList.add('wrong');$('feedback').textContent=(ok?'答對了！':'再看一次。')+' '+q.explanation;$('feedback').classList.remove('hidden');$('scoreNow').textContent='目前 '+state.score+' 分';$('nextBtn').textContent=state.index===quiz.questions.length-1?'查看結果':'下一題';$('nextBtn').classList.remove('hidden')}
+    function next(){if(state.index<quiz.questions.length-1){state.index++;renderQuestion()}else finish()}
+    function finish(){const percent=Math.round(state.score/quiz.questions.length*100);$('finalScore').textContent=percent+'%';$('resultText').textContent='答對 '+state.score+' / '+quiz.questions.length+' 題。確認資料後送出給老師。';$('sendBtn').disabled=false;$('sendBtn').textContent='送出成績';clearMessage('sendState');show('resultView')}
+    async function send(){if(state.sent)return;const button=$('sendBtn');button.disabled=true;button.textContent='傳送中…';try{const result=await api('saveQuizResult',{name:$('name').value.trim(),className:$('className').value.trim(),seat:$('seat').value.trim(),quizTitle:quiz.title,score:state.score,total:quiz.questions.length,answers:state.answers});state.sent=true;button.textContent='已送出';setMessage('sendState',result.message||'成績已送出。')}catch(error){button.disabled=false;button.textContent='重新送出';setMessage('sendState','傳送失敗：'+(error.message||error))}}
+
+    function addQuestion(question) {
+      const q = question || {type:'單詞題',question:'',options:['','','',''],answer:0,explanation:''};
+      const card = document.createElement('fieldset');
+      const radioName = 'correct-' + Date.now() + '-' + Math.random();
+      card.className = 'editor-card question-editor';
+      card.innerHTML = '<div class="editor-head"><strong>題目</strong><button type="button" class="danger remove-question">刪除這題</button></div><div class="teacher-grid"><div><label>題型</label><select class="edit-type"><option>單詞題</option><option>句子題</option></select></div><div><label>正確答案</label><span class="muted small">在選項左側勾選</span></div></div><label>題目內容</label><textarea class="edit-question" maxlength="300"></textarea><div class="edit-options"></div><label>答題後解析</label><textarea class="edit-explanation" maxlength="500"></textarea>';
+      card.querySelector('.edit-type').value = q.type || '單詞題';
+      card.querySelector('.edit-question').value = q.question || '';
+      card.querySelector('.edit-explanation').value = q.explanation || '';
+      const options = card.querySelector('.edit-options');
+      for (let i = 0; i < 4; i++) {
+        const row = document.createElement('label');
+        row.className = 'choice-row';
+        row.innerHTML = '<input class="edit-correct" type="radio" name="' + radioName + '" value="' + i + '"><input class="edit-option" type="text" maxlength="120" placeholder="選項 ' + String.fromCharCode(65 + i) + '">';
+        row.querySelector('.edit-option').value = (q.options || [])[i] || '';
+        row.querySelector('.edit-correct').checked = Number(q.answer) === i;
+        options.appendChild(row);
+      }
+      card.querySelector('.remove-question').onclick = () => {
+        if (document.querySelectorAll('.question-editor').length === 1) {
+          alert('至少保留一題。');
+          return;
+        }
+        card.remove();
+      };
+      $('questionEditors').appendChild(card);
+    }
+    function readEditor(){const questions=[...document.querySelectorAll('.question-editor')].map(card=>{const options=[...card.querySelectorAll('.edit-option')].map(input=>input.value.trim()).filter(Boolean);const selected=card.querySelector('.edit-correct:checked');const selectedOriginal=selected?Number(selected.value):-1;const originalOptions=[...card.querySelectorAll('.edit-option')].map(input=>input.value.trim());const answer=originalOptions.slice(0,selectedOriginal).filter(Boolean).length;if(!card.querySelector('.edit-question').value.trim())throw new Error('每一題都要填題目內容。');if(options.length<2)throw new Error('每題至少要填 2 個選項。');if(selectedOriginal<0||!originalOptions[selectedOriginal])throw new Error('每一題都要勾選一個有內容的正確答案。');return {type:card.querySelector('.edit-type').value,question:card.querySelector('.edit-question').value.trim(),options,answer:answer,explanation:card.querySelector('.edit-explanation').value.trim()}});return {title:$('teacherTitle').value.trim(),questions}}
+    function renderTeacher(data){$('teacherTitle').value=data.title||'';$('questionEditors').innerHTML='';data.questions.forEach(addQuestion);show('teacherView')}
+    async function loginTeacher(){clearMessage('teacherLoginState');teacherPin=$('teacherPin').value;try{renderTeacher(await api('getTeacherQuiz',teacherPin))}catch(error){setMessage('teacherLoginState',error.message||String(error))}}
+    async function saveTeacher(){clearMessage('teacherSaveState');let data;try{data=readEditor();if(!data.title)throw new Error('請填寫測驗名稱。')}catch(error){setMessage('teacherSaveState',error.message);return}const button=$('saveQuestionsBtn');button.disabled=true;button.textContent='儲存中…';try{const result=await api('saveTeacherQuiz',teacherPin,data);quiz=data;$('title').textContent=data.title;setMessage('teacherSaveState',result.message||'題庫已儲存。')}catch(error){setMessage('teacherSaveState',error.message||String(error))}finally{button.disabled=false;button.textContent='儲存題庫'}}
+    async function backToStudent(){try{await loadQuiz()}catch(error){alert(error.message||String(error))}show('startView')}
+
+    $('startBtn').onclick=start;$('nextBtn').onclick=next;$('sendBtn').onclick=send;$('restartBtn').onclick=()=>show('startView');$('teacherBtn').onclick=()=>{clearMessage('teacherLoginState');show('teacherLoginView')};$('teacherLoginBtn').onclick=loginTeacher;$('addQuestionBtn').onclick=()=>addQuestion();$('saveQuestionsBtn').onclick=saveTeacher;document.querySelectorAll('[data-back]').forEach(button=>button.onclick=backToStudent);loadQuiz().catch(error=>alert(error.message||String(error)));
   </script>
 </body>
 </html>
