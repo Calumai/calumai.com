@@ -3,7 +3,8 @@ const TEACHER_PIN = '請改成自己的教師 PIN';
 const RESULT_SHEET_NAME = '測驗紀錄';
 const QUESTION_SHEET_NAME = '題庫';
 const RESULT_HEADERS = ['提交時間', '姓名', '班級', '座號', '測驗名稱', '答對題數', '總題數', '百分比', '作答內容（JSON）'];
-const QUESTION_HEADERS = ['題型', '題目', '選項（JSON）', '正確選項序號', '解析'];
+// 題目請從網頁的「教師題庫管理」新增；選項欄由系統自動整理，不必手動修改。
+const QUESTION_HEADERS = ['題型', '題目', '選項（系統自動處理）', '正確選項序號', '解析'];
 const DEFAULT_QUESTIONS = [
   { type: '單詞題', question: '「book」最適合翻成哪一個中文意思？', options: ['書', '桌子', '老師', '朋友'], answer: 0, explanation: 'book 是「書」。' },
   { type: '句子題', question: '「I like reading books.」最適合的意思是？', options: ['我正在買書。', '我喜歡讀書。', '我把書借給你。', '我今天沒有帶書。'], answer: 1, explanation: '請依課堂教材改成自己的句子題。' }
