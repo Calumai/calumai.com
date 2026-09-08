@@ -3,8 +3,8 @@ const TEACHER_PIN = '請改成自己的教師 PIN';
 const RESULT_SHEET_NAME = '測驗紀錄';
 const QUESTION_SHEET_NAME = '題庫';
 const RESULT_HEADERS = ['提交時間', '姓名', '班級', '座號', '測驗名稱', '答對題數', '總題數', '百分比', '作答內容（JSON）'];
-// 題目請從網頁的「教師題庫管理」新增；選項欄由系統自動整理，不必手動修改。
-const QUESTION_HEADERS = ['題型', '題目', '選項（系統自動處理）', '正確選項序號', '解析'];
+// 老師可直接在「題庫」工作表填寫選項 1～4；正確答案填 1～4。
+const QUESTION_HEADERS = ['題型', '題目', '選項 1', '選項 2', '選項 3', '選項 4', '正確答案（填 1–4）', '解析'];
 const DEFAULT_QUESTIONS = [
   { type: '單詞題', question: '「book」最適合翻成哪一個中文意思？', options: ['書', '桌子', '老師', '朋友'], answer: 0, explanation: 'book 是「書」。' },
   { type: '句子題', question: '「I like reading books.」最適合的意思是？', options: ['我正在買書。', '我喜歡讀書。', '我把書借給你。', '我今天沒有帶書。'], answer: 1, explanation: '請依課堂教材改成自己的句子題。' }
@@ -39,9 +39,7 @@ function saveTeacherQuiz(pin, quiz) {
     const sheet = getQuestionSheet_();
     sheet.clearContents();
     sheet.getRange(1, 1, 1, QUESTION_HEADERS.length).setValues([QUESTION_HEADERS]);
-    sheet.getRange(2, 1, questions.length, QUESTION_HEADERS.length).setValues(questions.map(question => [
-      question.type, question.question, JSON.stringify(question.options), question.answer, question.explanation
-    ]));
+    sheet.getRange(2, 1, questions.length, QUESTION_HEADERS.length).setValues(questions.map(toSheetRow_));
     PropertiesService.getDocumentProperties().setProperty('QUIZ_TITLE', title);
   } finally {
     lock.releaseLock();
@@ -86,9 +84,15 @@ function getQuestionSheet_() {
   if (!sheet) {
     sheet = spreadsheet.insertSheet(QUESTION_SHEET_NAME);
     sheet.getRange(1, 1, 1, QUESTION_HEADERS.length).setValues([QUESTION_HEADERS]);
-    sheet.getRange(2, 1, DEFAULT_QUESTIONS.length, QUESTION_HEADERS.length).setValues(DEFAULT_QUESTIONS.map(question => [
-      question.type, question.question, JSON.stringify(question.options), question.answer, question.explanation
-    ]));
+    sheet.getRange(2, 1, DEFAULT_QUESTIONS.length, QUESTION_HEADERS.length).setValues(DEFAULT_QUESTIONS.map(toSheetRow_));
+  } else if (String(sheet.getRange(1, 3).getValue()).includes('JSON')) {
+    const legacyRows = sheet.getDataRange().getValues().slice(1);
+    const questions = legacyRows.map(row => {
+      try { return normalizeQuestion_({type:row[0],question:row[1],options:JSON.parse(row[2]),answer:Number(row[3]),explanation:row[4]}); } catch (error) { return null; }
+    }).filter(Boolean);
+    sheet.clearContents();
+    sheet.getRange(1, 1, 1, QUESTION_HEADERS.length).setValues([QUESTION_HEADERS]);
+    if (questions.length) sheet.getRange(2, 1, questions.length, QUESTION_HEADERS.length).setValues(questions.map(toSheetRow_));
   }
   return sheet;
 }
@@ -108,8 +112,8 @@ function readQuestions_() {
   const questions = rows.map(row => {
     try {
       return normalizeQuestion_({
-        type: row[0], question: row[1], options: JSON.parse(row[2]),
-        answer: Number(row[3]), explanation: row[4]
+        type: row[0], question: row[1], options: row.slice(2, 6),
+        answer: Number(row[6]) - 1, explanation: row[7]
       });
     } catch (error) {
       return null;
@@ -117,6 +121,10 @@ function readQuestions_() {
   }).filter(Boolean);
   if (!questions.length) throw new Error('題庫沒有可用題目，請由老師新增至少一題。');
   return questions;
+}
+
+function toSheetRow_(question) {
+  return [question.type, question.question, question.options[0] || '', question.options[1] || '', question.options[2] || '', question.options[3] || '', question.answer + 1, question.explanation];
 }
 
 function normalizeQuestion_(question) {
