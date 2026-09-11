@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="北市府 AI 教學應用第 3 堂。試玩並修正族語互動教材，加入分析、評鑑與創造關卡，再放進 Google 協作平台分享。">
+  <meta name="description" content="北市府 AI 教學應用第 3 堂。試玩並修正族語互動教材，加入進階關卡，再用 Google Apps Script 發布成網址並放進 Google 協作平台分享。">
   <meta name="theme-color" content="#2458aa">
   <meta property="og:title" content="遊戲化教學術（下）｜北市府 AI 教學應用">
-  <meta property="og:description" content="把 Vibe Coding 第一版升級成有學習效果、測過手機並能交給學生使用的完整互動闖關。">
+  <meta property="og:description" content="把 Vibe Coding 第一版升級成有學習效果的互動闖關，再用 Google Apps Script 發布成學生打得開的網址。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://calumai.com/class/taipei-ai/2026-0918-gamified-learning/">
   <meta property="og:image" content="https://calumai.com/class/taipei-ai/assets/course-03-cover.png">
   <title>遊戲化教學術（下）｜北市府 AI 教學應用</title>
   <link rel="icon" href="/assets/calumai-logo-mark.png">
-  <link rel="stylesheet" href="../assets/handout.css?v=20260911d">
+  <link rel="stylesheet" href="../assets/handout.css?v=20260911f">
   <script>document.documentElement.classList.add("js");</script>
 </head>
 <body class="lesson-blue" data-lesson="3">
@@ -24,7 +24,8 @@
       <nav aria-label="本課程導覽">
         <a href="#debug">試玩與修正</a>
         <a href="#upgrade">進階關卡</a>
-        <a href="#share">發布分享</a>
+        <a href="#gas">GAS 上線</a>
+        <a href="#share">放進網站</a>
       </nav>
     </div>
   </header>
@@ -33,7 +34,7 @@
     <section class="course-intro shell" aria-labelledby="course-title">
       <div>
         <p class="kicker"><span>臺北市政府 AI 教學應用課程</span><time datetime="2026-09-18T19:00">9/18　19:00-22:00</time></p>
-        <h1 id="course-title">遊戲化教學術（下）：把第一版變成有效又能分享的闖關</h1>
+        <h1 id="course-title">遊戲化教學術（下）：把第一版變成有效、能上線、能分享的闖關</h1>
       </div>
       <div class="course-outcome" aria-label="本堂成果">
         <span>今天帶走</span>
@@ -46,7 +47,7 @@
         <div class="section-heading narrow-heading">
           <p class="section-number">LESSON 03</p>
           <h2 id="route-title">從好玩，到真的有學習</h2>
-          <p>先把第一版玩壞、說清楚問題，再加入高一層的思考任務，最後才發布。</p>
+          <p>先把第一版玩壞、說清楚問題，再加入高一層的思考任務，最後用 GAS 上線並放進教材網站。</p>
         </div>
 
         <ol class="route-grid">
@@ -74,13 +75,14 @@
 
           <li class="route-card">
             <span class="route-name">03　交給學生</span>
-            <h3>預覽、發布、放進協作平台</h3>
-            <p>分清楚遊戲原稿、公開網址與教材網站，最後用手機和無痕視窗驗收。</p>
+            <h3>用 GAS 上線，再放進協作平台</h3>
+            <p>把 index.html 放進 Apps Script，取得正式網址，再嵌入教材網站並用手機驗收。</p>
             <dl>
+              <div><dt>上線工具</dt><dd>Google Apps Script</dd></div>
               <div><dt>教材入口</dt><dd>Google 協作平台</dd></div>
-              <div><dt>完成標準</dt><dd>學生不用登入也能開始玩</dd></div>
+              <div><dt>完成標準</dt><dd>預定學生能順利開始玩</dd></div>
             </dl>
-            <a class="button secondary" href="#share">選擇發布方式</a>
+            <a class="button secondary" href="#gas">開始 GAS 發布</a>
           </li>
         </ol>
       </div>
@@ -206,27 +208,171 @@
       </div>
     </section>
 
-    <section class="learning-section share-section" id="share" aria-labelledby="share-title">
+    <section class="learning-section gas-section" id="gas" aria-labelledby="gas-title">
       <div class="shell">
         <div class="section-heading narrow-heading">
           <p class="section-number">PART 03</p>
-          <h2 id="share-title">作品做好以後，才把它放進教材網站</h2>
-          <p>Google 協作平台是教材入口。你的遊戲可以貼程式碼、嵌入公開網址，或改成按鈕另開。</p>
+          <h2 id="gas-title">用 GAS 把 index.html 變成學生打得開的網址</h2>
+          <p>Google Apps Script，簡稱 GAS。這裡把它當成「幫小遊戲取得網路門牌的 Google 工具」，照順序貼好兩個檔案就能發布。</p>
+        </div>
+
+        <div class="gas-concept-map" aria-label="從遊戲檔案到正式網址的流程">
+          <article>
+            <span>你的作品</span>
+            <strong>index.html</strong>
+            <p>AI 幫你做好的完整遊戲</p>
+          </article>
+          <i aria-hidden="true">→</i>
+          <article class="is-gas">
+            <span>上線工具</span>
+            <strong>Apps Script</strong>
+            <p>放入 Code.gs 與 index.html</p>
+          </article>
+          <i aria-hidden="true">→</i>
+          <article>
+            <span>學生入口</span>
+            <strong>/exec 網址</strong>
+            <p>用預定學生帳號或無痕視窗驗收</p>
+          </article>
+        </div>
+
+        <article class="handoff-console gas-console" data-switcher>
+          <div class="switcher-tabs gas-tabs" role="tablist" aria-label="Google Apps Script 發布步驟">
+            <button type="button" role="tab" aria-selected="true" data-switch="gas-project">1　建專案</button>
+            <button type="button" role="tab" aria-selected="false" data-switch="gas-code">2　貼 Code.gs</button>
+            <button type="button" role="tab" aria-selected="false" data-switch="gas-html">3　放 index.html</button>
+            <button type="button" role="tab" aria-selected="false" data-switch="gas-deploy">4　部署</button>
+            <button type="button" role="tab" aria-selected="false" data-switch="gas-test">5　測網址</button>
+          </div>
+
+          <div class="switcher-panel gas-step-panel" data-panel="gas-project">
+            <div class="gas-step-heading">
+              <div><span>STEP 1</span><h3>建立一個新的 Apps Script 專案</h3></div>
+              <a class="button secondary" href="https://script.google.com/" target="_blank" rel="noopener noreferrer">開啟 Apps Script</a>
+            </div>
+            <ol>
+              <li>開啟 <strong>script.google.com</strong>，使用放教材的 Google 帳號登入。</li>
+              <li>按「新增專案」。</li>
+              <li>點左上角「未命名的專案」。</li>
+              <li>輸入作品名稱，例如「族語單字翻牌練習」，再按「重新命名」。</li>
+            </ol>
+            <div class="gas-finish"><strong>看到這樣就成功</strong><p>左側有 Code.gs，中間出現程式編輯區。</p></div>
+            <p class="gas-help">進不去嗎？學校帳號可能限制 Apps Script。先不要繞過管理規定，可以改用協作平台直接嵌入，或請管理員協助。</p>
+          </div>
+
+          <div class="switcher-panel gas-step-panel" data-panel="gas-code" hidden>
+            <div class="gas-step-heading">
+              <div><span>STEP 2</span><h3>在 Code.gs 放入開啟網頁的指令</h3></div>
+            </div>
+            <ol>
+              <li>點左側的 <strong>Code.gs</strong>。</li>
+              <li>在中間按 <strong>Ctrl + A</strong> 全選，再按 Backspace 刪除原本內容。</li>
+              <li>複製下方內容，完整貼上。</li>
+              <li>按 <strong>Ctrl + S</strong> 儲存。</li>
+            </ol>
+            <div class="copy-line-card gas-code-card">
+              <div><span>直接複製</span><strong>Code.gs</strong></div>
+              <button class="copy-button light-copy" type="button" data-copy-target="gas-code-snippet" data-copy-success="Code.gs 已複製，現在貼到 Apps Script。">複製程式</button>
+              <pre id="gas-code-snippet" tabindex="0">function doGet() {
+  return HtmlService.createHtmlOutputFromFile('index')
+    .setTitle('族語單字翻牌練習');
+}</pre>
+              <p class="inline-status" data-copy-status role="status"></p>
+            </div>
+            <div class="gas-finish"><strong>這四行在做什麼？</strong><p>有人打開網址時，請 Google 顯示名為 index 的網頁。</p></div>
+          </div>
+
+          <div class="switcher-panel gas-step-panel" data-panel="gas-html" hidden>
+            <div class="gas-step-heading">
+              <div><span>STEP 3</span><h3>新增 index.html，放進完整遊戲</h3></div>
+            </div>
+            <div class="gas-file-layout">
+              <ol>
+                <li>在左側「檔案」旁按加號，再選「HTML」。</li>
+                <li>名稱只輸入小寫的 <strong>index</strong>，不要再加 .html。</li>
+                <li>打開新出現的 <strong>index.html</strong>。</li>
+                <li>按 Ctrl + A 全選預設內容，再貼上 AI 產生的完整 HTML。</li>
+                <li>如果最上面或最下面有三個反引號，請把反引號刪掉。</li>
+                <li>按 Ctrl + S 儲存。</li>
+              </ol>
+              <div class="gas-file-tree" aria-label="完成後的檔案清單">
+                <span>檔案</span>
+                <strong>Code.gs</strong>
+                <strong>index.html</strong>
+                <small>左側看到這兩個檔案就對了</small>
+              </div>
+            </div>
+            <p class="gas-help">如果圖片、音檔或外部程式使用 http://，請改成 https://，不然放進 Apps Script 後可能載入失敗。</p>
+          </div>
+
+          <div class="switcher-panel gas-step-panel" data-panel="gas-deploy" hidden>
+            <div class="gas-step-heading">
+              <div><span>STEP 4</span><h3>部署成「網頁應用程式」</h3></div>
+            </div>
+            <ol>
+              <li>按右上角「部署」，再選「新增部署作業」。</li>
+              <li>點「選取類型」旁的設定圖示，選「網頁應用程式」。</li>
+              <li>說明可輸入「第一版族語翻牌練習」。</li>
+              <li>「執行身分」選擇自己。</li>
+              <li>「誰可以存取」依學生的帳號範圍選擇。若教材適合公開，而且帳號有提供公開選項，才選可讓一般學生開啟的範圍。</li>
+              <li>按「部署」，第一次使用時依畫面完成必要授權。</li>
+              <li>複製完成畫面中的「網頁應用程式網址」。</li>
+            </ol>
+            <div class="gas-finish"><strong>完成標準</strong><p>拿到一個以 <code>/exec</code> 結尾的網址，並先把它保存起來。</p></div>
+            <p class="gas-help">沒有「任何人」之類的公開選項，通常是學校或機關帳號的管理規定。不要一路亂按，也不要嘗試繞過限制。</p>
+          </div>
+
+          <div class="switcher-panel gas-step-panel" data-panel="gas-test" hidden>
+            <div class="gas-step-heading">
+              <div><span>STEP 5</span><h3><span class="title-phrase">先測正式網址，</span><wbr><span class="title-phrase">再交給學生</span></h3></div>
+            </div>
+            <ol>
+              <li>Chrome 按 <strong>Ctrl + Shift + N</strong> 開啟無痕視窗。</li>
+              <li>貼上剛才的網頁應用程式網址。</li>
+              <li>從開始畫面一路玩到結果畫面。</li>
+              <li>如果學生預計不用登入，確認無痕視窗也沒有要求登入。</li>
+            </ol>
+            <div class="gas-url-grid">
+              <article><span>只拿來測試</span><strong>/dev</strong><p>只有可以編輯專案的人能開，會顯示最新儲存內容。</p></article>
+              <article class="is-official"><span>交給學生</span><strong>/exec</strong><p>正式部署網址。先確認權限，再放進協作平台。</p></article>
+            </div>
+            <div class="gas-update">
+              <strong>遊戲改好了，學生怎麼看到新版？</strong>
+              <p>先儲存，再到「部署 → 管理部署作業」，選原本的部署、按編輯、建立新版本後重新部署。沿用同一個部署時，網址通常不用重貼。</p>
+            </div>
+          </div>
+        </article>
+
+        <aside class="source-strip" aria-label="Google Apps Script 官方資料">
+          <span>操作依據</span>
+          <a href="https://developers.google.com/apps-script/guides/web" target="_blank" rel="noopener noreferrer">Google：部署與嵌入 Web App</a>
+          <a href="https://developers.google.com/apps-script/concepts/deployments" target="_blank" rel="noopener noreferrer">Google：更新既有部署</a>
+          <a href="https://developers.google.com/apps-script/guides/html/restrictions" target="_blank" rel="noopener noreferrer">Google：HTML 服務限制</a>
+        </aside>
+      </div>
+    </section>
+
+    <section class="learning-section share-section" id="share" aria-labelledby="share-title">
+      <div class="shell">
+        <div class="section-heading narrow-heading">
+          <p class="section-number">PART 04</p>
+          <h2 id="share-title">網址測過以後，再放進教材網站</h2>
+          <p>Google 協作平台是教材入口。GAS 負責讓遊戲有網址，協作平台負責把課程說明、影片、教材與遊戲整理在一起。</p>
         </div>
 
         <ol class="publish-flow" aria-label="從作品到學生使用的流程">
           <li><span>01</span><strong>完成遊戲</strong><small>保留 index.html</small></li>
-          <li><span>02</span><strong>自己預覽</strong><small>從頭玩完</small></li>
-          <li><span>03</span><strong>選放法</strong><small>程式碼或網址</small></li>
-          <li><span>04</span><strong>放進 Sites</strong><small>嵌入或按鈕</small></li>
-          <li><span>05</span><strong>發布網站</strong><small>取得教材網址</small></li>
-          <li><span>06</span><strong>學生測試</strong><small>手機與無痕視窗</small></li>
+          <li><span>02</span><strong>放進 GAS</strong><small>準備兩個檔案</small></li>
+          <li><span>03</span><strong>部署 Web App</strong><small>取得 /exec 網址</small></li>
+          <li><span>04</span><strong>無痕測試</strong><small>確認學生能開</small></li>
+          <li><span>05</span><strong>放進 Sites</strong><small>嵌入或按鈕</small></li>
+          <li><span>06</span><strong>發布再測</strong><small>手機完整玩一次</small></li>
         </ol>
 
         <article class="handoff-console embed-console" data-switcher>
           <div class="switcher-tabs three-tabs" role="tablist" aria-label="選擇放進 Google 協作平台的方法">
-            <button type="button" role="tab" aria-selected="true" data-switch="code">我有 HTML 程式碼</button>
-            <button type="button" role="tab" aria-selected="false" data-switch="url">我有公開網址</button>
+            <button type="button" role="tab" aria-selected="true" data-switch="code">直接貼 HTML</button>
+            <button type="button" role="tab" aria-selected="false" data-switch="url">貼 GAS 網址</button>
             <button type="button" role="tab" aria-selected="false" data-switch="blocked">嵌入失敗</button>
           </div>
           <div class="switcher-panel embed-panel" data-panel="code">
@@ -242,14 +388,14 @@
           </div>
           <div class="switcher-panel embed-panel" data-panel="url" hidden>
             <span>方法 B</span>
-            <h3>插入 → 嵌入 → 貼上公開網址</h3>
+            <h3>插入 → 嵌入 → 貼上 GAS 的 /exec 網址</h3>
             <ol>
-              <li>先用無痕視窗確認遊戲網址真的能開。</li>
+              <li>先用無痕視窗確認 <strong>/exec</strong> 網址真的能開。</li>
               <li>在 Google 協作平台右側按「插入」，再按「嵌入」。</li>
-              <li>貼上遊戲網址，確認預覽後按「插入」。</li>
+              <li>貼上 GAS 的網頁應用程式網址，確認預覽後按「插入」。</li>
               <li>拉大嵌入區塊，實際點按遊戲按鈕。</li>
             </ol>
-            <p>有些網站會禁止被嵌入。這不是你操作錯，也不一定是程式壞掉。</p>
+            <p>網址本身能開、嵌入後卻要求登入時，先檢查 GAS 的部署存取範圍與學校帳號政策。</p>
           </div>
           <div class="switcher-panel embed-panel" data-panel="blocked" hidden>
             <span>方法 C</span>
@@ -282,31 +428,34 @@
         </div>
 
         <article class="release-gate" id="release" data-release-gate>
-          <header><span>分享前最後確認</span><strong data-release-count>0 / 8</strong></header>
+          <header><span>分享前最後確認</span><strong data-release-count>0 / 10</strong></header>
           <div class="release-list">
             <label><input type="checkbox"><span>遊戲能從開始玩到結果，不會卡住。</span></label>
             <label><input type="checkbox"><span>族語、中文、音檔與答案已由老師核對。</span></label>
             <label><input type="checkbox"><span>學生第一眼看得懂要按哪裡、做什麼。</span></label>
             <label><input type="checkbox"><span>至少有一個玩法真的對應學習目標。</span></label>
             <label><input type="checkbox"><span>手機直式畫面沒有左右捲動或按鈕被切掉。</span></label>
+            <label><input type="checkbox"><span>Apps Script 正式網址以 /exec 結尾，不是 /dev 測試網址。</span></label>
+            <label><input type="checkbox"><span>GAS 網址已用無痕視窗測過，存取權限符合學生身分。</span></label>
             <label><input type="checkbox"><span>Google 協作平台已按「發布」。</span></label>
             <label><input type="checkbox"><span>無痕視窗不會要求不必要的登入或權限。</span></label>
             <label><input type="checkbox"><span>另一位老師或學生已完成一次真人試玩。</span></label>
           </div>
-          <div class="gate-status" data-release-status role="status"><strong>還不能分享</strong><span>還有 8 項需要確認。</span></div>
+          <div class="gate-status" data-release-status role="status"><strong>還不能分享</strong><span>還有 10 項需要確認。</span></div>
         </article>
 
         <aside class="source-strip" aria-label="本堂參考資料">
           <span>想再看一次原理</span>
           <a href="https://www.youtube.com/watch?v=9aWaOylZRv0" target="_blank" rel="noopener noreferrer">Vibe Coding 製作、試玩與除錯示範</a>
           <a href="https://vocus.cc/article/6a7bb6b8fd8978000120cf8b" target="_blank" rel="noopener noreferrer">六階段 AI 遊戲式教學</a>
+          <a href="https://developers.google.com/apps-script/guides/web" target="_blank" rel="noopener noreferrer">Google Apps Script Web App 官方說明</a>
           <a href="https://support.google.com/sites/answer/90569?hl=zh-Hant" target="_blank" rel="noopener noreferrer">Google Sites 嵌入內容官方說明</a>
           <a href="https://support.google.com/sites/answer/6372880?hl=zh-Hant" target="_blank" rel="noopener noreferrer">Google Sites 發布與分享官方說明</a>
         </aside>
 
         <aside class="finish-banner">
           <span>兩堂課完成</span>
-          <strong>你已經把一份靜態教材，變成能玩、能學、能分享的互動作品。</strong>
+          <strong>你已經把一份靜態教材，變成能玩、能學、能上線、能分享的互動作品。</strong>
           <p>以後不用每次從零開始。保留這個遊戲骨架，換教材、換目標，再做下一個版本。</p>
         </aside>
       </div>
@@ -323,6 +472,6 @@
   </footer>
 
   <noscript><p class="noscript-note">這一頁需要 JavaScript 才能切換範例、產生修正指令與使用檢查表。</p></noscript>
-  <script src="../assets/handout.js?v=20260911d"></script>
+  <script src="../assets/handout.js?v=20260911f"></script>
 </body>
 </html>

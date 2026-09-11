@@ -217,7 +217,12 @@
       const card = button.closest('.copy-line-card');
       const status = card ? card.querySelector('[data-copy-status]') : null;
       button.addEventListener('click', function () {
-        copyText(target.textContent.trim(), button, status, '已複製。確認 AI 的規劃後再貼上。');
+        copyText(
+          target.textContent.trim(),
+          button,
+          status,
+          button.dataset.copySuccess || '已複製。確認 AI 的規劃後再貼上。'
+        );
       });
     });
   }

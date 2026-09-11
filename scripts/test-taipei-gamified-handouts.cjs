@@ -27,7 +27,7 @@ assert.match(lessonThree, /遊戲化教學術（下）/);
 for (const id of ['route', 'vibe', 'ability-map', 'make', 'prompt-builder']) {
   assert.match(lessonTwo, new RegExp(`id="${id}"`), `lesson 2 is missing ${id}`);
 }
-for (const id of ['route', 'debug', 'upgrade', 'share', 'release']) {
+for (const id of ['route', 'debug', 'upgrade', 'gas', 'share', 'release']) {
   assert.match(lessonThree, new RegExp(`id="${id}"`), `lesson 3 is missing ${id}`);
 }
 
@@ -54,12 +54,30 @@ assert.ok(lessonTwo.indexOf('id="ability-map"') < lessonTwo.indexOf('id="make"')
 assert.match(lessonThree, /data-issue-clinic/);
 assert.match(lessonThree, /data-upgrade-builder/);
 assert.match(lessonThree, /data-release-gate/);
-assert.match(lessonThree, /我有 HTML 程式碼/);
-assert.match(lessonThree, /我有公開網址/);
+assert.match(lessonThree, /直接貼 HTML/);
+assert.match(lessonThree, /貼 GAS 網址/);
 assert.match(lessonThree, /嵌入失敗/);
 assert.match(lessonThree, /修改後記得再發布/);
+assert.match(lessonThree, /Google Apps Script/);
+assert.match(lessonThree, /script\.google\.com/);
+assert.match(lessonThree, /function doGet\(\)/);
+assert.match(lessonThree, /HtmlService\.createHtmlOutputFromFile\('index'\)/);
+assert.match(lessonThree, /data-copy-success="Code\.gs 已複製，現在貼到 Apps Script。"/);
+assert.match(lessonThree, /Code\.gs/);
+assert.match(lessonThree, /index\.html/);
+assert.match(lessonThree, /新增部署作業/);
+assert.match(lessonThree, /管理部署作業/);
+assert.match(lessonThree, /\/dev/);
+assert.match(lessonThree, /\/exec/);
+assert.ok(lessonThree.indexOf('id="upgrade"') < lessonThree.indexOf('id="gas"'), 'GAS publishing must follow the game upgrade');
+assert.ok(lessonThree.indexOf('id="gas"') < lessonThree.indexOf('id="share"'), 'GAS publishing must happen before Google Sites');
+assert.equal((lessonThree.match(/data-switch="gas-/g) || []).length, 5, 'GAS tutorial needs five interactive steps');
+assert.equal((lessonThree.match(/class="release-list"[\s\S]*?<\/div>/) || [''])[0].match(/type="checkbox"/g)?.length, 10, 'release gate needs ten checks');
 assert.match(lessonThree, /youtube\.com\/watch\?v=9aWaOylZRv0/);
 assert.match(lessonThree, /vocus\.cc\/article\/6a7bb6b8fd8978000120cf8b/);
+assert.match(lessonThree, /developers\.google\.com\/apps-script\/guides\/web/);
+assert.match(lessonThree, /developers\.google\.com\/apps-script\/concepts\/deployments/);
+assert.match(lessonThree, /developers\.google\.com\/apps-script\/guides\/html\/restrictions/);
 assert.match(lessonThree, /support\.google\.com\/sites\/answer\/90569/);
 assert.match(lessonThree, /support\.google\.com\/sites\/answer\/6372880/);
 
@@ -99,12 +117,16 @@ for (const functionName of [
 }
 assert.doesNotMatch(sharedJs, /function initToolDrawers\(|function initMiniGame\(|function initTimer\(/, 'obsolete instructor widgets must be removed');
 assert.match(sharedJs, /IntersectionObserver/);
+assert.match(sharedJs, /button\.dataset\.copySuccess/);
 assert.doesNotMatch(sharedJs, /addEventListener\(['"]scroll['"]/, 'use IntersectionObserver instead of scroll listeners');
 assert.match(sharedCss, /@media \(max-width: 500px\)/);
 assert.match(sharedCss, /prefers-reduced-motion/);
 assert.match(sharedCss, /\.ability-console/);
 assert.match(sharedCss, /\.publish-flow/);
 assert.match(sharedCss, /\.vibe-handout/);
+assert.match(sharedCss, /\.gas-concept-map/);
+assert.match(sharedCss, /\.gas-console/);
+assert.match(sharedCss, /\.gas-url-grid/);
 
 assert.ok(fs.existsSync(path.join(root, 'downloads', 'vibe-coding-essentials.pdf')), 'lesson 2 handout PDF is missing');
 assert.ok(fs.existsSync(path.join(root, 'assets', 'vibe-coding-essentials-cover.jpg')), 'lesson 2 handout cover is missing');

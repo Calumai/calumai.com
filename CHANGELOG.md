@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added the existing five-step Google Apps Script Web App lesson to the 9/18 gamified-learning page. Learners now move from `index.html` to `Code.gs`, create the HTML file, deploy with appropriate access, distinguish `/dev` from `/exec`, update an existing deployment, test in an incognito window, and then embed the verified URL in Google Sites. The lesson uses the previously completed handout and current Google documentation rather than introducing a separate workflow.
+
 - Reworked the 9/11 Vibe Coding introduction from the supplied OXXO STEAM reference. Added a traditional-coding versus natural-language comparison, clarified teacher and AI responsibilities, added accuracy and safety checks, and placed the supplied 15-page PDF handout on the page with open and download actions.
 - Rebuilt the 9/11 and 9/18 Taipei gamified-learning pages around the actual course theme. The upper session teaches Vibe Coding as a plan, build and playtest loop before learners create memory, understanding or application games. The lower session covers precise bug reporting, analysis, evaluation or creation upgrades, peer playtesting, and verified Google Sites embed, publish and sharing routes. Removed instructor-dashboard drawers, run sheets, starter panels and timer widgets from the public pages.
 
