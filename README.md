@@ -15,6 +15,8 @@ CALUMAI 是一個以原生 HTML、CSS 與 JavaScript 製作的族語教學作品
 - `/class/taipei-ai/`：北市府 AI 教學應用四堂系列課程總覽與開放進度
 - `/class/taipei-ai/2026-0904-picture-book/`：北市府 9/4「自己的繪本自己生！」課程首頁，含提示詞暖身、NotebookLM 教材提示詞、簡報／海報換風格與進階 YAML 範例
 - `/class/taipei-ai/2026-0904-picture-book/practice/`：課堂限定 AI 圖片工作室，依序選用途、寫短描述、取得 AI 建議、調整修正版並生成一張可下載圖片
+- `/class/taipei-ai/2026-0911-gamified-learning/`：北市府 9/11 遊戲化教學上堂，先理解 Vibe Coding 的規劃、製作與試玩循環，再用記憶、理解、應用三層能力做出第一個族語互動關卡
+- `/class/taipei-ai/2026-0918-gamified-learning/`：北市府 9/18 遊戲化教學下堂，延續第一版進行除錯與真人試玩，加入分析、評鑑或創造關卡，最後用 Google 協作平台整理、發布與分享
 
 ## 本機預覽
 

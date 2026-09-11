@@ -422,8 +422,10 @@ assert.match(seriesIndex, /href="2026-0904-picture-book\/prompt-intro\/">先做�
 assert.match(seriesIndex, /href="2026-0904-picture-book\/">進入第 1 堂課程<\/a>/, "Taipei series hub must retain the full lesson entry");
 assert.equal((seriesIndex.match(/遊戲化教學術：把靜態教材變成超好玩的互動闖關/g) || []).length, 2, "the two game-based teaching sessions are missing");
 assert.match(seriesIndex, /拒絕加班！把 Gemini 訓練成最懂你的 AI 備課助理/, "fourth Taipei course title is missing");
-assert.equal((seriesIndex.match(/<button[^>]+class="course-status"[^>]+disabled/g) || []).length, 3, "future Taipei sessions must use three disabled building-state buttons");
-assert.doesNotMatch(seriesIndex, /2026-0911|2026-0918|2026-1002/, "building sessions must not link to nonexistent routes");
+assert.equal((seriesIndex.match(/<button[^>]+class="course-status"[^>]+disabled/g) || []).length, 1, "only the unfinished fourth Taipei session should remain disabled");
+assert.match(seriesIndex, /href="2026-0911-gamified-learning\/">進入第 2 堂課程<\/a>/, "Taipei series hub must link to lesson 2");
+assert.match(seriesIndex, /href="2026-0918-gamified-learning\/">進入第 3 堂課程<\/a>/, "Taipei series hub must link to lesson 3");
+assert.doesNotMatch(seriesIndex, /href="2026-1002/, "unfinished fourth session must not link to a nonexistent route");
 assert.match(seriesStyles, /@media \(max-width: 480px\)[\s\S]*?\.course-card\s*{/, "Taipei series hub needs a 390px card layout");
 for (const [token, value] of Object.entries({
   ink: "#111827",

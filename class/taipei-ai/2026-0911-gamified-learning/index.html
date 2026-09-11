@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="北市府 AI 教學應用第 2 堂。先理解 Vibe Coding，再把族語教材做成記憶、理解與應用三層互動遊戲。">
+  <meta name="theme-color" content="#8a5a00">
+  <meta property="og:title" content="遊戲化教學術（上）｜北市府 AI 教學應用">
+  <meta property="og:description" content="從學習目標、遊戲機制到 Vibe Coding 第一版，做出可以在瀏覽器試玩的族語互動關卡。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calumai.com/class/taipei-ai/2026-0911-gamified-learning/">
+  <meta property="og:image" content="https://calumai.com/class/taipei-ai/assets/course-02-cover.png">
+  <title>遊戲化教學術（上）｜北市府 AI 教學應用</title>
+  <link rel="icon" href="/assets/calumai-logo-mark.png">
+  <link rel="stylesheet" href="../assets/handout.css?v=20260911e">
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body class="lesson-gold" data-lesson="2">
+  <a class="skip-link" href="#main">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="../" aria-label="回到北市府四堂課首頁">CALUMAI <span>/ CLASS</span></a>
+      <nav aria-label="本課程導覽">
+        <a href="#vibe">Vibe Coding</a>
+        <a href="#ability-map">六階段玩法</a>
+        <a href="#make">動手做</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="course-intro shell" aria-labelledby="course-title">
+      <div>
+        <p class="kicker"><span>臺北市政府 AI 教學應用課程</span><time datetime="2026-09-11T19:00">9/11　19:00-22:00</time></p>
+        <h1 id="course-title">遊戲化教學術（上）：用 Vibe Coding 做出第一個族語遊戲</h1>
+      </div>
+      <div class="course-outcome" aria-label="本堂成果">
+        <span>今天帶走</span>
+        <strong>一個能從頭玩完的互動關卡</strong>
+      </div>
+    </section>
+
+    <section class="route-section" id="route" aria-labelledby="route-title">
+      <div class="shell">
+        <div class="section-heading narrow-heading">
+          <p class="section-number">LESSON 02</p>
+          <h2 id="route-title">從教材，到能玩的第一版</h2>
+          <p>先搞懂怎麼跟 AI 合作，再決定學生要練什麼，最後才開始做遊戲。</p>
+        </div>
+
+        <ol class="route-grid">
+          <li class="route-card is-featured">
+            <span class="route-name">01　先看懂</span>
+            <h3>Vibe Coding 怎麼運作</h3>
+            <p>老師說清楚目標與玩法，AI 協助規劃、製作與修改，作品靠一輪一輪試玩完成。</p>
+            <dl>
+              <div><dt>不必先會</dt><dd>HTML、CSS、JavaScript</dd></div>
+              <div><dt>一定要會</dt><dd>說需求、做判斷、找問題</dd></div>
+            </dl>
+            <a class="button primary" href="#vibe">先理解合作方式</a>
+          </li>
+
+          <li class="route-card">
+            <span class="route-name">02　再選目標</span>
+            <h3>先選腦力，再選玩法</h3>
+            <p>配對、排序、解謎、偵探與分支故事各有用途，不是加分數就叫遊戲化。</p>
+            <dl>
+              <div><dt>這堂先做</dt><dd>記憶、理解、應用</dd></div>
+              <div><dt>下堂升級</dt><dd>分析、評鑑、創造</dd></div>
+            </dl>
+            <a class="button secondary" href="#ability-map">挑一種學習能力</a>
+          </li>
+
+          <li class="route-card">
+            <span class="route-name">03　開始製作</span>
+            <h3>規劃、製作、試玩</h3>
+            <p>把教材填進需求卡，先讓 AI 說明計畫，確認後再做成單一 HTML。</p>
+            <dl>
+              <div><dt>第一版要有</dt><dd>任務、操作、回饋、完成條件</dd></div>
+              <div><dt>完成標準</dt><dd>自己能從開始玩到結束</dd></div>
+            </dl>
+            <a class="button secondary" href="#make">組出第一版提示詞</a>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="learning-section vibe-section" id="vibe" aria-labelledby="vibe-title">
+      <div class="shell">
+        <div class="section-heading narrow-heading">
+          <p class="section-number">PART 01</p>
+          <h2 id="vibe-title">先不用學程式，先學會把需求說清楚</h2>
+          <p>Vibe Coding 是把重心從「自己寫每一行語法」，改成「用自然語言引導 AI 做出作品」。</p>
+        </div>
+
+        <article class="vibe-handout">
+          <a class="vibe-handout-cover" href="../downloads/vibe-coding-essentials.pdf" target="_blank" rel="noopener noreferrer" aria-label="開啟 Vibe Coding Essentials 講義">
+            <img src="../assets/vibe-coding-essentials-cover.jpg" alt="Vibe Coding 開發者的溝通工具箱講義封面" width="1200" height="670">
+          </a>
+          <div class="vibe-handout-copy">
+            <span>15 頁課堂講義</span>
+            <h3>Vibe Coding：開發者的「溝通工具箱」</h3>
+            <p>搭配下面的互動說明閱讀。先理解人和 AI 怎麼分工，再開始做遊戲。</p>
+            <div class="resource-actions">
+              <a class="button primary" href="../downloads/vibe-coding-essentials.pdf" target="_blank" rel="noopener noreferrer">開啟講義</a>
+              <a class="resource-download" href="../downloads/vibe-coding-essentials.pdf" download>下載 PDF</a>
+            </div>
+          </div>
+        </article>
+
+        <div class="vibe-definition">
+          <div class="vibe-definition-copy">
+            <h3>老師像導演，AI 像製作助手</h3>
+            <p>你決定學生要學什麼、遊戲怎麼玩、什麼才算答對。AI 負責把這些指示整理成可以操作的第一版。</p>
+            <p class="vibe-example-line"><strong>例如：</strong>「請做一個族語圖片選擇遊戲，每次一題，答完馬上告訴學生對不對。」</p>
+          </div>
+
+          <article class="handoff-console concept-console" data-switcher>
+            <div class="switcher-tabs two-tabs" role="tablist" aria-label="比較傳統寫程式與 Vibe Coding">
+              <button type="button" role="tab" aria-selected="false" data-switch="traditional">傳統寫程式</button>
+              <button type="button" role="tab" aria-selected="true" data-switch="natural-language">Vibe Coding</button>
+            </div>
+            <div class="switcher-panel" data-panel="traditional" hidden>
+              <span>重心放在語法</span>
+              <h3>先學程式語言，再把功能一行一行寫出來</h3>
+              <p>製作者要自己處理網頁結構、畫面樣式、按鈕反應與錯誤排除。</p>
+            </div>
+            <div class="switcher-panel" data-panel="natural-language">
+              <span>重心放在引導</span>
+              <h3>先說清楚想做什麼，再請 AI 實作</h3>
+              <p>可以從 ChatGPT、Gemini 或 Canva 這類對話工具開始，邊看結果、邊說出下一個修改需求。</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="responsibility-grid">
+          <article>
+            <span>人類負責</span>
+            <h3>目標、判斷、感覺與最後驗收</h3>
+            <p>學習目標、族語內容、文化脈絡、遊戲體驗與答案正確性，都要由老師決定。</p>
+          </article>
+          <article class="accent-panel">
+            <span>AI 負責</span>
+            <h3>把清楚的指示做成可以試玩的版本</h3>
+            <p>AI 可以處理畫面、按鈕、規則、計分與程式，也能依照老師指出的問題繼續修改。</p>
+          </article>
+        </div>
+
+        <aside class="vibe-guardrail">
+          <div>
+            <h3>做得快，不代表可以不檢查</h3>
+            <p>AI 可能很有自信地做錯。作品越大也越難修，所以這堂只做一個小而完整的遊戲。</p>
+          </div>
+          <dl>
+            <div><dt>教材內容</dt><dd>族語、答案與文化脈絡由老師核對。</dd></div>
+            <div><dt>製作範圍</dt><dd>先做最小版本，一次只增加一項功能。</dd></div>
+            <div><dt>資料安全</dt><dd>不要貼學生個資、帳號密碼或未公開資料。</dd></div>
+            <div><dt>素材授權</dt><dd>圖片、音檔與程式來源仍要確認能否使用。</dd></div>
+          </dl>
+        </aside>
+
+        <div class="vibe-grid">
+          <article class="cycle-console" data-cycle>
+            <div class="cycle-count"><span data-cycle-current>1</span><small>/ 7</small></div>
+            <div class="cycle-content">
+              <span data-cycle-label>想清楚</span>
+              <h3 data-cycle-title>先決定學生要學會什麼</h3>
+              <p data-cycle-description>先有學習目標，再談畫面和功能。</p>
+            </div>
+            <button class="button secondary" type="button" data-cycle-next>下一個動作</button>
+          </article>
+
+          <article class="handoff-console location-console" data-switcher>
+            <div class="switcher-tabs four-tabs" role="tablist" aria-label="作品所在位置">
+              <button type="button" role="tab" aria-selected="true" data-switch="chat">AI 對話</button>
+              <button type="button" role="tab" aria-selected="false" data-switch="folder">作品資料夾</button>
+              <button type="button" role="tab" aria-selected="false" data-switch="url">公開網址</button>
+              <button type="button" role="tab" aria-selected="false" data-switch="site">協作平台</button>
+            </div>
+            <div class="switcher-panel" data-panel="chat">
+              <span>製作中的工作桌</span>
+              <h3>在這裡討論、預覽、請 AI 修改</h3>
+              <p>對話裡看得到或玩得到，只代表作品正在製作。這個畫面通常不是交給學生的正式網址。</p>
+            </div>
+            <div class="switcher-panel" data-panel="folder" hidden>
+              <span>自己的作品原稿</span>
+              <h3>把完整程式存成 index.html</h3>
+              <p>資料夾裡放的是作品原稿。雙擊 index.html 可以自己試玩，也能保留每次修改前的版本。</p>
+            </div>
+            <div class="switcher-panel" data-panel="url" hidden>
+              <span>真正交給學生的作品</span>
+              <h3>發布後，別人才能用網址打開</h3>
+              <p>公開網址是遊戲本身的入口。能用無痕視窗和手機打開，才算真的可以分享。</p>
+            </div>
+            <div class="switcher-panel" data-panel="site" hidden>
+              <span>教材的總入口</span>
+              <h3>Google 協作平台負責把教材整理在一起</h3>
+              <p>它適合放課程說明、影片、圖片、講義與遊戲入口。它不是 AI 對話，也不等於遊戲原稿。</p>
+            </div>
+          </article>
+        </div>
+
+        <aside class="plain-callout">
+          <strong>先記這個差別</strong>
+          <p>AI 對話是製作桌，HTML 是作品原稿，公開網址是遊戲入口，Google 協作平台是整門課的教材入口。</p>
+        </aside>
+
+        <aside class="source-strip" aria-label="Vibe Coding 參考資料">
+          <span>本段主要參考</span>
+          <a href="https://steam.oxxostudio.tw/category/aigc/vibe-coding/about.html" target="_blank" rel="noopener noreferrer">OXXO STEAM：認識 Vibe Coding</a>
+        </aside>
+      </div>
+    </section>
+
+    <section class="learning-section ability-section" id="ability-map" aria-labelledby="ability-title">
+      <div class="shell">
+        <div class="section-heading narrow-heading">
+          <p class="section-number">PART 02</p>
+          <h2 id="ability-title">先選學生要動哪一種腦力</h2>
+          <p>同一份教材可以做成很多遊戲。差別不在特效，而在學生玩完以後，到底練到了什麼。</p>
+        </div>
+
+        <article class="ability-console" data-switcher>
+          <div class="ability-rail" role="tablist" aria-label="六階段遊戲式學習">
+            <button type="button" role="tab" aria-selected="true" data-switch="remember"><span>01</span>記憶<small>記得詞</small></button>
+            <button type="button" role="tab" aria-selected="false" data-switch="understand"><span>02</span>理解<small>分得出</small></button>
+            <button type="button" role="tab" aria-selected="false" data-switch="apply"><span>03</span>應用<small>用得上</small></button>
+            <button type="button" role="tab" aria-selected="false" data-switch="analyze"><span>04</span>分析<small>找線索</small></button>
+            <button type="button" role="tab" aria-selected="false" data-switch="evaluate"><span>05</span>評鑑<small>做判斷</small></button>
+            <button type="button" role="tab" aria-selected="false" data-switch="create"><span>06</span>創造<small>組作品</small></button>
+          </div>
+
+          <div class="ability-stage">
+            <div class="ability-panel" data-panel="remember">
+              <div><span class="stage-tag">這堂先做</span><h3>記憶：看到、聽到，能想起來</h3><p>適合剛接觸的新詞、語音、符號與基本意思。</p></div>
+              <dl class="stage-facts">
+                <div><dt>適合玩法</dt><dd>Bingo、翻牌、配對</dd></div>
+                <div><dt>族語例子</dt><dd>圖片配族語、音檔配文字、中文配族語</dd></div>
+                <div><dt>對 AI 說</dt><dd>每次只出現一題，答完立刻顯示正確答案。</dd></div>
+              </dl>
+            </div>
+            <div class="ability-panel" data-panel="understand" hidden>
+              <div><span class="stage-tag">這堂先做</span><h3>理解：知道它們為什麼放在一起</h3><p>學生不只記得詞，還能看出分類、關係與先後順序。</p></div>
+              <dl class="stage-facts">
+                <div><dt>適合玩法</dt><dd>分類、排序、找同類</dd></div>
+                <div><dt>族語例子</dt><dd>問候語分情境、句子排順序、人物稱謂分類</dd></div>
+                <div><dt>對 AI 說</dt><dd>學生放好後，要說明哪一項放錯以及原因。</dd></div>
+              </dl>
+            </div>
+            <div class="ability-panel" data-panel="apply" hidden>
+              <div><span class="stage-tag">這堂先做</span><h3>應用：換一個情境，還是用得出來</h3><p>把已學過的詞句放進生活情境，不只做單純選擇題。</p></div>
+              <dl class="stage-facts">
+                <div><dt>適合玩法</dt><dd>情境選擇、填對話、操作解謎</dd></div>
+                <div><dt>族語例子</dt><dd>見到長輩怎麼說、依圖片補一句、完成短對話</dd></div>
+                <div><dt>對 AI 說</dt><dd>題目要給情境，回饋要說明為什麼這句適合。</dd></div>
+              </dl>
+            </div>
+            <div class="ability-panel" data-panel="analyze" hidden>
+              <div><span class="stage-tag next-tag">下堂升級</span><h3>分析：從線索裡找出差別與問題</h3><p>學生要比較、拆解、推理，不能只靠背答案。</p></div>
+              <dl class="stage-facts">
+                <div><dt>適合玩法</dt><dd>偵探、找錯、案例判讀</dd></div>
+                <div><dt>族語例子</dt><dd>找出不合情境的句子、比對兩段對話、追查錯譯</dd></div>
+                <div><dt>對 AI 說</dt><dd>答案要能從老師提供的線索判斷，不可自行補資料。</dd></div>
+              </dl>
+            </div>
+            <div class="ability-panel" data-panel="evaluate" hidden>
+              <div><span class="stage-tag next-tag">下堂升級</span><h3>評鑑：比較幾種做法，再作決定</h3><p>學生根據條件與文化脈絡，選擇較合適的表達。</p></div>
+              <dl class="stage-facts">
+                <div><dt>適合玩法</dt><dd>模擬、分支選擇、角色決策</dd></div>
+                <div><dt>族語例子</dt><dd>不同對象怎麼回應、比較兩種說法、選擇並說理由</dd></div>
+                <div><dt>對 AI 說</dt><dd>判斷標準由老師提供，遊戲不能假裝只有唯一文化答案。</dd></div>
+              </dl>
+            </div>
+            <div class="ability-panel" data-panel="create" hidden>
+              <div><span class="stage-tag next-tag">下堂升級</span><h3>創造：把學過的內容重新組成作品</h3><p>學生從回答者變成製作者，完成自己的對話、故事或展示。</p></div>
+              <dl class="stage-facts">
+                <div><dt>適合玩法</dt><dd>建造、策展、分支故事</dd></div>
+                <div><dt>族語例子</dt><dd>排出生活對話、設計角色任務、製作主題詞彙展</dd></div>
+                <div><dt>對 AI 說</dt><dd>只能重組老師提供的族語，不能替學生發明新句子。</dd></div>
+              </dl>
+            </div>
+          </div>
+        </article>
+
+        <div class="example-board" aria-labelledby="example-board-title">
+          <div class="example-board-heading">
+            <span>同一份「生活問候」教材</span>
+            <h3 id="example-board-title">十二種可以直接發展的玩法</h3>
+          </div>
+          <div class="example-grid">
+            <article><b>記憶 01</b><h4>聽音找字</h4><p>播放老師提供的音檔，選出對應族語。</p></article>
+            <article><b>記憶 02</b><h4>圖文配對</h4><p>把生活情境圖片和正確詞句配在一起。</p></article>
+            <article><b>理解 01</b><h4>場合分類</h4><p>把問候語放進早上、道別、感謝等情境。</p></article>
+            <article><b>理解 02</b><h4>對話排序</h4><p>把打亂的三句對話排回合理順序。</p></article>
+            <article><b>應用 01</b><h4>情境選句</h4><p>看人物與場合，選一句最適合的用語。</p></article>
+            <article><b>應用 02</b><h4>缺句解謎</h4><p>補上短對話缺少的一句，讓任務繼續。</p></article>
+            <article><b>分析 01</b><h4>對話偵探</h4><p>從線索找出哪一句放錯情境。</p></article>
+            <article><b>分析 02</b><h4>找出差別</h4><p>比較兩段對話，指出人物或時機的差異。</p></article>
+            <article><b>評鑑 01</b><h4>角色決策</h4><p>面對不同對象，選擇較合適的回應並說理由。</p></article>
+            <article><b>評鑑 02</b><h4>分支任務</h4><p>每個選擇帶到不同結果，再回看判斷依據。</p></article>
+            <article><b>創造 01</b><h4>對話建造</h4><p>用老師提供的詞句組出一段新對話。</p></article>
+            <article><b>創造 02</b><h4>主題策展</h4><p>挑選詞句、圖片與音檔，完成一頁主題展示。</p></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="learning-section make-section" id="make" aria-labelledby="make-title">
+      <div class="shell">
+        <div class="section-heading narrow-heading">
+          <p class="section-number">PART 03</p>
+          <h2 id="make-title">把教學想法寫成一張遊戲需求卡</h2>
+          <p>提示詞不是越長越好。先把學生、目標、教材、操作、回饋與完成條件交代清楚，AI 才知道要做什麼。</p>
+        </div>
+
+        <ol class="brief-map" aria-label="遊戲需求六項內容">
+          <li><span>01</span><strong>學生</strong><small>誰要使用</small></li>
+          <li><span>02</span><strong>目標</strong><small>玩完要會什麼</small></li>
+          <li><span>03</span><strong>教材</strong><small>只能使用哪些內容</small></li>
+          <li><span>04</span><strong>操作</strong><small>學生要做什麼</small></li>
+          <li><span>05</span><strong>回饋</strong><small>做完會知道什麼</small></li>
+          <li><span>06</span><strong>完成</strong><small>何時算過關</small></li>
+        </ol>
+
+        <div class="workbench" id="prompt-builder" data-prompt-builder>
+          <form class="builder-form" novalidate>
+            <div class="field-pair">
+              <label for="lesson-audience">學生
+                <select id="lesson-audience" name="audience">
+                  <option>國小學生</option>
+                  <option selected>國中學生</option>
+                  <option>高中學生</option>
+                  <option>成人學習者</option>
+                  <option>親子共學</option>
+                </select>
+              </label>
+              <label for="lesson-topic">教材主題
+                <input id="lesson-topic" name="topic" type="text" placeholder="例：生活中的問候" autocomplete="off">
+              </label>
+            </div>
+
+            <label for="lesson-goal">學生玩完要會什麼
+              <input id="lesson-goal" name="goal" type="text" placeholder="例：看到三種生活情境，能選出合適的問候語" autocomplete="off">
+            </label>
+
+            <div class="field-pair">
+              <label for="lesson-stage">這次先練哪一種能力
+                <select id="lesson-stage" name="stage">
+                  <option value="記憶：看到或聽到提示，能想起正確詞句">記憶：記得詞</option>
+                  <option value="理解：能分類、排序或看出詞句之間的關係">理解：分得出</option>
+                  <option value="應用：能把學過的詞句用在新的生活情境" selected>應用：用得上</option>
+                  <option value="分析：能根據線索比較、找錯與推理">分析：找線索</option>
+                  <option value="評鑑：能依照老師提供的標準作決定並說明理由">評鑑：做判斷</option>
+                  <option value="創造：能重組老師提供的內容完成新作品">創造：組作品</option>
+                </select>
+              </label>
+              <label for="lesson-game-type">玩法
+                <select id="lesson-game-type" name="gameType">
+                  <option>翻牌練習</option>
+                  <option>圖文或音字配對</option>
+                  <option>分類挑戰</option>
+                  <option>順序排列</option>
+                  <option selected>情境選擇闖關</option>
+                  <option>找錯偵探</option>
+                  <option>分支決策</option>
+                  <option>對話建造</option>
+                </select>
+              </label>
+            </div>
+
+            <label for="lesson-items">貼上老師已核對的教材
+              <textarea id="lesson-items" name="items" rows="8" placeholder="每行一筆，例如：&#10;情境｜族語詞句｜中文意思｜正確答案或使用條件&#10;情境｜族語詞句｜中文意思｜正確答案或使用條件&#10;情境｜族語詞句｜中文意思｜正確答案或使用條件"></textarea>
+            </label>
+            <p class="field-help">至少三筆。族語、中文與文化脈絡都由老師提供，AI 不翻譯、不補寫。</p>
+            <button class="button primary" type="submit">產生規劃提示詞</button>
+          </form>
+
+          <article class="builder-output" aria-live="polite">
+            <header>
+              <div><span>第一回合先規劃，不急著寫程式</span><h3>你的 Vibe Coding 提示詞</h3></div>
+              <button class="copy-button" type="button" data-copy-prompt disabled>複製提示詞</button>
+            </header>
+            <div class="empty-state" data-builder-empty>
+              <strong>先填左邊的需求卡</strong>
+              <p>最少填教材主題、學習目標與三筆教材。</p>
+            </div>
+            <pre data-builder-output hidden tabindex="0"></pre>
+            <p class="inline-status" data-builder-status role="status"></p>
+          </article>
+        </div>
+
+        <div class="build-path" aria-labelledby="build-path-title">
+          <div class="build-path-heading">
+            <span>從影片示範整理出的做法</span>
+            <h3 id="build-path-title">先規劃，再製作，最後真的玩一次</h3>
+          </div>
+          <ol>
+            <li><span>01</span><div><strong>開一個新對話或新作品資料夾</strong><p>一個遊戲用一個清楚的位置，避免和其他作品混在一起。</p></div></li>
+            <li><span>02</span><div><strong>貼上剛才的規劃提示詞</strong><p>先讓 AI 整理玩法、畫面、回饋與缺少的資料。</p></div></li>
+            <li><span>03</span><div><strong>回答 AI 的問題</strong><p>看不懂就直接說「我是新手，請用白話一次問一題」。</p></div></li>
+            <li><span>04</span><div><strong>確認計畫，再請它開始製作</strong><p>不要跳過規劃。先看玩法有沒有對準學習目標。</p></div></li>
+            <li><span>05</span><div><strong>把完整檔案存成 index.html</strong><p>AI 若能直接建立檔案，就確認資料夾裡看得到這個檔名。</p></div></li>
+            <li><span>06</span><div><strong>從開始畫面玩到結果畫面</strong><p>按過每一顆按鈕，記下第一個不符合預期的地方。</p></div></li>
+          </ol>
+          <article class="copy-line-card">
+            <div><span>AI 的規劃沒有問題時，再貼這一句</span><strong>確認，請照剛才的計畫開始製作。</strong></div>
+            <button class="copy-button light-copy" type="button" data-copy-target="build-confirmation">複製這一句</button>
+            <pre id="build-confirmation" hidden>確認，請照剛才的計畫開始製作。請輸出完整的單一 index.html，不使用外部套件、登入、資料庫或付費服務。完成後請先自行檢查開始、操作、回饋、結算與重新挑戰都能使用。</pre>
+            <p class="inline-status" data-copy-status role="status"></p>
+          </article>
+        </div>
+
+        <aside class="finish-banner">
+          <span>上堂完成</span>
+          <strong>遊戲能在瀏覽器打開，而且自己能從頭玩到結束。</strong>
+          <p>先保留這個可用版本。下堂再處理除錯、進階關卡、手機測試與發布。</p>
+        </aside>
+      </div>
+    </section>
+
+    <nav class="lesson-pagination shell" aria-label="前後堂課">
+      <a href="../2026-0904-picture-book/"><span>上一堂</span>AI 生成專屬部落故事</a>
+      <a href="../2026-0918-gamified-learning/"><span>下一堂</span>把第一版升級並分享</a>
+    </nav>
+  </main>
+
+  <footer>
+    <div class="shell footer-inner"><span>CALUMAI / 臺北市政府 AI 教學應用課程</span><a href="../">回到四堂課</a></div>
+  </footer>
+
+  <noscript><p class="noscript-note">這一頁需要 JavaScript 才能切換範例與產生提示詞。</p></noscript>
+  <script src="../assets/handout.js?v=20260911d"></script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="北市府 AI 教學應用第 3 堂。試玩並修正族語互動教材，加入分析、評鑑與創造關卡，再放進 Google 協作平台分享。">
+  <meta name="theme-color" content="#2458aa">
+  <meta property="og:title" content="遊戲化教學術（下）｜北市府 AI 教學應用">
+  <meta property="og:description" content="把 Vibe Coding 第一版升級成有學習效果、測過手機並能交給學生使用的完整互動闖關。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calumai.com/class/taipei-ai/2026-0918-gamified-learning/">
+  <meta property="og:image" content="https://calumai.com/class/taipei-ai/assets/course-03-cover.png">
+  <title>遊戲化教學術（下）｜北市府 AI 教學應用</title>
+  <link rel="icon" href="/assets/calumai-logo-mark.png">
+  <link rel="stylesheet" href="../assets/handout.css?v=20260911d">
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body class="lesson-blue" data-lesson="3">
+  <a class="skip-link" href="#main">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="../" aria-label="回到北市府四堂課首頁">CALUMAI <span>/ CLASS</span></a>
+      <nav aria-label="本課程導覽">
+        <a href="#debug">試玩與修正</a>
+        <a href="#upgrade">進階關卡</a>
+        <a href="#share">發布分享</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="course-intro shell" aria-labelledby="course-title">
+      <div>
+        <p class="kicker"><span>臺北市政府 AI 教學應用課程</span><time datetime="2026-09-18T19:00">9/18　19:00-22:00</time></p>
+        <h1 id="course-title">遊戲化教學術（下）：把第一版變成有效又能分享的闖關</h1>
+      </div>
+      <div class="course-outcome" aria-label="本堂成果">
+        <span>今天帶走</span>
+        <strong>一個測過、修過、能交給學生的作品</strong>
+      </div>
+    </section>
+
+    <section class="route-section" id="route" aria-labelledby="route-title">
+      <div class="shell">
+        <div class="section-heading narrow-heading">
+          <p class="section-number">LESSON 03</p>
+          <h2 id="route-title">從好玩，到真的有學習</h2>
+          <p>先把第一版玩壞、說清楚問題，再加入高一層的思考任務，最後才發布。</p>
+        </div>
+
+        <ol class="route-grid">
+          <li class="route-card is-featured">
+            <span class="route-name">01　先測再修</span>
+            <h3>把問題說到 AI 聽得懂</h3>
+            <p>不要只說「壞掉了」。說出期待、實際結果、重現步驟與哪些地方不能改。</p>
+            <dl>
+              <div><dt>真正的 Vibe Coding</dt><dd>做、玩、找問題、改、再玩</dd></div>
+              <div><dt>修正原則</dt><dd>一次只改一件事</dd></div>
+            </dl>
+            <a class="button primary" href="#debug">組出修正指令</a>
+          </li>
+
+          <li class="route-card">
+            <span class="route-name">02　再往上走</span>
+            <h3>加入分析、評鑑或創造</h3>
+            <p>從記得答案，走向找線索、做判斷與組出自己的作品。</p>
+            <dl>
+              <div><dt>這堂重點</dt><dd>分析、評鑑、創造</dd></div>
+              <div><dt>一次只加</dt><dd>一種能力、一個玩法</dd></div>
+            </dl>
+            <a class="button secondary" href="#upgrade">選擇進階關卡</a>
+          </li>
+
+          <li class="route-card">
+            <span class="route-name">03　交給學生</span>
+            <h3>預覽、發布、放進協作平台</h3>
+            <p>分清楚遊戲原稿、公開網址與教材網站，最後用手機和無痕視窗驗收。</p>
+            <dl>
+              <div><dt>教材入口</dt><dd>Google 協作平台</dd></div>
+              <div><dt>完成標準</dt><dd>學生不用登入也能開始玩</dd></div>
+            </dl>
+            <a class="button secondary" href="#share">選擇發布方式</a>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="learning-section debug-section" id="debug" aria-labelledby="debug-title">
+      <div class="shell">
+        <div class="section-heading narrow-heading">
+          <p class="section-number">PART 01</p>
+          <h2 id="debug-title">第一版不完美很正常，重點是怎麼修</h2>
+          <p>影片裡的 3D 遊戲也是先做出能動的版本，再實際試玩、找到跳躍與碰撞問題，最後請 AI 一輪一輪修正。</p>
+        </div>
+
+        <ol class="debug-brief" aria-label="說清楚問題的四項資料">
+          <li><span>01</span><strong>我原本期待</strong><small>按下去應該發生什麼</small></li>
+          <li><span>02</span><strong>實際發生</strong><small>現在看見什麼</small></li>
+          <li><span>03</span><strong>怎麼重現</strong><small>從哪一步開始會出錯</small></li>
+          <li><span>04</span><strong>不要改動</strong><small>哪些內容和功能要保留</small></li>
+        </ol>
+
+        <div class="clinic-console" data-issue-clinic>
+          <div class="issue-menu" role="tablist" aria-label="常見作品問題">
+            <button type="button" role="tab" aria-selected="true" data-issue="button">按鈕沒反應</button>
+            <button type="button" role="tab" aria-selected="false" data-issue="answer">答案有錯</button>
+            <button type="button" role="tab" aria-selected="false" data-issue="mobile">手機太擠</button>
+            <button type="button" role="tab" aria-selected="false" data-issue="score">分數重複</button>
+          </div>
+          <article class="clinic-result">
+            <span class="tool-eyebrow">選一個最像的問題</span>
+            <h3 data-clinic-title>按了按鈕，畫面完全沒變</h3>
+            <p data-clinic-clue>先記下是哪一個畫面、哪一顆按鈕，以及按下前後看到什麼。</p>
+            <div class="prompt-card">
+              <div class="prompt-card-head"><strong>補完括號後貼給 AI</strong><button class="copy-button" type="button" data-copy-clinic>複製修正指令</button></div>
+              <pre data-clinic-prompt tabindex="0"></pre>
+              <p class="inline-status" data-clinic-status role="status"></p>
+            </div>
+          </article>
+        </div>
+
+        <aside class="plain-callout">
+          <strong>修完不代表完成</strong>
+          <p>回到開始畫面，再完整玩一次。新問題消失，而且原本能用的功能沒有壞，這次修改才算過關。</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="learning-section upgrade-section" id="upgrade" aria-labelledby="upgrade-title">
+      <div class="shell">
+        <div class="section-heading narrow-heading">
+          <p class="section-number">PART 02</p>
+          <h2 id="upgrade-title">不要只加特效，把玩法往思考推進</h2>
+          <p>上堂先做記憶、理解與應用；這堂從其中一關往上升級，讓學生開始分析、評鑑或創造。</p>
+        </div>
+
+        <div class="stage-bridge" aria-label="六階段學習路徑">
+          <div><span>上堂完成</span><strong>記憶</strong><small>記得詞</small></div>
+          <i aria-hidden="true">→</i>
+          <div><span>上堂完成</span><strong>理解</strong><small>分得出</small></div>
+          <i aria-hidden="true">→</i>
+          <div><span>上堂完成</span><strong>應用</strong><small>用得上</small></div>
+          <i aria-hidden="true">→</i>
+          <div class="is-today"><span>今天選一個</span><strong>分析</strong><small>找線索</small></div>
+          <i aria-hidden="true">→</i>
+          <div class="is-today"><span>今天選一個</span><strong>評鑑</strong><small>做判斷</small></div>
+          <i aria-hidden="true">→</i>
+          <div class="is-today"><span>今天選一個</span><strong>創造</strong><small>組作品</small></div>
+        </div>
+
+        <div class="advanced-examples">
+          <article>
+            <span>04　分析</span>
+            <h3>對話偵探</h3>
+            <p>提供三段老師核對過的對話與線索，請學生找出哪一句用錯人物或情境。</p>
+            <small>學生要比較與說明，不是只猜答案。</small>
+          </article>
+          <article>
+            <span>05　評鑑</span>
+            <h3>分支決策</h3>
+            <p>遇到不同對象與場合，學生選擇一種回應，再依老師給的標準說明理由。</p>
+            <small>文化判斷由老師提供，AI 不自訂規則。</small>
+          </article>
+          <article>
+            <span>06　創造</span>
+            <h3>對話建造</h3>
+            <p>學生從老師提供的詞句庫中挑選與排序，完成一段可以播放或朗讀的短對話。</p>
+            <small>重組已確認內容，不讓 AI 發明族語。</small>
+          </article>
+        </div>
+
+        <div class="workbench compact upgrade-workbench" data-upgrade-builder>
+          <form class="builder-form" novalidate>
+            <label for="current-game">你現在的遊戲怎麼玩
+              <textarea id="current-game" name="context" rows="6" placeholder="例：學生看圖片，從三個答案選出正確族語；答完會看到正確答案，完成五題後顯示分數。"></textarea>
+            </label>
+            <fieldset>
+              <legend>這次只升級一種能力</legend>
+              <div class="upgrade-grid three-upgrades">
+                <label><input type="radio" name="upgrade" value="analysis" checked><span><b>分析</b><small>偵探、找錯、比對</small></span></label>
+                <label><input type="radio" name="upgrade" value="evaluate"><span><b>評鑑</b><small>模擬、選擇、說理由</small></span></label>
+                <label><input type="radio" name="upgrade" value="create"><span><b>創造</b><small>建造、策展、組對話</small></span></label>
+              </div>
+            </fieldset>
+            <button class="button primary" type="submit">產生單項升級指令</button>
+          </form>
+
+          <article class="builder-output" aria-live="polite">
+            <header><div><span>保留目前能用的版本</span><h3>只改一項的提示詞</h3></div><button class="copy-button" type="button" data-copy-upgrade disabled>複製指令</button></header>
+            <div class="empty-state" data-upgrade-empty><strong>先說目前怎麼玩</strong><p>再選分析、評鑑或創造其中一項。</p></div>
+            <pre data-upgrade-output hidden tabindex="0"></pre>
+            <p class="inline-status" data-upgrade-status role="status"></p>
+          </article>
+        </div>
+
+        <div class="playtest-board" aria-labelledby="playtest-title">
+          <div><span>真人試玩</span><h3 id="playtest-title">把作品交給另一位老師，先不要教他怎麼玩</h3></div>
+          <ol>
+            <li><b>看</b><p>他第一眼知不知道要做什麼？</p></li>
+            <li><b>玩</b><p>從開始走到結果，哪一步停住？</p></li>
+            <li><b>問</b><p>他覺得自己剛才練到了什麼？</p></li>
+            <li><b>記</b><p>先記第一個問題，不要一口氣改全部。</p></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="learning-section share-section" id="share" aria-labelledby="share-title">
+      <div class="shell">
+        <div class="section-heading narrow-heading">
+          <p class="section-number">PART 03</p>
+          <h2 id="share-title">作品做好以後，才把它放進教材網站</h2>
+          <p>Google 協作平台是教材入口。你的遊戲可以貼程式碼、嵌入公開網址，或改成按鈕另開。</p>
+        </div>
+
+        <ol class="publish-flow" aria-label="從作品到學生使用的流程">
+          <li><span>01</span><strong>完成遊戲</strong><small>保留 index.html</small></li>
+          <li><span>02</span><strong>自己預覽</strong><small>從頭玩完</small></li>
+          <li><span>03</span><strong>選放法</strong><small>程式碼或網址</small></li>
+          <li><span>04</span><strong>放進 Sites</strong><small>嵌入或按鈕</small></li>
+          <li><span>05</span><strong>發布網站</strong><small>取得教材網址</small></li>
+          <li><span>06</span><strong>學生測試</strong><small>手機與無痕視窗</small></li>
+        </ol>
+
+        <article class="handoff-console embed-console" data-switcher>
+          <div class="switcher-tabs three-tabs" role="tablist" aria-label="選擇放進 Google 協作平台的方法">
+            <button type="button" role="tab" aria-selected="true" data-switch="code">我有 HTML 程式碼</button>
+            <button type="button" role="tab" aria-selected="false" data-switch="url">我有公開網址</button>
+            <button type="button" role="tab" aria-selected="false" data-switch="blocked">嵌入失敗</button>
+          </div>
+          <div class="switcher-panel embed-panel" data-panel="code">
+            <span>方法 A</span>
+            <h3>插入 → 嵌入 → 嵌入程式碼</h3>
+            <ol>
+              <li>在 Google 協作平台右側按「插入」。</li>
+              <li>按「嵌入」，再切換到「嵌入程式碼」。</li>
+              <li>貼上 HTML。CSS 要放在 style 標籤裡，JavaScript 要放在 script 標籤裡。</li>
+              <li>按「下一步」確認預覽，再按「插入」。</li>
+            </ol>
+            <p>完整 HTML 貼不進去時，請 AI 幫你整理成「Google Sites 可嵌入的程式碼片段」，不要自己硬拆。</p>
+          </div>
+          <div class="switcher-panel embed-panel" data-panel="url" hidden>
+            <span>方法 B</span>
+            <h3>插入 → 嵌入 → 貼上公開網址</h3>
+            <ol>
+              <li>先用無痕視窗確認遊戲網址真的能開。</li>
+              <li>在 Google 協作平台右側按「插入」，再按「嵌入」。</li>
+              <li>貼上遊戲網址，確認預覽後按「插入」。</li>
+              <li>拉大嵌入區塊，實際點按遊戲按鈕。</li>
+            </ol>
+            <p>有些網站會禁止被嵌入。這不是你操作錯，也不一定是程式壞掉。</p>
+          </div>
+          <div class="switcher-panel embed-panel" data-panel="blocked" hidden>
+            <span>方法 C</span>
+            <h3>改放一顆清楚的按鈕，讓學生另開遊戲</h3>
+            <ol>
+              <li>在右側按「插入」，再按「按鈕」。</li>
+              <li>名稱寫清楚，例如「開始族語問候闖關」。</li>
+              <li>貼上遊戲的公開網址，再按「插入」。</li>
+              <li>發布後，用手機點按鈕測一次。</li>
+            </ol>
+            <p>能順利使用比一定要嵌在頁面裡更重要。</p>
+          </div>
+        </article>
+
+        <div class="sites-steps" aria-labelledby="sites-steps-title">
+          <div class="sites-steps-heading">
+            <span>Google 協作平台</span>
+            <h3 id="sites-steps-title">把遊戲整理成學生找得到的教材頁</h3>
+          </div>
+          <ol>
+            <li><span>01</span><div><strong>開啟 Google 協作平台</strong><p>到 sites.google.com，開啟現有網站，或按空白範本建立新網站。</p></div></li>
+            <li><span>02</span><div><strong>新增「小遊戲」頁面</strong><p>右側切到「頁面」，按新增頁面，名稱直接寫學生看得懂的用途。</p></div></li>
+            <li><span>03</span><div><strong>加入一句任務說明</strong><p>只寫學生要做什麼、完成幾關，不要把製作過程全貼上去。</p></div></li>
+            <li><span>04</span><div><strong>嵌入遊戲或放按鈕</strong><p>依照上方 A、B、C 選一種能正常操作的方法。</p></div></li>
+            <li><span>05</span><div><strong>先按預覽</strong><p>切換電腦、平板與手機畫面，確認文字、按鈕與遊戲範圍。</p></div></li>
+            <li><span>06</span><div><strong>按發布，設定網址與觀看權限</strong><p>若是學校帳號，可用的公開範圍可能由管理員限制。</p></div></li>
+            <li><span>07</span><div><strong>用無痕視窗開正式網址</strong><p>不要只在自己的登入狀態測試，還要請另一個人真的玩一次。</p></div></li>
+            <li><span>08</span><div><strong>修改後記得再發布</strong><p>編輯畫面已經改好，不代表學生立刻看得到新版。</p></div></li>
+          </ol>
+        </div>
+
+        <article class="release-gate" id="release" data-release-gate>
+          <header><span>分享前最後確認</span><strong data-release-count>0 / 8</strong></header>
+          <div class="release-list">
+            <label><input type="checkbox"><span>遊戲能從開始玩到結果，不會卡住。</span></label>
+            <label><input type="checkbox"><span>族語、中文、音檔與答案已由老師核對。</span></label>
+            <label><input type="checkbox"><span>學生第一眼看得懂要按哪裡、做什麼。</span></label>
+            <label><input type="checkbox"><span>至少有一個玩法真的對應學習目標。</span></label>
+            <label><input type="checkbox"><span>手機直式畫面沒有左右捲動或按鈕被切掉。</span></label>
+            <label><input type="checkbox"><span>Google 協作平台已按「發布」。</span></label>
+            <label><input type="checkbox"><span>無痕視窗不會要求不必要的登入或權限。</span></label>
+            <label><input type="checkbox"><span>另一位老師或學生已完成一次真人試玩。</span></label>
+          </div>
+          <div class="gate-status" data-release-status role="status"><strong>還不能分享</strong><span>還有 8 項需要確認。</span></div>
+        </article>
+
+        <aside class="source-strip" aria-label="本堂參考資料">
+          <span>想再看一次原理</span>
+          <a href="https://www.youtube.com/watch?v=9aWaOylZRv0" target="_blank" rel="noopener noreferrer">Vibe Coding 製作、試玩與除錯示範</a>
+          <a href="https://vocus.cc/article/6a7bb6b8fd8978000120cf8b" target="_blank" rel="noopener noreferrer">六階段 AI 遊戲式教學</a>
+          <a href="https://support.google.com/sites/answer/90569?hl=zh-Hant" target="_blank" rel="noopener noreferrer">Google Sites 嵌入內容官方說明</a>
+          <a href="https://support.google.com/sites/answer/6372880?hl=zh-Hant" target="_blank" rel="noopener noreferrer">Google Sites 發布與分享官方說明</a>
+        </aside>
+
+        <aside class="finish-banner">
+          <span>兩堂課完成</span>
+          <strong>你已經把一份靜態教材，變成能玩、能學、能分享的互動作品。</strong>
+          <p>以後不用每次從零開始。保留這個遊戲骨架，換教材、換目標，再做下一個版本。</p>
+        </aside>
+      </div>
+    </section>
+
+    <nav class="lesson-pagination shell" aria-label="前後堂課">
+      <a href="../2026-0911-gamified-learning/"><span>上一堂</span>做出第一個互動關卡</a>
+      <a href="../"><span>回到系列</span>查看四堂課總覽</a>
+    </nav>
+  </main>
+
+  <footer>
+    <div class="shell footer-inner"><span>CALUMAI / 臺北市政府 AI 教學應用課程</span><a href="../">回到四堂課</a></div>
+  </footer>
+
+  <noscript><p class="noscript-note">這一頁需要 JavaScript 才能切換範例、產生修正指令與使用檢查表。</p></noscript>
+  <script src="../assets/handout.js?v=20260911d"></script>
+</body>
+</html>

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Reworked the 9/11 Vibe Coding introduction from the supplied OXXO STEAM reference. Added a traditional-coding versus natural-language comparison, clarified teacher and AI responsibilities, added accuracy and safety checks, and placed the supplied 15-page PDF handout on the page with open and download actions.
+- Rebuilt the 9/11 and 9/18 Taipei gamified-learning pages around the actual course theme. The upper session teaches Vibe Coding as a plan, build and playtest loop before learners create memory, understanding or application games. The lower session covers precise bug reporting, analysis, evaluation or creation upgrades, peer playtesting, and verified Google Sites embed, publish and sharing routes. Removed instructor-dashboard drawers, run sheets, starter panels and timer widgets from the public pages.
+
 - Replaced every abstract placeholder in the 9/4 image-style catalog with an original same-scene demonstration image. All 57 cards now show their actual visual effect across complete styles, photography, camera angles, drawing media, craft materials, comics, art movements and special formats; 11 new comparison sheets were optimized to WebP for classroom loading.
 - Changed the 9/4 practice room to show both AI prompt suggestions and image generation as unlimited accumulated totals. Removed both total-quota lockouts while preserving the classroom gate, request-in-progress button lock and server-side rate limiting.
 - Restored the removed image-style catalog as a standalone, classroom-code-free page with 14 complete presets shown through original same-scene comparison images, 43 searchable style modifiers, category filters, selection mixing and copy controls; it is linked from the 9/4 lesson rather than embedded in the practice room.
