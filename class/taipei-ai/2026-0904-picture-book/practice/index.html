@@ -8,9 +8,9 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
   <title>AI 圖片工作室｜北市府 AI 教學應用</title>
   <link rel="icon" href="/assets/calumai-logo-mark.png">
-  <link rel="stylesheet" href="styles.css?v=20260904i">
-  <script src="core.js?v=20260904i" defer></script>
-  <script src="app.js?v=20260904i" defer></script>
+  <link rel="stylesheet" href="styles.css?v=20260911-vibestudio1">
+  <script src="core.js?v=20260911-vibestudio1" defer></script>
+  <script src="app.js?v=20260911-vibestudio1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -20,6 +20,10 @@
       <a class="brand" href="/class/" aria-label="回到 CALUMAI 課程首頁">CALUMAI <span>/ CLASS</span></a>
       <a class="back-link" href="../">回到 9/4 課程</a>
     </div>
+    <nav class="shell studio-nav" id="studio-nav" aria-label="創作工作室">
+      <a href="./" aria-current="page">圖片工作室</a>
+      <a href="/class/vibe" id="studio-vibe-link" target="_blank" rel="noopener">Vibe Coding 實驗室<span class="sr-only">（另開分頁，保留此頁）</span></a>
+    </nav>
   </header>
 
   <main id="main" class="shell">
@@ -239,12 +243,34 @@
                 <figcaption id="image-request-reference"></figcaption>
               </figure>
             </div>
-            <button class="button primary full-button" id="download-image" type="button" hidden>下載圖片</button>
+            <div class="studio-result-actions">
+              <button class="button primary full-button" id="download-image" type="button" hidden>下載圖片</button>
+              <button class="button secondary full-button" id="vibe-transfer-button" type="button" hidden aria-haspopup="dialog">帶到 Vibe Coding 實驗室</button>
+            </div>
           </aside>
         </div>
       </section>
     </section>
   </main>
+
+  <dialog class="studio-handoff-dialog" id="vibe-leave-dialog" aria-labelledby="vibe-leave-title" aria-describedby="vibe-leave-description">
+    <h2 id="vibe-leave-title">保留這一頁再切換</h2>
+    <p id="vibe-leave-description">圖片與提示詞目前只留在這個分頁，尚未保存到教材。關閉或重新整理會遺失；若已有圖片，請先下載。</p>
+    <div class="studio-handoff-actions">
+      <a class="button primary" id="vibe-leave-open" href="/class/vibe" target="_blank" rel="noopener">保留此頁，另開實驗室</a>
+      <button class="button secondary" id="vibe-leave-cancel" type="button" autofocus>繼續留在圖片工作室</button>
+    </div>
+  </dialog>
+
+  <dialog class="studio-handoff-dialog" id="vibe-transfer-panel" aria-labelledby="vibe-transfer-title" aria-describedby="vibe-transfer-description">
+    <h2 id="vibe-transfer-title">把圖片加入教材</h2>
+    <p id="vibe-transfer-description">先下載圖片，再到實驗室匯入。這兩個步驟不會自動傳送圖片、提示詞或課堂資料。</p>
+    <ol class="studio-handoff-steps">
+      <li><strong>下載這張圖片</strong><p>把圖片存到電腦。如果瀏覽器改為開啟圖片，請在圖片上按右鍵或長按，選擇儲存圖片。</p><button class="button primary" id="vibe-transfer-download" type="button">下載圖片</button></li>
+      <li><strong>開啟實驗室，再匯入圖片</strong><p>在教材的素材區選擇「加入圖片素材」，放入剛下載的檔案。原本圖片工作室會保留在此分頁。</p><a class="button secondary" id="vibe-transfer-open" href="/class/vibe" target="_blank" rel="noopener">開啟實驗室（保留此頁）</a></li>
+    </ol>
+    <button class="button secondary" id="vibe-transfer-close" type="button">回到圖片</button>
+  </dialog>
 
   <footer>
     <div class="shell">

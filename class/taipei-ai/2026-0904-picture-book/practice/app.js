@@ -51,7 +51,6 @@
     globalThis.history.replaceState(null, "", cleanUrl.pathname + search + cleanUrl.hash);
   }
 
-  if (previewMode && !byId("class-code").value) byId("class-code").value = "20260904";
 
   function makeUuid() {
     if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
@@ -303,6 +302,7 @@
 
   function resetImage() {
     imageState = core.transitionGeneration(imageState, { type: "reset" });
+    if (byId("vibe-transfer-panel").open) byId("vibe-transfer-panel").close();
     renderImageState();
   }
 
@@ -406,6 +406,7 @@
     byId("image-retry").hidden = !failed || !imageState.error || !imageState.error.retryable;
     byId("generate-image-button").hidden = succeeded || failed;
     byId("download-image").hidden = !succeeded;
+    byId("vibe-transfer-button").hidden = !succeeded;
 
     if (loading) {
       byId("preview-title").textContent = "正在生成圖片";
@@ -530,6 +531,8 @@
     anchor.href = href;
     anchor.download = filename;
     anchor.rel = "noopener";
+    // Cross-origin image URLs may ignore download. Keep the teaching page open.
+    if (/^https:\/\//u.test(href)) anchor.target = "_blank";
     document.body.append(anchor);
     anchor.click();
     anchor.remove();
@@ -650,11 +653,32 @@
   byId("generate-image-button").addEventListener("click", () => performImageGeneration(false));
   byId("image-retry").addEventListener("click", () => performImageGeneration(true));
 
-  byId("download-image").addEventListener("click", () => {
+  function downloadCurrentImage() {
     if (imageState.phase !== "success") return;
     const spec = core.buildImageDownload(imageState.result, `${purposeLabel()}-${promptDraft.originalPrompt}`);
     clickDownload(spec.dataUrl, spec.filename, false);
+  }
+
+  function hasUnstoredWork() {
+    return Boolean(promptDraft.purpose || byId("original-prompt").value.trim()
+      || byId("revised-prompt").value.trim() || assistState.phase === "loading"
+      || imageState.phase === "loading" || imageState.phase === "success");
+  }
+
+  byId("download-image").addEventListener("click", downloadCurrentImage);
+  byId("vibe-transfer-download").addEventListener("click", downloadCurrentImage);
+  byId("studio-vibe-link").addEventListener("click", (event) => {
+    if (!hasUnstoredWork()) return;
+    event.preventDefault();
+    byId("vibe-leave-dialog").showModal();
   });
+  byId("vibe-leave-cancel").addEventListener("click", () => byId("vibe-leave-dialog").close());
+  byId("vibe-leave-open").addEventListener("click", () => byId("vibe-leave-dialog").close());
+  byId("vibe-transfer-button").addEventListener("click", () => {
+    if (imageState.phase === "success") byId("vibe-transfer-panel").showModal();
+  });
+  byId("vibe-transfer-close").addEventListener("click", () => byId("vibe-transfer-panel").close());
+  byId("vibe-transfer-open").addEventListener("click", () => byId("vibe-transfer-panel").close());
 
   document.querySelectorAll("[data-studio-step-target]").forEach((button) => {
     button.addEventListener("click", () => setStudioStep(button.dataset.studioStepTarget));
