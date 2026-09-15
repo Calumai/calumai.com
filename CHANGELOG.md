@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added five playable number-vocabulary game examples to Lesson 06, with per-game HTML downloads, a shared menu and an offline ZIP. Preserved the supplied memory game and 22 vocabulary entries; the four new games practice spelling, number-word order, quantity choices and letter deduction. Verified all play/download links, full prompt copying, ZIP contents and mobile layout before publication.
+
 - Rewrote Lesson 06 to explain gamification through learning goals and provide five categorized, self-contained language-game prompts. Added expandable prompt cards, full-text copy, UTF-8 TXT download, and a classroom playtest activity. Updated only the Lesson 06 course summary and entry; retained existing newer lessons. The public page runs independently of the unpublished handout editor.
 
 - Replaced Lesson 08's Padlet material with a complete learner-facing LINE helper handout. The new page starts from LINE Official Account registration and offers two independent routes: a confirmation-gated Google Calendar helper and a 1,094-entry Truku word lookup helper. Added downloadable Apps Script files, the word-list workbook, setup checks, troubleshooting, security guidance, assignments, official references, and removed visible links to the obsolete Padlet slides.

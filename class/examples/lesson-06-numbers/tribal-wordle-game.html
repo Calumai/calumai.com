@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>族語拼音密碼｜CALUMAI 族語數字遊戲</title><style>:root{--paper:#f7f6ef;--surface:#fff;--ink:#233d34;--muted:#627168;--forest:#294e40;--forest-hover:#1d3d31;--sage:#e9efdf;--line:#d9dfd2;--accent:#a3482b;--accent-soft:#faeee5;--radius:20px;color:var(--ink);background:var(--paper);font-family:"Microsoft JhengHei","PingFang TC","Heiti TC",system-ui,-apple-system,sans-serif;line-height:1.65;font-synthesis:none;color-scheme:light}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;min-width:280px}button,input,select{font:inherit}button,summary,a,input,select{outline-offset:5px}:focus-visible{outline:3px solid var(--accent)}button,a,summary{touch-action:manipulation}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.5}h1,h2,h3,p{margin:0}h1{font-size:clamp(30px,4vw,46px);line-height:1.3;letter-spacing:-.035em}h2{font-size:23px;line-height:1.4}h3{font-size:18px}a{color:var(--forest)}.shell{width:min(1140px,calc(100% - 64px));margin-inline:auto}.app-header{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);padding-block:24px}.brand{display:flex;align-items:center;gap:13px;font-size:16px;font-weight:800;letter-spacing:.1em}.brand-mark{display:grid;grid-template-columns:repeat(2,6px);gap:4px;place-content:center;width:34px;height:34px;background:var(--forest);border-radius:9px}.brand-mark i{display:block;width:6px;height:6px;background:var(--sage);border-radius:50%}.brand small{color:var(--muted);font-weight:500;letter-spacing:0;font-size:13px}.header-label{font-size:13px;color:var(--muted)}.game-intro{padding:30px 0 26px}.game-intro p:not(.eyebrow){margin-top:12px;max-width:760px;color:var(--muted)}.eyebrow{font-size:12px;color:var(--accent);font-weight:800;letter-spacing:.1em;margin-bottom:8px}.muted{color:var(--muted)}.game-layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:24px;align-items:start}.panel,.side-panel{min-width:0;padding:26px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}.side-panel{background:#f0f2e8}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 19px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font-weight:700;text-decoration:none;line-height:1.4}.btn:hover{border-color:var(--forest);background:var(--sage)}.btn.primary,.btn-primary{background:var(--forest);border-color:var(--forest);color:white}.btn.primary:hover,.btn-primary:hover{background:var(--forest-hover)}.btn.secondary,.btn-secondary{background:var(--surface);border-color:var(--line)}.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.field{display:grid;gap:7px;font-size:14px;font-weight:700}input,select{min-height:48px;max-width:100%;border:1px solid #acb9a3;border-radius:10px;background:white;color:var(--ink);padding:10px 12px}input[type=checkbox]{min-height:0;width:20px;height:20px;padding:0;accent-color:var(--forest)}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px}.metric{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 20px;min-width:0}.metric span,.metric small{font-size:13px;color:var(--muted)}.metric strong{display:block;font-size:27px;line-height:1.3}.status{min-height:28px;font-size:15px;line-height:1.65}.status:empty{min-height:0}summary{cursor:pointer;min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:700}details{border-top:1px solid var(--line);padding-top:8px;margin-top:20px}details>div,details>p,details>ul{margin-top:12px}.app-footer{display:flex;justify-content:space-between;gap:16px;padding-block:26px;font-size:12px;color:var(--muted)}.skip-link{position:absolute;top:8px;left:8px;transform:translateY(-160%);z-index:100;background:var(--surface);padding:12px 20px;border:2px solid var(--forest);border-radius:8px}.skip-link:focus{transform:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}button,li,p,h2,h3{overflow-wrap:anywhere}.rule-text{font-size:13px;color:var(--muted)}
+@media(max-width:800px){.shell{width:calc(100% - 32px)}.game-layout{grid-template-columns:1fr}.app-header{padding-block:17px}.brand small{display:none}.game-intro{padding-block:26px 22px}.panel,.side-panel{padding:20px}.metric{padding:12px 14px}.metric strong{font-size:24px}}
+@media(max-width:420px){.shell{width:calc(100% - 24px)}.header-label{font-size:12px}.metrics{gap:7px}.metric{padding:10px}.metric span,.metric small{font-size:12px}.panel,.side-panel{padding:16px}.app-footer{display:block}.app-footer span{display:block}.controls .btn{flex:1}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+.wordle-layout{display:grid;grid-template-columns:minmax(0,1fr) 315px;gap:24px;align-items:start}.wordle-sidebar{display:grid;gap:20px}.wordle-settings{display:grid;gap:17px;margin:23px 0 13px}.wordle-board-head{display:flex;align-items:start;justify-content:space-between;gap:15px}.wordle-board-head h2{font-size:20px}.wordle-count{font-size:14px;white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}.wordle-clue{margin-top:18px;background:var(--sage);padding:13px 17px;border-radius:10px;font-size:20px;font-weight:800}.wordle-board{display:grid;gap:7px;margin:23px auto;max-width:450px}.wordle-row{display:grid;grid-template-columns:repeat(var(--letters,6),minmax(0,1fr));gap:7px}.wordle-cell{min-width:0;height:57px;display:flex;align-items:center;justify-content:center;position:relative;border:1px solid var(--line);border-radius:9px;background:#fbfcf8;font-family:inherit;font-size:25px;font-weight:800}.wordle-cell.filled{border:2px solid var(--forest);background:white}.wordle-cell small{position:absolute;right:4px;bottom:0;font-size:11px;line-height:1.2}.wordle-cell.is-correct{border-color:var(--forest)}.is-correct{background:var(--forest)!important;color:white!important}.is-present{background:#f0d48a!important;color:#513d11!important;border-color:#b99540!important}.is-absent{background:#e5e8e1!important;color:#4f5d50!important;border-color:#c9d0c5!important}.wordle-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;font-size:12px;color:var(--muted);margin:0 0 24px}.wordle-legend span{display:flex;align-items:center;gap:5px}.wordle-legend b{display:grid;place-items:center;width:23px;height:23px;border-radius:5px;font-size:13px}#wordle-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}#wordle-input{width:100%;font-size:21px;min-width:0}#wordle-input-rule{margin-top:10px}#wordle-status{margin-top:14px}.wordle-keyboard{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-top:18px}.wordle-keyboard button{min-width:0;min-height:48px;border:1px solid #b9c3b0;border-radius:9px;background:#f3f5ee;color:var(--ink);font-weight:800;font-size:18px}.wordle-keyboard button:hover{border-color:var(--forest)}.wordle-key-actions{display:flex;gap:10px;margin-top:10px}.wordle-key-actions .btn{flex:1;font-size:14px;padding-inline:10px}.wordle-result{border:1px solid #bbc9a9;background:var(--sage);border-radius:14px;padding:24px;margin-top:22px}.wordle-result h2{font-size:26px}.wordle-result p{margin-top:8px}#wordle-answer{font-size:28px;font-weight:800;overflow-wrap:anywhere}#wordle-result-note{color:var(--muted);font-size:14px}.wordle-result .btn{margin-top:20px}.wordle-help h2{font-size:19px}.wordle-help ol{padding-left:23px;margin-block:15px}.wordle-help li{padding-bottom:9px;font-size:14px}.wordle-word-list{display:flex;flex-wrap:wrap;gap:8px}.wordle-word-list button{min-height:48px;padding:8px 13px;border:1px solid var(--line);background:white;color:var(--forest);border-radius:9px;font-size:17px;font-weight:700}
+@media(max-width:880px){.wordle-layout{grid-template-columns:1fr}.wordle-sidebar{display:contents}.wordle-sidebar>.side-panel{order:-1}.wordle-help{order:1}.wordle-cell{height:54px}.wordle-play{max-width:680px;width:100%;margin-inline:auto}}
+@media(max-width:600px){.wordle-layout{gap:18px}.wordle-row{gap:5px}.wordle-board{gap:6px}.wordle-cell{height:42px;font-size:22px;border-radius:7px}.wordle-legend{gap:9px;font-size:11px}.wordle-legend b{width:20px;height:20px}#wordle-form{grid-template-columns:1fr}#wordle-form button{width:100%}.wordle-board-head h2{font-size:18px}.wordle-board-head{gap:8px}.wordle-count{font-size:12px}.wordle-result{padding:20px}}
+</style></head><body><a class="skip-link" href="#game-main">跳到遊戲</a><header class="shell app-header"><div class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>CALUMAI <small>族語數字遊戲</small></div><span class="header-label">05 / 進階猜詞</span></header>
+<main class="shell" id="game-main">
+  <section class="game-intro"><p class="eyebrow">05 / 進階猜詞</p><h1>族語拼音密碼</h1><p>猜一個數字詞。每猜一次，就用位置提示修正下一次的拼寫。</p></section>
+  <div class="wordle-layout">
+    <section class="panel wordle-play" aria-label="猜詞區">
+      <div class="wordle-board-head"><div><span class="eyebrow">本局密碼</span><h2 id="wordle-question">先選好格數，開始一局</h2></div><span id="wordle-counter" class="wordle-count">0 / 6 次</span></div>
+      <p id="wordle-clue" class="wordle-clue" hidden></p>
+      <div id="wordle-board" class="wordle-board" aria-label="六次猜測紀錄"></div>
+      <div class="wordle-legend"><span><b class="is-correct">✓</b>位置正確</span><span><b class="is-present">↔</b>位置不同</span><span><b class="is-absent">−</b>沒有這個字母</span></div>
+      <form id="wordle-form" novalidate><label class="field" for="wordle-input">輸入你的猜詞<input id="wordle-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" enterkeyhint="done" aria-describedby="wordle-input-rule wordle-status" disabled></label><button class="btn primary" id="wordle-submit" type="submit" disabled>送出猜詞</button></form>
+      <p id="wordle-input-rule" class="rule-text">用小寫輸入。本遊戲每個英文字母一格，n、g 分開；只猜下方詞表裡的詞。</p>
+      <p id="wordle-status" class="status" role="status" aria-live="polite">點「開始新一局」，再輸入或點選字母。</p>
+      <div id="wordle-keyboard" class="wordle-keyboard" aria-label="字母鍵盤"></div>
+      <div class="wordle-key-actions"><button id="wordle-delete" type="button" class="btn secondary" disabled>刪除一個字母</button><button id="wordle-clear" type="button" class="btn secondary" disabled>清空輸入</button></div>
+      <section id="wordle-result" class="wordle-result" tabindex="-1" hidden aria-labelledby="wordle-result-title"><p class="eyebrow">這一局完成了</p><h2 id="wordle-result-title"></h2><p id="wordle-answer"></p><p id="wordle-result-note"></p><button id="wordle-again" type="button" class="btn primary">再玩一次</button></section>
+    </section>
+    <aside class="wordle-sidebar">
+      <section class="side-panel"><p class="eyebrow">選一種練法</p><h2>先看中文，或自己猜</h2><div class="wordle-settings"><label class="field" for="wordle-length">每個詞有幾格<select id="wordle-length"></select></label><label class="field" for="wordle-mode">練習方式<select id="wordle-mode"><option value="practice">練習：先顯示中文</option><option value="challenge">挑戰：猜完再揭曉中文</option></select></label><button id="wordle-start" type="button" class="btn primary">開始新一局</button></div><p class="rule-text">換格數或模式後，按「開始新一局」套用，並清除上一局紀錄。</p></section>
+      <section class="panel wordle-help"><h2>跟著提示修正</h2><ol><li>填滿格子，再按「送出猜詞」。</li><li>✓ 留在原位，↔ 試著換位置。</li><li>一共可以猜六次，拼錯或不在詞表裡不扣次數。</li></ol><p class="rule-text">同一個字母出現兩次，不一定兩個都算對；要看答案裡實際有幾個。</p>
+        <details id="wordle-bank"><summary id="wordle-bank-title">查看可用詞</summary><p class="rule-text">點一個詞填入輸入框，再按送出。</p><div id="wordle-words" class="wordle-word-list"></div></details>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<footer class="shell app-footer"><span>CALUMAI / 數字主題</span><span>可離線開啟 · 不用登入</span></footer>
+<script>"use strict";
+// 老師更換題庫的位置：保留原始拼寫與中文，沒有句子或音檔時留白。
+const VOCAB=[
+  {
+    "id": "n01",
+    "word": "kingal",
+    "translation": "一",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n02",
+    "word": "dha",
+    "translation": "二",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n03",
+    "word": "tru",
+    "translation": "三",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n04",
+    "word": "spat",
+    "translation": "四",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n05",
+    "word": "rima",
+    "translation": "五",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n06",
+    "word": "mataru",
+    "translation": "六",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n07",
+    "word": "empitu",
+    "translation": "七",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n08",
+    "word": "maspat",
+    "translation": "八",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n09",
+    "word": "mngari",
+    "translation": "九",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n10",
+    "word": "maxal",
+    "translation": "十",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n11",
+    "word": "maxal kingal",
+    "translation": "十一",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n12",
+    "word": "maxal dha",
+    "translation": "十二",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n13",
+    "word": "maxal tru",
+    "translation": "十三",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n14",
+    "word": "maxal spat",
+    "translation": "十四",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n15",
+    "word": "maxal rima",
+    "translation": "十五",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n16",
+    "word": "maxal mataru",
+    "translation": "十六",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n17",
+    "word": "maxal empitu",
+    "translation": "十七",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n18",
+    "word": "maxal maspat",
+    "translation": "十八",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n19",
+    "word": "maxal mngari",
+    "translation": "十九",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n20",
+    "word": "empusal",
+    "translation": "二十",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n21",
+    "word": "empusal kingal",
+    "translation": "二十一",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n22",
+    "word": "empusal dha",
+    "translation": "二十二",
+    "exampleSentence": "",
+    "audioUrl": ""
+  }
+];
+// Game cells are written Latin characters, not claims about linguistic sound units.
+// Exact spelling is retained: no case folding, trimming or guessed normalization.
+function scoreWordleGuess(answer, guess) {
+  const marks = guess.map(() => 'absent');
+  const remaining = new Map();
+  answer.forEach((token, index) => {
+    if (guess[index] === token) marks[index] = 'correct';
+    else remaining.set(token, (remaining.get(token) || 0) + 1);
+  });
+  guess.forEach((token, index) => {
+    if (marks[index] === 'correct') return;
+    if ((remaining.get(token) || 0) > 0) {
+      marks[index] = 'present';
+      remaining.set(token, remaining.get(token) - 1);
+    }
+  });
+  return marks;
+}
+(() => {
+  'use strict';
+  const WORD_DATA = VOCAB.filter(item => /^[a-z]+$/.test(item.word)).map(item => ({...item, tokens:Array.from(item.word)}));
+  const byId = id => document.getElementById(id);
+  const board=byId('wordle-board'), input=byId('wordle-input'), status=byId('wordle-status');
+  const lengthSelect=byId('wordle-length'), modeSelect=byId('wordle-mode');
+  const keyboard=byId('wordle-keyboard'), wordList=byId('wordle-words');
+  const labels={correct:'位置正確',present:'位置不同',absent:'答案沒有這個字母'};
+  const symbols={correct:'✓',present:'↔',absent:'−'};
+  const rank={absent:1,present:2,correct:3};
+  let length=6, pool=[], answer=null, guesses=[], marks=[], active=false, composing=false, keyboardMarks=new Map();
+  const lengths=[...new Set(WORD_DATA.map(item=>item.tokens.length))].sort((a,b)=>a-b);
+  lengths.forEach(value=>{
+    const option=document.createElement('option'); option.value=String(value);
+    option.textContent=`${value} 格 · ${WORD_DATA.filter(x=>x.tokens.length===value).length} 個詞`;
+    lengthSelect.append(option);
+  });
+  lengthSelect.value=String(lengths.includes(6)?6:lengths[0]);
+  function candidates() { return WORD_DATA.filter(item=>item.tokens.length===length); }
+  function drawBoard(){
+    board.style.setProperty('--letters',length); board.replaceChildren();
+    for(let row=0;row<6;row++){
+      const line=document.createElement('div'); line.className='wordle-row'; line.setAttribute('role','group');
+      line.setAttribute('aria-label',`第 ${row+1} 次猜測`);
+      const letters=guesses[row] ? Array.from(guesses[row]) : row===guesses.length&&active?Array.from(input.value):[];
+      for(let col=0;col<length;col++){
+        const cell=document.createElement('span'); cell.className='wordle-cell'; const letter=letters[col]||'';
+        cell.textContent=letter;
+        if(marks[row]){
+          const mark=marks[row][col]; cell.classList.add('is-'+mark);
+          const symbol=document.createElement('small');symbol.textContent=symbols[mark];symbol.setAttribute('aria-hidden','true');cell.append(symbol);
+          cell.setAttribute('aria-label',`${letter}，${labels[mark]}`);
+        }else{if(letter)cell.classList.add('filled');cell.setAttribute('aria-label',letter||'空格');}
+        line.append(cell);
+      }
+      board.append(line);
+    }
+    byId('wordle-counter').textContent=`${guesses.length} / 6 次`;
+  }
+  function setControls(){
+    [input,byId('wordle-submit'),byId('wordle-delete'),byId('wordle-clear')].forEach(el=>el.disabled=!active);
+    keyboard.querySelectorAll('button').forEach(el=>el.disabled=!active);
+    wordList.querySelectorAll('button').forEach(el=>el.disabled=!active);
+  }
+  function insert(text){
+    if(!active)return;
+    const start=input.selectionStart??input.value.length, end=input.selectionEnd??start;
+    input.value=input.value.slice(0,start)+text+input.value.slice(end);
+    input.focus({preventScroll:true});input.setSelectionRange(start+text.length,start+text.length);drawBoard();
+  }
+  function drawKeyboard(){
+    keyboard.replaceChildren();
+    const alphabet=[...new Set(pool.flatMap(item=>item.tokens))].sort();
+    alphabet.forEach(letter=>{
+      const key=document.createElement('button');key.type='button';key.textContent=letter;key.dataset.letter=letter;
+      const mark=keyboardMarks.get(letter);
+      if(mark)key.classList.add('is-'+mark);
+      key.setAttribute('aria-label',mark?`${letter}，${labels[mark]}`:`輸入 ${letter}`);
+      key.addEventListener('click',()=>insert(letter));keyboard.append(key);
+    });
+    setControls();
+  }
+  function drawWords(){
+    wordList.replaceChildren();byId('wordle-bank-title').textContent=`查看本局可用詞（${pool.length} 個）`;
+    pool.forEach(item=>{const button=document.createElement('button');button.type='button';button.textContent=item.word;button.addEventListener('click',()=>{if(!active)return;input.value=item.word;drawBoard();input.focus({preventScroll:true});status.textContent='已填入，按「送出猜詞」檢查。';});wordList.append(button);});
+    setControls();
+  }
+  function start(){
+    const previous=answer?.id;length=Number(lengthSelect.value);pool=candidates();
+    guesses=[];marks=[];keyboardMarks=new Map();input.value='';composing=false;
+    byId('wordle-result').hidden=true;
+    if(!pool.length){active=false;answer=null;status.textContent='目前沒有這個格數的題目。';drawBoard();drawWords();drawKeyboard();return;}
+    const possible=pool.length>1?pool.filter(item=>item.id!==previous):pool;
+    answer=possible[Math.floor(Math.random()*possible.length)];active=true;
+    byId('wordle-question').textContent=`找出 ${length} 個字母的數字詞`;
+    const clue=byId('wordle-clue');clue.hidden=modeSelect.value!=='practice';clue.textContent=`中文提示：${answer.translation}`;
+    status.textContent='可以開始猜了。填滿後按「送出猜詞」。';
+    byId('wordle-bank').open=false;drawWords();drawBoard();drawKeyboard();
+    input.focus({preventScroll:true});
+    if(window.matchMedia('(max-width:880px)').matches)byId('wordle-question').scrollIntoView({block:'start',behavior:'instant'});
+  }
+  function finish(won){
+    active=false;setControls();
+    byId('wordle-result-title').textContent=won?'密碼解開了！':'先記住這個詞，再試一局';
+    byId('wordle-answer').textContent=`${answer.word} · ${answer.translation}`;
+    byId('wordle-result-note').textContent=won?`你用了 ${guesses.length} 次猜中。可以再玩一次，練習另一個數字。`:'六次用完了。對照上方的位置提示，再看一次正確拼寫。';
+    byId('wordle-result').hidden=false;byId('wordle-result').focus({preventScroll:false});
+  }
+  byId('wordle-form').addEventListener('submit',event=>{
+    event.preventDefault();if(!active||composing)return;
+    const guess=input.value;
+    if(!/^[a-z]+$/.test(guess)){status.textContent='請用小寫英文字母輸入，不加空格。這次不扣次數。';return;}
+    if(Array.from(guess).length!==length){status.textContent=`這一局要填 ${length} 個字母，目前是 ${Array.from(guess).length} 個。這次不扣次數。`;return;}
+    if(!pool.some(item=>item.word===guess)){status.textContent='這個詞不在本局詞表裡。展開「查看本局可用詞」再選一個，這次不扣次數。';return;}
+    const result=scoreWordleGuess(answer.tokens,Array.from(guess));guesses.push(guess);marks.push(result);
+    result.forEach((mark,index)=>{const letter=Array.from(guess)[index];if(rank[mark]>(rank[keyboardMarks.get(letter)]||0))keyboardMarks.set(letter,mark);});
+    input.value='';drawBoard();drawKeyboard();
+    const won=guess===answer.word;
+    status.textContent=won?'猜對了！':`${guess}：${Array.from(guess).map((letter,index)=>`${letter} ${labels[result[index]]}`).join('；')}。還有 ${6-guesses.length} 次。`;
+    if(won||guesses.length===6)finish(won);else input.focus({preventScroll:true});
+  });
+  input.addEventListener('compositionstart',()=>{composing=true;});input.addEventListener('compositionend',()=>{composing=false;drawBoard();});
+  input.addEventListener('keydown',event=>{if(event.key==='Enter'&&(composing||event.isComposing||event.keyCode===229))event.preventDefault();});
+  input.addEventListener('input',drawBoard);
+  byId('wordle-delete').addEventListener('click',()=>{
+    if(!active)return;const start=input.selectionStart??input.value.length,end=input.selectionEnd??start;
+    const from=start===end?Math.max(0,start-1):start;input.value=input.value.slice(0,from)+input.value.slice(end);
+    input.focus({preventScroll:true});input.setSelectionRange(from,from);drawBoard();
+  });
+  byId('wordle-clear').addEventListener('click',()=>{if(active){input.value='';drawBoard();input.focus({preventScroll:true});}});
+  byId('wordle-start').addEventListener('click',start);byId('wordle-again').addEventListener('click',start);
+  length=Number(lengthSelect.value);pool=candidates();drawBoard();drawWords();drawKeyboard();
+})();
+
+</script></body></html>

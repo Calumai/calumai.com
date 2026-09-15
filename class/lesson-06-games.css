@@ -39,6 +39,11 @@
 .six-game>p:not(.six-category){color:var(--muted);margin:12px 0}
 .six-game .six-material{font-size:15px}
 .six-material strong{color:var(--ink)}
+.six-example-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:18px}
+.six-example-actions .six-download{margin-top:0}
+.six-example-kind{font-size:14px;color:var(--muted)}
+.six-example-links{display:flex;flex-wrap:wrap;gap:12px 24px}
+.six-example-links a{color:var(--teal);font-weight:700;text-underline-offset:4px}
 .six-prompt-details{margin-top:22px;border-top:1px solid var(--line)}
 .six-prompt-details>summary{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:16px 0 0;cursor:pointer;list-style:none;color:var(--teal);font-weight:700;min-height:48px}
 .six-prompt-details>summary::-webkit-details-marker{display:none}
