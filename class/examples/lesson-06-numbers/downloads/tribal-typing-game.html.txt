@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>羅馬拼音防衛戰｜CALUMAI 族語數字遊戲</title><style>:root{--paper:#f7f6ef;--surface:#fff;--ink:#233d34;--muted:#627168;--forest:#294e40;--forest-hover:#1d3d31;--sage:#e9efdf;--line:#d9dfd2;--accent:#a3482b;--accent-soft:#faeee5;--radius:20px;color:var(--ink);background:var(--paper);font-family:"Microsoft JhengHei","PingFang TC","Heiti TC",system-ui,-apple-system,sans-serif;line-height:1.65;font-synthesis:none;color-scheme:light}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;min-width:280px}button,input,select{font:inherit}button,summary,a,input,select{outline-offset:5px}:focus-visible{outline:3px solid var(--accent)}button,a,summary{touch-action:manipulation}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.5}h1,h2,h3,p{margin:0}h1{font-size:clamp(30px,4vw,46px);line-height:1.3;letter-spacing:-.035em}h2{font-size:23px;line-height:1.4}h3{font-size:18px}a{color:var(--forest)}.shell{width:min(1140px,calc(100% - 64px));margin-inline:auto}.app-header{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);padding-block:24px}.brand{display:flex;align-items:center;gap:13px;font-size:16px;font-weight:800;letter-spacing:.1em}.brand-mark{display:grid;grid-template-columns:repeat(2,6px);gap:4px;place-content:center;width:34px;height:34px;background:var(--forest);border-radius:9px}.brand-mark i{display:block;width:6px;height:6px;background:var(--sage);border-radius:50%}.brand small{color:var(--muted);font-weight:500;letter-spacing:0;font-size:13px}.header-label{font-size:13px;color:var(--muted)}.game-intro{padding:30px 0 26px}.game-intro p:not(.eyebrow){margin-top:12px;max-width:760px;color:var(--muted)}.eyebrow{font-size:12px;color:var(--accent);font-weight:800;letter-spacing:.1em;margin-bottom:8px}.muted{color:var(--muted)}.game-layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:24px;align-items:start}.panel,.side-panel{min-width:0;padding:26px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}.side-panel{background:#f0f2e8}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 19px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font-weight:700;text-decoration:none;line-height:1.4}.btn:hover{border-color:var(--forest);background:var(--sage)}.btn.primary,.btn-primary{background:var(--forest);border-color:var(--forest);color:white}.btn.primary:hover,.btn-primary:hover{background:var(--forest-hover)}.btn.secondary,.btn-secondary{background:var(--surface);border-color:var(--line)}.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.field{display:grid;gap:7px;font-size:14px;font-weight:700}input,select{min-height:48px;max-width:100%;border:1px solid #acb9a3;border-radius:10px;background:white;color:var(--ink);padding:10px 12px}input[type=checkbox]{min-height:0;width:20px;height:20px;padding:0;accent-color:var(--forest)}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px}.metric{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 20px;min-width:0}.metric span,.metric small{font-size:13px;color:var(--muted)}.metric strong{display:block;font-size:27px;line-height:1.3}.status{min-height:28px;font-size:15px;line-height:1.65}.status:empty{min-height:0}summary{cursor:pointer;min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:700}details{border-top:1px solid var(--line);padding-top:8px;margin-top:20px}details>div,details>p,details>ul{margin-top:12px}.app-footer{display:flex;justify-content:space-between;gap:16px;padding-block:26px;font-size:12px;color:var(--muted)}.skip-link{position:absolute;top:8px;left:8px;transform:translateY(-160%);z-index:100;background:var(--surface);padding:12px 20px;border:2px solid var(--forest);border-radius:8px}.skip-link:focus{transform:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}button,li,p,h2,h3{overflow-wrap:anywhere}.rule-text{font-size:13px;color:var(--muted)}
+@media(max-width:800px){.shell{width:calc(100% - 32px)}.game-layout{grid-template-columns:1fr}.app-header{padding-block:17px}.brand small{display:none}.game-intro{padding-block:26px 22px}.panel,.side-panel{padding:20px}.metric{padding:12px 14px}.metric strong{font-size:24px}}
+@media(max-width:420px){.shell{width:calc(100% - 24px)}.header-label{font-size:12px}.metrics{gap:7px}.metric{padding:10px}.metric span,.metric small{font-size:12px}.panel,.side-panel{padding:16px}.app-footer{display:block}.app-footer span{display:block}.controls .btn{flex:1}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+.typing-game { padding-bottom: 32px; }
+.typing-game .game-intro { margin: 0; padding: 30px 0 26px; }
+.typing-game .game-intro p:last-child { margin-top: 12px; max-width: 740px; color: var(--muted); }
+.typing-game h1 { font-size: clamp(28px, 4vw, 42px); line-height: 1.3; }
+.typing-game .panel { border: 1px solid var(--line); border-radius: 20px; background: var(--surface); padding: 24px; }
+.typing-settings { margin-bottom: 20px; }
+.typing-settings .controls { display: grid; grid-template-columns: 1.3fr 1.3fr 1fr; gap: 16px; }
+.typing-settings .field { display: grid; gap: 8px; font-size: 15px; font-weight: 700; }
+.typing-game select, .typing-game input[type="text"] { width: 100%; min-width: 0; min-height: 48px; border: 1px solid #9aa995; border-radius: 10px; background: white; color: var(--ink); padding: 10px 12px; font: inherit; }
+.typing-game select:disabled { color: var(--muted); background: var(--paper); }
+.typing-motion { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; margin-top: 10px; cursor: pointer; }
+.typing-motion input { width: 22px; height: 22px; accent-color: var(--forest); }
+.typing-settings-note { font-size: 14px; margin: 0; }
+.typing-game .typing-board { padding-top: 0; }
+.typing-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+.typing-metrics .metric { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; column-gap: 12px; padding: 18px 16px; border: 0; border-radius: 0; background: transparent; }
+.typing-metrics .metric:first-child { padding-left: 0; }
+.typing-metrics .metric:last-child { padding-right: 0; }
+.typing-metrics .metric + .metric { border-left: 1px solid var(--line); }
+.typing-metrics span { font-size: 14px; color: var(--muted); }
+.typing-metrics strong { font-size: 23px; font-variant-numeric: tabular-nums; }
+.typing-canvas-wrap { height: clamp(160px, 29svh, 300px); overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: #f4f7ee; }
+#typing-canvas { display: block; width: 100%; height: 100%; }
+.typing-targets { margin-top: 16px; }
+.typing-targets h2 { font-size: 14px; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
+#typing-words { display: flex; flex-wrap: wrap; gap: 8px 12px; list-style: none; margin: 0; padding: 0; }
+#typing-words li { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; border-radius: 10px; background: var(--sage); padding: 8px 12px; max-width: 100%; }
+#typing-words .typing-word { font-size: 20px; font-weight: 800; overflow-wrap: anywhere; white-space: pre-wrap; }
+#typing-words .typing-meaning { color: var(--muted); font-size: 14px; }
+.typing-answer { margin-top: 18px; }
+.typing-answer label { display: block; font-weight: 700; margin-bottom: 9px; }
+.typing-input-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+.typing-game #typing-input { min-height: 54px; font-size: 22px; font-family: inherit; scroll-margin-block: 80px; }
+.typing-input-row .btn { min-width: 84px; }
+#typing-spelling-note { font-size: 13px; margin: 8px 0 0; }
+.typing-status { min-height: 52px; display: flex; align-items: center; font-weight: 700; padding: 10px 0; margin: 0; color: var(--forest); }
+.typing-status[data-kind="error"] { color: var(--accent); }
+.typing-actions { display: flex; flex-wrap: wrap; gap: 10px; border-top: 1px solid var(--line); padding-top: 16px; }
+.typing-game .btn { min-height: 48px; }
+.typing-results { margin-top: 20px; }
+.typing-results h2 { font-size: 28px; }
+.typing-results h3 { font-size: 18px; margin-top: 24px; }
+#typing-result-summary { color: var(--muted); margin-top: 10px; }
+.typing-review { padding: 0; margin: 12px 0 24px; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
+.typing-review li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.typing-review strong { display: block; font-size: 19px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.typing-review small { color: var(--muted); }
+.typing-review .typing-review-state { font-size: 13px; color: var(--muted); white-space: nowrap; }
+@media (max-width: 600px) {
+  .typing-game .panel { padding: 16px; }
+  .typing-settings .controls { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .typing-settings .field:first-child { grid-column: 1 / -1; }
+  .typing-game .typing-board { padding-top: 0; }
+  .typing-metrics .metric { flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px 10px; }
+  .typing-metrics strong { font-size: 20px; }
+  .typing-metrics span { font-size: 12px; }
+  .typing-canvas-wrap { height: 165px; }
+  .typing-review { grid-template-columns: 1fr; }
+  .typing-actions .btn { flex: 1 1 auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .typing-game *, .typing-game *::before, .typing-game *::after { animation: none !important; transition: none !important; }
+}
+</style></head><body><a class="skip-link" href="#game-main">跳到遊戲</a><header class="shell app-header"><div class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>CALUMAI <small>族語數字遊戲</small></div><span class="header-label">02 / 練習拼寫</span></header>
+<main class="shell typing-game" id="game-main">
+  <section class="game-intro" aria-labelledby="typing-title">
+    <p class="eyebrow">02 / 練習拼寫</p>
+    <h1 id="typing-title">數字拼音防衛戰</h1>
+    <p>看著氣球上的族語，在下方輸入相同的詞，再按「送出」。每答對一題得 10 分，一局練習 8 題。</p>
+  </section>
+
+  <section class="panel typing-settings" aria-label="遊戲設定">
+    <div class="controls">
+      <label class="field" for="typing-range">這次練哪些數字？
+        <select id="typing-range"><option value="first">一～十</option><option value="second">十一～二十二</option><option value="all">全部 22 組</option></select>
+      </label>
+      <label class="field" for="typing-mode">遊戲模式
+        <select id="typing-mode"><option value="practice">練習模式</option><option value="challenge">挑戰模式</option></select>
+      </label>
+      <label class="field" for="typing-speed">落下速度
+        <select id="typing-speed"><option value="slow">慢</option><option value="medium">中</option><option value="fast">快</option></select>
+      </label>
+    </div>
+    <label class="typing-motion"><input type="checkbox" id="typing-still"> 不計時練習（關閉動畫）</label>
+    <p class="muted typing-settings-note" id="typing-mode-note">先用慢速練習。漏接的氣球會回到上方，可以繼續輸入。</p>
+  </section>
+
+  <section class="typing-board panel" aria-label="拼寫遊戲">
+    <div class="metrics typing-metrics" aria-label="本輪紀錄">
+      <div class="metric"><span>已完成</span><strong id="typing-progress">0 / 8</strong></div>
+      <div class="metric"><span>分數</span><strong id="typing-score">0</strong></div>
+      <div class="metric"><span id="typing-heart-label">練習模式</span><strong id="typing-hearts">不扣心</strong></div>
+    </div>
+    <div class="typing-canvas-wrap"><canvas id="typing-canvas" aria-hidden="true"></canvas></div>
+    <div class="typing-targets" aria-labelledby="typing-target-title">
+      <h2 id="typing-target-title">現在的詞彙</h2>
+      <ul id="typing-words"><li class="muted">按「開始遊戲」，這裡就會出現題目。</li></ul>
+    </div>
+    <form id="typing-form" class="typing-answer" autocomplete="off">
+      <label for="typing-input">請照畫面輸入，空格也要一致。</label>
+      <div class="typing-input-row">
+        <input id="typing-input" name="answer" type="text" inputmode="text" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-describedby="typing-spelling-note" placeholder="在這裡輸入族語" disabled>
+        <button class="btn btn-primary primary" id="typing-submit" type="submit" disabled>送出</button>
+      </div>
+      <p class="muted" id="typing-spelling-note">大小寫、前後空格都要相同。答錯時，直接在原本的文字上修改。</p>
+    </form>
+    <p class="status typing-status" id="typing-status" role="status" aria-live="polite" aria-atomic="true">準備好了，就按「開始遊戲」。</p>
+    <div class="controls typing-actions">
+      <button class="btn btn-primary primary" type="button" id="typing-start">開始遊戲</button>
+      <button class="btn btn-secondary secondary" type="button" id="typing-pause" hidden>暫停</button>
+      <button class="btn btn-secondary secondary" type="button" id="typing-reset" hidden>重新開始</button>
+      <button class="btn btn-secondary secondary" type="button" id="typing-settings-button" hidden>回到設定</button>
+    </div>
+  </section>
+
+  <section class="panel typing-results" id="typing-results" aria-labelledby="typing-result-title" hidden>
+    <p class="eyebrow">這一輪的練習</p>
+    <h2 id="typing-result-title" tabindex="-1">練習完成</h2>
+    <p id="typing-result-summary"></p>
+    <h3>再看一次這些詞</h3>
+    <ul class="typing-review" id="typing-review"></ul>
+    <button class="btn btn-primary primary" id="typing-again" type="button">再玩一局</button>
+  </section>
+</main>
+
+<footer class="shell app-footer"><span>CALUMAI / 數字主題</span><span>可離線開啟 · 不用登入</span></footer>
+<script>"use strict";
+// 老師更換題庫的位置：保留原始拼寫與中文，沒有句子或音檔時留白。
+const VOCAB=[
+  {
+    "id": "n01",
+    "word": "kingal",
+    "translation": "一",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n02",
+    "word": "dha",
+    "translation": "二",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n03",
+    "word": "tru",
+    "translation": "三",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n04",
+    "word": "spat",
+    "translation": "四",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n05",
+    "word": "rima",
+    "translation": "五",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n06",
+    "word": "mataru",
+    "translation": "六",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n07",
+    "word": "empitu",
+    "translation": "七",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n08",
+    "word": "maspat",
+    "translation": "八",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n09",
+    "word": "mngari",
+    "translation": "九",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n10",
+    "word": "maxal",
+    "translation": "十",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n11",
+    "word": "maxal kingal",
+    "translation": "十一",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n12",
+    "word": "maxal dha",
+    "translation": "十二",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n13",
+    "word": "maxal tru",
+    "translation": "十三",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n14",
+    "word": "maxal spat",
+    "translation": "十四",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n15",
+    "word": "maxal rima",
+    "translation": "十五",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n16",
+    "word": "maxal mataru",
+    "translation": "十六",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n17",
+    "word": "maxal empitu",
+    "translation": "十七",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n18",
+    "word": "maxal maspat",
+    "translation": "十八",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n19",
+    "word": "maxal mngari",
+    "translation": "十九",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n20",
+    "word": "empusal",
+    "translation": "二十",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n21",
+    "word": "empusal kingal",
+    "translation": "二十一",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n22",
+    "word": "empusal dha",
+    "translation": "二十二",
+    "exampleSentence": "",
+    "audioUrl": ""
+  }
+];
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const ui = {
+    range: $('typing-range'), mode: $('typing-mode'), speed: $('typing-speed'), still: $('typing-still'),
+    modeNote: $('typing-mode-note'), canvas: $('typing-canvas'), words: $('typing-words'),
+    form: $('typing-form'), input: $('typing-input'), submit: $('typing-submit'), status: $('typing-status'),
+    start: $('typing-start'), pause: $('typing-pause'), reset: $('typing-reset'), settings: $('typing-settings-button'),
+    progress: $('typing-progress'), score: $('typing-score'), hearts: $('typing-hearts'), heartLabel: $('typing-heart-label'),
+    results: $('typing-results'), resultTitle: $('typing-result-title'), summary: $('typing-result-summary'),
+    review: $('typing-review'), again: $('typing-again')
+  };
+  const ctx = ui.canvas.getContext('2d');
+  const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const duration = { slow: 32000, medium: 24000, fast: 16000 };
+  let state = freshState();
+  let frameId = null;
+  let lastFrame = null;
+  let composing = false;
+  let compositionEndedAt = -Infinity;
+  let canvasWidth = 600;
+  let canvasHeight = 260;
+
+  function freshState() {
+    return { phase: 'ready', selected: [], active: [], nextIndex: 0, resolved: 0,
+      score: 0, lives: 3, misses: 0, wrongAnswers: 0, spawnElapsed: 0,
+      still: false, mode: 'practice', speed: 'slow', records: new Map() };
+  }
+  function say(message, kind = 'normal') {
+    ui.status.textContent = message;
+    ui.status.dataset.kind = kind;
+  }
+  function selectedPool() {
+    return ui.range.value === 'first' ? VOCAB.slice(0, 10)
+      : ui.range.value === 'second' ? VOCAB.slice(10) : VOCAB.slice();
+  }
+  function shuffle(items) {
+    const result = items.slice();
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+  }
+  function settingsNote() {
+    const busy = state.phase === 'running' || state.phase === 'paused';
+    if (ui.still.checked) ui.mode.value = 'practice';
+    ui.mode.disabled = busy || ui.still.checked;
+    ui.speed.disabled = busy || ui.still.checked;
+    ui.modeNote.textContent = ui.still.checked
+      ? '氣球停在原地，不計時、不扣心。輸入完成後，再練下一題。'
+      : ui.mode.value === 'challenge'
+        ? '氣球落到地面會扣一顆心。共有 3 顆心，先看清楚再輸入。'
+        : '先用慢速練習。漏接的氣球會回到上方，可以繼續輸入。';
+  }
+  function updateControls() {
+    const busy = state.phase === 'running' || state.phase === 'paused';
+    ui.range.disabled = busy;
+    ui.still.disabled = busy;
+    settingsNote();
+    ui.input.disabled = state.phase !== 'running';
+    ui.submit.disabled = state.phase !== 'running';
+    ui.start.hidden = busy;
+    ui.start.textContent = state.phase === 'finished' ? '再玩一局' : '開始遊戲';
+    ui.pause.hidden = !busy;
+    ui.pause.textContent = state.phase === 'paused' ? '繼續' : '暫停';
+    ui.reset.hidden = !busy;
+    ui.settings.hidden = !busy;
+    ui.progress.textContent = `${state.resolved} / ${state.selected.length || 8}`;
+    ui.score.textContent = String(state.score);
+    const challenge = busy || state.phase === 'finished' ? state.mode === 'challenge' : ui.mode.value === 'challenge';
+    ui.heartLabel.textContent = challenge ? '剩下的心' : '練習模式';
+    ui.hearts.textContent = challenge ? `${state.lives} / 3` : '不扣心';
+  }
+  function renderWords() {
+    ui.words.replaceChildren();
+    if (!state.active.length) {
+      const item = document.createElement('li');
+      item.className = 'muted';
+      item.textContent = state.phase === 'finished' ? '這一輪結束了，下方可以複習。' : '按「開始遊戲」，這裡就會出現題目。';
+      ui.words.append(item);
+      return;
+    }
+    for (const balloon of state.active.slice().sort((a, b) => b.progress - a.progress)) {
+      const item = document.createElement('li');
+      const word = document.createElement('span');
+      word.className = 'typing-word';
+      word.textContent = balloon.item.word;
+      const meaning = document.createElement('span');
+      meaning.className = 'typing-meaning';
+      meaning.textContent = balloon.item.translation;
+      item.append(word, meaning);
+      ui.words.append(item);
+    }
+  }
+  function stopLoop() {
+    if (frameId !== null) cancelAnimationFrame(frameId);
+    frameId = null;
+    lastFrame = null;
+  }
+  function spawn() {
+    if (state.nextIndex >= state.selected.length) return;
+    const occupied = new Set(state.active.map(balloon => balloon.lane));
+    const lane = occupied.has(0) ? 1 : 0;
+    const index = state.nextIndex++;
+    state.active.push({ uid: index, item: state.selected[index], lane, progress: 0 });
+    state.spawnElapsed = 0;
+    renderWords();
+  }
+  function start() {
+    stopLoop();
+    state = freshState();
+    state.selected = shuffle(selectedPool()).slice(0, 8);
+    state.mode = ui.still.checked ? 'practice' : ui.mode.value;
+    state.speed = ui.speed.value;
+    state.still = ui.still.checked;
+    state.phase = 'running';
+    state.selected.forEach(item => state.records.set(item.id, { outcome: 'pending', drops: 0 }));
+    ui.input.value = '';
+    ui.results.hidden = true;
+    composing = false;
+    spawn();
+    updateControls();
+    say(state.still ? '看著詞彙輸入，完成後按「送出」。不計時，可以慢慢來。' : '氣球開始落下了。輸入相同的族語，再按「送出」。');
+    draw();
+    scheduleFrame();
+    ui.input.focus({ preventScroll: true });
+    ui.form.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+  }
+  function scheduleFrame() {
+    if (state.phase === 'running' && !state.still && frameId === null) frameId = requestAnimationFrame(tick);
+  }
+  function tick(timestamp) {
+    frameId = null;
+    if (state.phase !== 'running' || state.still) return;
+    const elapsed = lastFrame === null ? 0 : Math.min(timestamp - lastFrame, 100);
+    lastFrame = timestamp;
+    state.spawnElapsed += elapsed;
+    for (const balloon of state.active.slice()) {
+      if (state.phase !== 'running') break;
+      balloon.progress += elapsed / duration[state.speed];
+      if (balloon.progress >= 1) {
+        state.misses++;
+        state.records.get(balloon.item.id).drops++;
+        if (state.mode === 'practice') {
+          balloon.progress = 0;
+          say(`${balloon.item.word} 回到上方了。繼續輸入，不扣心。`);
+        } else {
+          state.active = state.active.filter(other => other.uid !== balloon.uid);
+          state.records.get(balloon.item.id).outcome = 'missed';
+          state.resolved++;
+          state.lives--;
+          say(`漏接 ${balloon.item.word}，剩下 ${state.lives} 顆心。`, 'error');
+          renderWords();
+          if (state.lives === 0 || state.resolved === state.selected.length) finish();
+        }
+        updateControls();
+      }
+    }
+    if (state.phase === 'running') {
+      if ((!state.active.length || state.spawnElapsed >= 8000) && state.active.length < 2) spawn();
+      draw();
+      scheduleFrame();
+    }
+  }
+  function submit() {
+    if (state.phase !== 'running' || composing) return;
+    const answer = ui.input.value;
+    // 完全保留原拼寫：不轉小寫，也不移除任何空格。
+    const matching = state.active.filter(balloon => balloon.item.word === answer)
+      .sort((a, b) => b.progress - a.progress)[0];
+    if (!matching) {
+      state.wrongAnswers++;
+      say(answer ? '再看一次拼寫。字母、大小寫和空格都要相同。' : '先在輸入框填入畫面上的族語。', 'error');
+      ui.input.focus({ preventScroll: true });
+      return;
+    }
+    state.active = state.active.filter(balloon => balloon.uid !== matching.uid);
+    state.records.get(matching.item.id).outcome = 'correct';
+    state.score += 10;
+    state.resolved++;
+    ui.input.value = '';
+    say(`答對了！${matching.item.word} 是「${matching.item.translation}」，加 10 分。`);
+    if (state.resolved === state.selected.length) { finish(); return; }
+    if (!state.active.length) spawn();
+    renderWords();
+    updateControls();
+    draw();
+    ui.input.focus({ preventScroll: true });
+  }
+  function pause(auto = false) {
+    if (state.phase !== 'running') return;
+    stopLoop();
+    state.phase = 'paused';
+    updateControls();
+    say(auto ? '已自動暫停。回來後按「繼續」。' : '已暫停，準備好後按「繼續」。');
+    draw();
+  }
+  function resume() {
+    if (state.phase !== 'paused') return;
+    state.phase = 'running';
+    lastFrame = null;
+    updateControls();
+    say('繼續練習，輸入與畫面相同的族語。');
+    draw();
+    scheduleFrame();
+    ui.input.focus({ preventScroll: true });
+  }
+  function finish() {
+    stopLoop();
+    state.phase = 'finished';
+    state.active = [];
+    updateControls();
+    renderWords();
+    draw();
+    const correct = state.score / 10;
+    ui.resultTitle.textContent = state.lives === 0 ? '這一輪先到這裡' : '8 題練習完成';
+    ui.summary.textContent = `答對 ${correct} 題，得到 ${state.score} 分。${state.lives === 0 ? '先看一次漏接的詞，再試一輪。' : '看看剛剛練過的數字，再選一組繼續。'}`;
+    ui.review.replaceChildren();
+    for (const item of state.selected) {
+      const record = state.records.get(item.id);
+      const row = document.createElement('li');
+      const text = document.createElement('span');
+      const word = document.createElement('strong');
+      word.textContent = item.word;
+      const meaning = document.createElement('small');
+      meaning.textContent = item.translation;
+      text.append(word, meaning);
+      const outcome = document.createElement('span');
+      outcome.className = 'typing-review-state';
+      outcome.textContent = record.outcome === 'correct' ? '已完成' : record.outcome === 'missed' ? '漏接，再練一次' : '這輪還沒完成';
+      row.append(text, outcome);
+      ui.review.append(row);
+    }
+    ui.results.hidden = false;
+    say(`這一輪結束，答對 ${correct} 題。下方可以複習。`);
+    ui.resultTitle.focus({ preventScroll: true });
+    ui.results.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+  }
+  function resetToSettings() {
+    stopLoop();
+    state = freshState();
+    ui.input.value = '';
+    ui.results.hidden = true;
+    updateControls();
+    renderWords();
+    draw();
+    say('選好數字範圍與模式，再按「開始遊戲」。');
+    ui.range.focus();
+  }
+  function roundRect(x, y, width, height, radius) {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.arcTo(x + width, y, x + width, y + height, radius);
+    ctx.arcTo(x + width, y + height, x, y + height, radius);
+    ctx.arcTo(x, y + height, x, y, radius);
+    ctx.arcTo(x, y, x + width, y, radius);
+    ctx.closePath();
+  }
+  function drawBalloon(balloon, preview = false) {
+    const wide = canvasWidth >= 500;
+    const laneWidth = canvasWidth / 2;
+    const centerX = state.active.length === 1 || preview ? canvasWidth / 2 : laneWidth * (balloon.lane + .5);
+    const fontSize = wide ? 21 : 16;
+    ctx.font = `700 ${fontSize}px "Microsoft JhengHei", system-ui, sans-serif`;
+    const maxWidth = state.active.length > 1 ? laneWidth - 12 : canvasWidth - 30;
+    const width = Math.min(Math.max(ctx.measureText(balloon.item.word).width + 28, 110), maxWidth);
+    const height = 64;
+    const travel = Math.max(canvasHeight - height - 42, 8);
+    const y = 12 + (state.still || preview ? .2 : balloon.progress) * travel;
+    ctx.strokeStyle = '#9dae89';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(centerX, y + height); ctx.lineTo(centerX, y + height + 16); ctx.stroke();
+    roundRect(centerX - width / 2, y, width, height, 26);
+    ctx.fillStyle = balloon.lane === 1 ? '#e8eadb' : '#dbe7cb'; ctx.fill();
+    ctx.strokeStyle = '#98aa82'; ctx.stroke();
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#233d34';
+    ctx.fillText(balloon.item.word, centerX, y + 24, width - 16);
+    ctx.font = '14px "Microsoft JhengHei", system-ui, sans-serif';
+    ctx.fillStyle = '#52634b'; ctx.fillText(balloon.item.translation, centerX, y + 47, width - 16);
+  }
+  function draw() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.fillStyle = '#f4f7ee'; ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+    ctx.fillStyle = '#e1e8d5'; ctx.fillRect(0, canvasHeight - 16, canvasWidth, 16);
+    ctx.strokeStyle = '#b6c5a5'; ctx.beginPath(); ctx.moveTo(0, canvasHeight - 16); ctx.lineTo(canvasWidth, canvasHeight - 16); ctx.stroke();
+    if (state.phase === 'ready') drawBalloon({ item: VOCAB[0], lane: 0, progress: .2 }, true);
+    for (const balloon of state.active) drawBalloon(balloon);
+    if (state.phase === 'paused' || state.phase === 'finished') {
+      ctx.fillStyle = 'rgba(247,246,239,.9)'; ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+      ctx.fillStyle = '#294e40'; ctx.font = '700 24px "Microsoft JhengHei", system-ui, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(state.phase === 'paused' ? '已暫停' : '這一輪結束了', canvasWidth / 2, canvasHeight / 2);
+    }
+  }
+  function resize() {
+    const rect = ui.canvas.getBoundingClientRect();
+    canvasWidth = Math.max(rect.width, 1);
+    canvasHeight = Math.max(rect.height, 1);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    ui.canvas.width = Math.round(canvasWidth * dpr);
+    ui.canvas.height = Math.round(canvasHeight * dpr);
+    if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+  ui.form.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!composing && performance.now() - compositionEndedAt > 80) submit();
+  });
+  ui.input.addEventListener('compositionstart', () => { composing = true; });
+  ui.input.addEventListener('compositionend', () => { composing = false; compositionEndedAt = performance.now(); });
+  ui.input.addEventListener('keydown', event => {
+    if (event.key === 'Enter' && (composing || event.isComposing || event.keyCode === 229)) event.preventDefault();
+  });
+  ui.start.addEventListener('click', start);
+  ui.again.addEventListener('click', start);
+  ui.reset.addEventListener('click', start);
+  ui.settings.addEventListener('click', resetToSettings);
+  ui.pause.addEventListener('click', () => state.phase === 'paused' ? resume() : pause());
+  ui.mode.addEventListener('change', () => { settingsNote(); updateControls(); });
+  ui.still.addEventListener('change', () => { settingsNote(); updateControls(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) pause(true); });
+  motionPreference.addEventListener('change', event => {
+    if (!event.matches) return;
+    ui.still.checked = true;
+    if (state.phase === 'running' || state.phase === 'paused') {
+      stopLoop(); state.still = true; state.mode = 'practice';
+      updateControls(); draw();
+      say('已改成不計時練習。氣球停在原地，可以慢慢輸入。');
+    } else { settingsNote(); updateControls(); }
+  });
+  ui.still.checked = motionPreference.matches;
+  new ResizeObserver(resize).observe(ui.canvas);
+  updateControls();
+  resize();
+  // 只讀快照供檢查使用，不提供改分數、跳題或調整時間的方法。
+  Object.defineProperty(window, 'gameDebug', { configurable: false, get() {
+    return Object.freeze({ phase: state.phase, mode: state.mode, still: state.still,
+      score: state.score, lives: state.lives, resolved: state.resolved, total: state.selected.length,
+      nextIndex: state.nextIndex, loopScheduled: frameId !== null,
+      active: Object.freeze(state.active.map(balloon => Object.freeze({ uid: balloon.uid, word: balloon.item.word,
+        translation: balloon.item.translation, progress: balloon.progress }))) });
+  } });
+})();
+
+</script></body></html>

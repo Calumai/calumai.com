@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="部落採集記憶翻牌：使用老師確認的詞彙，將族語與中文配對。單檔、免登入、沒有倒數淘汰。">
+  <title>部落採集記憶翻牌｜族語教學遊戲</title>
+  <script>
+    "use strict";
+    // ================================================================
+    // 老師更換題庫的位置
+    // ================================================================
+    // 1. 本檔保留老師提供的 22 組語料；預設用前 8 組（一～八）開始。
+    // 2. 每局固定選 8 組，產生 16 張牌；也可用畫面上的「老師換題」選擇。
+    // 3. id 必須唯一；word 是老師確認的族語，translation 是中文意思。
+    // 4. exampleSentence 與 audioUrl 可填 ""；沒有資料時不顯示相關區塊。
+    // 5. audioUrl 可填可直接播放的音檔網址，或 audio/kingal.mp3 這類相對路徑。
+    //    線上音檔需連網；檔案分享頁面網址不一定是可播放的音檔網址。
+    // 6. 文字請用雙引號包住；內容若有雙引號，請寫成 \"；換行請用 \n。
+    // 7. 只填老師已確認且有使用權的內容；本程式不翻譯、不生成族語錄音。
+    // 8. 修改並儲存 HTML 後，重新開啟或重新整理頁面。
+    const cardData = [
+      { id: "n01", word: "kingal",          translation: "一",     exampleSentence: "", audioUrl: "" },
+      { id: "n02", word: "dha",             translation: "二",     exampleSentence: "", audioUrl: "" },
+      { id: "n03", word: "tru",             translation: "三",     exampleSentence: "", audioUrl: "" },
+      { id: "n04", word: "spat",            translation: "四",     exampleSentence: "", audioUrl: "" },
+      { id: "n05", word: "rima",            translation: "五",     exampleSentence: "", audioUrl: "" },
+      { id: "n06", word: "mataru",          translation: "六",     exampleSentence: "", audioUrl: "" },
+      { id: "n07", word: "empitu",          translation: "七",     exampleSentence: "", audioUrl: "" },
+      { id: "n08", word: "maspat",          translation: "八",     exampleSentence: "", audioUrl: "" },
+      { id: "n09", word: "mngari",          translation: "九",     exampleSentence: "", audioUrl: "" },
+      { id: "n10", word: "maxal",           translation: "十",     exampleSentence: "", audioUrl: "" },
+      { id: "n11", word: "maxal kingal",    translation: "十一",   exampleSentence: "", audioUrl: "" },
+      { id: "n12", word: "maxal dha",       translation: "十二",   exampleSentence: "", audioUrl: "" },
+      { id: "n13", word: "maxal tru",       translation: "十三",   exampleSentence: "", audioUrl: "" },
+      { id: "n14", word: "maxal spat",      translation: "十四",   exampleSentence: "", audioUrl: "" },
+      { id: "n15", word: "maxal rima",      translation: "十五",   exampleSentence: "", audioUrl: "" },
+      { id: "n16", word: "maxal mataru",    translation: "十六",   exampleSentence: "", audioUrl: "" },
+      { id: "n17", word: "maxal empitu",    translation: "十七",   exampleSentence: "", audioUrl: "" },
+      { id: "n18", word: "maxal maspat",    translation: "十八",   exampleSentence: "", audioUrl: "" },
+      { id: "n19", word: "maxal mngari",    translation: "十九",   exampleSentence: "", audioUrl: "" },
+      { id: "n20", word: "empusal",         translation: "二十",   exampleSentence: "", audioUrl: "" },
+      { id: "n21", word: "empusal kingal",  translation: "二十一", exampleSentence: "", audioUrl: "" },
+      { id: "n22", word: "empusal dha",     translation: "二十二", exampleSentence: "", audioUrl: "" }
+    ];
+
+    // 老師填寫課堂資訊的位置：未提供的欄位維持空白，不推定族語或方言。
+    const classroomInfo = {
+      language: "",
+      dialect: "",
+      audience: "",
+      topic: "數字",
+      vocabularyLevel: "初級"
+    };
+  </script>
+  <style>
+    :root {
+      --paper: #f7f6ef;
+      --surface: #ffffff;
+      --ink: #233d34;
+      --muted: #627168;
+      --forest: #294e40;
+      --forest-hover: #1d3d31;
+      --sage: #e9efdf;
+      --line: #d9dfd2;
+      --accent: #a3482b;
+      --accent-soft: #faeee5;
+      --focus: #974726;
+      --radius: 20px;
+      font-family: "Microsoft JhengHei", "PingFang TC", "Heiti TC", system-ui, -apple-system, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.55;
+      font-synthesis: none;
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { scrollbar-gutter: stable; }
+    body { margin: 0; min-width: 280px; }
+    button, input { font: inherit; }
+    button { cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    button:disabled { cursor: not-allowed; }
+    button, summary, input { outline-offset: 5px; }
+    :focus-visible { outline: 3px solid var(--focus); }
+    h1, h2, h3, p { margin: 0; }
+    svg { display: block; width: 21px; height: 21px; flex: 0 0 auto; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .skip { position: absolute; z-index: 50; top: 10px; left: 12px; transform: translateY(-180%); background: var(--surface); color: var(--ink); padding: 12px 20px; border-radius: 10px; }
+    .skip:focus { transform: none; }
+    .shell { width: min(1192px, calc(100% - 64px)); margin-inline: auto; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-block: 24px; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 11px; font-size: 15px; font-weight: 800; letter-spacing: .05em; }
+    .brand-mark { width: 34px; height: 34px; display: grid; grid-template-columns: repeat(2, 7px); gap: 4px; place-content: center; border-radius: 10px; background: var(--forest); }
+    .brand-mark i { width: 7px; height: 7px; background: #d8e6c6; border-radius: 50%; }
+    .brand-divider { color: #94a08e; font-weight: 400; margin-inline: 2px; }
+    .brand-secondary { color: var(--muted); font-weight: 500; letter-spacing: 0; }
+    .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .btn { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 11px 18px; border: 1px solid transparent; border-radius: 12px; font-size: 16px; line-height: 1.4; font-weight: 700; text-decoration: none; transition: background-color .15s ease, border-color .15s ease; }
+    .btn-primary { background: var(--forest); color: white; border-color: var(--forest); }
+    .btn-primary:hover { background: var(--forest-hover); }
+    .btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--line); }
+    .btn-secondary:hover { background: #edf1e7; border-color: #a9b79b; }
+    .btn-quiet { background: transparent; color: var(--ink); border-color: transparent; }
+    .btn-quiet:hover { background: var(--sage); }
+    .btn:disabled { opacity: .52; }
+    .btn-wide { width: 100%; }
+    .icon-only { width: 48px; padding: 10px; }
+    .hero { display: flex; align-items: end; justify-content: space-between; gap: 28px; padding: 30px 0 26px; }
+    .eyebrow { color: var(--accent); font-size: 13px; letter-spacing: .1em; font-weight: 800; margin-bottom: 8px; }
+    h1 { font-size: clamp(28px, 3.3vw, 42px); letter-spacing: -.035em; line-height: 1.3; font-weight: 800; }
+    .hero-sub { margin-top: 9px; color: var(--muted); font-size: 16px; }
+    .topic-stamp { display: flex; align-items: center; gap: 10px; white-space: nowrap; padding-bottom: 4px; }
+    .topic-dot { width: 9px; height: 9px; background: var(--accent); border-radius: 50%; }
+    .topic-text { font-size: 14px; color: var(--muted); }
+    .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.7); padding-block: 18px; margin-bottom: 24px; }
+    .stat { padding-inline: 28px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .stat + .stat { border-left: 1px solid var(--line); }
+    .stat-label { color: var(--muted); font-size: 14px; }
+    .stat-value { font-size: 29px; line-height: 1.15; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .stat-value small { font-size: 16px; color: var(--muted); font-weight: 500; }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 292px; gap: 24px; align-items: start; }
+    .board-panel { background: var(--surface); padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); min-width: 0; }
+    .board-heading { display: flex; gap: 12px; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .board-heading h2 { font-size: 19px; line-height: 1.45; }
+    .board-note { font-size: 13px; color: var(--muted); white-space: nowrap; }
+    .board-wrap { position: relative; }
+    .board { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; align-items: stretch; }
+    .card { display: flex; min-height: 116px; min-width: 0; padding: 12px 10px; justify-content: center; align-items: center; flex-direction: column; gap: 5px; position: relative; border: 2px solid var(--forest); border-radius: 14px; background: var(--forest); color: var(--ink); user-select: none; transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease; }
+    .card:not(:disabled):not([aria-disabled="true"]):hover { border-color: #90a66e; box-shadow: 0 0 0 2px #dce6ce; }
+    .card:disabled { opacity: 1; }
+    .card.is-up { background: #fffdf7; border-color: var(--accent); }
+    .card.is-matched { background: var(--sage); border-color: #b9cbaa; }
+    .dots { display: grid; grid-template-columns: repeat(2, 10px); gap: 8px; padding: 12px; }
+    .dots i { width: 10px; height: 10px; border-radius: 50%; background: #d4e1c1; }
+    .face { width: 100%; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+    .card-kind { display: block; color: var(--muted); font-size: 11px; letter-spacing: .09em; font-weight: 500; }
+    .card-word { display: block; width: 100%; max-width: 100%; font-size: clamp(20px, 2.1vw, 27px); line-height: 1.4; font-weight: 800; overflow-wrap: anywhere; word-break: normal; white-space: pre-wrap; hyphens: none; }
+    .card-mark { position: absolute; right: 8px; top: 5px; font-size: 13px; color: var(--forest); font-weight: 800; }
+    .ready-shade { position: absolute; inset: 0; border-radius: 14px; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(247,246,239,.55); }
+    .ready-card { width: min(340px,100%); text-align: center; background: #fffdf6; border: 1px solid #e2e4d9; box-shadow: 0 12px 48px rgba(21,47,34,.15); border-radius: 20px; padding: 28px; }
+    .ready-mini { color: var(--accent); letter-spacing: .1em; font-size: 12px; font-weight: 800; margin-bottom: 8px; }
+    .ready-card h3 { font-size: 25px; letter-spacing: -.03em; }
+    .ready-card p { color: var(--muted); margin: 10px 0 23px; font-size: 15px; }
+    .ready-card .btn { min-height: 54px; font-size: 17px; }
+    .board-bottom { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 18px; }
+    .turn-status { display: flex; gap: 9px; align-items: center; font-size: 14px; min-height: 44px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; background: #758b58; }
+    .board-bottom .btn { padding-inline: 10px; font-size: 14px; }
+    .collection { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #f0f2e8; }
+    .collection-head { padding: 24px 22px 18px; border-bottom: 1px solid var(--line); }
+    .collection-head .eyebrow { color: var(--muted); font-size: 11px; margin-bottom: 5px; }
+    .collection-head h2 { font-size: 24px; letter-spacing: -.02em; }
+    .collection-head p { font-size: 13px; color: var(--muted); margin-top: 6px; }
+    .progress-track { display: flex; gap: 5px; margin-top: 17px; }
+    .progress-track span { height: 5px; flex: 1; border-radius: 3px; background: #d8decb; }
+    .progress-track span.done { background: var(--forest); }
+    .collection-list { list-style: none; margin: 0; padding: 6px 20px; }
+    .collection-item { display: flex; align-items: center; gap: 12px; min-height: 47px; padding: 10px 0; border-bottom: 1px solid #dce1d4; }
+    .collection-item:last-child { border-bottom: 0; }
+    .item-number { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; flex: 0 0 20px; }
+    .item-content { min-width: 0; flex: 1; }
+    .item-word { display: block; font-size: 16px; font-weight: 800; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .item-translation { display: block; color: var(--muted); font-size: 13px; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .item-empty { width: 55%; height: 1px; background: #cdd5c2; }
+    .item-check { color: var(--forest); font-size: 14px; }
+    .collection-foot { border-top: 1px solid var(--line); padding: 16px 22px; color: var(--muted); font-size: 13px; line-height: 1.75; }
+    .class-details { padding: 15px 4px; color: var(--muted); font-size: 12px; }
+    .class-details p { margin-bottom: 3px; overflow-wrap: anywhere; }
+    .footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 24px 30px; color: var(--muted); font-size: 12px; }
+    .footer p { line-height: 1.8; }
+    .error-panel { border: 1px solid #c87355; border-radius: 16px; padding: 24px; background: var(--accent-soft); margin-bottom: 24px; }
+    .error-panel h2 { font-size: 21px; margin-bottom: 10px; }
+    .error-panel ul { padding-left: 24px; }
+    .sound-notice { color: var(--accent); font-size: 13px; padding-top: 12px; }
+    dialog { color: var(--ink); background: #fffdf8; border: 1px solid var(--line); border-radius: 24px; width: min(510px, calc(100% - 32px)); max-width: calc(100% - 32px); max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); padding: 30px; box-shadow: 0 22px 85px rgba(21,47,34,.22); overscroll-behavior: contain; }
+    dialog::backdrop { background: rgba(21,36,28,.42); }
+    body.has-dialog { overflow: hidden; }
+    .dialog-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 17px; }
+    .dialog-head h2 { font-size: 27px; letter-spacing: -.025em; line-height: 1.35; }
+    .dialog-intro { color: var(--muted); font-size: 15px; margin-top: 8px; }
+    .dialog-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+    .dialog-actions .btn { min-height: 52px; }
+    .success-badge { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 700; color: var(--forest); margin-bottom: 12px; }
+    .success-badge b { display: grid; place-items: center; width: 23px; height: 23px; border-radius: 50%; background: var(--sage); }
+    .feedback-word-box { background: var(--sage); border-radius: 16px; padding: 25px 22px; margin-top: 20px; }
+    .feedback-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+    .feedback-word { margin-top: 5px; font-size: clamp(28px, 5vw, 39px); font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .feedback-translation { margin-top: 15px; padding-top: 15px; border-top: 1px solid #cbd6bd; font-size: 22px; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .example { padding: 18px 0 0; }
+    .example h3 { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+    .example p { font-size: 18px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .audio-block { margin-top: 18px; }
+    .audio-block .btn { width: 100%; }
+    .audio-status { margin-top: 8px; font-size: 14px; color: var(--accent); min-height: 0; }
+    .mismatch-cards { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin-top: 22px; }
+    .memory-peek { background: var(--accent-soft); border: 1px solid #e9cdbb; border-radius: 14px; padding: 19px 14px; text-align: center; min-width: 0; }
+    .memory-peek .card-word { font-size: 26px; margin-top: 10px; }
+    .mismatch-note { color: var(--muted); font-size: 14px; margin-top: 18px; }
+    .teacher-dialog { width: min(730px, calc(100% - 32px)); }
+    .teacher-meta { color: var(--muted); background: var(--sage); border-radius: 12px; font-size: 13px; padding: 12px 15px; margin-bottom: 18px; line-height: 1.9; }
+    .selection-controls { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+    .selection-controls .btn { min-height: 44px; padding: 9px 14px; font-size: 14px; }
+    .selection-presets { display: flex; gap: 7px; flex-wrap: wrap; }
+    .selection-count { font-size: 15px; font-weight: 800; }
+    .selection-hint { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+    .word-choices { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; border: 0; padding: 0; margin: 0; }
+    .word-choice { display: flex; align-items: center; gap: 10px; padding: 12px; min-height: 58px; border: 1px solid var(--line); background: var(--surface); border-radius: 11px; cursor: pointer; min-width: 0; }
+    .word-choice.is-selected { background: var(--sage); border-color: #aebf9a; }
+    .word-choice input { accent-color: var(--forest); width: 21px; height: 21px; margin: 0; flex: 0 0 auto; }
+    .choice-content { min-width: 0; line-height: 1.35; }
+    .choice-word { display: block; font-size: 16px; font-weight: 700; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .choice-translation { display: block; font-size: 13px; color: var(--muted); margin-top: 4px; overflow-wrap: anywhere; }
+    .selection-footer { position: sticky; bottom: -30px; padding: 17px 0 4px; background: #fffdf8; margin-top: 15px; border-top: 1px solid var(--line); }
+    .selection-footer p { margin-bottom: 12px; font-size: 12px; color: var(--muted); }
+    .selection-footer .toolbar { flex-wrap: nowrap; }
+    .selection-footer .btn-primary { flex: 1; }
+    .help-steps { padding-left: 25px; margin: 20px 0; }
+    .help-steps li { padding: 0 0 14px 4px; }
+    .help-steps strong { display: block; margin-bottom: 4px; }
+    .help-steps p, .help-section p { font-size: 14px; color: var(--muted); }
+    .help-section { border-top: 1px solid var(--line); padding-top: 15px; margin-top: 15px; }
+    .help-section h3 { font-size: 15px; margin-bottom: 5px; }
+    .help-section p + p { margin-top: 8px; }
+    .motion-label { display: flex; align-items: center; gap: 9px; min-height: 48px; font-size: 15px; cursor: pointer; }
+    .motion-label input { width: 21px; height: 21px; accent-color: var(--forest); }
+    .result-symbol { display: flex; gap: 7px; justify-content: center; margin-bottom: 20px; }
+    .result-symbol i { display: block; width: 13px; height: 13px; background: var(--forest); border-radius: 50%; }
+    .result-symbol i:last-child { background: var(--accent); }
+    .result-dialog { text-align: center; }
+    .result-dialog h2 { font-size: 31px; letter-spacing: -.03em; line-height: 1.35; }
+    .result-dialog > p { color: var(--muted); margin-top: 10px; font-size: 15px; }
+    .result-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+    .result-stat { background: var(--sage); border-radius: 14px; padding: 18px 8px; }
+    .result-stat strong { display: block; font-size: 30px; font-variant-numeric: tabular-nums; }
+    .result-stat span { font-size: 13px; color: var(--muted); }
+    @media (max-width: 1000px) {
+      .shell { width: calc(100% - 40px); }
+      .workspace { grid-template-columns: minmax(0,1fr) 246px; gap: 18px; }
+      .board-panel { padding: 18px; }
+      .board { gap: 10px; }
+      .card { min-height: 105px; }
+      .stat { padding-inline: 20px; }
+      .stat-value { font-size: 26px; }
+    }
+    @media (max-width: 820px) {
+      .workspace { grid-template-columns: minmax(0,1fr); }
+      .collection-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); column-gap: 25px; }
+      .collection-item:nth-last-child(2) { border-bottom: 0; }
+      .collection-head { padding: 21px; }
+      .collection-head h2 { font-size: 22px; }
+      .collection-foot { padding-block: 12px; }
+      .class-details { padding: 12px 4px 0; }
+      .hero { padding-block: 25px; }
+      .topic-stamp { display: none; }
+      .card { min-height: 115px; }
+      .card-word { font-size: 25px; }
+    }
+    @media (max-width: 560px) {
+      html { scrollbar-gutter: auto; }
+      .shell { width: calc(100% - 28px); }
+      .topbar { align-items: center; flex-wrap: wrap; padding-block: 16px 12px; gap: 10px; }
+      .brand { font-size: 13px; gap: 8px; }
+      .brand-secondary, .brand-divider { display: none; }
+      .brand-mark { width: 28px; height: 28px; }
+      .toolbar { gap: 2px; }
+      .toolbar .btn { font-size: 13px; min-height: 44px; padding: 9px 10px; gap: 5px; }
+      .toolbar .btn svg { width: 18px; height: 18px; }
+      .toolbar .icon-only { width: 42px; }
+      .hero { padding: 23px 0 20px; }
+      .eyebrow { font-size: 12px; }
+      h1 { font-size: clamp(27px,7.6vw,37px); }
+      .hero-sub { font-size: 14px; }
+      .stats { padding-block: 15px; margin-bottom: 17px; }
+      .stat { flex-direction: column; align-items: flex-start; gap: 7px; padding-inline: 14px; }
+      .stat-label { font-size: 12px; }
+      .stat-value { font-size: 26px; }
+      .stat-value small { font-size: 13px; }
+      .board-panel { padding: 16px 12px; border-radius: 17px; }
+      .board-heading { margin-bottom: 14px; padding-inline: 3px; gap: 8px; }
+      .board-heading h2 { font-size: 17px; }
+      .board-note { font-size: 11px; }
+      .board { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+      .card { min-height: 106px; padding: 13px 11px; }
+      .card-word { font-size: 26px; }
+      .ready-shade { align-items: flex-start; padding: 0 14px; }
+      .ready-card { position: sticky; top: 24px; margin-top: 45px; padding: 25px 19px; }
+      .ready-card h3 { font-size: 23px; }
+      .ready-card p { font-size: 14px; }
+      .board-bottom { align-items: center; margin-top: 12px; gap: 8px; }
+      .turn-status { font-size: 13px; }
+      .board-bottom .btn { font-size: 13px; min-height: 44px; white-space: nowrap; }
+      .workspace { gap: 17px; }
+      .collection-list { padding-inline: 17px; column-gap: 16px; }
+      .collection-item { gap: 5px; }
+      .item-word { font-size: 15px; }
+      .footer { flex-direction: column; align-items: flex-start; gap: 5px; padding-top: 18px; }
+      dialog { padding: 24px 20px; border-radius: 20px; }
+      .dialog-head h2 { font-size: 25px; }
+      .word-choices { grid-template-columns: 1fr; }
+      .selection-footer { bottom: -24px; }
+      .selection-controls { align-items: start; }
+      .selection-count { font-size: 14px; padding-top: 9px; }
+      .teacher-meta { font-size: 12px; }
+      .feedback-word-box { padding: 22px 18px; }
+      .feedback-word { font-size: 32px; }
+      .mismatch-cards { gap: 8px; }
+      .memory-peek { padding-inline: 10px; }
+      .memory-peek .card-word { font-size: 24px; }
+    }
+    @media (max-width: 350px) {
+      .topbar { justify-content: center; }
+      .topbar > .toolbar { width: 100%; justify-content: space-between; }
+      .brand-secondary { display: inline; }
+      .board-heading h2 { font-size: 15px; }
+      .stat { padding-inline: 10px; }
+      .stat-value { font-size: 23px; }
+      .card-word { font-size: 23px; }
+      .turn-status { font-size: 12px; }
+      .board-bottom { flex-wrap: wrap; }
+      .collection-list { grid-template-columns: 1fr; }
+      .collection-item:nth-last-child(2) { border-bottom: 1px solid #dce1d4; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+    html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    @media (forced-colors: active) {
+      .card, .btn, .word-choice { border: 2px solid ButtonText; }
+      .card.is-matched { border: 3px double Highlight; }
+      .dots i, .status-dot, .brand-mark i, .progress-track span.done { background: ButtonText; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#gameArea">跳到遊戲區</a>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span>族語學習室</span><span class="brand-divider" aria-hidden="true">/</span><span class="brand-secondary">記憶配對</span>
+      </div>
+      <nav class="toolbar" aria-label="遊戲工具">
+        <button class="btn btn-quiet icon-only" id="helpBtn" type="button" aria-label="遊戲說明" title="遊戲說明">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4.6 1.4c-.8.7-2.1 1-2.1 2.6"/><path d="M12 16h.01"/></svg>
+        </button>
+        <button class="btn btn-quiet" id="muteBtn" type="button" aria-pressed="false" aria-label="靜音成功提示音" title="只控制成功提示音，不影響手動播放老師錄音">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path id="soundWaves" d="M15 8c2 2 2 6 0 8m3-11c4 4 4 10 0 14"/><path id="soundSlash" d="m15 9 6 6m0-6-6 6" hidden/></svg>
+          <span id="muteLabel">提示音：開</span>
+        </button>
+        <button class="btn btn-secondary" id="teacherBtn" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2" fill="currentColor"/><circle cx="15" cy="17" r="2" fill="currentColor"/></svg>
+          老師換題
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="mainTitle">
+        <div>
+          <p class="eyebrow" id="topicEyebrow">數字主題 · 詞彙難度：初級</p>
+          <h1 id="mainTitle">部落採集記憶翻牌</h1>
+          <p class="hero-sub">翻開一張詞，找到它的意思。把每一組，慢慢記起來。</p>
+        </div>
+        <div class="topic-stamp"><span class="topic-dot" aria-hidden="true"></span><p class="topic-text">不比快，練習記得更清楚</p></div>
+      </section>
+      <section class="error-panel" id="dataError" hidden role="alert" aria-labelledby="dataErrorTitle">
+        <h2 id="dataErrorTitle">題庫還需要老師補齊</h2>
+        <p>請先修正程式上方的 cardData，再重新開啟。本頁不會補造詞彙。</p>
+        <ul id="dataErrorList"></ul>
+      </section>
+      <section class="stats" aria-label="本局學習紀錄">
+        <div class="stat"><span class="stat-label">已完成組數</span><p class="stat-value"><span id="matchedCount">0</span> <small>/ 8</small></p></div>
+        <div class="stat"><span class="stat-label">翻牌次數</span><p class="stat-value" id="flipCount">0</p></div>
+        <div class="stat"><span class="stat-label">經過時間</span><p class="stat-value" id="timer" role="timer" aria-live="off" aria-label="經過時間 0 分 0 秒">00:00</p></div>
+      </section>
+      <div class="workspace">
+        <section class="board-panel" id="gameArea" tabindex="-1" aria-labelledby="boardTitle">
+          <div class="board-heading"><h2 id="boardTitle">找出彼此的意思</h2><span class="board-note">8 組詞彙 · 16 張卡牌</span></div>
+          <div class="board-wrap">
+            <div id="board" class="board" role="group" aria-label="16 張記憶卡；用 Tab 或方向鍵移動，以 Enter 或空白鍵翻牌"></div>
+            <div id="readyShade" class="ready-shade">
+              <div class="ready-card">
+                <div class="ready-mini">這一次，收藏 8 組詞彙</div>
+                <h3>準備開始採集了嗎？</h3>
+                <p>每次翻兩張，找出族語與中文。<br>答錯也沒關係，再試一次就好。</p>
+                <button class="btn btn-primary btn-wide" id="startBtn" type="button">開始遊戲 <span aria-hidden="true">→</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="board-bottom">
+            <div class="turn-status"><span class="status-dot" aria-hidden="true"></span><p id="turnStatus" role="status" aria-live="polite" aria-atomic="true">按「開始遊戲」後再翻牌。</p></div>
+            <button class="btn btn-quiet" id="restartBtn" type="button" disabled>重新開始</button>
+            <button class="btn btn-secondary" id="resultBtn" type="button" hidden>查看結果</button>
+          </div>
+          <p class="sound-notice" id="soundNotice" role="status" hidden></p>
+        </section>
+        <aside aria-label="本次採集的詞彙">
+          <section class="collection">
+            <header class="collection-head">
+              <p class="eyebrow">每找到一組，就留下一份記憶</p>
+              <h2>我的採集簿</h2>
+              <p id="collectionCaption">配對成功的詞彙會留在這裡。</p>
+              <div id="progressTrack" class="progress-track" aria-hidden="true"></div>
+            </header>
+            <ol class="collection-list" id="collectionList"></ol>
+            <div class="collection-foot">時間只是紀錄，不會倒數淘汰。<br>可以停下來想一想、讀一讀。</div>
+          </section>
+          <div class="class-details" id="classDetails"></div>
+        </aside>
+      </div>
+    </main>
+    <footer class="footer"><p>操作：點擊卡牌，或用 Tab／方向鍵移動、Enter／空白鍵翻牌。</p><p>免登入 · 無排行榜 · 不使用 AI 生成族語發音</p></footer>
+  </div>
+
+  <dialog id="feedbackDialog" aria-labelledby="feedbackTitle" aria-describedby="feedbackIntro">
+    <div class="success-badge" id="successBadge"><b aria-hidden="true">✓</b><span id="successProgress">已完成 1 / 8 組</span></div>
+    <div class="dialog-head"><div><h2 id="feedbackTitle" tabindex="-1">找到一組！</h2><p class="dialog-intro" id="feedbackIntro">讀一讀，再把這個詞收進記憶。</p></div></div>
+    <div id="successContent">
+      <div class="feedback-word-box"><span class="feedback-label">族語</span><p class="feedback-word" id="matchedWord" dir="auto"></p><p class="feedback-translation"><span class="feedback-label">中文　</span><span id="matchedTranslation" dir="auto"></span></p></div>
+      <section class="example" id="exampleSection" hidden><h3>老師提供的例句</h3><p id="exampleText" dir="auto"></p></section>
+      <div class="audio-block" id="audioSection" hidden>
+        <button class="btn btn-secondary" id="pronounceBtn" type="button"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 8c2 2 2 6 0 8m3-11c4 4 4 10 0 14"/></svg><span id="pronounceLabel">聽發音</span></button>
+        <p class="audio-status" id="audioStatus" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+    <div id="mismatchContent" hidden><div class="mismatch-cards" id="mismatchCards"></div><p class="mismatch-note">兩張牌會一直保留，直到你按下「再試一次」。</p></div>
+    <div class="dialog-actions"><button class="btn btn-primary btn-wide" id="feedbackContinue" type="button">繼續</button></div>
+  </dialog>
+
+  <dialog id="resultDialog" class="result-dialog" aria-labelledby="resultTitle" aria-describedby="resultIntro">
+    <div class="result-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <p class="eyebrow">本次採集完成</p><h2 id="resultTitle" tabindex="-1">8 組詞彙，全部找到！</h2><p id="resultIntro">把意思配在一起，也把詞彙留在記憶裡。</p>
+    <div class="result-stats"><div class="result-stat"><strong id="resultFlips">16</strong><span>翻牌次數</span></div><div class="result-stat"><strong id="resultTime">00:00</strong><span>經過時間</span></div></div>
+    <p>沒有名次，也沒有時間壓力。<br>再玩一次，看看還記得多少。</p>
+    <div class="dialog-actions"><button class="btn btn-primary btn-wide" id="playAgainBtn" type="button">重新開始</button><button class="btn btn-quiet btn-wide" id="reviewBoardBtn" type="button">查看已配對卡牌</button></div>
+  </dialog>
+
+  <dialog id="teacherDialog" class="teacher-dialog" aria-labelledby="teacherTitle" aria-describedby="teacherIntro">
+    <div class="dialog-head"><div><h2 id="teacherTitle" tabindex="-1">老師換題</h2><p class="dialog-intro" id="teacherIntro">從已提供的詞彙中，選出這一局的 8 組。</p></div><button class="btn btn-quiet icon-only" id="closeTeacherBtn" type="button" aria-label="取消換題並關閉"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+    <div class="teacher-meta" id="teacherMeta"></div>
+    <div class="selection-controls"><div class="selection-presets"><button class="btn btn-secondary" id="firstEightBtn" type="button">前 8 組</button><button class="btn btn-secondary" id="lastEightBtn" type="button">後 8 組</button></div><p class="selection-count" id="selectionCount" role="status" aria-live="polite">已選 8 / 8 組</p></div>
+    <p class="selection-hint" id="selectionHint">已選滿時，先取消一組，再勾選要加入的詞彙。</p>
+    <fieldset class="word-choices" id="wordChoices" aria-describedby="selectionHint"><legend class="sr-only">本局的 8 組詞彙</legend></fieldset>
+    <div class="selection-footer"><p>套用會清除本局紀錄並回到開始畫面；重新整理頁面會恢復前 8 組。永久修改請編輯 HTML 上方的 cardData。</p><div class="toolbar"><button class="btn btn-secondary" id="cancelTeacherBtn" type="button">取消</button><button class="btn btn-primary" id="applySelectionBtn" type="button">套用這 8 組</button></div></div>
+  </dialog>
+
+  <dialog id="helpDialog" aria-labelledby="helpTitle">
+    <div class="dialog-head"><h2 id="helpTitle" tabindex="-1">慢慢翻，就會記得</h2><button class="btn btn-quiet icon-only" id="closeHelpBtn" type="button" aria-label="關閉遊戲說明"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+    <ol class="help-steps"><li><strong>每次翻開兩張牌</strong><p>找出同一組詞彙的族語卡與中文卡。已翻開或配對成功的卡牌不能重複計分。</p></li><li><strong>找到一組，先讀一讀</strong><p>成功的牌會固定翻開。看完詞彙與老師提供的例句，再按「繼續」。有老師錄音時，可按「聽發音」並重播。</p></li><li><strong>還沒配對，就再試一次</strong><p>兩張牌不會自行蓋回。先記住它們的位置，再按「再試一次」。配對確認期間不能翻第三張。</p></li></ol>
+    <section class="help-section"><h3>紀錄怎麼算？</h3><p>每翻開一張可用的牌，翻牌次數加 1；一次翻兩張就是 2 次。重複點同一張、點已配對的牌或確認期間連按，都不加次數。</p><p>時間從按下「開始遊戲」到最後一組配對成功為止；包含中途閱讀、思考及開啟說明的時間。沒有倒數，也不會因時間結束而淘汰。</p></section>
+    <section class="help-section"><h3>鍵盤、畫面與聲音</h3><p>Tab／Shift＋Tab 移動焦點；方向鍵可在牌區移動；Enter 或空白鍵操作。配對視窗需按「繼續」或「再試一次」關閉。Esc 可關閉其他說明與設定視窗。</p><p>「提示音」按鈕只控制成功提示音，與老師錄音分開。老師錄音必須由學生手動按下播放，程式不會合成族語發音。</p><label class="motion-label"><input type="checkbox" id="reduceMotionToggle">減少動畫（也會遵循裝置設定）</label></section>
+    <section class="help-section"><h3>題庫與連線</h3><p id="helpDataNote"></p><p>本 HTML 不使用 CDN、外部程式庫、線上字型、登入、排行榜或付費 API。沒有線上音檔時可離線遊玩；使用線上音檔時，播放需要連網。</p><p>沒有擅自加入文化圖像、圖騰、翻譯或例句。族語與中文皆依老師提供的文字呈現。</p></section>
+    <div class="dialog-actions"><button class="btn btn-primary btn-wide" id="helpDoneBtn" type="button">了解了</button></div>
+  </dialog>
+
+  <dialog id="restartDialog" aria-labelledby="restartTitle" aria-describedby="restartDescription">
+    <div class="dialog-head"><div><h2 id="restartTitle">重新開始這一局？</h2><p class="dialog-intro" id="restartDescription">將保留這 8 組詞彙，重新洗牌。已完成組數、翻牌次數與時間都會歸零。</p></div></div>
+    <div class="dialog-actions"><button class="btn btn-secondary btn-wide" id="cancelRestartBtn" type="button" autofocus>先繼續這一局</button><button class="btn btn-primary btn-wide" id="confirmRestartBtn" type="button">確定重新開始</button></div>
+  </dialog>
+
+  <noscript><div class="shell error-panel"><h2>請使用已啟用 JavaScript 的瀏覽器開啟</h2><p>這個遊戲需要 JavaScript 才能翻牌。檔案預覽器可能只顯示畫面，請改用瀏覽器開啟 HTML。</p></div></noscript>
+  <script>
+  (() => {
+    "use strict";
+    const PAIR_COUNT = 8;
+    const $ = (id) => document.getElementById(id);
+    const ui = Object.fromEntries([
+      "board", "readyShade", "startBtn", "restartBtn", "resultBtn", "matchedCount", "flipCount", "timer", "turnStatus", "collectionList", "collectionCaption", "progressTrack",
+      "dataError", "dataErrorList", "teacherBtn", "muteBtn", "muteLabel", "soundWaves", "soundSlash", "soundNotice",
+      "feedbackDialog", "feedbackTitle", "feedbackIntro", "feedbackContinue", "successBadge", "successProgress", "successContent", "matchedWord", "matchedTranslation", "exampleSection", "exampleText", "audioSection", "pronounceBtn", "pronounceLabel", "audioStatus", "mismatchContent", "mismatchCards",
+      "resultDialog", "resultTitle", "resultFlips", "resultTime", "playAgainBtn", "reviewBoardBtn",
+      "teacherDialog", "teacherTitle", "teacherMeta", "wordChoices", "selectionCount", "firstEightBtn", "lastEightBtn", "closeTeacherBtn", "cancelTeacherBtn", "applySelectionBtn",
+      "helpDialog", "helpTitle", "helpBtn", "closeHelpBtn", "helpDoneBtn", "helpDataNote", "reduceMotionToggle",
+      "restartDialog", "cancelRestartBtn", "confirmRestartBtn", "classDetails", "topicEyebrow"
+    ].map((id) => [id, $(id)]));
+
+    // 遊戲狀態只在下列明確階段之間切換：
+    // idle → playing → feedback → playing / finished。
+    // feedback 一開始即鎖定，所有快速點擊、重複點擊都由同一入口阻擋。
+    const state = {
+      phase: "idle", cards: [], selected: [], matchedIds: new Set(), matchedOrder: [],
+      flips: 0, startedAt: null, elapsedMs: 0, timerId: null, session: 0,
+      feedbackMatched: false, feedbackEntry: null, lastIndex: 0
+    };
+    let bank = [];
+    let selectedIds = [];
+    let draftIds = new Set();
+    let sfxMuted = false;
+    let audioContext = null;
+    let sfxMaster = null;
+    let sfxUnavailable = false;
+    let activeRecording = null;
+    let recordingVersion = 0;
+    let recordingTimeout = null;
+    let focusReturn = null;
+
+    function element(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    function validateData(data) {
+      const errors = [];
+      if (!Array.isArray(data)) return ["cardData 必須是一個包含詞彙物件的陣列。"];
+      if (data.length < PAIR_COUNT) errors.push(`目前只有 ${data.length} 組，還缺 ${PAIR_COUNT - data.length} 組完整語料（id、族語 word、中文 translation）。`);
+      const ids = new Set();
+      data.forEach((entry, index) => {
+        const label = `第 ${index + 1} 組`;
+        if (!entry || typeof entry !== "object" || Array.isArray(entry)) { errors.push(`${label}：資料必須是包含 id、word、translation 的物件。`); return; }
+        [["id", "唯一 ID"], ["word", "族語"], ["translation", "中文意思"]].forEach(([key, name]) => {
+          if (typeof entry[key] !== "string" || !entry[key].trim()) errors.push(`${label}：缺少有效的${name}（${key}），請填入非空白文字。`);
+        });
+        if (typeof entry.id === "string" && entry.id.trim()) {
+          if (ids.has(entry.id.trim())) errors.push(`${label}：id「${entry.id}」重複，請使用不同 ID。`);
+          ids.add(entry.id.trim());
+        }
+        ["exampleSentence", "audioUrl"].forEach((key) => {
+          if (entry[key] !== undefined && typeof entry[key] !== "string") errors.push(`${label}：${key} 請填文字，沒有資料請填空字串 ""。`);
+        });
+      });
+      return errors;
+    }
+
+    function init() {
+      populateClassroom();
+      const errors = validateData(cardData);
+      if (errors.length) {
+        ui.dataErrorList.replaceChildren(...errors.map((message) => element("li", "", message)));
+        ui.dataError.hidden = false;
+        ui.readyShade.hidden = true;
+        ui.startBtn.disabled = true;
+        ui.teacherBtn.disabled = true;
+        ui.turnStatus.textContent = "題庫未完成，請先補齊上方列出的資料。";
+        ui.helpDataNote.textContent = "題庫尚有缺漏；請修正頁面列出的欄位，再開始遊戲。";
+        renderCollection();
+        return;
+      }
+      bank = cardData.map((entry) => ({
+        id: entry.id.trim(), word: entry.word, translation: entry.translation,
+        exampleSentence: entry.exampleSentence || "", audioUrl: (entry.audioUrl || "").trim()
+      }));
+      selectedIds = bank.slice(0, PAIR_COUNT).map((entry) => entry.id);
+      ui.helpDataNote.textContent = `題庫共有 ${bank.length} 組老師提供的完整配對；每局固定選 8 組，共 16 張牌。預設使用前 8 組，可從「老師換題」變更。例句與錄音皆為選填。`;
+      resetRound(false);
+    }
+
+    function populateClassroom() {
+      const safeInfo = (key) => typeof classroomInfo[key] === "string" ? classroomInfo[key].trim() : "";
+      const language = safeInfo("language") || "未填寫";
+      const dialect = safeInfo("dialect") || "未填寫";
+      const audience = safeInfo("audience") || "未填寫";
+      const topic = safeInfo("topic") || "未填寫";
+      const level = safeInfo("vocabularyLevel");
+      ui.classDetails.replaceChildren(element("p", "", `族語別：${language}　／　方言別：${dialect}`), element("p", "", `授課對象：${audience}`));
+      ui.teacherMeta.replaceChildren(element("p", "", `族語別：${language}　／　方言別：${dialect}`), element("p", "", `授課對象：${audience}　／　練習主題：${topic}`));
+      ui.topicEyebrow.textContent = `${topic}主題${level ? ` · 詞彙難度：${level}` : ""}`;
+    }
+
+    // Fisher–Yates 洗牌。牌面不以字詞相似程度配對，只認資料 id 與不同卡牌種類。
+    function shuffle(items) {
+      const array = [...items];
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function resetRound(startImmediately) {
+      state.session += 1;
+      stopTimer();
+      stopRecording();
+      closeAllDialogs();
+      state.phase = "idle";
+      state.selected = [];
+      state.matchedIds = new Set();
+      state.matchedOrder = [];
+      state.flips = 0;
+      state.elapsedMs = 0;
+      state.startedAt = null;
+      state.feedbackEntry = null;
+      state.feedbackMatched = false;
+      state.lastIndex = 0;
+      const entries = bank.filter((entry) => selectedIds.includes(entry.id));
+      if (entries.length !== PAIR_COUNT) {
+        ui.turnStatus.textContent = "請先選好 8 組完整詞彙。";
+        return;
+      }
+      // 準備畫面也只顯示牌背；真正按下開始時再洗牌一次。
+      state.cards = shuffle(entries.flatMap((entry) => [
+        { pairId: entry.id, kind: "word", text: entry.word, entry },
+        { pairId: entry.id, kind: "translation", text: entry.translation, entry }
+      ]));
+      renderBoard();
+      renderStats();
+      renderCollection();
+      ui.readyShade.hidden = false;
+      ui.restartBtn.hidden = false;
+      ui.restartBtn.disabled = true;
+      ui.resultBtn.hidden = true;
+      ui.turnStatus.textContent = "按「開始遊戲」後再翻牌。";
+      if (startImmediately) startRound();
+    }
+
+    function startRound() {
+      if (state.phase !== "idle" || state.cards.length !== PAIR_COUNT * 2) return;
+      unlockSuccessAudio(); // 只在學生的開始／重玩按鈕事件中建立 AudioContext。
+      state.cards = shuffle(state.cards);
+      state.phase = "playing";
+      state.startedAt = performance.now();
+      state.elapsedMs = 0;
+      renderBoard();
+      ui.readyShade.hidden = true;
+      ui.restartBtn.disabled = false;
+      ui.turnStatus.textContent = "先翻一張，再找它的另一半。";
+      state.timerId = window.setInterval(renderTimer, 250);
+      renderTimer();
+      focusCard(0);
+    }
+
+    function stopTimer() {
+      if (state.timerId !== null) window.clearInterval(state.timerId);
+      state.timerId = null;
+    }
+    function elapsed() {
+      return state.startedAt === null ? state.elapsedMs : Math.max(0, performance.now() - state.startedAt);
+    }
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      return `${String(minutes).padStart(2, "0")}:${String(totalSeconds % 60).padStart(2, "0")}`;
+    }
+    function renderTimer() {
+      const ms = elapsed();
+      const value = formatTime(ms);
+      if (ui.timer.textContent !== value) ui.timer.textContent = value;
+      const seconds = Math.floor(ms / 1000);
+      ui.timer.setAttribute("aria-label", `經過時間 ${Math.floor(seconds / 60)} 分 ${seconds % 60} 秒`);
+    }
+    function renderStats() {
+      ui.matchedCount.textContent = String(state.matchedIds.size);
+      ui.flipCount.textContent = String(state.flips);
+      renderTimer();
+    }
+
+    function renderBoard() {
+      const fragment = document.createDocumentFragment();
+      state.cards.forEach((card, index) => {
+        const button = element("button", "card");
+        button.type = "button";
+        button.dataset.index = String(index);
+        button.dataset.pairId = card.pairId;
+        button.dataset.kind = card.kind;
+        button.addEventListener("click", (event) => {
+          if (event.detail > 1) return;
+          selectCard(index);
+        });
+        fragment.appendChild(button);
+      });
+      ui.board.replaceChildren(fragment);
+      updateAllCards();
+    }
+    function updateAllCards() { state.cards.forEach((_, index) => updateCard(index)); }
+    function updateCard(index) {
+      const card = state.cards[index];
+      const button = ui.board.children[index];
+      const matched = state.matchedIds.has(card.pairId);
+      const up = matched || state.selected.includes(index);
+      const blocked = state.phase !== "playing" || up;
+      button.disabled = state.phase === "idle";
+      button.classList.toggle("is-up", up);
+      button.classList.toggle("is-matched", matched);
+      button.setAttribute("aria-pressed", String(up));
+      button.setAttribute("aria-disabled", String(blocked));
+      button.tabIndex = matched ? -1 : 0;
+      button.replaceChildren();
+      if (up) {
+        const face = element("span", "face");
+        face.setAttribute("aria-hidden", "true");
+        face.append(element("span", "card-kind", card.kind === "word" ? "族語" : "中文"));
+        const word = element("span", "card-word", card.text);
+        word.dir = "auto";
+        face.append(word);
+        button.append(face);
+        if (matched) { const mark = element("span", "card-mark", "✓"); mark.setAttribute("aria-hidden", "true"); button.append(mark); }
+        button.setAttribute("aria-label", `第 ${index + 1} 張，${card.kind === "word" ? "族語" : "中文"}：${card.text}，${matched ? "已配對完成" : "已翻開"}`);
+      } else {
+        // 蓋牌時不把答案放在可讀文字、title 或 aria-label 中。
+        const dots = element("span", "dots");
+        dots.setAttribute("aria-hidden", "true");
+        for (let n = 0; n < 4; n++) dots.append(element("i"));
+        button.append(dots);
+        button.setAttribute("aria-label", `第 ${index + 1} 張，尚未翻開`);
+      }
+    }
+
+    function selectCard(index) {
+      const card = state.cards[index];
+      if (!card || state.phase !== "playing" || state.selected.length >= 2 || state.selected.includes(index) || state.matchedIds.has(card.pairId)) return;
+      state.lastIndex = index;
+      state.selected.push(index);
+      state.flips += 1;
+      updateCard(index);
+      renderStats();
+      if (state.selected.length === 1) {
+        ui.turnStatus.textContent = "已翻開一張，請再選另一張。";
+        return;
+      }
+      // 同步上鎖，不等動畫、音檔或 setTimeout，第三張不可能插入比對。
+      state.phase = "feedback";
+      const [first, second] = state.selected.map((i) => state.cards[i]);
+      const isMatch = first.pairId === second.pairId && first.kind !== second.kind;
+      state.feedbackMatched = isMatch;
+      state.feedbackEntry = isMatch ? first.entry : null;
+      if (isMatch) {
+        state.matchedIds.add(first.pairId);
+        state.matchedOrder.push(first.entry);
+        if (state.matchedIds.size === PAIR_COUNT) {
+          state.elapsedMs = elapsed();
+          state.startedAt = null;
+          stopTimer();
+        }
+        renderCollection();
+        playSuccessTone();
+      }
+      updateAllCards();
+      renderStats();
+      openFeedback(isMatch, first, second);
+    }
+
+    function renderCollection() {
+      const entries = state.matchedOrder;
+      const fragment = document.createDocumentFragment();
+      for (let index = 0; index < PAIR_COUNT; index++) {
+        const entry = entries[index];
+        const item = element("li", "collection-item");
+        const number = element("span", "item-number", String(index + 1).padStart(2, "0"));
+        number.setAttribute("aria-hidden", "true");
+        item.append(number);
+        if (entry) {
+          const content = element("span", "item-content");
+          const word = element("span", "item-word", entry.word); word.dir = "auto";
+          const translation = element("span", "item-translation", entry.translation); translation.dir = "auto";
+          content.append(word, translation); item.append(content);
+          const check = element("span", "item-check", "✓"); check.setAttribute("aria-hidden", "true"); item.append(check);
+        } else {
+          const line = element("span", "item-empty"); line.setAttribute("aria-hidden", "true"); item.append(line, element("span", "sr-only", "尚未採集"));
+        }
+        fragment.append(item);
+      }
+      ui.collectionList.replaceChildren(fragment);
+      const marks = [];
+      for (let index = 0; index < PAIR_COUNT; index++) marks.push(element("span", index < entries.length ? "done" : ""));
+      ui.progressTrack.replaceChildren(...marks);
+      ui.collectionCaption.textContent = entries.length === PAIR_COUNT ? "這一回合的 8 組詞彙，都收集好了。" : entries.length ? `已留下 ${entries.length} 組詞彙，再慢慢找下一組。` : "配對成功的詞彙會留在這裡。";
+    }
+
+    function openFeedback(isMatch, first, second) {
+      stopRecording();
+      ui.audioStatus.textContent = "";
+      ui.pronounceLabel.textContent = "聽發音";
+      ui.successBadge.hidden = !isMatch;
+      ui.successContent.hidden = !isMatch;
+      ui.mismatchContent.hidden = isMatch;
+      ui.feedbackTitle.textContent = isMatch ? "找到一組！" : "還不是同一組";
+      ui.feedbackIntro.textContent = isMatch ? "讀一讀，再把這個詞收進記憶。" : "先記住這兩張的位置，準備好再蓋回。";
+      ui.feedbackContinue.textContent = isMatch ? "繼續" : "再試一次";
+      ui.exampleSection.hidden = true;
+      ui.audioSection.hidden = true;
+      ui.exampleText.textContent = "";
+      if (isMatch) {
+        const entry = first.entry;
+        ui.successProgress.textContent = `已完成 ${state.matchedIds.size} / 8 組`;
+        ui.matchedWord.textContent = entry.word;
+        ui.matchedTranslation.textContent = entry.translation;
+        if (entry.exampleSentence.trim()) { ui.exampleSection.hidden = false; ui.exampleText.textContent = entry.exampleSentence; }
+        if (entry.audioUrl) ui.audioSection.hidden = false;
+        ui.turnStatus.textContent = "配對成功，讀完後按「繼續」。";
+      } else {
+        const peeks = [first, second].map((card, i) => {
+          const box = element("div", "memory-peek");
+          box.append(element("span", "card-kind", `第 ${state.selected[i] + 1} 張 · ${card.kind === "word" ? "族語" : "中文"}`));
+          const word = element("p", "card-word", card.text); word.dir = "auto"; box.append(word);
+          return box;
+        });
+        ui.mismatchCards.replaceChildren(...peeks);
+        ui.turnStatus.textContent = "還沒配對，記住位置後按「再試一次」。";
+      }
+      showDialog(ui.feedbackDialog, ui.feedbackTitle);
+    }
+
+    function continueAfterFeedback() {
+      if (state.phase !== "feedback") return;
+      const lastIndex = state.lastIndex;
+      stopRecording();
+      hideDialog(ui.feedbackDialog, false);
+      state.selected = [];
+      state.feedbackEntry = null;
+      if (state.matchedIds.size === PAIR_COUNT) {
+        state.phase = "finished";
+        updateAllCards();
+        ui.turnStatus.textContent = "這一回合，全部收藏了。";
+        ui.restartBtn.hidden = true;
+        ui.resultBtn.hidden = false;
+        showResults();
+        return;
+      }
+      state.phase = "playing";
+      updateAllCards();
+      ui.turnStatus.textContent = state.feedbackMatched ? "收下一組記憶，再找下一組。" : "沒關係，再翻兩張試試看。";
+      focusCard(nextPlayableIndex(lastIndex, 1));
+    }
+
+    function showResults() {
+      ui.resultFlips.textContent = String(state.flips);
+      ui.resultTime.textContent = formatTime(state.elapsedMs);
+      showDialog(ui.resultDialog, ui.resultTitle);
+    }
+
+    function focusCard(index) {
+      const button = ui.board.children[index];
+      if (button && !button.disabled) button.focus({ preventScroll: true });
+    }
+    function nextPlayableIndex(from, step) {
+      const count = state.cards.length;
+      if (!count) return 0;
+      let index = from;
+      for (let tried = 0; tried < count; tried++) {
+        index = (index + step + count) % count;
+        const card = state.cards[index];
+        if (!state.matchedIds.has(card.pairId) && !state.selected.includes(index)) return index;
+      }
+      return from;
+    }
+    ui.board.addEventListener("keydown", (event) => {
+      const target = event.target.closest("button.card");
+      if (!target || state.phase !== "playing") return;
+      const index = Number(target.dataset.index);
+      const columns = getComputedStyle(ui.board).gridTemplateColumns.split(" ").filter(Boolean).length;
+      const step = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: columns, ArrowUp: -columns }[event.key];
+      if (step !== undefined) {
+        event.preventDefault();
+        const next = nextPlayableIndex(index, step);
+        // 同欄均已完成時改找下一張，避免方向鍵卡住。
+        focusCard(next === index ? nextPlayableIndex(index, Math.sign(step)) : next);
+      } else if (event.key === "Home") {
+        event.preventDefault(); focusCard(nextPlayableIndex(state.cards.length - 1, 1));
+      } else if (event.key === "End") {
+        event.preventDefault(); focusCard(nextPlayableIndex(0, -1));
+      }
+    });
+    // 長按 Enter／空白鍵不連續觸發按鈕；有效操作仍使用原生按鈕鍵盤行為。
+    document.addEventListener("keydown", (event) => {
+      if (event.repeat && (event.key === "Enter" || event.key === " ") && event.target.closest("button")) {
+        event.preventDefault(); event.stopImmediatePropagation();
+      }
+    }, true);
+
+    function showDialog(dialog, initialFocus) {
+      focusReturn = document.activeElement;
+      if (!dialog.open) dialog.showModal();
+      document.body.classList.add("has-dialog");
+      if (initialFocus) initialFocus.focus({ preventScroll: true });
+      dialog.scrollTop = 0;
+    }
+    function hideDialog(dialog, restore = true) {
+      if (dialog.open) dialog.close();
+      if (!document.querySelector("dialog[open]")) document.body.classList.remove("has-dialog");
+      if (restore && focusReturn && focusReturn.isConnected && !focusReturn.disabled) focusReturn.focus({ preventScroll: true });
+    }
+    function closeAllDialogs() {
+      document.querySelectorAll("dialog[open]").forEach((dialog) => dialog.close());
+      document.body.classList.remove("has-dialog");
+    }
+    document.querySelectorAll("dialog").forEach((dialog) => {
+      dialog.addEventListener("close", () => {
+        if (!document.querySelector("dialog[open]")) document.body.classList.remove("has-dialog");
+      });
+    });
+    ui.feedbackDialog.addEventListener("cancel", (event) => {
+      event.preventDefault(); // 不用 Esc 或點背景跳過學生主動確認。
+      ui.feedbackContinue.focus();
+    });
+    ui.resultDialog.addEventListener("cancel", () => {
+      window.setTimeout(() => ui.resultBtn.focus({ preventScroll: true }), 0);
+    });
+
+    function openTeacher() {
+      if (!bank.length || state.phase === "feedback") return;
+      draftIds = new Set(selectedIds);
+      renderChoices();
+      showDialog(ui.teacherDialog, ui.teacherTitle);
+    }
+    function renderChoices() {
+      const fragment = document.createDocumentFragment();
+      const legend = element("legend", "sr-only", "本局的 8 組詞彙"); fragment.append(legend);
+      bank.forEach((entry) => {
+        const label = element("label", "word-choice");
+        const input = document.createElement("input");
+        input.type = "checkbox"; input.value = entry.id; input.checked = draftIds.has(entry.id);
+        input.addEventListener("change", () => {
+          if (input.checked) draftIds.add(entry.id); else draftIds.delete(entry.id);
+          updateChoiceControls();
+        });
+        const content = element("span", "choice-content");
+        const word = element("span", "choice-word", entry.word); word.dir = "auto";
+        content.append(word, element("span", "choice-translation", entry.translation));
+        label.append(input, content); fragment.append(label);
+      });
+      ui.wordChoices.replaceChildren(fragment);
+      updateChoiceControls();
+    }
+    function updateChoiceControls() {
+      const count = draftIds.size;
+      ui.selectionCount.textContent = `已選 ${count} / 8 組`;
+      ui.applySelectionBtn.disabled = count !== PAIR_COUNT;
+      ui.wordChoices.querySelectorAll("input").forEach((input) => {
+        input.checked = draftIds.has(input.value);
+        input.disabled = !input.checked && count >= PAIR_COUNT;
+        input.closest("label").classList.toggle("is-selected", input.checked);
+      });
+    }
+    ui.firstEightBtn.addEventListener("click", () => { draftIds = new Set(bank.slice(0, PAIR_COUNT).map((entry) => entry.id)); updateChoiceControls(); });
+    ui.lastEightBtn.addEventListener("click", () => { draftIds = new Set(bank.slice(-PAIR_COUNT).map((entry) => entry.id)); updateChoiceControls(); });
+    ui.applySelectionBtn.addEventListener("click", () => {
+      if (draftIds.size !== PAIR_COUNT) return;
+      selectedIds = bank.filter((entry) => draftIds.has(entry.id)).map((entry) => entry.id);
+      hideDialog(ui.teacherDialog, false);
+      resetRound(false);
+      ui.startBtn.focus({ preventScroll: true });
+    });
+
+    // 成功提示音：只有兩個短音；絕不作為族語發音。
+    function unlockSuccessAudio() {
+      if (sfxUnavailable) return;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) { markSfxUnavailable(); return; }
+      try {
+        if (!audioContext) {
+          audioContext = new AudioContextClass();
+          sfxMaster = audioContext.createGain();
+          sfxMaster.gain.value = sfxMuted ? 0 : 1;
+          sfxMaster.connect(audioContext.destination);
+        }
+        const promise = audioContext.resume();
+        if (promise && typeof promise.catch === "function") promise.catch(() => { /* 遊戲不依賴音訊解鎖結果。 */ });
+      } catch (_) { markSfxUnavailable(); }
+    }
+    function markSfxUnavailable() {
+      sfxUnavailable = true;
+      ui.muteLabel.textContent = "提示音：不可用";
+      ui.muteBtn.disabled = true;
+      ui.muteBtn.setAttribute("aria-label", "此瀏覽器無法使用成功提示音");
+      ui.soundNotice.hidden = false;
+      ui.soundNotice.textContent = "提示音無法使用，仍可正常遊戲。";
+    }
+    function playSuccessTone() {
+      if (sfxMuted || !audioContext || !sfxMaster || sfxUnavailable) return;
+      const session = state.session;
+      const play = () => {
+        if (sfxMuted || session !== state.session || audioContext.state !== "running") return;
+        try {
+          const now = audioContext.currentTime;
+          [[660, 0], [880, .12]].forEach(([frequency, delay]) => {
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            oscillator.type = "sine";
+            oscillator.frequency.setValueAtTime(frequency, now + delay);
+            gain.gain.setValueAtTime(0, now + delay);
+            gain.gain.linearRampToValueAtTime(.055, now + delay + .015);
+            gain.gain.exponentialRampToValueAtTime(.001, now + delay + .18);
+            oscillator.connect(gain); gain.connect(sfxMaster);
+            oscillator.start(now + delay); oscillator.stop(now + delay + .2);
+            oscillator.onended = () => { oscillator.disconnect(); gain.disconnect(); };
+          });
+        } catch (_) { /* 提示音失敗不影響配對狀態。 */ }
+      };
+      if (audioContext.state === "suspended") audioContext.resume().then(play).catch(() => {}); else play();
+    }
+    ui.muteBtn.addEventListener("click", () => {
+      sfxMuted = !sfxMuted;
+      ui.muteBtn.setAttribute("aria-pressed", String(sfxMuted));
+      ui.muteBtn.setAttribute("aria-label", sfxMuted ? "開啟成功提示音" : "靜音成功提示音");
+      ui.muteLabel.textContent = sfxMuted ? "提示音：靜音" : "提示音：開";
+      ui.soundWaves.style.display = sfxMuted ? "none" : "";
+      ui.soundSlash.style.display = sfxMuted ? "" : "none";
+      ui.soundSlash.removeAttribute("hidden");
+      if (sfxMaster && audioContext) sfxMaster.gain.setValueAtTime(sfxMuted ? 0 : 1, audioContext.currentTime);
+    });
+
+    // 老師錄音獨立使用 HTMLAudioElement；僅按「聽發音」才載入、播放。
+    // 版本號阻止重玩／切換詞彙之後，舊音檔的 Promise 或錯誤污染新畫面。
+    function stopRecording() {
+      recordingVersion += 1;
+      if (recordingTimeout !== null) window.clearTimeout(recordingTimeout);
+      recordingTimeout = null;
+      if (activeRecording) {
+        activeRecording.onerror = null; activeRecording.onended = null; activeRecording.onplaying = null;
+        try { activeRecording.pause(); activeRecording.removeAttribute("src"); activeRecording.load(); } catch (_) {}
+        activeRecording = null;
+      }
+    }
+    function safeAudioSource(value) {
+      const url = new URL(value, document.baseURI);
+      if (["http:", "https:", "file:", "blob:"].includes(url.protocol)) return url.href;
+      if (url.protocol === "data:" && /^data:audio\//i.test(value)) return value;
+      throw new Error("不支援的音檔網址");
+    }
+    function playRecording() {
+      const entry = state.feedbackEntry;
+      if (state.phase !== "feedback" || !entry || !entry.audioUrl) return;
+      stopRecording();
+      const version = recordingVersion;
+      ui.audioStatus.textContent = "";
+      ui.pronounceLabel.textContent = "載入發音中…";
+      let audio;
+      const stillCurrent = () => version === recordingVersion && ui.feedbackDialog.open && state.feedbackEntry === entry;
+      const fail = () => {
+        if (!stillCurrent()) return;
+        stopRecording();
+        ui.pronounceLabel.textContent = "重試播放";
+        ui.audioStatus.textContent = "音檔暫時無法播放";
+      };
+      try {
+        audio = new Audio();
+        activeRecording = audio;
+        audio.preload = "none";
+        audio.src = safeAudioSource(entry.audioUrl);
+        audio.onerror = fail;
+        audio.onplaying = () => {
+          if (!stillCurrent()) return;
+          if (recordingTimeout !== null) window.clearTimeout(recordingTimeout);
+          recordingTimeout = null;
+          ui.pronounceLabel.textContent = "重播發音";
+          ui.audioStatus.textContent = "正在播放老師錄音，可再次按下重播。";
+        };
+        audio.onended = () => {
+          if (!stillCurrent()) return;
+          ui.pronounceLabel.textContent = "再聽一次";
+          ui.audioStatus.textContent = "播放完畢。";
+        };
+        recordingTimeout = window.setTimeout(fail, 10000);
+        const promise = audio.play();
+        if (promise && typeof promise.catch === "function") promise.catch(fail);
+      } catch (_) { fail(); }
+    }
+
+    ui.startBtn.addEventListener("click", startRound);
+    ui.feedbackContinue.addEventListener("click", (event) => { if (event.detail <= 1) continueAfterFeedback(); });
+    ui.pronounceBtn.addEventListener("click", playRecording);
+    ui.playAgainBtn.addEventListener("click", () => resetRound(true));
+    ui.reviewBoardBtn.addEventListener("click", () => { hideDialog(ui.resultDialog, false); ui.resultBtn.focus({ preventScroll: true }); });
+    ui.resultBtn.addEventListener("click", showResults);
+    ui.restartBtn.addEventListener("click", () => {
+      if (state.phase === "playing") showDialog(ui.restartDialog, ui.cancelRestartBtn);
+    });
+    ui.cancelRestartBtn.addEventListener("click", () => hideDialog(ui.restartDialog));
+    ui.confirmRestartBtn.addEventListener("click", () => resetRound(true));
+    ui.teacherBtn.addEventListener("click", openTeacher);
+    ui.closeTeacherBtn.addEventListener("click", () => hideDialog(ui.teacherDialog));
+    ui.cancelTeacherBtn.addEventListener("click", () => hideDialog(ui.teacherDialog));
+    ui.helpBtn.addEventListener("click", () => showDialog(ui.helpDialog, ui.helpTitle));
+    ui.closeHelpBtn.addEventListener("click", () => hideDialog(ui.helpDialog));
+    ui.helpDoneBtn.addEventListener("click", () => hideDialog(ui.helpDialog));
+    ui.reduceMotionToggle.addEventListener("change", () => document.documentElement.classList.toggle("reduce-motion", ui.reduceMotionToggle.checked));
+    window.addEventListener("pagehide", () => { stopRecording(); });
+    document.addEventListener("visibilitychange", () => { if (document.hidden) stopRecording(); });
+    init();
+  })();
+  </script>
+</body>
+</html>

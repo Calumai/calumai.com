@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Kept Lesson 06 HTML downloads unchanged by automatic site analytics: download buttons now request plain-text copies and save them with the original `.html` filenames. Applied the same delivery to the game menu; the offline ZIP still contains only the six HTML files and teacher instructions.
+
 - Added five playable number-vocabulary game examples to Lesson 06, with per-game HTML downloads, a shared menu and an offline ZIP. Preserved the supplied memory game and 22 vocabulary entries; the four new games practice spelling, number-word order, quantity choices and letter deduction. Verified all play/download links, full prompt copying, ZIP contents and mobile layout before publication.
 
 - Rewrote Lesson 06 to explain gamification through learning goals and provide five categorized, self-contained language-game prompts. Added expandable prompt cards, full-text copy, UTF-8 TXT download, and a classroom playtest activity. Updated only the Lesson 06 course summary and entry; retained existing newer lessons. The public page runs independently of the unpublished handout editor.

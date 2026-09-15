@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>數字詞序火車｜CALUMAI 族語數字遊戲</title><style>:root{--paper:#f7f6ef;--surface:#fff;--ink:#233d34;--muted:#627168;--forest:#294e40;--forest-hover:#1d3d31;--sage:#e9efdf;--line:#d9dfd2;--accent:#a3482b;--accent-soft:#faeee5;--radius:20px;color:var(--ink);background:var(--paper);font-family:"Microsoft JhengHei","PingFang TC","Heiti TC",system-ui,-apple-system,sans-serif;line-height:1.65;font-synthesis:none;color-scheme:light}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;min-width:280px}button,input,select{font:inherit}button,summary,a,input,select{outline-offset:5px}:focus-visible{outline:3px solid var(--accent)}button,a,summary{touch-action:manipulation}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.5}h1,h2,h3,p{margin:0}h1{font-size:clamp(30px,4vw,46px);line-height:1.3;letter-spacing:-.035em}h2{font-size:23px;line-height:1.4}h3{font-size:18px}a{color:var(--forest)}.shell{width:min(1140px,calc(100% - 64px));margin-inline:auto}.app-header{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);padding-block:24px}.brand{display:flex;align-items:center;gap:13px;font-size:16px;font-weight:800;letter-spacing:.1em}.brand-mark{display:grid;grid-template-columns:repeat(2,6px);gap:4px;place-content:center;width:34px;height:34px;background:var(--forest);border-radius:9px}.brand-mark i{display:block;width:6px;height:6px;background:var(--sage);border-radius:50%}.brand small{color:var(--muted);font-weight:500;letter-spacing:0;font-size:13px}.header-label{font-size:13px;color:var(--muted)}.game-intro{padding:30px 0 26px}.game-intro p:not(.eyebrow){margin-top:12px;max-width:760px;color:var(--muted)}.eyebrow{font-size:12px;color:var(--accent);font-weight:800;letter-spacing:.1em;margin-bottom:8px}.muted{color:var(--muted)}.game-layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:24px;align-items:start}.panel,.side-panel{min-width:0;padding:26px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}.side-panel{background:#f0f2e8}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 19px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font-weight:700;text-decoration:none;line-height:1.4}.btn:hover{border-color:var(--forest);background:var(--sage)}.btn.primary,.btn-primary{background:var(--forest);border-color:var(--forest);color:white}.btn.primary:hover,.btn-primary:hover{background:var(--forest-hover)}.btn.secondary,.btn-secondary{background:var(--surface);border-color:var(--line)}.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.field{display:grid;gap:7px;font-size:14px;font-weight:700}input,select{min-height:48px;max-width:100%;border:1px solid #acb9a3;border-radius:10px;background:white;color:var(--ink);padding:10px 12px}input[type=checkbox]{min-height:0;width:20px;height:20px;padding:0;accent-color:var(--forest)}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px}.metric{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 20px;min-width:0}.metric span,.metric small{font-size:13px;color:var(--muted)}.metric strong{display:block;font-size:27px;line-height:1.3}.status{min-height:28px;font-size:15px;line-height:1.65}.status:empty{min-height:0}summary{cursor:pointer;min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:700}details{border-top:1px solid var(--line);padding-top:8px;margin-top:20px}details>div,details>p,details>ul{margin-top:12px}.app-footer{display:flex;justify-content:space-between;gap:16px;padding-block:26px;font-size:12px;color:var(--muted)}.skip-link{position:absolute;top:8px;left:8px;transform:translateY(-160%);z-index:100;background:var(--surface);padding:12px 20px;border:2px solid var(--forest);border-radius:8px}.skip-link:focus{transform:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}button,li,p,h2,h3{overflow-wrap:anywhere}.rule-text{font-size:13px;color:var(--muted)}
+@media(max-width:800px){.shell{width:calc(100% - 32px)}.game-layout{grid-template-columns:1fr}.app-header{padding-block:17px}.brand small{display:none}.game-intro{padding-block:26px 22px}.panel,.side-panel{padding:20px}.metric{padding:12px 14px}.metric strong{font-size:24px}}
+@media(max-width:420px){.shell{width:calc(100% - 24px)}.header-label{font-size:12px}.metrics{gap:7px}.metric{padding:10px}.metric span,.metric small{font-size:12px}.panel,.side-panel{padding:16px}.app-footer{display:block}.app-footer span{display:block}.controls .btn{flex:1}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+.train-intro { margin-bottom: 0; }
+.train-intro h1 { margin: .3rem 0 .8rem; }
+.train-intro > p:last-child { color: var(--muted); max-width: 42rem; }
+.train-layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 24px; align-items: start; }
+.train-play { min-width: 0; padding: clamp(20px, 3vw, 30px); }
+.train-metrics { display: flex; justify-content: space-between; gap: 20px; padding-bottom: 16px; margin-bottom: 0; border-bottom: 1px solid var(--line); }
+.train-metrics .metric { display: grid; gap: 6px; padding: 0; background: transparent; border: 0; border-radius: 0; }
+.train-metrics .metric:last-child { text-align: right; }
+.train-metrics .metric span { color: var(--muted); font-size: .85rem; }
+.train-metrics .metric strong { font-size: 1.25rem; }
+.train-stations { display: flex; gap: 12px; list-style: none; margin: 18px 0; padding: 0; }
+.train-stations li { position: relative; display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); background: var(--paper); font-size: .82rem; font-weight: 700; }
+.train-stations li + li::before { content: ''; position: absolute; width: 12px; height: 1px; background: var(--line); right: 100%; top: 50%; }
+.train-stations li.is-current { border: 2px solid var(--accent); color: var(--accent); background: #fff9f3; }
+.train-stations li.is-done { border-color: var(--forest); background: var(--forest); color: white; }
+.train-welcome { padding: 16px 0 28px; }
+.train-ticket { padding: 35px 20px; border: 1px solid var(--line); background: var(--sage); border-radius: 12px; text-align: center; display: grid; gap: 12px; }
+.train-ticket strong { font-size: clamp(1.55rem, 3vw, 2rem); }
+.train-ticket span:first-child { font-size: .85rem; letter-spacing: .12em; }
+.train-ticket span:last-child { font-size: .95rem; color: var(--muted); }
+.train-start-controls { display: flex; flex-wrap: wrap; align-items: end; gap: 16px; margin-top: 24px; }
+.train-start-controls label { display: grid; gap: 8px; flex: 1 1 220px; font-size: .9rem; }
+.train-start-controls select { width: 100%; min-height: 48px; font: inherit; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 10px 12px; }
+.train-prompt { text-align: center; padding: 6px 0 10px; }
+.train-prompt > span { color: var(--muted); font-size: .9rem; }
+.train-prompt h2 { margin: 10px 0 0; font-size: clamp(2.25rem, 6vw, 3.6rem); letter-spacing: .06em; }
+.train-scene { padding-top: 16px; }
+.train-railway { display: flex; align-items: end; gap: 10px; min-height: 114px; padding: 0 8px; }
+.train-engine { position: relative; flex: 0 0 88px; height: 92px; }
+.train-cabin { position: absolute; width: 38px; height: 66px; right: 2px; bottom: 12px; border-radius: 7px 7px 0 0; background: var(--forest); border-top: 7px solid var(--ink); }
+.train-cabin::before { content: ''; position: absolute; width: 18px; height: 23px; left: 10px; top: 9px; background: #dbe7cc; border-radius: 2px; }
+.train-chimney { position: absolute; width: 14px; height: 29px; bottom: 42px; left: 14px; background: var(--accent); border-top: 6px solid #893a22; }
+.train-engine-body { position: absolute; width: 86px; height: 38px; bottom: 13px; left: 0; border-radius: 20px 2px 3px 4px; background: var(--forest); border-bottom: 8px solid var(--accent); }
+.train-engine i { position: absolute; width: 21px; height: 21px; bottom: 0; border-radius: 50%; background: var(--ink); border: 5px solid var(--muted); }
+.train-engine i:nth-last-child(2) { left: 10px; }
+.train-engine i:last-child { right: 8px; }
+.train-carriages { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; flex: 1; min-width: 0; padding-bottom: 12px; }
+.train-car { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; height: 92px; min-width: 0; border: 2px dashed #a6b49c; border-bottom: 8px solid var(--forest); border-radius: 8px; background: #f4f6ee; color: var(--ink); }
+.train-car::before, .train-car::after { content: ''; width: 17px; height: 17px; border: 4px solid var(--muted); border-radius: 50%; background: var(--ink); position: absolute; bottom: -19px; }
+.train-car::before { left: 12px; }
+.train-car::after { right: 12px; }
+.train-car > small { color: var(--muted); font-size: .73rem; }
+.train-car > span { color: var(--muted); font-size: .9rem; }
+.train-car.is-filled { border: 2px solid var(--forest); border-bottom-width: 8px; background: var(--sage); }
+.train-car button { appearance: none; color: var(--forest); border: 0; background: transparent; min-height: 42px; width: 100%; cursor: pointer; padding: 3px 4px; font: inherit; font-weight: 750; font-size: clamp(1rem, 2vw, 1.35rem); overflow-wrap: anywhere; }
+.train-car button:disabled { cursor: default; opacity: 1; }
+.train-car.is-correct { background: #e1eddb; border-color: var(--forest); }
+.train-track { height: 12px; border-block: 3px solid #8b9787; margin-top: 5px; background: repeating-linear-gradient(90deg, transparent 0 14px, #c2c7b9 14px 22px, transparent 22px 34px); }
+.train-instruction { color: var(--muted); font-size: .875rem; margin: 23px 0 15px; line-height: 1.7; }
+.train-pool { display: flex; flex-wrap: wrap; gap: 12px; min-height: 61px; margin-bottom: 25px; }
+.train-word { min-height: 56px; min-width: 120px; flex: 1; padding: 13px 20px; border: 1px solid var(--line); border-bottom-width: 3px; border-radius: 8px; background: var(--surface); color: var(--ink); font: inherit; font-size: 1.2rem; font-weight: 700; cursor: pointer; overflow-wrap: anywhere; }
+.train-word:hover:not(:disabled) { background: var(--sage); border-color: #8f9d84; }
+.train-word:disabled { color: var(--muted); background: var(--paper); opacity: .42; cursor: default; border-bottom-width: 1px; }
+.train-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.train-actions .btn { min-height: 46px; }
+.train-status { margin-top: 20px; min-height: 54px; padding: 15px 16px; border-radius: 8px; background: var(--paper); font-size: .95rem; line-height: 1.7; }
+.train-status[data-kind="success"] { color: #254630; background: #e4eddd; }
+.train-status[data-kind="retry"] { color: #863a23; background: #fbede3; }
+.train-hint-text { font-size: .95rem; margin: 12px 0 0; padding-left: 14px; border-left: 3px solid var(--accent); }
+.train-next { margin-top: 18px; }
+.train-aside { display: grid; gap: 20px; }
+.train-howto { padding: 25px; }
+.train-howto h2 { font-size: 1.2rem; margin: .6rem 0 1.25rem; }
+.train-howto ol { padding: 0; list-style: none; }
+.train-howto li { display: flex; align-items: baseline; gap: 11px; margin: 17px 0; }
+.train-howto li span { display: grid; flex: 0 0 24px; place-items: center; width: 24px; height: 24px; font-size: .78rem; font-weight: 700; background: var(--sage); border-radius: 50%; }
+.train-howto li p { margin: 0; font-size: .93rem; line-height: 1.7; }
+.train-howto > p:last-child { font-size: .85rem; padding-top: 15px; border-top: 1px solid var(--line); margin-bottom: 0; }
+.train-bank { padding: 20px 24px; }
+.train-bank summary { font-weight: 650; cursor: pointer; line-height: 1.6; }
+.train-bank ul { list-style: none; padding: 0; margin: 16px 0 0; }
+.train-bank li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: .9rem; }
+.train-bank li span:last-child { font-weight: 650; overflow-wrap: anywhere; }
+.train-result { padding: 15px 0 5px; }
+.train-result h2 { font-size: 2rem; margin: 10px 0; }
+.train-result > p:not(.eyebrow) { color: var(--muted); }
+.train-records { padding: 0; margin: 25px 0; list-style: none; }
+.train-records li { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 5px 10px; padding: 14px 0; border-top: 1px solid var(--line); }
+.train-records li > span { font-weight: 700; overflow-wrap: anywhere; }
+.train-records small { grid-column: 2; color: var(--muted); }
+.train-play button:focus-visible, .train-play select:focus-visible, .train-bank summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+.train-play [hidden], .train-aside [hidden] { display: none !important; }
+@media (max-width: 900px) { .train-layout { grid-template-columns: minmax(0, 1fr); } .train-aside { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; } }
+@media (max-width: 560px) { .train-aside { grid-template-columns: 1fr; } .train-play { padding: 20px 16px; } .train-engine { flex-basis: 54px; transform: scale(.67); transform-origin: left bottom; margin-right: -7px; } .train-railway { padding-inline: 0; gap: 7px; min-height: 98px; } .train-carriages { gap: 9px; } .train-car { height: 88px; } .train-car button { font-size: 1.03rem; } .train-car::before { left: 8px; } .train-car::after { right: 8px; } .train-word { min-width: 100px; padding-inline: 8px; font-size: 1.1rem; } .train-start-controls .btn { width: 100%; } .train-actions > .primary { flex-basis: 100%; } .train-actions > .secondary { flex: 1; } .train-next { width: 100%; } .train-records li { grid-template-columns: 58px minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .train-play *, .train-aside * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+</style></head><body><a class="skip-link" href="#game-main">跳到遊戲</a><header class="shell app-header"><div class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>CALUMAI <small>族語數字遊戲</small></div><span class="header-label">03 / 練習詞序</span></header>
+<main id="game-main" class="shell">
+  <section class="game-intro train-intro" aria-labelledby="train-title">
+    <p class="eyebrow">03 / 排好詞序</p>
+    <h1 id="train-title">數字詞序火車</h1>
+    <p>這次先練數字詞組，照中文提示排好兩個詞。</p>
+  </section>
+
+  <div class="train-layout">
+    <section class="panel train-play" aria-label="火車練習區">
+      <div class="metrics train-metrics" aria-label="練習紀錄">
+        <div class="metric"><span>目前進度</span><strong id="train-progress">準備出發</strong></div>
+        <div class="metric"><span>已完成</span><strong id="train-completed">0 / 6</strong></div>
+      </div>
+      <ol class="train-stations" id="train-stations" aria-label="六題練習進度"></ol>
+
+      <div id="train-welcome" class="train-welcome">
+        <div class="train-ticket"><span>本次車票</span><strong>6 題詞序練習</strong><span>不限時間，可以慢慢排。</span></div>
+        <div class="train-start-controls">
+          <label class="field" for="train-order">出題順序
+            <select id="train-order"><option value="random">隨機抽 6 題</option><option value="ordered">從十一開始練 6 題</option></select>
+          </label>
+          <button class="btn primary" id="train-start" type="button">開始排火車</button>
+        </div>
+      </div>
+
+      <div id="train-round" hidden>
+        <div class="train-prompt"><span>把這個數字排上車</span><h2 id="train-question" tabindex="-1"></h2></div>
+        <div class="train-scene" aria-label="依照第一節、第二節的順序放入詞塊">
+          <div class="train-railway">
+            <div class="train-engine" aria-hidden="true"><span class="train-cabin"></span><span class="train-chimney"></span><span class="train-engine-body"></span><i></i><i></i></div>
+            <div id="train-carriages" class="train-carriages"></div>
+          </div>
+          <div class="train-track" aria-hidden="true"></div>
+        </div>
+        <p class="train-instruction">點下面的詞，依序放進車廂。想換順序，就點車廂裡的詞退回。</p>
+        <div id="train-pool" class="train-pool" aria-label="待選詞塊"></div>
+        <div class="controls train-actions">
+          <button class="btn primary" id="train-check" type="button">檢查答案</button>
+          <button class="btn secondary" id="train-reset" type="button">重新排列</button>
+          <button class="btn secondary" id="train-hint" type="button">看提示</button>
+        </div>
+        <div id="train-status" class="status train-status" role="status" aria-live="polite" aria-atomic="true">先點一個詞，放進第一節車廂。</div>
+        <p id="train-hint-text" class="train-hint-text" hidden></p>
+        <button class="btn primary train-next" id="train-next" type="button" hidden>下一題 →</button>
+      </div>
+
+      <div id="train-result" class="train-result" hidden>
+        <p class="eyebrow">六題都到站了</p>
+        <h2 id="train-result-title" tabindex="-1">這一趟完成了！</h2>
+        <p id="train-summary"></p>
+        <ol id="train-records" class="train-records" aria-label="本輪練習紀錄"></ol>
+        <button class="btn primary" id="train-restart" type="button">再練一趟</button>
+      </div>
+    </section>
+
+    <aside class="train-aside">
+      <section class="panel train-howto" aria-labelledby="train-howto-title">
+        <p class="eyebrow">怎麼玩</p><h2 id="train-howto-title">兩個詞，排一列車</h2>
+        <ol><li><span>1</span><p>看中文數字，點詞塊上車。</p></li><li><span>2</span><p>排好兩個詞，按「檢查答案」。</p></li><li><span>3</span><p>排對後，按「下一題」繼續。</p></li></ol>
+        <p class="muted">排錯可以改，也可以先看提示。</p>
+      </section>
+      <details class="panel train-bank"><summary>查看 11 組數字詞彙</summary><ul id="train-bank-list"></ul></details>
+    </aside>
+  </div>
+</main>
+
+<footer class="shell app-footer"><span>CALUMAI / 數字主題</span><span>可離線開啟 · 不用登入</span></footer>
+<script>"use strict";
+// 老師更換題庫的位置：保留原始拼寫與中文，沒有句子或音檔時留白。
+const VOCAB=[
+  {
+    "id": "n01",
+    "word": "kingal",
+    "translation": "一",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n02",
+    "word": "dha",
+    "translation": "二",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n03",
+    "word": "tru",
+    "translation": "三",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n04",
+    "word": "spat",
+    "translation": "四",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n05",
+    "word": "rima",
+    "translation": "五",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n06",
+    "word": "mataru",
+    "translation": "六",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n07",
+    "word": "empitu",
+    "translation": "七",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n08",
+    "word": "maspat",
+    "translation": "八",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n09",
+    "word": "mngari",
+    "translation": "九",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n10",
+    "word": "maxal",
+    "translation": "十",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n11",
+    "word": "maxal kingal",
+    "translation": "十一",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n12",
+    "word": "maxal dha",
+    "translation": "十二",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n13",
+    "word": "maxal tru",
+    "translation": "十三",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n14",
+    "word": "maxal spat",
+    "translation": "十四",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n15",
+    "word": "maxal rima",
+    "translation": "十五",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n16",
+    "word": "maxal mataru",
+    "translation": "十六",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n17",
+    "word": "maxal empitu",
+    "translation": "十七",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n18",
+    "word": "maxal maspat",
+    "translation": "十八",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n19",
+    "word": "maxal mngari",
+    "translation": "十九",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n20",
+    "word": "empusal",
+    "translation": "二十",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n21",
+    "word": "empusal kingal",
+    "translation": "二十一",
+    "exampleSentence": "",
+    "audioUrl": ""
+  },
+  {
+    "id": "n22",
+    "word": "empusal dha",
+    "translation": "二十二",
+    "exampleSentence": "",
+    "audioUrl": ""
+  }
+];
+(() => {
+  'use strict';
+
+  // 只拆開題庫原有的空格，答案順序與原始詞彙完全相同。
+  const bank = VOCAB.filter(entry => entry.word.includes(' ')).map(entry => ({
+    id: entry.id,
+    word: entry.word,
+    translation: entry.translation,
+    tokens: entry.word.split(' ').map((text, index) => ({ id: `${entry.id}-part-${index}`, text }))
+  }));
+  const $ = id => document.getElementById(id);
+  const ui = {
+    welcome: $('train-welcome'), round: $('train-round'), result: $('train-result'),
+    question: $('train-question'), pool: $('train-pool'), carriages: $('train-carriages'),
+    check: $('train-check'), reset: $('train-reset'), hint: $('train-hint'), next: $('train-next'),
+    status: $('train-status'), hintText: $('train-hint-text'), stations: $('train-stations'),
+    progress: $('train-progress'), completed: $('train-completed'), records: $('train-records')
+  };
+  let questions = [], questionIndex = 0, chosen = [], tokenOrder = [], records = [];
+  let attempts = 0, hinted = false, solved = false, playing = false, lastChecked = null;
+
+  function shuffle(items) {
+    const result = [...items];
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+  }
+
+  function setStatus(text, kind = '') {
+    ui.status.textContent = text;
+    ui.status.dataset.kind = kind;
+  }
+
+  function renderStations() {
+    ui.stations.replaceChildren();
+    for (let i = 0; i < 6; i++) {
+      const item = document.createElement('li');
+      const done = i < records.length;
+      item.textContent = done ? '✓' : String(i + 1);
+      item.className = done ? 'is-done' : playing && i === questionIndex ? 'is-current' : '';
+      item.setAttribute('aria-label', `第 ${i + 1} 題${done ? '已完成' : playing && i === questionIndex ? '，目前題目' : '尚未完成'}`);
+      if (playing && i === questionIndex && !done) item.setAttribute('aria-current', 'step');
+      ui.stations.append(item);
+    }
+    ui.completed.textContent = `${records.length} / 6`;
+  }
+
+  function focusAvailableToken() {
+    const token = ui.pool.querySelector('button:not(:disabled)');
+    (token || ui.check).focus();
+  }
+
+  function renderTrain() {
+    const question = questions[questionIndex];
+    ui.carriages.replaceChildren();
+    question.tokens.forEach((unused, index) => {
+      const carriage = document.createElement('div');
+      carriage.className = `train-car${chosen[index] ? ' is-filled' : ''}${solved ? ' is-correct' : ''}`;
+      const label = document.createElement('small');
+      label.textContent = `第 ${index + 1} 節`;
+      carriage.append(label);
+      if (chosen[index]) {
+        const token = question.tokens.find(part => part.id === chosen[index]);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = token.text;
+        button.dataset.tokenId = token.id;
+        button.disabled = solved;
+        button.setAttribute('aria-label', `第 ${index + 1} 節：${token.text}，點一下退回`);
+        button.addEventListener('click', () => {
+          if (!playing || solved) return;
+          chosen.splice(index, 1);
+          lastChecked = null;
+          setStatus('詞塊已退回，點詞塊重新放上車。');
+          renderTrain();
+          focusAvailableToken();
+        });
+        carriage.append(button);
+      } else {
+        const empty = document.createElement('span');
+        empty.textContent = '等詞塊上車';
+        carriage.append(empty);
+      }
+      ui.carriages.append(carriage);
+    });
+    ui.pool.replaceChildren();
+    tokenOrder.forEach(token => {
+      const button = document.createElement('button');
+      button.className = 'train-word';
+      button.type = 'button';
+      button.textContent = token.text;
+      button.dataset.tokenId = token.id;
+      button.disabled = solved || chosen.includes(token.id);
+      button.setAttribute('aria-label', `${token.text}，放進下一節車廂`);
+      button.addEventListener('click', () => {
+        if (!playing || solved || chosen.includes(token.id)) return;
+        chosen.push(token.id);
+        lastChecked = null;
+        setStatus(chosen.length === question.tokens.length ? '兩個詞都上車了，按「檢查答案」。' : '再點一個詞，放進下一節車廂。');
+        renderTrain();
+        focusAvailableToken();
+      });
+      ui.pool.append(button);
+    });
+    ui.check.disabled = solved;
+    ui.reset.disabled = solved;
+    ui.hint.disabled = solved;
+  }
+
+  function loadQuestion() {
+    chosen = [];
+    attempts = 0;
+    hinted = false;
+    solved = false;
+    lastChecked = null;
+    const question = questions[questionIndex];
+    tokenOrder = shuffle(question.tokens);
+    ui.question.textContent = question.translation;
+    ui.question.dataset.questionId = question.id;
+    ui.progress.textContent = `第 ${questionIndex + 1} 題`;
+    ui.hintText.hidden = true;
+    ui.hintText.textContent = '';
+    ui.next.hidden = true;
+    ui.next.textContent = questionIndex === questions.length - 1 ? '看本輪紀錄 →' : '下一題 →';
+    setStatus('先點一個詞，放進第一節車廂。');
+    renderStations();
+    renderTrain();
+    ui.question.focus({ preventScroll: true });
+  }
+
+  function startGame() {
+    questions = ($('train-order').value === 'ordered' ? [...bank] : shuffle(bank)).slice(0, 6);
+    records = [];
+    questionIndex = 0;
+    playing = true;
+    ui.records.replaceChildren();
+    ui.welcome.hidden = true;
+    ui.result.hidden = true;
+    ui.round.hidden = false;
+    loadQuestion();
+  }
+
+  function finishGame() {
+    playing = false;
+    ui.round.hidden = true;
+    ui.result.hidden = false;
+    ui.progress.textContent = '全部到站';
+    renderStations();
+    const firstTry = records.filter(record => record.attempts === 1 && !record.hinted).length;
+    $('train-summary').textContent = `完成 ${records.length} 題，其中 ${firstTry} 題不用提示就一次排對。下面可以再看一次完整詞組。`;
+    ui.records.replaceChildren();
+    records.forEach(record => {
+      const row = document.createElement('li');
+      const translation = document.createElement('strong');
+      translation.textContent = record.translation;
+      const word = document.createElement('span');
+      word.textContent = record.word;
+      const detail = document.createElement('small');
+      detail.textContent = `${record.attempts === 1 ? '一次排對' : `調整後排對，檢查 ${record.attempts} 次`}${record.hinted ? '・看過提示' : ''}`;
+      row.append(translation, word, detail);
+      ui.records.append(row);
+    });
+    $('train-result-title').focus({ preventScroll: true });
+  }
+
+  ui.check.addEventListener('click', () => {
+    if (!playing || solved) return;
+    const question = questions[questionIndex];
+    if (chosen.length !== question.tokens.length) {
+      setStatus('還有詞塊沒上車，先把兩個詞都放進車廂。');
+      return;
+    }
+    const arrangement = chosen.join('|');
+    if (lastChecked === arrangement) {
+      setStatus('這個排列還沒改。點車廂裡的詞退回，再換個順序試試。', 'retry');
+      return;
+    }
+    attempts++;
+    lastChecked = arrangement;
+    if (chosen.every((id, index) => id === question.tokens[index].id)) {
+      solved = true;
+      records.push({ id: question.id, word: question.word, translation: question.translation, attempts, hinted });
+      setStatus(`排列正確！${question.translation}：${question.word}。`, 'success');
+      ui.hintText.hidden = true;
+      ui.next.hidden = false;
+      renderStations();
+      renderTrain();
+      ui.next.focus();
+    } else {
+      setStatus('順序還沒排對。點車廂裡的詞退回，換個順序再試一次。', 'retry');
+    }
+  });
+
+  ui.reset.addEventListener('click', () => {
+    if (!playing || solved) return;
+    chosen = [];
+    lastChecked = null;
+    setStatus('車廂清空了，重新點選第一個詞。');
+    renderTrain();
+    focusAvailableToken();
+  });
+
+  ui.hint.addEventListener('click', () => {
+    if (!playing || solved) return;
+    hinted = true;
+    ui.hintText.textContent = `第一節先放「${questions[questionIndex].tokens[0].text}」。`;
+    ui.hintText.hidden = false;
+    setStatus('提示在下面。先找到第一個詞，再把另一個詞接上。');
+  });
+
+  ui.next.addEventListener('click', () => {
+    if (!playing || !solved) return;
+    solved = false;
+    questionIndex++;
+    if (questionIndex >= questions.length) finishGame();
+    else loadQuestion();
+  });
+
+  $('train-start').addEventListener('click', startGame);
+  $('train-restart').addEventListener('click', startGame);
+  bank.forEach(entry => {
+    const item = document.createElement('li');
+    const translation = document.createElement('span');
+    translation.textContent = entry.translation;
+    const word = document.createElement('span');
+    word.textContent = entry.word;
+    item.append(translation, word);
+    $('train-bank-list').append(item);
+  });
+  renderStations();
+})();
+
+</script></body></html>
