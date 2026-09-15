@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="用圖書館與點名的例子，看懂音檔、Google Drive、Google Sheet 與 GAS 的關係。照 SOP 上傳、同步與試播，不能播放時逐項檢查。">
+  <title>音檔與同步操作說明｜第四堂延伸講義｜CALUMAI</title>
+  <link rel="icon" href="/assets/calumai-logo-mark.png">
+  <link rel="stylesheet" href="/class/styles.css">
+  <link rel="stylesheet" href="/class/lesson.css?v=20260902a">
+  <link rel="stylesheet" href="/class/lesson-04-audio.css?v=20260915d">
+</head>
+<body class="audio-page">
+<header><div class="shell nav"><a class="brand" href="/class/">CALUMAI <span>/ CLASS</span></a><nav aria-label="音檔說明導覽"><a href="/class/lesson-04.html">回第四堂</a><a href="#audio-sop">操作 SOP</a><a href="#audio-sync">同步音檔</a><a href="#audio-troubleshooting">不能播放？</a></nav></div></header>
+<main class="shell lesson-page" id="audio-handout">
+  <div class="audio-page-heading"><p class="eyebrow">第四堂延伸講義</p><h1>音檔與同步操作說明</h1><p>從檔名、上傳到試播，照著做一輪，再看懂背後的分工。</p></div>
+
+  <section class="audio-guide" id="audio-relationship" aria-labelledby="audio-relationship-title">
+    <p class="eyebrow">第 4 堂・音檔講義</p>
+    <h2 id="audio-relationship-title">音檔、Google Sheet 與 GAS 到底有什麼關係？</h2>
+    <p class="audio-lead">音檔上傳後，系統還要知道「哪一題配哪一個聲音」。試算表就是用來記錄這件事的。</p>
+    <p>這一節不用寫程式。先看一個例子，跟著做，再故意改錯一次。等你看到修正後能播放，再來認識 GAS。</p>
+    <nav class="audio-jumps" id="audio-shortcuts" aria-label="音檔講義重點">
+      <a href="#audio-sop"><span class="audio-jump-title"><strong>老師版操作 SOP</strong><span class="audio-jump-arrow" aria-hidden="true">→</span></span><span class="audio-jump-description">照步驟上傳、同步，再試播。</span></a>
+      <a href="#audio-mistake"><span class="audio-jump-title"><strong>故意做錯一次</strong><span class="audio-jump-arrow" aria-hidden="true">→</span></span><span class="audio-jump-description">改錯檔名，練習找原因、修正。</span></a>
+      <a href="#audio-library"><span class="audio-jump-title"><strong>圖書館比喻</strong><span class="audio-jump-arrow" aria-hidden="true">→</span></span><span class="audio-jump-description">用書庫、目錄和館員看懂分工。</span></a>
+      <a href="#audio-troubleshooting"><span class="audio-jump-title"><strong>不能播放？</strong><span class="audio-jump-arrow" aria-hidden="true">→</span></span><span class="audio-jump-description">照檢查表，逐項找出問題。</span></a>
+    </nav>
+
+    <h3>先看案例：「你好」要播放哪個音檔？</h3>
+    <p>假設你錄好「你好」的族語發音，把檔案取名為 <code>001_你好.mp3</code>，放進指定的 Google Drive 資料夾。題庫 B 欄填「你好」，同步後，同一列的 E 欄就會出現音檔連結。</p>
+    <p class="audio-table-hint">手機上可左右滑動下方表格，查看 A 到 E 欄。</p><div class="audio-table-wrap" tabindex="0" role="region" aria-label="本課 A 到 E 欄位，可左右捲動"><table class="audio-schema-table"><caption>本課範例的試算表欄位，請保留 A 到 E 的順序</caption><thead><tr><th scope="col">A｜族語</th><th scope="col">B｜中文</th><th scope="col">C｜例句</th><th scope="col">D｜級別</th><th scope="col">E｜音檔連結</th></tr></thead><tbody><tr><td>老師確認的族語</td><td>你好</td><td>可留白</td><td>可留白</td><td>同步後自動填入</td></tr></tbody></table></div>
+    <p>上表的族語文字是欄位說明；實作時，請填入你已確認的族語與錄音，不要把「老師確認的族語」當成題目。</p>
+    <div class="audio-note"><strong>本課要對上的是「中文」，不是整個檔名。</strong><p><code>001_<b>你好</b>.mp3</code> 中的「你好」，要跟 B 欄的「你好」一致。E 欄放連結，請不要把 <code>001.mp3</code> 或完整檔名貼進 E 欄。其他教材可能使用 <code>audio</code> 欄記錄檔名，稍後會用圖書館例子說明。</p></div>
+
+    <h3 id="audio-sop">老師版音檔操作 SOP</h3>
+    <p>請講師先確認：你的練習用試算表、音檔資料夾與教材網址已接好。還沒完成時，請回<a href="/class/lesson-04.html#codegs">第四堂的「準備素材，再取得兩個完整檔案」</a>跟著設定。以下只操作自己的練習副本。</p>
+    <ol class="audio-steps">
+      <li><h4>Step 1｜先確認音檔名稱</h4><p>本課沿用「編號_中文.副檔名」，例如 <code>001_你好.mp3</code>、<code>002_謝謝.mp3</code>。原本是 WAV 就保留 <code>.wav</code>；把字尾改成 <code>.mp3</code> 不會讓聲音格式跟著轉換。先在電腦播放一次，確認內容正確。</p></li>
+      <li><h4>Step 2｜上傳到指定 Google Drive 資料夾</h4><p>開啟設定時指定的資料夾，點「新增」→「檔案上傳」，選取音檔。等上傳完成，確認清單看得到檔案。不要另外建資料夾，也不要放進裡面的子資料夾。</p></li>
+      <li><h4>Step 3｜複製音檔名稱</h4><p>在 Drive 對音檔按右鍵，選「重新命名」。選取檔名後按 <kbd>Ctrl</kbd>＋<kbd>C</kbd> 複製，再按「取消」。先複製，避免重新手打多字、漏字。</p></li>
+      <li><h4>Step 4｜貼到 Google Sheet 指定欄位</h4><p>確認目前選的是題庫工作表。在對應題目的 <strong>B 欄「中文」</strong>貼上檔名，再刪掉前方編號與底線、後方的副檔名，只留下「你好」。A 欄填已確認的族語；E 欄留給系統填連結。</p></li>
+      <li><h4>Step 5｜同步，再到教材網站播放</h4><p>在這份試算表點「擴充功能」→「Apps Script」。在上方函式下拉選單選 <code>autoFillAudioLinks</code>，按「執行」。第一次若要求授權，請講師協助確認。執行結束後回試算表，看 E 欄是否出現連結。</p><p>再重新整理你自己的教材網址，等音檔讀取完成，點喇叭按鈕。題目順序會打亂；可以作答後看答案，確認正在測「你好」這一題。請聽內容是否正確，不能只確認有聲音。</p></li>
+      <li><h4>Step 6｜不能播放時，先檢查資料</h4><p>依下方<a href="#audio-troubleshooting">故障排除表</a>，從「音檔有沒有上傳」往下檢查。每次只修一個地方，重新同步、重新整理，再試播。</p></li>
+    </ol>
+
+    <h3 id="audio-mistake">故意做錯一次，看看會發生什麼事</h3>
+    <p>先依 SOP 成功播放「你好」，並確認資料夾裡只有這一個「你好」音檔。接下來只用自己的練習副本與練習音檔，不動全班共用的題庫。</p>
+    <ol>
+      <li>在 Drive 把 <code>001_你好.mp3</code> 改成 <code>001_你號.mp3</code>。試算表 B 欄仍保留「你好」。</li>
+      <li>複製這一題 E 欄的舊連結，先貼到記事本備份。接著只清空這一格 E 欄，保留題目與其他列。</li>
+      <li>再執行一次同步。回試算表看這一格：它仍是空白，因為「你號」對不上「你好」。</li>
+      <li>重新整理教材，找到這一題。你會看到「此題無音檔」，喇叭按鈕不能播放。</li>
+      <li>把 Drive 檔名改回 <code>001_你好.mp3</code>，再同步一次。E 欄應重新出現連結。</li>
+      <li>重新整理教材，再點這一題的喇叭。確認聽得到正確的族語發音。</li>
+    </ol>
+    <div class="audio-note"><strong>為什麼練習要先清空一格 E 欄？</strong><p>這份範例遇到配對失敗，會保留舊連結。同一個 Drive 檔案改名後，原連結也可能仍能播放。若不先清空，會看不出這次其實沒有配對成功。這是故意做錯的練習步驟，平常不用把整欄清空。</p></div>
+
+    <h3 id="audio-library">播放成功後，再用圖書館認識 GAS</h3>
+    <p>想像你走進圖書館。書已經搬進書庫，還是得有目錄，館員才知道你要哪一本，以及要去哪裡拿。音檔也是一樣：上傳完成，只代表檔案放好了。</p>
+    <div class="audio-table-wrap"><table><caption>把教材系統想成一間圖書館</caption><thead><tr><th scope="col">教材裡的東西</th><th scope="col">圖書館裡的角色</th></tr></thead><tbody><tr><td>Google Drive 音檔資料夾</td><td>書庫</td></tr><tr><td>音檔</td><td>書</td></tr><tr><td>音檔檔名</td><td>書籍編號</td></tr><tr><td>Google Sheet</td><td>目錄</td></tr><tr><td>GAS（Google Apps Script）</td><td>幫忙查目錄、找書的館員</td></tr><tr><td>教材網頁</td><td>來借書的使用者，替學生取得音檔</td></tr></tbody></table></div>
+    <p><strong>Google Sheet 通常存的是「找到音檔需要的資訊」。</strong>真正的聲音檔留在 Drive。本課的目錄先記中文，再由 GAS 這位館員找到對應音檔、補上連結。</p>
+    <pre class="audio-flow" aria-label="本課音檔資料流程">音檔：001_你好.mp3
+  |
+  v
+上傳到指定 Drive 資料夾
+  |
+  v
+Sheet B 欄：你好
+  |
+  v
+執行同步，GAS 比對「你好」
+  |
+  v
+Sheet E 欄：自動填入連結
+  |
+  v
+教材讀取這一題的連結
+  |
+  v
+GAS 取出聲音，交給教材
+  |
+  v
+學生點喇叭播放</pre>
+    <p>本課先在同步時配對名字。學生播放時，網頁已經拿到這一題 E 欄的連結，會請 GAS 依這個連結取出聲音；這時不用重新猜檔名。</p>
+
+    <details id="audio-filename-example"><summary>如果另一份教材要求填「audio 音檔檔名」呢？</summary>
+      <p>下面是「完整檔名配對」的通用案例，幫你看懂為什麼有些題庫要填檔名。本課的 B、E 欄請照前面的 SOP 操作，不要換成這張表。</p>
+      <p>Drive 裡有 <code>001.mp3</code>、<code>002.mp3</code>、<code>003.mp3</code>。目錄這樣記：</p>
+      <div class="audio-table-wrap"><table><caption>通用案例：用 audio 欄記錄完整檔名</caption><thead><tr><th scope="col">中文</th><th scope="col">族語</th><th scope="col">audio</th></tr></thead><tbody><tr><td>你好</td><td>……</td><td><code>001.mp3</code></td></tr><tr><td>謝謝</td><td>……</td><td><code>002.mp3</code></td></tr></tbody></table></div>
+      <pre class="audio-flow" aria-label="以完整檔名查找音檔的通用流程">音檔
+  |
+  v
+上傳指定 Drive 資料夾
+  |
+  v
+Sheet 記錄音檔檔名
+  |
+  v
+GAS 讀 Sheet 的檔名
+  |
+  v
+依檔名在 Drive 找音檔
+  |
+  v
+提供給教材網頁
+  |
+  v
+學生播放</pre>
+      <ol><li>網頁知道「你好」這一題要使用哪一列資料。</li><li>GAS 讀到這列的 <code>audio</code> 是 <code>001.mp3</code>。</li><li>GAS 到指定的 Drive 資料夾尋找 <code>001.mp3</code>。</li><li>找到這個音檔。</li><li>把聲音提供給網頁，學生就能播放。</li></ol>
+      <h4>為什麼檔名很重要？因為電腦不會猜。</h4>
+      <div class="audio-table-wrap"><table><caption>假設這份教材要求「完整檔名完全相同」</caption><thead><tr><th scope="col">Drive</th><th scope="col">Sheet 的 audio</th><th scope="col">結果</th></tr></thead><tbody><tr><td><code>001.mp3</code></td><td><code>001.mp3</code></td><td>✅ 可以正確對應</td></tr><tr><td><code>001.mp3</code></td><td><code>001</code></td><td>❌ 少了副檔名，可能找不到</td></tr><tr><td><code>001.mp3</code></td><td><code>001 .mp3</code></td><td>❌ 多一個空格，可能找不到</td></tr><tr><td><code>001.mp3</code></td><td><code>002.mp3</code></td><td>❌ 若有 002.mp3，就指向另一個檔案；沒有就找不到</td></tr></tbody></table></div>
+      <p>是否忽略大小寫、空格或副檔名，要看那份教材的程式怎麼寫。上表不能直接當成本課的規則。</p>
+    </details>
+
+    <h3>本課真正要對準的名字</h3>
+    <p>本課的程式會取出<strong>第一個底線後、最後一個句點前</strong>的文字，再跟 B 欄比對。它不會幫你刪掉多餘空格，也不會把英文字母統一成大寫或小寫。</p>
+    <div class="audio-table-wrap"><table><caption>以下才是本課的配對結果</caption><thead><tr><th scope="col">Drive 檔名</th><th scope="col">B 欄</th><th scope="col">同步結果</th></tr></thead><tbody><tr><td><code>001_你好.mp3</code></td><td>你好</td><td>✅ 對上「你好」</td></tr><tr><td><code>001.mp3</code></td><td>你好</td><td>❌ 沒有「_你好」，不會配對</td></tr><tr><td><code>001_你好 .mp3</code></td><td>你好</td><td>❌「你好」後多一個空格</td></tr><tr><td><code>001_謝謝.mp3</code></td><td>你好</td><td>❌ 名字不同；若有「謝謝」那列，會配到那列</td></tr><tr><td><code>002_你好.wav</code></td><td>你好</td><td>✅ 一樣對上「你好」，編號與副檔名不參與這次比對</td></tr></tbody></table></div>
+    <p>副檔名不參與配對，不代表任何檔案都能播放。這份範例沒有先篩掉非音檔；資料夾只放能正常播放的音檔。中文部分不要多加底線或句點，也不要讓兩個音檔使用同一個中文名稱。</p>
+
+    <h3 id="audio-troubleshooting">故障排除表：先檢查資料，再懷疑程式</h3>
+    <p>從第一項開始。確認資料都正確，再請講師看設定與錯誤紀錄。</p>
+    <div class="audio-table-wrap"><table><caption>不能播放時，照這個順序檢查</caption><thead><tr><th scope="col">檢查項目</th><th scope="col">在哪裡看、怎麼修</th></tr></thead><tbody>
+      <tr><th scope="row"><span class="audio-check">□ 音檔已上傳</span></th><td>Drive 清單要看得到檔案，且上傳已完成。先在電腦或 Drive 開啟，確認檔案本身有聲音。</td></tr>
+      <tr><th scope="row">□ 資料夾正確</th><td>回到設定時指定的資料夾確認。放在別的資料夾或子資料夾，本課的同步不會找到。</td></tr>
+      <tr><th scope="row">□ Drive 檔名正確</th><td>例如 <code>001_你好.mp3</code>。有編號、底線、中文與原本的副檔名。</td></tr>
+      <tr><th scope="row">□ Sheet 配對文字一致</th><td>本課比對 B 欄與檔名中的中文，要逐字相同。若使用另一套 audio 檔名教材，才是檢查完整檔名一致。</td></tr>
+      <tr><th scope="row">□ 副檔名正確</th><td>保留真正的 <code>.mp3</code> 或 <code>.wav</code>，不要只改字尾假裝轉檔。沒有句點的檔名不會被本課配對。</td></tr>
+      <tr><th scope="row">□ 沒有多餘空格</th><td>檢查 B 欄開頭、結尾，以及檔名中文前後的空格。本課不會自動清掉它們。</td></tr>
+      <tr><th scope="row">□ 填在正確欄位</th><td>A 欄族語不能空白；B 欄中文；E 欄由同步填連結。不要把完整檔名貼到 E 欄。</td></tr>
+      <tr><th scope="row">□ 同步後有新連結</th><td>回 E 欄檢查。找到配對會覆寫該格；沒找到會保留舊值。不要把「執行結束」當成全部配對成功。</td></tr>
+      <tr><th scope="row">□ GAS 讀對資料夾與欄位</th><td>請講師核對設定用的資料夾 ID、綁定試算表、目前選取的題庫分頁，以及 B、E 欄位置。範例沒有鎖定工作表名稱，請勿任意切換或調換欄位。</td></tr>
+      <tr><th scope="row">□ 權限與播放正常</th><td>前面都對了，再請講師查執行帳號是否能讀音檔、Apps Script 執行紀錄與教材連線。重新整理教材後再試喇叭。</td></tr>
+    </tbody></table></div>
+    <h3>換你用自己的話說一次</h3>
+    <p>「音檔已經上傳了，為什麼試算表裡的名字還要跟 Drive 對得上？」</p>
+    <details><summary>說完再打開，看看有沒有抓到重點</summary><p>「上傳只是把音檔放好。試算表還要告訴系統這一題用哪個音檔。名字對上，才找得到正確的聲音。」</p><p>本課再補一句就夠了：「我讓檔名中的中文跟 B 欄一樣，再同步到 E 欄。」不用解釋程式碼。</p></details>
+  </section>
+
+  <section class="audio-guide" id="audio-sync" aria-labelledby="audio-sync-title">
+    <p class="eyebrow">第 4 堂・同步音檔</p>
+    <h2 id="audio-sync-title">為什麼按一下「同步音檔」，Google Sheet 就會自己出現音檔連結？</h2>
+    <p class="audio-lead">先記住三個操作：按照規則準備音檔、放進指定資料夾、執行一次同步。</p>
+    <ol><li>按照「編號_中文.副檔名」準備音檔。</li><li>把音檔放進指定 Google Drive 資料夾。</li><li>執行「同步音檔」，再回 Google Sheet 看 E 欄。</li></ol>
+    <div class="audio-note"><strong>本課的「同步音檔」要在哪裡按？</strong><p>在試算表點「擴充功能」→「Apps Script」，在上方函式選單選 <code>autoFillAudioLinks</code>，再按「執行」。這個名稱只要照著選，不用背、也不用讀程式碼。</p></div>
+
+    <h3>像請助理進教室點名</h3>
+    <p>把 Drive 資料夾想成教室，音檔是學生，檔名是姓名，音檔連結是地址。Google Sheet 是名冊，GAS 是負責點名、整理名冊的助理。</p>
+    <p>請助理點名，他會看教室裡有哪些音檔、讀取名字、取得地址，再整理到試算表。本課已有題目名冊，所以助理會找出 B 欄同名的那一列，在 E 欄補上地址。<strong>他不會替你新增題目列。</strong></p>
+    <pre class="audio-flow" aria-label="本課同步音檔的流程">指定 Drive 資料夾
+  |
+  v
+查看資料夾裡的檔案
+  |
+  v
+讀檔名，取出中文
+  |
+  v
+取得 Google 的檔案識別碼，組成連結
+  |
+  v
+比對 Sheet 已有的 B 欄中文
+  |
+  v
+對上：把連結填進同列 E 欄
+沒對上：那一列維持原樣</pre>
+
+    <h3>音檔、檔名、音檔連結，是三件事</h3>
+    <div class="audio-table-wrap"><table><caption>同一個音檔，可以從三個角度看</caption><thead><tr><th scope="col">你看到什麼</th><th scope="col">它是什麼</th><th scope="col">生活中的例子</th></tr></thead><tbody><tr><td>音檔本身，例如 <code>001_你好.mp3</code> 這個檔案</td><td>裡面真的存有聲音，開啟才聽得到</td><td>學生本人</td></tr><tr><td>檔名，例如 <code>001_你好.mp3</code> 這幾個字</td><td>系統辨認檔案時使用的名字，文字本身沒有聲音</td><td>學生姓名</td></tr><tr><td>音檔連結，例如 <code>https://drive.google.com/……</code></td><td>指向檔案的地址；這裡是示意，不能直接播放</td><td>學生地址</td></tr></tbody></table></div>
+    <div class="audio-answer"><strong>檔名告訴電腦它是誰，連結告訴電腦它在哪裡。</strong></div>
+    <p>本課 E 欄實際會出現以 <code>https://docs.google.com/uc?export=download&amp;id=</code> 開頭的連結，後面接 Google 自動產生的檔案識別碼，和檔名前的「001」不同。它是找到音檔的地址。請保留系統填入的格式。</p>
+
+    <h3>會自動填連結，還是不能隨便取名</h3>
+    <p>地址可以自動取得，但系統仍得知道「這個地址要填到哪一題」。本課用檔名中的中文，配對題庫 B 欄；如果兩邊不同，助理就不知道要填哪一列。</p>
+    <pre class="audio-flow" aria-label="本課題目與音檔配對">題庫 B 欄：你好
+           |
+           v
+Drive：001_你好.mp3
+           |
+           v
+這一題 E 欄：音檔連結</pre>
+    <details><summary>用 001.mp3 建「音檔名冊」的系統，和本課有什麼不同？</summary>
+      <p>有些系統會掃描 Drive，再把「完整檔名＋連結」寫成一張獨立名冊。題庫寫 <code>001.mp3</code>，音檔名冊記 <code>001.mp3 → 對應連結</code>，兩邊靠相同檔名配對。</p>
+      <pre class="audio-flow" aria-label="音檔名冊型同步的通用概念">Drive 音檔資料夾
+  |
+  v
+檢查有哪些音檔
+  |
+  v
+讀取每個完整檔名
+  |
+  v
+取得每個音檔的連結
+  |
+  v
+把檔名與連結寫進 Sheet</pre>
+      <div class="audio-table-wrap"><table><caption>名冊型系統的示意結果；本課範例不會產生這張表</caption><thead><tr><th scope="col">檔名</th><th scope="col">音檔連結</th></tr></thead><tbody><tr><td><code>001.mp3</code></td><td>自動產生</td></tr><tr><td><code>002.mp3</code></td><td>自動產生</td></tr><tr><td><code>003.mp3</code></td><td>自動產生</td></tr><tr><td><code>004.mp3</code></td><td>新增音檔並重新同步後出現</td></tr></tbody></table></div>
+      <p>你可以把同步理解成「讓試算表重新知道 Drive 現在有哪些音檔」。但每套工具更新的範圍不同：本課只替已有題目更新連結，沒有新增音檔名冊，也不會刪除舊資料。</p>
+    </details>
+
+    <h3>完整實作：先同步三個音檔，再加第四個</h3>
+    <p>請講師先準備一份已接好教材的練習副本，確認只有以下三筆題目，還沒有「早安」。保留欄位標題，在 A 欄填入教師確認的族語，B 欄依序填「你好、謝謝、再見」，E 欄先留白。準備對應的真實錄音；如果你使用別的詞，就讓檔名和 B 欄一起換成那些詞。</p>
+    <ol class="audio-steps">
+      <li><h4>任務 1｜上傳三個音檔</h4><p>把 <code>001_你好.mp3</code>、<code>002_謝謝.mp3</code>、<code>003_再見.mp3</code> 上傳到指定資料夾。這是本課版本；只叫 <code>001.mp3</code>、<code>002.mp3</code>、<code>003.mp3</code>，程式不會配對。</p></li>
+      <li><h4>任務 2｜執行同步音檔</h4><p>在題庫試算表點「擴充功能」→「Apps Script」，選 <code>autoFillAudioLinks</code>，按「執行」。等執行結束後切回試算表。</p></li>
+      <li><h4>任務 3｜觀察 Google Sheet</h4><p>三筆題目仍留在原來的位置，E 欄應各多一個連結。系統沒有另外建立檔名欄。</p>
+        <div class="audio-table-wrap"><table><caption>本課同步三個音檔後，應看到的變化</caption><thead><tr><th scope="col">B 欄｜原本的中文</th><th scope="col">Drive 對應檔名</th><th scope="col">E 欄｜同步後</th></tr></thead><tbody><tr><td>你好</td><td><code>001_你好.mp3</code></td><td>自動填入連結</td></tr><tr><td>謝謝</td><td><code>002_謝謝.mp3</code></td><td>自動填入連結</td></tr><tr><td>再見</td><td><code>003_再見.mp3</code></td><td>自動填入連結</td></tr></tbody></table></div>
+        <p>表格中間的 Drive 檔名只供對照，不要在你的題庫插入這一欄。</p></li>
+      <li><h4>任務 4｜新增第四個，再同步一次</h4><p>上傳 <code>004_早安.mp3</code>。先同步一次，觀察：題庫沒有「早安」那列，所以不會自動多出第四題。</p><p>接著在試算表新增一列，A 欄填已確認的族語，B 欄填「早安」，E 欄留白。再同步一次，這一列的 E 欄應出現連結。重新整理教材，確認四題都能播放正確的聲音。</p></li>
+    </ol>
+    <p>新增錄音後，要再同步，試算表才會更新連結。本課還需要先有對應的題目列；把檔案丟進 Drive，不會直接變成新題目。</p>
+
+    <h3>改名、刪檔、同名時，要做什麼？</h3>
+    <p>同步前先看這張表，確認哪些連結會更新、哪些需要自己處理。</p>
+    <div class="audio-table-wrap"><table><caption>本課同步功能的實際行為</caption><thead><tr><th scope="col">情況</th><th scope="col">系統會怎麼做／老師怎麼操作</th></tr></thead><tbody>
+      <tr><th scope="row">同步會重建整張表嗎？</th><td>不會。只找第一列標題下面已有的資料列；B 欄配對成功才填 E 欄。不新增題目、不重排、不清表。</td></tr>
+      <tr><th scope="row">舊連結會被覆蓋嗎？</th><td>配對成功會直接覆寫那一格 E 欄，包括手動填的連結，沒有先問確認。配對失敗則保留舊值。練習前先留副本。</td></tr>
+      <tr><th scope="row">會自動讀副檔名嗎？</th><td>會讀完整檔名，取出第一個底線後、最後一個句點前的文字配對。沒有檢查它一定是 MP3 或 WAV；請保留真正的音檔格式。</td></tr>
+      <tr><th scope="row">有重複檔名或同名中文呢？</th><td>不會提醒衝突。像 <code>001_你好.mp3</code> 和 <code>002_你好.wav</code> 都對上「你好」，最後讀到的那個會被採用，不能靠編號控制選哪個。請整理成一個中文只對一個音檔；題庫若有兩列「你好」，兩列也會拿到同一連結。</td></tr>
+      <tr><th scope="row">會掃描子資料夾嗎？</th><td>不會。只查看指定資料夾直接放置的檔案。</td></tr>
+      <tr><th scope="row">靠檔名配對，還是靠編號？</th><td>靠檔名中的中文對 B 欄。編號不是這份程式的配對依據。英文的大小寫、中文前後的空格都不會自動整理。</td></tr>
+      <tr><th scope="row">寫進 E 欄的是什麼？</th><td>含 <code>id=檔案識別碼</code> 的 Google 音檔連結。請讓系統填入，保留原本格式。</td></tr>
+      <tr><th scope="row">音檔重新命名後呢？</th><td>檢查新的中文部分仍對上 B 欄，再同步。若配對名稱改了，要一起核對題目文字；舊列若不再使用，手動清除那列的舊 E 欄連結。同一個檔案只改名，原連結可能仍可用，不能因此判斷同步成功。</td></tr>
+      <tr><th scope="row">刪除 Drive 音檔後呢？</th><td>Sheet 不會跟著刪列或清除連結。請手動處理不再使用的 E 欄連結，或上傳替代音檔再同步。舊格仍有地址，不代表檔案還能讀取。</td></tr>
+    </tbody></table></div>
+    <h3>老師只要記住</h3>
+    <div class="audio-answer"><strong>檔案放對地方、名字取對、按一次同步，剩下讓系統處理。</strong><p>本課再檢查兩件事：B 欄有對應的中文題目，E 欄同步後有連結。最後一定要回教材聽一次。</p></div>
+  </section>
+
+  <div class="back-row"><a href="/class/lesson-04.html">回第四堂講義</a><a class="secondary" href="#audio-handout">回到音檔說明開頭</a></div>
+</main>
+<footer class="shell"><span>CALUMAI / AI 工具實戰進階班</span><a href="/class/">回到課程總覽</a></footer>
+</body>
+</html>

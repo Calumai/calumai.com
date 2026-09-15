@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Moved the Lesson 04 audio and synchronization explanations into a standalone handout, linked from the lesson header and a prominent entry card. Preserved the library analogy, upload/sync SOP, deliberate-error exercise and troubleshooting; old audio section links now open the corresponding section on the new page. Verified wording against the existing GAS implementation without changing it.
+
 - Kept Lesson 06 HTML downloads unchanged by automatic site analytics: download buttons now request plain-text copies and save them with the original `.html` filenames. Applied the same delivery to the game menu; the offline ZIP still contains only the six HTML files and teacher instructions.
 
 - Added five playable number-vocabulary game examples to Lesson 06, with per-game HTML downloads, a shared menu and an offline ZIP. Preserved the supplied memory game and 22 vocabulary entries; the four new games practice spelling, number-word order, quantity choices and letter deduction. Verified all play/download links, full prompt copying, ZIP contents and mobile layout before publication.
