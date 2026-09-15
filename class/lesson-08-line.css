@@ -227,6 +227,8 @@
 .download-grid article>div{display:flex;flex-wrap:wrap;gap:9px;margin-top:17px}
 .download-grid a{border:1px solid #55708d;border-radius:8px;color:#f3f7fb;padding:9px 12px;font-size:14px;font-weight:800;text-decoration:none}
 .download-grid a:hover{background:#17243a;border-color:#9fc3ff}
+.download-footnote{margin:18px 0 0;color:#c6d2de;font-size:14px;line-height:1.7}
+.download-footnote strong{color:#fff}
 
 .tutorial{
   min-width:0;
