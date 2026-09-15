@@ -1,1 +1,651 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>課程講義｜CALUMAI</title><link rel="stylesheet" href="/class/styles.css"><link rel="stylesheet" href="/class/lesson.css?v=20260819a"><link rel="stylesheet" href="/class/lesson-branches.css?v=20260819a"></head><body><header><div class="shell nav"><a class="brand" href="/class/">CALUMAI <span>/ CLASS</span></a><nav><a href="/class/">課程總覽</a><a href="#slides">PPT 預覽</a><a href="#handout">講義</a><a href="#prompts">提示詞</a></nav></div></header><main class="shell lesson-page" id="lesson"></main><footer class="shell"><span>CALUMAI / AI 工具實戰進階班</span><a href="/class/">回到課程總覽</a></footer><script src="/class/lesson.js?v=20260819a"></script></body></html>
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="從 LINE 官方帳號申請開始，完成 Google 行事曆小幫手或太魯閣語單詞小幫手，並學會部署、Webhook、驗收與安全檢查。">
+  <link rel="canonical" href="https://calumai.com/class/lesson-08.html">
+  <title>第 8 堂｜LINE 教學小幫手：行事曆與單詞查詢｜CALUMAI</title>
+  <link rel="icon" href="/assets/calumai-logo-mark.png">
+  <link rel="stylesheet" href="/class/styles.css">
+  <link rel="stylesheet" href="/class/lesson.css?v=20260902a">
+  <link rel="stylesheet" href="/class/lesson-08-line.css?v=20260915a">
+</head>
+<body class="lesson08-line">
+  <a class="skip-link" href="#main">跳到主要內容</a>
+
+  <header>
+    <div class="shell nav">
+      <a class="brand" href="/class/">CALUMAI <span>/ CLASS</span></a>
+      <nav aria-label="第 8 堂導覽">
+        <a href="/class/">課程總覽</a>
+        <a href="#downloads">下載</a>
+        <a href="#calendar">行事曆</a>
+        <a href="#word-helper">單詞</a>
+        <a href="#verify">驗收</a>
+        <a href="#homework">作業</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell lesson-page lesson08-page" id="main">
+    <section class="lesson-hero line-hero" aria-labelledby="lesson-title">
+      <p class="eyebrow">第 08 堂 / LINE MESSAGING API + GOOGLE APPS SCRIPT</p>
+      <h1 id="lesson-title">把 LINE 變成教學小幫手</h1>
+      <p class="lede">從官方帳號申請開始，選一條路完成：把確認過的訊息新增到 Google 行事曆，或從 Google 試算表查詢太魯閣語單詞。</p>
+      <div class="lesson-meta" aria-label="課程資訊">
+        <span>建議 150–180 分鐘</span>
+        <span>入門實作</span>
+        <span>90 分鐘可二選一</span>
+      </div>
+      <div class="back-row">
+        <a href="#choose">選擇實作路線</a>
+        <a class="secondary" href="#downloads">下載課堂素材</a>
+        <a class="secondary" href="#prompts">複製除錯提示詞</a>
+      </div>
+    </section>
+
+    <aside class="webhook-warning" aria-labelledby="webhook-warning-title">
+      <div class="warning-label">先看這裡</div>
+      <div>
+        <h2 id="webhook-warning-title">兩個功能，請用兩個練習用 LINE 官方帳號</h2>
+        <p>這份講義提供兩套<strong>獨立</strong>程式。一個 Messaging API Channel 只能設定一個 Webhook URL；如果把第二個網址貼到同一個 Channel，第一個功能就收不到訊息。</p>
+        <ul>
+          <li>只做一個小幫手：準備一個練習帳號即可。</li>
+          <li>兩個都要保留：分別建立「行事曆小幫手」與「單詞小幫手」兩個練習帳號。</li>
+          <li>不要拿學校或單位正在使用的正式官方帳號做課堂測試。</li>
+        </ul>
+      </div>
+    </aside>
+
+    <section class="route-section" id="choose" aria-labelledby="choose-title">
+      <div class="section-heading">
+        <p class="eyebrow">先選一條主線</p>
+        <h2 id="choose-title">今天要先完成哪一個？</h2>
+        <p>兩套教學都從 LINE 官方帳號申請開始。時間不夠時先完成一套，另一套留作進階練習。</p>
+      </div>
+      <div class="route-grid">
+        <article class="route-card calendar-route">
+          <span class="route-no">A</span>
+          <p class="route-tag">GOOGLE CALENDAR</p>
+          <h3>行事曆小幫手</h3>
+          <p>在 LINE 私訊輸入時間與標題，先看草稿，再用確認碼把測試活動新增到自己的 Google 行事曆。</p>
+          <dl>
+            <dt>需要檔案</dt><dd>Code.gs、LineCalendar.gs</dd>
+            <dt>完成證據</dt><dd>LINE 草稿＋Google Calendar 測試活動</dd>
+          </dl>
+          <a href="#calendar">開始行事曆教學</a>
+        </article>
+        <article class="route-card word-route">
+          <span class="route-no">B</span>
+          <p class="route-tag">GOOGLE SHEETS</p>
+          <h3>單詞小幫手</h3>
+          <p>在 LINE 輸入太魯閣語、中文或編號，從 Google 試算表的 1,094 筆詞條回覆精確查詢結果。</p>
+          <dl>
+            <dt>需要檔案</dt><dd>Code.gs、太魯閣語單詞列表.xlsx</dd>
+            <dt>完成證據</dt><dd>三種查詢＋新增詞條後立即查到</dd>
+          </dl>
+          <a href="#word-helper">開始單詞教學</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="lesson-grid" id="goals">
+      <article class="lesson-card">
+        <p class="eyebrow">課堂目標</p>
+        <h2>完成後，你會做到這些事</h2>
+        <ul>
+          <li>建立 LINE 官方帳號並啟用 Messaging API。</li>
+          <li>分清楚 Token、Webhook URL 與綁定碼。</li>
+          <li>把 Token 存在 Script Properties，不寫進程式碼。</li>
+          <li>將 Apps Script 部署成 Web App，連回 LINE。</li>
+          <li>用另一個視窗與真實 LINE 訊息完成端對端測試。</li>
+          <li>說明這份課堂原型的安全與資料限制。</li>
+        </ul>
+      </article>
+      <article class="lesson-card">
+        <p class="eyebrow">今天的作品</p>
+        <h2>一個真的能回覆你的 LINE 小幫手</h2>
+        <p>核心作業二選一：完成行事曆新增，或完成單詞查詢。進階作業再建立第二個練習帳號，把另一條路也完成。</p>
+        <div class="output-list">
+          <span>正式 /exec 網址</span>
+          <span>LINE 實際回覆</span>
+          <span>Google 端資料變化</span>
+          <span>安全檢查紀錄</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="flow-section" id="flow" aria-labelledby="flow-title">
+      <div class="section-heading">
+        <p class="eyebrow">先看懂資料怎麼走</p>
+        <h2 id="flow-title">LINE 只是入口，真正工作的是後面的 Google 服務</h2>
+      </div>
+      <div class="flow-grid">
+        <article>
+          <h3>行事曆路線</h3>
+          <ol class="flow-track" aria-label="行事曆資料流程">
+            <li>LINE 私訊</li><li>Webhook</li><li>Apps Script</li><li>Google Calendar</li><li>LINE 回覆</li>
+          </ol>
+        </article>
+        <article>
+          <h3>單詞路線</h3>
+          <ol class="flow-track" aria-label="單詞資料流程">
+            <li>LINE 查詞</li><li>Webhook</li><li>Apps Script</li><li>Google Sheet</li><li>LINE 回覆</li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="glossary-section" aria-labelledby="glossary-title">
+      <div class="section-heading compact-heading">
+        <p class="eyebrow">四個名詞先分清楚</p>
+        <h2 id="glossary-title">設定時最常搞混的東西</h2>
+      </div>
+      <dl class="glossary-grid">
+        <div><dt>LINE 官方帳號</dt><dd>學生實際加入好友、傳訊息的帳號。</dd></div>
+        <div><dt>Messaging API</dt><dd>讓自己的程式可以接收並回覆 LINE 訊息。</dd></div>
+        <div><dt>Channel access token</dt><dd>程式呼叫 LINE API 的密碼。不可公開，也不是 Channel secret。</dd></div>
+        <div><dt>Webhook URL</dt><dd>LINE 把訊息送到 Apps Script 的 /exec 網址。</dd></div>
+        <div><dt>綁定碼</dt><dd>只有行事曆版會產生；12 碼、10 分鐘有效，用來授權某個 LINE 使用者。</dd></div>
+        <div><dt>「綁定雲端」</dt><dd>這是舊版雲端硬碟搜尋指令，本課不使用。</dd></div>
+      </dl>
+    </section>
+
+    <section class="prep-section" id="prep" aria-labelledby="prep-title">
+      <div class="section-heading">
+        <p class="eyebrow">課前準備</p>
+        <h2 id="prep-title">開始前先把這些準備好</h2>
+      </div>
+      <div class="prep-grid">
+        <article><b>01</b><h3>帳號</h3><p>可登入的 LINE 個人帳號、Google 帳號；全程使用同一個 Google 帳號。</p></article>
+        <article><b>02</b><h3>設備</h3><p>電腦瀏覽器與手機 LINE App。部署、貼程式用電腦，實際傳訊息用手機。</p></article>
+        <article><b>03</b><h3>安全命名</h3><p>練習帳號可用暱稱或座號，不在公開名稱放未成年學生全名。</p></article>
+        <article><b>04</b><h3>測試資料</h3><p>行事曆只放虛構測試活動；詞表只放已取得使用權且適合公開查詢的資料。</p></article>
+      </div>
+    </section>
+
+    <section class="download-panel" id="downloads" aria-labelledby="downloads-title">
+      <div class="download-heading">
+        <div>
+          <p class="eyebrow">課堂素材</p>
+          <h2 id="downloads-title">先下載，再照著對應路線做</h2>
+          <p>完整包已分成 calendar 與 word 兩個資料夾。程式內沒有 Token；太魯閣語詞表請從語發基金會官方系統取得。</p>
+        </div>
+        <a class="bundle-download" href="/class/examples/lesson-08-line-helper/lesson-08-line-helper-materials.zip" download>下載完整素材 ZIP</a>
+      </div>
+      <div class="download-grid">
+        <article>
+          <span>A / 行事曆</span>
+          <h3>兩份 Apps Script</h3>
+          <p>兩個檔案要放在同一個 Apps Script 專案。</p>
+          <div>
+            <a href="/class/examples/lesson-08-line-helper/calendar/Code.gs" download>下載 Code.gs</a>
+            <a href="/class/examples/lesson-08-line-helper/calendar/LineCalendar.gs" download>下載 LineCalendar.gs</a>
+          </div>
+        </article>
+        <article>
+          <span>B / 單詞</span>
+          <h3>程式與官方詞表來源</h3>
+          <p>下載程式後，到官方系統取得 2026 年公告版太魯閣語 Excel；本站不另外重製或鏡像詞料檔。</p>
+          <div>
+            <a href="/class/examples/lesson-08-line-helper/word/Code.gs" download>下載 Code.gs</a>
+            <a href="https://glossary.ilrdf.org.tw/" target="_blank" rel="noopener">到官方系統下載太魯閣語詞表</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="tutorial tutorial-calendar" id="calendar" aria-labelledby="calendar-title">
+      <div class="tutorial-heading">
+        <div class="tutorial-route">路線 A</div>
+        <div>
+          <p class="eyebrow">LINE × GOOGLE CALENDAR</p>
+          <h2 id="calendar-title">行事曆小幫手：從官方帳號到新增測試活動</h2>
+          <p>只接受私人聊天。訊息先變成 10 分鐘有效的草稿，輸入確認碼後才會真的新增活動。</p>
+        </div>
+      </div>
+
+      <div class="steps-list">
+        <article class="step-card">
+          <b class="step-no">01</b>
+          <div>
+            <h3>建立練習用 LINE 官方帳號</h3>
+            <ol>
+              <li>開啟 <a href="https://manager.line.biz/" target="_blank" rel="noopener">LINE Official Account Manager</a>，點「免費開設帳號」。</li>
+              <li>登入 LINE Business ID，填寫帳號名稱、類別與聯絡資料。</li>
+              <li>建議名稱：<code>行事曆小幫手－暱稱或座號</code>。</li>
+              <li>課堂練習使用未認證帳號即可；不要使用單位的正式官方帳號。</li>
+            </ol>
+            <p class="step-result"><strong>完成後會看到：</strong>自己的官方帳號管理後台。</p>
+          </div>
+        </article>
+
+        <article class="step-card">
+          <b class="step-no">02</b>
+          <div>
+            <h3>啟用 Messaging API，取得 Token</h3>
+            <ol>
+              <li>進入剛建立的官方帳號，點右上角「設定」→「Messaging API」。</li>
+              <li>點「啟用 Messaging API」，建立或選擇<strong>自己的練習用 Provider</strong>。</li>
+              <li>開啟 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener">LINE Developers Console</a>，進入剛才的 Messaging API Channel。</li>
+              <li>在「Messaging API」分頁找到 <code>Channel access token (long-lived)</code>，點 Issue／發行並複製。</li>
+            </ol>
+            <p class="mini-warning"><strong>先確認再選：</strong>Messaging API 啟用後不能更換或解除 Provider。不可選老師、其他組別或單位正式使用的 Provider。Channel secret 不是 Token；不要把 Token 貼到 Code.gs、班群、GitHub 或作業截圖。</p>
+          </div>
+        </article>
+
+        <article class="step-card">
+          <b class="step-no">03</b>
+          <div>
+            <h3>建立 Google 試算表與兩個指令碼檔案</h3>
+            <ol>
+              <li>建立空白 Google 試算表，命名為「LINE 行事曆小幫手－暱稱或座號」。</li>
+              <li>點「擴充功能」→「Apps Script」。</li>
+              <li>用下載的行事曆版 <code>Code.gs</code> 取代原本內容。</li>
+              <li>按檔案清單旁的「＋」→「指令碼」，建立 <code>LineCalendar.gs</code>，貼入第二份程式。</li>
+              <li>按儲存。</li>
+            </ol>
+            <p class="step-result"><strong>完成後會看到：</strong>左側檔案清單同時有 Code.gs 與 LineCalendar.gs。</p>
+          </div>
+        </article>
+
+        <article class="step-card">
+          <b class="step-no">04</b>
+          <div>
+            <h3>把 Token 存到 Script Properties，設定台北時區</h3>
+            <ol>
+              <li>Apps Script 左側點「專案設定」。</li>
+              <li>在「指令碼屬性」新增：名稱 <code>LINE_TOKEN</code>，值貼上自己的 Channel access token。</li>
+              <li>同一頁把專案時區設為 <code>Asia/Taipei</code>。</li>
+              <li>開啟 Google Calendar「設定」→「時區」，也確認為台北。</li>
+            </ol>
+            <p class="mini-warning">不要把 Token 寫在程式碼的引號裡。若曾公開過 Token，請回 LINE Developers 重新發行，再更新 LINE_TOKEN。</p>
+          </div>
+        </article>
+
+        <article class="step-card">
+          <b class="step-no">05</b>
+          <div>
+            <h3>部署成 Web App</h3>
+            <ol>
+              <li>右上角「部署」→「新增部署作業」。</li>
+              <li>類型選「網頁應用程式」。</li>
+              <li>「執行身分」選<strong>我</strong>；「誰可以存取」選<strong>所有人／任何人，不必登入</strong>。</li>
+              <li>完成 Google 授權，複製以 <code>/exec</code> 結尾的網址。</li>
+              <li>用無痕視窗開啟網址，確認看到「LINE 行事曆小幫手運作中」。</li>
+            </ol>
+            <p class="step-result"><strong>判斷：</strong>若無痕視窗要求登入，表示存取權沒有開對，先回部署設定修正。</p>
+          </div>
+        </article>
+
+        <article class="step-card">
+          <b class="step-no">06</b>
+          <div>
+            <h3>把 /exec 網址填到 LINE Webhook</h3>
+            <ol>
+              <li>回到 LINE Developers Console 的 Messaging API 分頁。</li>
+              <li>在 Webhook URL 貼上純 <code>/exec</code> 網址，不要再加其他文字。</li>
+              <li>點 Verify；看到 Success 後，開啟 Use webhook。</li>
+              <li>回 LINE Official Account Manager 的回應設定，測試期間先停用內建自動回應與歡迎訊息。</li>
+              <li>掃描 QR Code，把官方帳號加為好友。</li>
+            </ol>
+            <p class="mini-warning">Verify 成功只代表網址能收到測試請求；仍要實際傳訊息，才能確認 Token 與 Calendar 功能。</p>
+          </div>
+        </article>
+
+        <article class="step-card">
+          <b class="step-no">07</b>
+          <div>
+            <h3>設定並綁定自己的 Google 行事曆</h3>
+            <ol>
+              <li>回到試算表並重新整理頁面。</li>
+              <li>點上方「🗓️ LINE 行事曆小幫手」→「設定 LINE 行事曆」。</li>
+              <li>留空使用主要行事曆，或貼上自己擁有的 Calendar ID。</li>
+              <li>畫面會顯示 12 碼一次性綁定碼。</li>
+              <li>10 分鐘內私訊：<code>綁定行事曆 A1B2C3D4E5F6</code>，把範例代碼換成畫面上的代碼。</li>
+            </ol>
+            <p class="step-result"><strong>完成後會收到：</strong>「LINE 行事曆綁定完成」。綁定碼用過就失效。</p>
+          </div>
+        </article>
+
+        <article class="step-card">
+          <b class="step-no">08</b>
+          <div>
+            <h3>傳指令，先看草稿再確認</h3>
+            <div class="command-grid">
+              <div><span>查看說明</span><code>行事曆說明</code></div>
+              <div><span>建立一小時草稿</span><code>新增行事曆 明天 14:00 LINE課堂測試</code></div>
+              <div><span>指定起訖時間</span><code>新增行事曆 明天 14:00-16:00 小組討論</code></div>
+              <div><span>建立全天草稿</span><code>新增行事曆 後天 全天 繳交作業</code></div>
+              <div><span>查詢未來七天</span><code>查詢本週行程</code></div>
+              <div><span>真的新增</span><code>確認行事曆 畫面顯示的確認碼</code></div>
+            </div>
+            <ul class="behavior-list">
+              <li>只接受私人聊天新增行程。</li>
+              <li>只有開始時間時，預設 60 分鐘。</li>
+              <li>草稿與確認碼 10 分鐘有效。</li>
+              <li>確認後才建立活動，並加入 15 分鐘前提醒。</li>
+              <li>「查詢本週行程」實際查詢從現在起未來 7 天。</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+
+      <aside class="route-checkpoint">
+        <p class="eyebrow">路線 A 通關</p>
+        <h3>看到這三件事才算完成</h3>
+        <ol><li>LINE 先回一份日期、時間、標題都正確的草稿。</li><li>輸入確認碼後，LINE 回覆已建立。</li><li>Google Calendar 只有一筆相符的測試活動。</li></ol>
+      </aside>
+    </section>
+
+    <section class="tutorial tutorial-word" id="word-helper" aria-labelledby="word-title">
+      <div class="tutorial-heading">
+        <div class="tutorial-route">路線 B</div>
+        <div>
+          <p class="eyebrow">LINE × GOOGLE SHEETS</p>
+          <h2 id="word-title">單詞小幫手：從官方帳號到查詢 1,094 筆詞條</h2>
+          <p>程式只做完整精確比對，不會猜測或編造答案。私人聊天可直接輸入，群組必須先寫「查詞」。</p>
+        </div>
+      </div>
+
+      <div class="steps-list">
+        <article class="step-card">
+          <b class="step-no">01</b>
+          <div>
+            <h3>建立第二個練習用 LINE 官方帳號</h3>
+            <ol>
+              <li>開啟 <a href="https://manager.line.biz/" target="_blank" rel="noopener">LINE Official Account Manager</a>，再建立一個官方帳號。</li>
+              <li>建議名稱：<code>單詞小幫手－暱稱或座號</code>。</li>
+              <li>如果你只做單詞路線，這就是今天唯一需要的練習帳號。</li>
+              <li>若已完成行事曆路線，不要重複使用那個 Channel 的 Webhook。</li>
+            </ol>
+          </div>
+        </article>
+
+        <article class="step-card">
+          <b class="step-no">02</b>
+          <div>
+            <h3>啟用 Messaging API，取得這個帳號自己的 Token</h3>
+            <ol>
+              <li>在官方帳號後台點「設定」→「Messaging API」→「啟用 Messaging API」。</li>
+              <li>選擇自己的練習用 Provider，完成條款確認。</li>
+              <li>到 LINE Developers Console 開啟<strong>單詞小幫手</strong>的 Channel。</li>
+              <li>在 Messaging API 分頁發行 Channel access token (long-lived)。</li>
+            </ol>
+            <p class="mini-warning">Provider 選定後不能更換或解除，不可選老師、其他組別或單位正式使用的 Provider。每個 Channel 的 Token 與 Webhook 要成對；貼到另一個帳號的 Token，即使 Verify 成功也可能不回覆。</p>
+          </div>
+        </article>
+
+        <article class="step-card">
+          <b class="step-no">03</b>
+          <div>
+            <h3>把 Excel 詞表轉成 Google 試算表</h3>
+            <ol>
+              <li>到<a href="https://glossary.ilrdf.org.tw/" target="_blank" rel="noopener">原住民族語學習詞表系統</a>的「資源下載」，選擇單一語別的<strong>太魯閣語</strong>，下載 2026 年公告版 Excel。</li>
+              <li>把 Excel 上傳 Google Drive，用 Google 試算表開啟，再點「檔案」→「另存為 Google 試算表」。</li>
+              <li>在最左側插入新的 A 欄，標題填「啟用」；要讓 LINE 查到的資料列填「是」，原本七欄會右移成 B～H。</li>
+              <li>確認下方工作表名稱是 <code>單詞列表</code>，第一列依序為：啟用、序號、編號、中文、族語、備註、級別、類別。</li>
+              <li>把 C 欄「編號」設為<strong>純文字</strong>，避免 <code>01-01</code> 變成日期。</li>
+            </ol>
+            <p class="step-result"><strong>完成後會看到：</strong>原生 Google 試算表，而不是仍顯示 .xlsx 的 Office 編輯模式。</p>
+          </div>
+        </article>
+
+        <article class="step-card">
+          <b class="step-no">04</b>
+          <div>
+            <h3>核對第一列 A～H 欄位</h3>
+            <div class="table-wrap" tabindex="0" aria-label="單詞列表欄位，可水平捲動">
+              <table class="field-table">
+                <thead><tr><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th></tr></thead>
+                <tbody><tr><td>啟用</td><td>序號</td><td>編號</td><td>中文</td><td>族語</td><td>備註</td><td>級別</td><td>類別</td></tr></tbody>
+              </table>
+            </div>
+            <ul>
+              <li>A 欄填「是」才會公開查詢。</li>
+              <li>C、D、E 欄是核心查詢資料：編號、中文、族語。</li>
+              <li>不要改欄位名稱、順序或工作表名稱。</li>
+              <li>範本共有 1,094 筆已啟用詞條。</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="step-card">
+          <b class="step-no">05</b>
+          <div>
+            <h3>加入單詞版 Code.gs</h3>
+            <ol>
+              <li>在詞表點「擴充功能」→「Apps Script」。</li>
+              <li>用下載的<strong>單詞版</strong> <code>Code.gs</code> 取代原本內容。</li>
+              <li>按儲存。</li>
+              <li>到左側「專案設定」→「指令碼屬性」，新增名稱 <code>LINE_TOKEN</code>，值貼上單詞 Channel 的 Token。</li>
+            </ol>
+            <p class="mini-warning">行事曆版與單詞版都有 Code.gs，但內容不同。請從正確資料夾複製，不要混用。</p>
+          </div>
+        </article>
+
+        <article class="step-card">
+          <b class="step-no">06</b>
+          <div>
+            <h3>初始化，讓 Web App 記住詞表位置</h3>
+            <ol>
+              <li>回到 Google 試算表並重新整理。</li>
+              <li>點「📖 LINE 單詞小幫手」→「初始化／檢查單詞列表」。</li>
+              <li>確認畫面回報的可查詞條數量正確。</li>
+            </ol>
+            <p class="step-result"><strong>為什麼要初始化：</strong>Web App 執行時沒有「目前開啟的試算表」，程式會把這份試算表 ID 存成 <code>WORD_SHEET_ID</code>，之後依 ID 開啟詞庫。</p>
+          </div>
+        </article>
+
+        <article class="step-card">
+          <b class="step-no">07</b>
+          <div>
+            <h3>部署 Web App，連到單詞 Channel</h3>
+            <ol>
+              <li>「部署」→「新增部署作業」→「網頁應用程式」。</li>
+              <li>執行身分選「我」；存取權選「所有人／任何人，不必登入」。</li>
+              <li>複製 <code>/exec</code> 網址，用無痕視窗確認顯示「LINE 單詞小幫手運作中」。</li>
+              <li>把這個網址貼到<strong>單詞小幫手 Channel</strong> 的 Webhook URL。</li>
+              <li>Verify 成功後開啟 Use webhook，並停用內建自動回應與測試期間的歡迎訊息。</li>
+            </ol>
+          </div>
+        </article>
+
+        <article class="step-card">
+          <b class="step-no">08</b>
+          <div>
+            <h3>用族語、中文、編號各查一次</h3>
+            <div class="command-grid">
+              <div><span>族語</span><code>kingal</code></div>
+              <div><span>中文</span><code>一</code></div>
+              <div><span>編號</span><code>01-01</code></div>
+              <div><span>使用方式</span><code>說明</code></div>
+            </div>
+            <p>以上三種查詢應回到同一筆資料。接著在詞表新增一列，A 欄填「是」，補上編號、中文與族語，再回 LINE 查詢新詞。</p>
+            <ul class="behavior-list">
+              <li>改詞表資料：立即生效，不必重新部署。</li>
+              <li>改 Code.gs：要到「管理部署作業」建立新版本。</li>
+              <li>群組選修：先開啟 Allow bot to join group chats，再輸入 <code>查詞 kingal</code>。</li>
+              <li>群組不接受只輸入單詞，避免機器人回覆每一句聊天。</li>
+              <li>同一個 LINE 群組只能加入一個官方帳號。</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+
+      <aside class="route-checkpoint word-checkpoint">
+        <p class="eyebrow">路線 B 通關</p>
+        <h3>看到這三件事才算完成</h3>
+        <ol><li>族語、中文、編號查到同一筆資料。</li><li>輸入不存在的詞時，收到「找不到」提示而不是亂猜答案。</li><li>新增一筆啟用詞條後，不重新部署也能立即查到。</li></ol>
+      </aside>
+    </section>
+
+    <section class="verify-section" id="verify" aria-labelledby="verify-title">
+      <div class="section-heading">
+        <p class="eyebrow">真人驗收</p>
+        <h2 id="verify-title">不要只看 Verify 的綠色 Success</h2>
+        <p>Verify 只檢查 Webhook 網址能不能收到測試請求；真正完成要從 LINE 一路測到 Google 服務，再看 LINE 回覆。</p>
+      </div>
+      <div class="table-wrap verify-table-wrap" tabindex="0" aria-label="兩個小幫手驗收表，可水平捲動">
+        <table class="verify-table">
+          <thead><tr><th>檢查項目</th><th>行事曆小幫手</th><th>單詞小幫手</th></tr></thead>
+          <tbody>
+            <tr><th>無痕開啟 /exec</th><td>顯示行事曆小幫手運作中</td><td>顯示單詞小幫手運作中</td></tr>
+            <tr><th>LINE Webhook</th><td>Verify Success＋Use webhook 開啟</td><td>Verify Success＋Use webhook 開啟</td></tr>
+            <tr><th>LINE 實際回覆</th><td>「行事曆說明」有回覆</td><td>「說明」有回覆</td></tr>
+            <tr><th>Google 資料連線</th><td>一次性綁定成功</td><td>初始化回報筆數正確</td></tr>
+            <tr><th>核心功能</th><td>草稿確認後只新增一筆</td><td>族語、中文、編號皆可查</td></tr>
+            <tr><th>修改驗證</th><td>測試活動時間與提醒正確</td><td>新增詞條後立即可查</td></tr>
+            <tr><th>安全檢查</th><td>截圖沒有 Token、代碼或私人行程</td><td>截圖沒有 Token 或未授權資料</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="faq-section" id="troubleshooting" aria-labelledby="faq-title">
+      <div class="section-heading compact-heading">
+        <p class="eyebrow">卡住先看這裡</p>
+        <h2 id="faq-title">常見錯誤與最短修正路線</h2>
+      </div>
+      <div class="faq-list">
+        <details><summary>試算表看不到「擴充功能」</summary><p>檔案可能仍是 .xlsx。先點「檔案」→「另存為 Google 試算表」，再從新檔案開 Apps Script。</p></details>
+        <details><summary>/exec 網址要求登入</summary><p>Web App 存取權沒有設成「所有人／任何人，不必登入」。回「部署」→「管理部署作業」檢查。</p></details>
+        <details><summary>Google 顯示「這個應用程式未經驗證」</summary><p>只有在這份程式是你自己建立、已閱讀內容，而且來源確定時，才依畫面展開「進階」並繼續授權。若專案來自陌生人、內容不確定或要求超出課程的權限，立刻停止並請老師檢查。</p></details>
+        <details><summary>部署時看不到「所有人／任何人」</summary><p>學校或單位的 Google Workspace 管理員可能禁止公開 Web App。請改用老師允許的個人練習帳號，或請管理員確認政策；不要嘗試繞過單位限制。</p></details>
+        <details><summary>Verify 成功，但 LINE 沒有回覆</summary><p>依序檢查 Use webhook、Script Property 的 LINE_TOKEN，以及 Token 和 Webhook 是否來自同一個 Channel，再看 Apps Script 執行記錄。</p></details>
+        <details><summary>LINE 同時收到兩則回答</summary><p>LINE 官方帳號的內建自動回應或歡迎訊息仍開啟。測試期間先停用，讓 Webhook 單獨回答。</p></details>
+        <details><summary>修改程式後，LINE 還是舊行為</summary><p>程式碼變更要到「管理部署作業」編輯部署並建立新版本。只有修改單詞表資料不必重新部署。</p></details>
+        <details><summary>單詞編號 01-01 變成日期</summary><p>先把 C 欄「編號」設成純文字，再重新輸入 01-01。</p></details>
+        <details><summary>行事曆只收到草稿，沒有新增活動</summary><p>這是安全設計。請檢查草稿內容，再輸入「確認行事曆＋畫面顯示的確認碼」。</p></details>
+        <details><summary>行事曆日期或時間不正確</summary><p>Apps Script 專案與 Google Calendar 的時區都要設為 Asia/Taipei，再重新建立一筆測試活動。</p></details>
+        <details><summary>第二個功能設定後，第一個功能壞了</summary><p>你可能把同一個 Channel 的 Webhook URL 換掉了。兩套獨立程式請使用兩個練習官方帳號。</p></details>
+      </div>
+    </section>
+
+    <section class="safety-section" id="safety" aria-labelledby="safety-title">
+      <div class="section-heading">
+        <p class="eyebrow">安全、資料與族語責任</p>
+        <h2 id="safety-title">課堂能成功，不代表可以直接拿去正式營運</h2>
+      </div>
+      <div class="safety-grid">
+        <article><h3>分清楚哪些是祕密</h3><p>Token 與 Channel secret 是憑證，絕對不能公開；綁定碼雖然短暫有效，也不要分享。/exec 網址不是密碼，但本課原型仍不要主動貼到公開頁面。</p></article>
+        <article><h3>只用測試資料</h3><p>行事曆不要輸入正式工作、賓客、個資或敏感排程；單詞表不要放學生個資或成績。</p></article>
+        <article><h3>知道原型限制</h3><p>純 Apps Script Web App 無法可靠讀取 LINE 的簽章標頭，因此這是教學原型，不適合承載敏感資料或正式公開服務。</p></article>
+        <article><h3>詞料要人工確認</h3><p>程式只負責查詢，不代表拼寫、語意、級別或分類必然正確。本課範例指向語發基金會 2026 年公告版；使用與改作仍須遵守官方標示，並由族語教師或資料權責者確認，不可混用不同族群詞表。</p></article>
+      </div>
+    </section>
+
+    <section class="homework-section" id="homework" aria-labelledby="homework-title">
+      <div class="section-heading">
+        <p class="eyebrow">課後作業</p>
+        <h2 id="homework-title">基礎二選一，進階再完成第二條路</h2>
+      </div>
+      <div class="homework-grid">
+        <article>
+          <span>A / 行事曆組</span>
+          <ol><li>建立一筆未來日期的虛構測試活動。</li><li>先截 LINE 草稿，再完成確認。</li><li>截取 Google Calendar 中唯一一筆完成活動。</li><li>用 100 字說明為什麼需要第二次確認。</li></ol>
+        </article>
+        <article>
+          <span>B / 單詞組</span>
+          <ol><li>新增 5 筆由老師確認的詞條。</li><li>分別用族語、中文、編號查詢。</li><li>將其中一筆 A 欄改成「否」或清空，證明它不再被查到。</li><li>附上詞料來源與授權說明。</li></ol>
+        </article>
+      </div>
+      <div class="submission-spec">
+        <h3>繳交規格</h3>
+        <ul><li>2～4 張操作成果截圖。</li><li>一張「LINE → Webhook → Apps Script → Google 服務 → LINE」資料流程圖。</li><li>100～200 字學習反思。</li><li>截圖不得出現 Token、Channel secret、綁定碼、完整 /exec 網址或私人行程。</li></ul>
+      </div>
+    </section>
+
+    <section class="prompts" id="prompts" aria-labelledby="prompts-title">
+      <h2 id="prompts-title">卡住時可直接複製的除錯提示詞</h2>
+      <p class="lede">先刪除 Token、Channel secret、完整 /exec 網址與私人資料，再把安全版本貼給 AI。一次只處理一個問題。</p>
+
+      <div class="prompt-block">
+        <label class="prompt-label" for="prompt-calendar">行事曆｜LINE 沒有回覆</label>
+        <textarea readonly id="prompt-calendar">你是一位 Google Apps Script 與 LINE Messaging API 除錯老師。
+
+我正在做 LINE 行事曆小幫手。請根據以下資訊找出最可能原因，先提供檢查順序，再提供最小修改；不要重寫整套程式。
+
+【無痕開啟 /exec 看到的文字】
+【LINE Verify 結果】
+【Use webhook 是否開啟】
+【我傳送的測試指令】
+【LINE 實際回覆】
+【Apps Script 執行記錄；請先刪除任何憑證】
+【相關函式；不要貼 Token】
+
+請分成：1. 最可能原因 2. 要在哪個畫面檢查 3. 最小修正 4. 修正後三個測試。不要要求我公開 Token、Channel secret、完整 Webhook 網址或私人行程。</textarea>
+        <button type="button" class="copy-btn" data-copy-target="prompt-calendar">複製行事曆除錯提示詞</button>
+      </div>
+
+      <div class="prompt-block">
+        <label class="prompt-label" for="prompt-word">單詞｜查不到或回覆錯誤</label>
+        <textarea readonly id="prompt-word">你是一位 Google Apps Script、Google Sheets 與 LINE Messaging API 除錯老師。
+
+我正在做 LINE 單詞小幫手。請先檢查資料格式、初始化與部署，不要先重寫程式。
+
+【工作表名稱】
+【A～H 第一列欄位】
+【初始化顯示的詞條數】
+【查詢文字】
+【LINE 實際回覆】
+【一筆匿名化範例資料】
+【Apps Script 執行記錄；請先刪除任何憑證】
+【相關函式；不要貼 Token】
+
+請分成：1. 最可能原因 2. 要在哪個畫面檢查 3. 最小修正 4. 修正後用族語、中文、編號各測一次。不要要求我公開 Token、完整 Webhook 網址、學生資料或未授權詞料。</textarea>
+        <button type="button" class="copy-btn" data-copy-target="prompt-word">複製單詞除錯提示詞</button>
+      </div>
+
+      <div class="prompt-block">
+        <label class="prompt-label" for="prompt-change">修改功能｜先保留能用版本</label>
+        <textarea readonly id="prompt-change">以下 Apps Script 目前已經可以正常運作。請只新增【一次寫一項功能】，不要改動 LINE_TOKEN、Webhook、資料欄位或現有可用流程。
+
+請先回答：
+1. 需要修改哪些函式。
+2. 哪些既有功能可能受影響。
+3. 最小修改方案。
+4. 修改後至少 6 個測試案例。
+
+等我確認方案後，再提供修改過的完整函式。不要要求我貼出任何 Token、Channel secret、完整 /exec 網址或私人資料。
+
+【目前行為】
+【想新增的單一功能】
+【已移除憑證的相關程式】</textarea>
+        <button type="button" class="copy-btn" data-copy-target="prompt-change">複製安全修改提示詞</button>
+      </div>
+    </section>
+
+    <section class="sources-section" id="sources" aria-labelledby="sources-title">
+      <div>
+        <p class="eyebrow">官方資料</p>
+        <h2 id="sources-title">畫面名稱改版時，回官方文件查證</h2>
+      </div>
+      <ul>
+        <li><a href="https://developers.line.biz/en/docs/messaging-api/getting-started/" target="_blank" rel="noopener">LINE Messaging API：開始使用</a></li>
+        <li><a href="https://developers.line.biz/en/docs/basics/channel-access-token/" target="_blank" rel="noopener">LINE：Channel access token</a></li>
+        <li><a href="https://developers.line.biz/en/docs/messaging-api/verify-webhook-url/" target="_blank" rel="noopener">LINE：驗證 Webhook URL</a></li>
+        <li><a href="https://developers.line.biz/en/docs/messaging-api/verify-webhook-signature/" target="_blank" rel="noopener">LINE：Webhook 簽章驗證</a></li>
+        <li><a href="https://developers.line.biz/en/docs/messaging-api/group-chats/" target="_blank" rel="noopener">LINE：群組聊天</a></li>
+        <li><a href="https://developers.google.com/apps-script/guides/web" target="_blank" rel="noopener">Google Apps Script：Web Apps</a></li>
+        <li><a href="https://developers.google.com/apps-script/guides/properties" target="_blank" rel="noopener">Google Apps Script：Properties Service</a></li>
+        <li><a href="https://developers.google.com/apps-script/reference/calendar" target="_blank" rel="noopener">Google Apps Script：Calendar Service</a></li>
+        <li><a href="https://glossary.ilrdf.org.tw/" target="_blank" rel="noopener">原住民族語言發展基金會：原住民族語學習詞表系統</a></li>
+      </ul>
+      <p>LINE 與 Google 後台文字可能隨改版略有不同；核心判斷仍是：自己的 Channel、自己的 Token、可公開接收的 /exec，以及完整的實際訊息測試。</p>
+    </section>
+
+    <nav class="lesson-pagination" aria-label="前後課程">
+      <a href="/class/lesson-07.html"><span>上一堂</span><strong>07｜遊戲比較與實作</strong></a>
+      <a href="/class/lesson-09.html"><span>下一堂</span><strong>09｜Google Vids 圖卡影片</strong></a>
+    </nav>
+  </main>
+
+  <footer class="shell">
+    <span>CALUMAI / AI 工具實戰進階班</span>
+    <a href="/class/">回到課程總覽</a>
+  </footer>
+  <script src="/class/lesson-08-line.js?v=20260915a" defer></script>
+</body>
+</html>

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Replaced Lesson 08's Padlet material with a complete learner-facing LINE helper handout. The new page starts from LINE Official Account registration and offers two independent routes: a confirmation-gated Google Calendar helper and a 1,094-entry Truku word lookup helper. Added downloadable Apps Script files, the word-list workbook, setup checks, troubleshooting, security guidance, assignments, official references, and removed visible links to the obsolete Padlet slides.
+
 - Added the existing five-step Google Apps Script Web App lesson to the 9/18 gamified-learning page. Learners now move from `index.html` to `Code.gs`, create the HTML file, deploy with appropriate access, distinguish `/dev` from `/exec`, update an existing deployment, test in an incognito window, and then embed the verified URL in Google Sites. The lesson uses the previously completed handout and current Google documentation rather than introducing a separate workflow.
 
 - Reworked the 9/11 Vibe Coding introduction from the supplied OXXO STEAM reference. Added a traditional-coding versus natural-language comparison, clarified teacher and AI responsibilities, added accuracy and safety checks, and placed the supplied 15-page PDF handout on the page with open and download actions.
