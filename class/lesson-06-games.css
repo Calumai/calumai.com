@@ -1,0 +1,68 @@
+.lesson-six .lesson-page{padding-top:48px;max-width:1100px}
+.lesson-six .lesson-hero{border:1px solid var(--line);border-left:8px solid var(--teal)}
+.lesson-six .lesson-hero h1{font-size:clamp(32px,4.4vw,54px);line-height:1.24;letter-spacing:-.03em}
+.lesson-six .lesson-hero .lede{font-size:19px;line-height:1.85;margin:22px 0;max-width:840px}
+.six-action,.six-download{display:inline-flex;align-items:center;justify-content:center;gap:16px;border:1px solid var(--teal);border-radius:8px;padding:12px 18px;font:700 15px/1.5 Arial,"Noto Sans TC",sans-serif;text-decoration:none;cursor:pointer}
+.six-action{color:#fff;background:var(--teal)}
+.six-download{background:#fff;color:var(--teal);flex-shrink:0}
+.six-section{margin:48px 0}
+.six-section h2{font-size:clamp(25px,3.2vw,35px);line-height:1.4;letter-spacing:-.03em;margin:0 0 18px}
+.six-section h3{line-height:1.5}
+.six-section p{line-height:1.85}
+.six-lead{font-size:19px;max-width:950px}
+.six-reasons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin:30px 0}
+.six-reasons article{border-top:2px solid var(--teal);padding-top:16px}
+.six-number{font-size:14px;letter-spacing:.1em;font-weight:700;color:var(--teal)}
+.six-reasons h3{font-size:20px;margin:10px 0}
+.six-reasons p{margin:0;color:var(--muted)}
+.six-example{background:#edf5f5;border-radius:12px;padding:24px 28px}
+.six-example h3{margin:0;font-size:20px}
+.six-example p:last-child{margin-bottom:0}
+.six-steps{list-style:none;counter-reset:steps;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;padding:0;margin:25px 0}
+.six-steps li{counter-increment:steps;border-left:1px solid var(--line);padding-left:18px}
+.six-steps li::before{content:"0" counter(steps);color:var(--teal);font-weight:700;font-size:14px}
+.six-steps h3{font-size:18px;margin:8px 0}
+.six-steps p{margin:0;color:var(--muted);font-size:15px}
+.six-prep{border-top:1px solid var(--line);padding-top:18px;color:var(--muted)}
+.six-section-heading{display:flex;justify-content:space-between;align-items:center;gap:24px}
+.six-section-heading .eyebrow{margin-bottom:10px}
+.six-section-heading h2{margin-bottom:0}
+.six-categories{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:26px 0}
+.six-categories a{position:relative;border:1px solid var(--line);border-radius:10px;padding:18px 16px;background:#fff;color:var(--ink);text-decoration:none}
+.six-categories a>span:first-child{display:block;color:var(--teal);font-size:13px;margin-bottom:7px}
+.six-categories strong{font-size:18px}
+.six-categories a>span:last-child{display:block;color:var(--teal);margin-top:12px}
+.six-categories a:hover{border-color:var(--teal);background:#f0f8f8}
+.six-game{background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px 32px;margin:18px 0;scroll-margin-top:105px;min-width:0}
+.six-game .six-category{font-size:13px;color:var(--teal);font-weight:700;letter-spacing:.04em;margin:0 0 8px}
+.six-game h3{font-size:25px;margin:0 0 12px}
+.six-game>p:not(.six-category){color:var(--muted);margin:12px 0}
+.six-game .six-material{font-size:15px}
+.six-material strong{color:var(--ink)}
+.six-prompt-details{margin-top:22px;border-top:1px solid var(--line)}
+.six-prompt-details>summary{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:16px 0 0;cursor:pointer;list-style:none;color:var(--teal);font-weight:700;min-height:48px}
+.six-prompt-details>summary::-webkit-details-marker{display:none}
+.six-prompt-details>summary span{font-size:23px;font-weight:400}
+.six-prompt-details[open]>summary span{transform:rotate(45deg)}
+.lesson-six .prompt-block{margin-bottom:0;background:#f3f7f8;border:1px solid var(--line);padding:20px}
+.lesson-six .prompt-label{color:var(--teal);letter-spacing:0;display:block;font-size:15px}
+.lesson-six .prompt-block textarea{height:400px;min-height:210px;background:#fff;color:var(--ink);border-color:#aebfc5;line-height:1.85;font-size:16px;margin:14px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.lesson-six .copy-btn{background:var(--teal);color:#fff;font-size:15px;min-height:44px}
+.lesson-six .copy-btn.copied{background:#d9ece9;color:#155650}
+.six-copy-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.six-copy-status,.six-status{font-size:14px;color:var(--muted)}
+.six-status:empty{display:none}
+.six-practice-list{padding-left:24px;max-width:900px}
+.six-practice-list li{padding-left:10px;margin:24px 0}
+.six-practice-list li::marker{font-weight:700;color:var(--teal)}
+.six-practice-list h3{font-size:19px;margin:0 0 5px}
+.six-practice-list p{margin:0;color:var(--muted)}
+.six-finish{border-left:4px solid var(--teal);background:#fff;padding:22px 26px;margin-top:30px}
+.six-finish h3{margin:0}
+.six-finish ul{padding-left:22px;line-height:1.9}
+.six-finish p{margin-bottom:0}
+.lesson-six a:focus-visible,.lesson-six button:focus-visible,.lesson-six summary:focus-visible,.lesson-six textarea:focus-visible{outline:3px solid #147d7e;outline-offset:4px}
+.lesson-six [hidden]{display:none!important}
+@media(max-width:900px){.six-section-heading{display:block}.six-download{margin-top:20px}.six-categories{grid-template-columns:repeat(3,minmax(0,1fr))}.six-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.lesson-six .nav{flex-direction:column;gap:10px}.lesson-six .nav nav{justify-content:flex-start;gap:8px 16px}.lesson-six .nav nav a{font-size:13px}.lesson-six .lesson-page{padding-top:25px}.lesson-six .lesson-hero{padding:25px 22px}.lesson-six .lesson-hero .lede,.six-lead{font-size:17px}.six-section{margin:36px 0}.six-reasons{grid-template-columns:1fr;gap:20px}.six-categories{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.six-game{padding:23px 19px;scroll-margin-top:135px}.six-game h3{font-size:23px}.six-example{padding:22px}.lesson-six .prompt-block{padding:14px}.lesson-six .prompt-block textarea{height:340px;padding:12px}.six-copy-row{align-items:flex-start;flex-direction:column;gap:8px}.six-steps{gap:22px 14px}.six-steps li{padding-left:12px}.six-finish{padding:20px}.six-action{font-size:14px}.six-practice-list li{padding-left:4px}.lesson-six section[id]{scroll-margin-top:135px}}
+@media(prefers-reduced-motion:reduce){.lesson-six{scroll-behavior:auto}html:has(.lesson-six){scroll-behavior:auto}}
