@@ -8,9 +8,9 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
   <title>AI 圖片工作室｜北市府 AI 教學應用</title>
   <link rel="icon" href="/assets/calumai-logo-mark.png">
-  <link rel="stylesheet" href="styles.css?v=20260911-vibestudio1">
+  <link rel="stylesheet" href="styles.css?v=20260916-prompt-expert1">
   <script src="core.js?v=20260911-vibestudio1" defer></script>
-  <script src="app.js?v=20260911-vibestudio1" defer></script>
+  <script src="app.js?v=20260916-prompt-expert1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -23,6 +23,7 @@
     <nav class="shell studio-nav" id="studio-nav" aria-label="創作工作室">
       <a href="./" aria-current="page">圖片工作室</a>
       <a href="/class/vibe" id="studio-vibe-link" target="_blank" rel="noopener">Vibe Coding 實驗室<span class="sr-only">（另開分頁，保留此頁）</span></a>
+      <a href="/class/prompt-expert/" id="studio-prompt-expert-link" target="_blank" rel="noopener">提示詞小專家<span class="sr-only">（另開分頁，保留此頁）</span></a>
     </nav>
   </header>
 
@@ -31,7 +32,7 @@
       <div>
         <p class="kicker">課堂限定練習</p>
         <h1 id="page-title">AI 圖片工作室</h1>
-        <p>先寫自己的話，讓 AI 幫你看、幫你改，最後再生成圖片。</p>
+        <p>先寫自己的話，交給提示詞小專家健檢，確認修改版後再生成圖片。</p>
       </div>
       <aside class="privacy-note">
         <strong>金鑰不會出現在網頁裡</strong>
@@ -148,7 +149,14 @@
                 <p class="form-message" id="prompt-message" role="status" aria-live="polite"></p>
                 <div class="panel-actions">
                   <button class="button secondary" type="button" data-step-previous="1">上一步</button>
-                  <button class="button primary" id="review-prompt-button" type="submit">請 AI 給修改建議</button>
+                  <button class="button primary" id="review-prompt-button" type="submit">交給提示詞小專家<span class="sr-only">（另開分頁，保留原文）</span></button>
+                </div>
+                <div class="prompt-expert-fallback" id="prompt-expert-fallback" hidden>
+                  <p>也可以手動複製，到小專家做提示詞健檢。</p>
+                  <div class="prompt-expert-fallback-actions">
+                    <button class="button secondary" id="copy-prompt-for-expert" type="button">複製原文</button>
+                    <a class="button secondary" id="open-prompt-expert" href="/class/prompt-expert/" target="_blank" rel="noopener">開啟提示詞小專家</a>
+                  </div>
                 </div>
               </form>
             </section>
@@ -156,7 +164,7 @@
             <section class="studio-panel" data-studio-panel="3" aria-labelledby="feedback-title" hidden>
               <header class="panel-heading">
                 <span>第 3 關</span>
-                <h4 id="feedback-title" tabindex="-1">AI 先告訴你怎麼改會更清楚</h4>
+                <h4 id="feedback-title" tabindex="-1">提示詞小專家的健檢回饋</h4>
                 <p>這裡只看回饋，不會改掉你的原文。</p>
               </header>
               <div class="prompt-quote"><span>你的原文</span><p id="feedback-original-prompt"></p></div>
@@ -175,7 +183,7 @@
               </article>
               <div class="panel-actions">
                 <button class="button secondary" type="button" data-step-previous="2">回去修改原文</button>
-                <button class="button secondary" id="feedback-retry" type="button" hidden>重新取得回饋</button>
+                <button class="button secondary" id="feedback-retry" type="button" hidden>重新交給提示詞小專家</button>
                 <button class="button primary" id="show-revised-prompt" type="button" hidden>下一關：看 AI 修改版</button>
               </div>
             </section>
@@ -183,7 +191,7 @@
             <section class="studio-panel" data-studio-panel="4" aria-labelledby="revision-title" hidden>
               <header class="panel-heading">
                 <span>第 4 關</span>
-                <h4 id="revision-title" tabindex="-1">AI 修改版已完成</h4>
+                <h4 id="revision-title" tabindex="-1">小專家的修改版已帶回</h4>
                 <p>這段文字會拿來生成圖片，你還可以直接修改。</p>
               </header>
               <div class="field">

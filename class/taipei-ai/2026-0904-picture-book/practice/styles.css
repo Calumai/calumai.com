@@ -192,6 +192,24 @@ strong {
   color: var(--teal-dark);
 }
 
+.prompt-expert-fallback {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--teal-soft);
+}
+
+.prompt-expert-fallback p {
+  margin: 0 0 .6rem;
+}
+
+.prompt-expert-fallback-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+}
+
 .studio-result-actions {
   display: grid;
   gap: .55rem;
@@ -1179,6 +1197,25 @@ footer a:focus-visible {
 
   .header-inner {
     min-height: 64px;
+  }
+
+  .studio-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .35rem;
+  }
+
+  .studio-nav a {
+    min-width: 0;
+    padding: .55rem .3rem;
+    font-size: .76rem;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .prompt-expert-fallback-actions .button {
+    width: 100%;
+    white-space: normal;
   }
 
   .practice-intro {

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="貼上你的想法，檢查提示詞哪裡不清楚，取得保留原意的修改建議。給老師的提示詞小專家。">
+  <meta name="theme-color" content="#196b65">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <title>提示詞小專家｜CalumAI</title>
+  <link rel="stylesheet" href="styles.css?v=20260916">
+  <script src="/class/taipei-ai/2026-0904-picture-book/practice/core.js?v=20260916" defer></script>
+  <script src="core.js?v=20260916" defer></script><script src="app.js?v=20260916" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到主要內容</a>
+  <header class="site-header"><div class="shell header-row"><a class="brand" href="/class/">CALUMAI <span>/ CLASS</span></a><div class="session"><span id="session-status" role="status">正在確認課堂…</span><button id="join-button" class="text-button" type="button" hidden>加入課堂</button><button id="logout-button" class="text-button" type="button" hidden>離開課堂</button></div></div>
+    <nav class="shell studio-nav" aria-label="創作工作室"><a href="/class/taipei-ai/2026-0904-picture-book/practice/" target="_blank" rel="noopener">圖片工作室</a><a href="/class/vibe" target="_blank" rel="noopener">Vibe Coding 實驗室</a><a href="./" aria-current="page">提示詞小專家</a></nav>
+  </header>
+  <main id="main" class="shell">
+    <p id="demo-banner" class="notice" hidden>本機示範：使用固定規則展示操作，沒有呼叫 AI，也不會扣課堂額度。</p>
+    <p id="handoff-status" class="notice" role="status" hidden></p>
+    <section class="intro"><div><p class="eyebrow">把想法說清楚，AI 才能幫上忙</p><h1>提示詞小專家</h1><p>貼上你想請 AI 做的事。幫你找出不清楚的地方，<br class="desktop-only">整理成更好用的提示詞。</p></div><p class="intro-note">圖片、教材、教案、互動遊戲<br>都可以從一句話開始。</p></section>
+    <div class="workbench">
+      <section class="input-panel" aria-labelledby="input-title">
+        <div class="section-label"><span>你的想法</span><small>不必先學會專業術語</small></div>
+        <h2 id="input-title">想請 AI 幫你做什麼？</h2>
+        <form id="review-form" novalidate>
+          <label class="sr-only" for="prompt-input">貼上你的提示詞</label>
+          <textarea id="prompt-input" rows="10" maxlength="4000" placeholder="例如：我想做一個給國小學生玩的族語單字配對遊戲。單詞和答案由我提供。"></textarea>
+          <div class="field-meta"><span>原文會保留，不會被 AI 蓋掉。</span><span id="prompt-count">0 / 4000</span></div>
+          <fieldset class="purpose"><legend>這次想做什麼？<span>不選也可以</span></legend><div class="purpose-options"><label><input type="radio" name="purpose" value="auto" checked><span>自動判斷</span></label><label><input type="radio" name="purpose" value="image"><span>圖片</span></label><label><input type="radio" name="purpose" value="teaching"><span>教材／教案</span></label><label><input type="radio" name="purpose" value="vibe"><span>Vibe Coding</span></label></div></fieldset>
+          <button id="review-button" class="button primary" type="submit">幫我健檢 <span aria-hidden="true">→</span></button>
+        </form>
+        <p id="review-status" role="status" aria-live="polite"></p>
+        <div id="review-error" class="error-box" hidden><p id="error-message" role="alert"></p><button id="retry-button" class="button secondary" type="button" hidden>重試同一次健檢</button></div>
+        <p class="privacy">請不要貼學生個資、密碼或 API 金鑰。族語與文化內容，仍由老師確認。</p>
+      </section>
+      <section class="output-panel" aria-labelledby="output-title">
+        <div id="empty-result"><div class="section-label"><span>一起把需求說清楚</span></div><h2 id="output-title">不知道怎麼寫，也沒關係。</h2><p>先貼上你原本會對 AI 說的話。健檢後，這裡會出現：</p><ul class="empty-list"><li><span>01</span><div><strong>最值得補充的地方</strong><p>哪裡容易讓 AI 猜錯，以及可以怎麼說。</p></div></li><li><span>02</span><div><strong>可以直接用的修正版</strong><p>保留你的想法，內容仍然由你決定。</p></div></li></ul></div>
+        <div id="review-result" hidden>
+          <div class="section-label"><span id="result-label">AI 的修改建議</span><span id="stale-badge" class="badge" hidden>原文已修改</span></div>
+          <h2>可以這樣說得更清楚</h2><p id="feedback-output" class="feedback"></p>
+          <div class="revision-heading"><label for="revised-prompt">整理後的提示詞</label><small>你可以再改幾個字</small></div>
+          <textarea id="revised-prompt" rows="9" maxlength="4000"></textarea>
+          <div class="result-actions"><button id="copy-button" class="button primary" type="button">複製提示詞</button><button id="recheck-button" class="button secondary" type="button">拿這版再健檢</button><button id="return-button" class="button secondary" type="button" hidden>確認帶回圖片工作室</button></div>
+          <p id="result-message" role="status" aria-live="polite"></p>
+          <details class="reviewed-original"><summary>查看這次健檢的原文</summary><p id="reviewed-original"></p></details>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer class="shell footer">沿用課堂 AI 服務。健檢只提供提示詞建議，不會自動生成圖片或改動你的教材。</footer>
+  <dialog id="access-dialog" aria-labelledby="access-title"><div class="dialog-header"><h2 id="access-title">加入課堂，就能使用 AI</h2><button id="close-access" class="text-button" type="button">先不用</button></div><p>沿用圖片工作室的課堂資格，已加入的人不必再輸入。</p><form id="claim-form"><label for="class-code">課堂碼</label><input id="class-code" name="class_code" autocomplete="off" maxlength="128" required><label for="nickname">暱稱</label><input id="nickname" name="nickname" autocomplete="nickname" maxlength="40" required><label class="consent"><input id="consent" type="checkbox" required><span>我不會輸入個資、機密或未經授權的內容。</span></label><button id="claim-button" class="button primary" type="submit">加入並回到提示詞</button><p id="claim-message" role="status"></p></form></dialog>
+</body></html>

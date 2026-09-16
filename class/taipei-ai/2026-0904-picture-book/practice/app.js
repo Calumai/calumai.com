@@ -35,6 +35,7 @@
   let highestStep = 1;
   let assistState = core.createGenerationState("text");
   let imageState = core.createGenerationState("image");
+  let promptExpertHandoff = null;
   let promptDraft = {
     purpose: "",
     originalPrompt: "",
@@ -110,21 +111,6 @@
         ok: false,
         request_id: "local-preview",
         error: { code: "UNAUTHENTICATED", message: "請先輸入課堂碼，進入練習室。", retryable: false }
-      };
-    }
-    if (pathname === "/generate/text") {
-      const original = String(body && body.source_notes || "一個清楚的主題").trim();
-      return {
-        ok: true,
-        request_id: "local-preview-text",
-        kind: "text",
-        content: JSON.stringify({
-          feedback: "這是本機預覽文字，不是 AI 回覆。可以再補上主角、所在位置、正在做的事與畫面重點。",
-          revised_prompt: `${original}。主體清楚，動作自然，構圖有明確焦點，畫面不要出現無關文字或浮水印。`
-        }),
-        usage: { input_tokens: 0, output_tokens: 0, total_tokens: 0 },
-        remaining: { ...previewQuota },
-        classroom_remaining: { image: 40 }
       };
     }
     return {
@@ -442,62 +428,80 @@
     updateAvailability();
   }
 
-  function buildAssistantRequest() {
-    const request = {
-      topic: `圖片提示詞檢視｜${purposeLabel()}`,
-      audience: "AI 繪圖初學教師",
-      duration_minutes: 5,
-      objective: "讓使用者看懂原始描述缺少什麼，並取得可直接生圖的修正版",
-      source_notes: promptDraft.originalPrompt,
-      requirements: "只回傳一個 JSON 物件，欄位只能有 feedback 與 revised_prompt。feedback 請用白話說明最優先調整的兩至三點；revised_prompt 要保留原意，補足主體、場景、動作、構圖與必要限制。不得捏造族語、族群文化、服飾、圖紋、器物、儀式或事實。資料不足時，請在修正版寫明不要自行添加未確認細節。"
-    };
-    const idempotencyKey = core.createIdempotencyKey("text", makeUuid());
-    return {
-      idempotencyKey,
-      payload: core.buildTextPayload(request, idempotencyKey)
-    };
+  function openPromptExpert() {
+    const prompt = byId("original-prompt").value.trim();
+    if (prompt.length < 3 || prompt.length > 4000) {
+      byId("prompt-message").textContent = "請用至少 3 個字描述圖片，不需要寫很長。";
+      return;
+    }
+    if (!currentSession || imageState.phase === "loading") return;
+    // Each handoff belongs to one child window and the exact source draft.
+    // No prompt, classroom identity or credential is placed in the URL.
+    const id = makeUuid();
+    const child = globalThis.open(`/class/prompt-expert/#picture=${id}`, "_blank");
+    promptExpertHandoff = child && !child.closed
+      ? { child, id, originalPrompt: prompt, purpose: promptDraft.purpose, purposeLabel: purposeLabel(), accepted: null }
+      : null;
+    byId("prompt-expert-fallback").hidden = Boolean(promptExpertHandoff);
+    byId("prompt-message").textContent = promptExpertHandoff
+      ? "已開啟提示詞小專家。完成健檢後，按「帶回圖片工作室」；這一頁和原文會保留。"
+      : "瀏覽器擋住了新分頁。請允許開啟彈出視窗後再按一次，或複製原文到提示詞小專家。";
   }
 
-  async function performPromptReview(isRetry) {
-    if (!isRetry) {
-      const request = buildAssistantRequest();
-      assistState = core.transitionGeneration(assistState, {
-        type: "start",
-        idempotencyKey: request.idempotencyKey,
-        request: request.payload
-      });
-    } else {
-      assistState = core.transitionGeneration(assistState, { type: "retry" });
+  globalThis.addEventListener("message", (event) => {
+    const handoff = promptExpertHandoff;
+    const message = event.data;
+    if (!handoff || event.origin !== globalThis.location.origin || event.source !== handoff.child
+      || !message || typeof message !== "object" || message.id !== handoff.id) return;
+    if (message.type === "calum-prompt-ready") {
+      handoff.child.postMessage({
+        type: "calum-prompt-source", id: handoff.id, prompt: handoff.originalPrompt,
+        purpose: "image", purposeLabel: handoff.purposeLabel
+      }, globalThis.location.origin);
+      return;
     }
-    renderAssistantState();
-    try {
-      const payload = await callJsonService("/generate/text", "POST", assistState.request, 70000);
-      const result = core.normalizeGenerationResult("text", payload);
-      let parsed;
-      try {
-        parsed = core.parsePromptAssistantResult(result.content);
-      } catch {
-        throw {
-          code: "AI_RESPONSE_INVALID",
-          message: "AI 回覆格式不完整。",
-          retryable: true,
-          requestId: result.requestId,
-          httpStatus: 0
-        };
-      }
-      promptDraft.feedback = parsed.feedback;
-      promptDraft.revisedPrompt = parsed.revisedPrompt;
-      byId("revised-prompt").value = parsed.revisedPrompt;
-      assistState = core.transitionGeneration(assistState, { type: "success", result });
-      highestStep = Math.max(highestStep, 4);
-      updateSessionFromResult(result);
-      updateDraftSummary();
-    } catch (error) {
-      assistState = core.transitionGeneration(assistState, { type: "failure", error });
+    if (message.type !== "calum-prompt-result") return;
+    const acknowledge = (ok, text) => handoff.child.postMessage({
+      type: "calum-prompt-accepted", id: handoff.id, ok, message: text
+    }, globalThis.location.origin);
+    if (typeof message.feedback !== "string" || typeof message.revisedPrompt !== "string"
+      || !message.feedback.trim() || message.feedback.length > 4000
+      || message.revisedPrompt.trim().length < 3 || message.revisedPrompt.length > 4000) {
+      acknowledge(false, "建議內容不完整，或超過 4000 個字。請縮短後重新帶回。");
+      return;
     }
+    if (handoff.accepted) {
+      const same = handoff.accepted.feedback === message.feedback
+        && handoff.accepted.revisedPrompt === message.revisedPrompt;
+      acknowledge(same, same ? "這份建議已帶回，沒有重複覆蓋。" : "這次建議已帶回。若要再修改，請從圖片工作室重新開啟小專家。");
+      return;
+    }
+    if (!currentSession || imageState.phase === "loading") {
+      acknowledge(false, "圖片工作室目前無法接收。請先回到圖片工作室確認課堂狀態及圖片是否仍在生成。");
+      return;
+    }
+    if (byId("original-prompt").value.trim() !== handoff.originalPrompt || promptDraft.purpose !== handoff.purpose) {
+      acknowledge(false, "圖片工作室的原文或用途已變更，沒有覆蓋新內容。請回到圖片工作室，重新交給小專家。");
+      byId("prompt-message").textContent = "原文或用途已更新，舊的 AI 建議沒有套用。請重新交給提示詞小專家。";
+      return;
+    }
+    handoff.accepted = { feedback: message.feedback, revisedPrompt: message.revisedPrompt };
+    promptDraft.originalPrompt = handoff.originalPrompt;
+    promptDraft.feedback = message.feedback.trim();
+    promptDraft.revisedPrompt = message.revisedPrompt.trim();
+    byId("feedback-original-prompt").textContent = handoff.originalPrompt;
+    byId("revised-prompt").value = promptDraft.revisedPrompt;
+    byId("final-prompt-output").textContent = "";
+    byId("revision-message").textContent = "提示詞小專家的修改版已帶回。確認後再進行圖片生成。";
+    byId("prompt-message").textContent = "修改版已帶回，原文保留。";
+    assistState = core.transitionGeneration(assistState, { type: "success", result: handoff.accepted });
+    resetImage();
+    highestStep = 4;
     renderAssistantState();
-    updateStepNavigation();
-  }
+    updateDraftSummary();
+    setStudioStep(4);
+    acknowledge(true, "已帶回圖片工作室的修改版，原文保留，尚未生成圖片。");
+  });
 
   async function performImageGeneration(isRetry) {
     const prompt = promptDraft.revisedPrompt.trim();
@@ -603,23 +607,20 @@
 
   promptForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const prompt = byId("original-prompt").value.trim();
-    promptDraft.originalPrompt = prompt;
-    if (prompt.length < 3 || prompt.length > 4000) {
-      byId("prompt-message").textContent = "請用至少 3 個字描述圖片，不需要寫很長。";
-      return;
-    }
-    byId("prompt-message").textContent = "";
-    byId("feedback-original-prompt").textContent = prompt;
-    promptDraft.feedback = "";
-    promptDraft.revisedPrompt = "";
-    resetImage();
-    highestStep = Math.max(highestStep, 3);
-    setStudioStep(3);
-    performPromptReview(false);
+    openPromptExpert();
   });
 
-  byId("feedback-retry").addEventListener("click", () => performPromptReview(true));
+  byId("feedback-retry").addEventListener("click", openPromptExpert);
+  byId("copy-prompt-for-expert").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(byId("original-prompt").value.trim());
+      byId("prompt-message").textContent = "原文已複製，開啟提示詞小專家後直接貼上即可。";
+    } catch {
+      byId("original-prompt").focus();
+      byId("original-prompt").select();
+      byId("prompt-message").textContent = "瀏覽器未允許複製，已選取原文。請按 Ctrl+C，或長按文字選擇複製。";
+    }
+  });
   byId("show-revised-prompt").addEventListener("click", () => {
     byId("revised-prompt").value = promptDraft.revisedPrompt;
     updateDraftSummary();

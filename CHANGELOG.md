@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Added a standalone teacher-friendly prompt expert at `/class/prompt-expert/`, reusing the existing classroom text relay. Teachers can review a prompt, edit and copy the revision, and review it again. The image studio opens the expert with the original text and selected purpose; revisions return only after confirmation, without generating an image. Preserved existing image and Vibe generation flows.
+- Verified 446 local application tests (including 16 prompt-expert core/browser checks), 64 relay tests, build and relay dry-run. Real production verification is recorded after release; local examples are explicitly labeled as rule-based demonstrations.
+
 - Moved the Lesson 04 audio and synchronization explanations into a standalone handout, linked from the lesson header and a prominent entry card. Preserved the library analogy, upload/sync SOP, deliberate-error exercise and troubleshooting; old audio section links now open the corresponding section on the new page. Verified wording against the existing GAS implementation without changing it.
 
 - Kept Lesson 06 HTML downloads unchanged by automatic site analytics: download buttons now request plain-text copies and save them with the original `.html` filenames. Applied the same delivery to the game menu; the offline ZIP still contains only the six HTML files and teacher instructions.
