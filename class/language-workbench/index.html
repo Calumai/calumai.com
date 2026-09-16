@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="為族語推廣工作整理需求、產生提示詞與保存工作紀錄。十二個實用工具，免登入，資料留在自己的瀏覽器。">
+  <meta name="theme-color" content="#115e59">
+  <title>語推 AI 工作台｜CalumAI</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./catalog.js" defer></script>
+  <script src="./store.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要內容</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#home"><span class="brand-mark" aria-hidden="true">語</span><span>語推 AI 工作台<small>CALUMAI · 日常工作的好幫手</small></span></a>
+      <nav aria-label="主要導覽"><a href="#home">工作工具</a><a href="#records">工作紀錄</a><a href="#settings">設定與備份</a></nav>
+    </div>
+  </header>
+  <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+  <main id="main" tabindex="-1"></main>
+  <footer class="site-footer"><span>CalumAI 語推 AI 工作台</span><span>資料只存在這個瀏覽器，請定期<a href="#settings">下載備份</a>。</span><a href="/class/prompt-expert/" target="_blank" rel="noopener noreferrer">提示詞小專家 ↗</a></footer>
+  <noscript><p class="panel">請開啟瀏覽器的 JavaScript，才能使用提示詞工具和本機紀錄。</p></noscript>
+</body>
+</html>
