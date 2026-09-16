@@ -233,6 +233,7 @@
     window.scrollTo({ top: 0 }); main.focus({ preventScroll: true });
   }
   window.addEventListener('hashchange', route);
+  document.querySelector('.skip-link').addEventListener('click', event => { event.preventDefault(); main.focus(); });
   window.addEventListener('beforeunload', event => { if (activeTool && unpersisted) persistDraft(); if (unpersisted) { event.preventDefault(); event.returnValue = ''; } });
   window.addEventListener('storage', event => {
     if (event.key !== 'calumai.yutui.v1.state') return;
