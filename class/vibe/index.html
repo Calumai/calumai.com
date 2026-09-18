@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="CALUMAI Vibe Coding 實驗室：用自然語言產生或修改單一 HTML 教學作品，直接預覽、匯入圖片並下載。">
+  <meta name="theme-color" content="#176b62">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; frame-src data: blob:; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <title>Vibe Coding 實驗室｜CALUMAI</title>
+  <link rel="stylesheet" href="styles.css?v=20260918">
+  <script src="/class/taipei-ai/2026-0904-picture-book/practice/core.js?v=20260918" defer></script>
+  <script src="app.js?v=20260918" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="shell header-row">
+      <a class="brand" href="/class/">CALUMAI <span>/ CLASS</span></a>
+      <div class="session">
+        <span id="session-status" role="status">正在確認課堂…</span>
+        <button id="join-button" class="text-button" type="button" hidden>加入課堂</button>
+        <button id="logout-button" class="text-button" type="button" hidden>離開課堂</button>
+      </div>
+    </div>
+    <nav class="shell studio-nav" aria-label="創作工作室">
+      <a href="/class/taipei-ai/2026-0904-picture-book/practice/" target="_blank" rel="noopener">圖片工作室</a>
+      <a href="./" aria-current="page">Vibe Coding 實驗室</a>
+      <a href="/class/prompt-expert/" target="_blank" rel="noopener">提示詞小專家</a>
+    </nav>
+  </header>
+
+  <main id="main" class="shell">
+    <p id="demo-banner" class="notice" hidden>本機示範模式：會產生固定範例，不會呼叫 AI，也不會扣課堂額度。</p>
+
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">VIBE CODING LAB</p>
+        <h1 id="page-title">把一句想法，做成可以玩的網頁。</h1>
+        <p>老師只要說明「學生要做什麼」，AI 先做第一版；你可以直接改程式、試玩，再請 AI 繼續修改。</p>
+      </div>
+      <aside>
+        <strong>這裡先做作品，不會自動發布</strong>
+        <p>草稿存在這台裝置。完成後可以下載單一 HTML；公開網址與版本發布會另外處理。</p>
+      </aside>
+    </section>
+
+    <section class="lab-grid" aria-label="Vibe Coding 工作區">
+      <div class="left-column">
+        <section class="panel prompt-panel">
+          <div class="panel-heading">
+            <div><span>01</span><h2>跟 AI 說你要做什麼</h2></div>
+            <small>不知道術語也可以</small>
+          </div>
+          <label for="prompt-input">需求</label>
+          <textarea id="prompt-input" rows="9" maxlength="4000" placeholder="例如：做一個給國小學生玩的族語單字配對遊戲。詞彙和中文答案由我提供；配對成功要顯示例句，手機也能操作。"></textarea>
+          <div class="field-meta"><span>族語、答案與文化資料請由老師提供。</span><span id="prompt-count">0 / 4000</span></div>
+          <div class="actions">
+            <button id="generate-button" class="button primary" type="button">請 AI 製作</button>
+            <button id="improve-button" class="button secondary" type="button">修改目前版本</button>
+          </div>
+          <p id="ai-status" class="status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="panel asset-panel">
+          <div class="panel-heading">
+            <div><span>02</span><h2>加入圖片素材</h2></div>
+            <small>可從圖片工作室下載後加入</small>
+          </div>
+          <label class="upload-box" for="asset-input">
+            <strong>選擇圖片</strong>
+            <span>PNG / JPG / WebP，單張最多 1 MB</span>
+            <input id="asset-input" type="file" accept="image/png,image/jpeg,image/webp" multiple>
+          </label>
+          <div id="asset-list" class="asset-list" aria-live="polite">
+            <p class="empty-note">還沒有圖片素材。</p>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel code-panel">
+        <div class="panel-heading">
+          <div><span>03</span><h2>程式碼</h2></div>
+          <small id="save-state">草稿會自動保存在這個瀏覽器。</small>
+        </div>
+        <label class="sr-only" for="code-editor">完整 HTML 程式碼</label>
+        <textarea id="code-editor" class="code-editor" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="AI 產生的完整 HTML 會出現在這裡；也可以直接貼上自己的 HTML。"></textarea>
+        <div class="code-actions">
+          <button id="preview-button" class="button primary" type="button">更新預覽</button>
+          <button id="undo-button" class="button secondary" type="button" disabled>還原上一版</button>
+          <button id="download-button" class="button secondary" type="button">下載 HTML</button>
+          <button id="clear-button" class="text-button danger" type="button">清空</button>
+        </div>
+      </section>
+
+      <section class="panel preview-panel">
+        <div class="panel-heading">
+          <div><span>04</span><h2>即時試玩</h2></div>
+          <small>預覽在隔離沙盒中執行</small>
+        </div>
+        <div class="preview-shell">
+          <iframe id="preview-frame" title="Vibe Coding 作品預覽" sandbox="allow-scripts allow-forms allow-modals" referrerpolicy="no-referrer"></iframe>
+          <div id="preview-empty" class="preview-empty">產生或貼上 HTML 後，按「更新預覽」。</div>
+        </div>
+        <p class="preview-note">預覽不會取得 CALUMAI 的登入資料、localStorage 或主站 DOM。</p>
+      </section>
+    </section>
+  </main>
+
+  <footer class="shell footer">CALUMAI / Vibe Coding 實驗室 · 草稿保存在目前裝置，不會自動公開。</footer>
+
+  <dialog id="access-dialog" aria-labelledby="access-title">
+    <div class="dialog-header">
+      <h2 id="access-title">加入課堂，就能使用 AI</h2>
+      <button id="close-access" class="text-button" type="button">先不用</button>
+    </div>
+    <p>沿用圖片工作室與提示詞小專家的課堂資格；已加入的人通常不需要再輸入。</p>
+    <form id="claim-form">
+      <label for="class-code">課堂碼</label>
+      <input id="class-code" name="class_code" autocomplete="off" maxlength="128" required>
+      <label for="nickname">暱稱</label>
+      <input id="nickname" name="nickname" autocomplete="nickname" maxlength="40" required>
+      <label class="consent"><input id="consent" type="checkbox" required><span>我不會輸入個資、API 金鑰、機密或未經授權的內容。</span></label>
+      <button id="claim-button" class="button primary" type="submit">加入課堂</button>
+      <p id="claim-message" class="status" role="status"></p>
+    </form>
+  </dialog>
+
+  <dialog id="confirm-clear-dialog" aria-labelledby="confirm-clear-title">
+    <h2 id="confirm-clear-title">清空目前作品？</h2>
+    <p>需求、程式碼與本機草稿都會清除。這個動作無法復原。</p>
+    <div class="actions">
+      <button id="confirm-clear" class="button danger-button" type="button">確定清空</button>
+      <button id="cancel-clear" class="button secondary" type="button">取消</button>
+    </div>
+  </dialog>
+</body>
+</html>
