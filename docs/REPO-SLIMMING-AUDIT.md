@@ -114,19 +114,14 @@ node scripts/audit-repo-size.js --json
 
 ## 下一批候選
 
-### 1. Lesson 01 RPG ZIP
+### 1. Lesson 01 RPG ZIP（已完成）
 
-`class/examples/lesson-01-rpg-examples.zip` 約 **24.52 MiB**。
-
-同一頁已另外提供：
+`class/examples/lesson-01-rpg-examples.zip` 約 **24.52 MiB**，Git 歷史記錄為「Add lesson one RPG example PDF archive」，而同一堂課後續已將兩份 PDF 個別加入：
 
 - `Taroko_RPG_Adventure.pdf` 約 12.25 MiB
 - `Truku_Classroom_RPG_Adventure.pdf` 約 12.29 MiB
 
-下一輪應先確認 ZIP 是否只是這兩份 PDF 的便利包；若是，可以：
-
-- 移除 ZIP，保留兩份個別下載；或
-- 把 ZIP 移到 GitHub Release / 專用下載儲存。
+2026-09-18 已移除 ZIP 便利包，改為兩份 PDF 個別下載。預覽功能與兩份正式 PDF 均保留。
 
 ### 2. 9/4 課程包 ZIP
 
