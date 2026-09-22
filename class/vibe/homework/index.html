@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#176b62"><title>作業小幫手｜CALUMAI</title>
+<link rel="stylesheet" href="styles.css?v=20260922">
+<script src="/class/taipei-ai/2026-0904-picture-book/practice/core.js?v=20260922" defer></script>
+<script src="app.js?v=20260922" defer></script>
+</head>
+<body>
+<header><a href="/class/vibe/">CALUMAI / HOMEWORK</a><span id="session-status">確認課堂中…</span></header>
+<main>
+<section class="hero"><p>HOMEWORK HELPER</p><h1>拍作業，我幫你看題目。</h1><div>預設用國小三年級程度回答；不照抄題目範例。</div></section>
+<section class="card">
+<label class="upload" for="photo"><strong>拍照或選擇作業圖片</strong><span>JPG / PNG / WebP</span><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label>
+<div id="preview-wrap" hidden><img id="preview" alt="作業照片"><button id="remove" type="button">重新選擇</button></div>
+<label for="note">還有什麼要求？（可不填）</label><textarea id="note" maxlength="500" placeholder="例如：只要第 2 題、造句不要跟範例一樣"></textarea>
+<button id="solve" class="primary" type="button">看圖片並解答</button><p id="status" aria-live="polite"></p>
+</section>
+<section id="answer-card" class="card" hidden><div class="answer-head"><h2>作業答案</h2><button id="again" type="button">換一個答案</button></div><div id="answer"></div></section>
+</main>
+<dialog id="access"><h2>先加入課堂</h2><form id="claim"><label>課堂碼<input id="class-code" required></label><label>暱稱<input id="nickname" required></label><label class="check"><input id="consent" type="checkbox" required>我不會上傳個資或機密內容。</label><button class="primary">加入</button><p id="claim-msg"></p></form></dialog>
+</body></html>
