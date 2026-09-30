@@ -114,4 +114,7 @@
       setTimeout(() => { button.textContent = original; }, 2500);
     });
   });
+  if (location.hash === '#gas-score-handout') {
+    requestAnimationFrame(() => document.getElementById('gas-score-handout').scrollIntoView({ block: 'start' }));
+  }
 })();
