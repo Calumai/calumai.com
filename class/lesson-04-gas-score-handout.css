@@ -1,4 +1,7 @@
-.gas-handout{margin:30px 0;padding:32px;border:1px solid #c7d7d6;border-radius:18px;background:#f8fbf8;color:#102238}
+.lesson-hero .back-row .gas-hero-link{border:2px solid #102238;background:#ffe36b;color:#102238;padding:11px 17px;box-shadow:4px 4px 0 #102238;font-size:16px}
+.lesson-hero .back-row .gas-hero-link:hover{background:#ffec9c;transform:translate(-1px,-1px)}
+.lesson-hero .back-row .gas-hero-link:focus-visible{outline:3px solid #147d7e;outline-offset:5px}
+.gas-handout{margin:30px 0;padding:32px;border:1px solid #c7d7d6;border-top:7px solid #e3a62f;border-radius:18px;background:#f8fbf8;color:#102238;box-shadow:0 12px 30px #10223812}
 .gas-handout-head{max-width:1000px}
 .gas-eyebrow{margin:0 0 8px;color:#147d7e;font-size:13px;font-weight:900;letter-spacing:.08em}
 .gas-handout h2{margin:0 0 12px;font-size:clamp(27px,3.6vw,42px);line-height:1.18;letter-spacing:-.04em}
@@ -30,5 +33,5 @@
 .gas-help li,.gas-help p{margin:8px 0;color:#344b56;line-height:1.7}
 .gas-help .gas-sources{font-size:13px}
 .gas-help a{color:#0b686a;font-weight:800}
-@media(max-width:780px){.gas-handout{padding:21px}.gas-step{grid-template-columns:1fr;gap:10px;padding:18px}.gas-step h3 small{display:block;margin:5px 0 0}.gas-route{flex-direction:column;gap:5px;padding:11px}.gas-route span{font-size:14px}.gas-route>b{align-self:center;transform:rotate(90deg);line-height:1}.gas-footer-grid{grid-template-columns:1fr}}
+@media(max-width:780px){.lesson-hero .back-row .gas-hero-link{width:100%;text-align:center}.gas-handout{padding:21px}.gas-step{grid-template-columns:1fr;gap:10px;padding:18px}.gas-step h3 small{display:block;margin:5px 0 0}.gas-route{flex-direction:column;gap:5px;padding:11px}.gas-route span{font-size:14px}.gas-route>b{align-self:center;transform:rotate(90deg);line-height:1}.gas-footer-grid{grid-template-columns:1fr}}
 @media print{.gas-handout{border:0;padding:0;background:#fff}.gas-copy{display:none}.gas-step,.gas-help{break-inside:avoid}.gas-code,.gas-prompt{max-height:none;overflow:visible;color:#102238;background:#f2f5f6}}

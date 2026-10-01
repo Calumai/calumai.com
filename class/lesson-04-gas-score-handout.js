@@ -1,6 +1,7 @@
 (() => {
-  const anchor = document.getElementById('handout');
-  if (!anchor || document.getElementById('gas-score-handout')) return;
+  const hero = document.querySelector('#lesson .lesson-hero');
+  if (!hero || document.getElementById('gas-score-handout')) return;
+  hero.querySelector('.back-row')?.insertAdjacentHTML('afterbegin', '<a class="gas-hero-link" href="#gas-score-handout">照原簡報做：GAS 成績紀錄 6 步驟 ↓</a>');
 
   const gasCode = [
     'function doPost(e) {',
@@ -30,11 +31,11 @@
     '請提供可複製的完整 HTML，並指出我只需替換哪個網址。'
   ].join('\n');
 
-  anchor.insertAdjacentHTML('afterend', `
+  hero.insertAdjacentHTML('afterend', `
     <section class="gas-handout" id="gas-score-handout" aria-labelledby="gas-handout-title">
       <div class="gas-handout-head">
-        <p class="gas-eyebrow">跟著原簡報操作 · GAS 成績紀錄</p>
-        <h2 id="gas-handout-title">讓單字練習的結果進到成績單</h2>
+        <p class="gas-eyebrow">原 PPT 操作講義 · 先從這裡開始</p>
+        <h2 id="gas-handout-title">照簡報做：GAS 成績紀錄 6 步驟</h2>
         <p>先記住一句話：<strong>字表放題目，成績單收結果，GAS 是中間的收件員。</strong>這份講義照原簡報的順序，用假資料走完一次。</p>
         <div class="gas-route" role="img" aria-label="字表提供題目，學生在練習卡作答，GAS 接收後把結果寫入成績單">
           <span>字表<br><small>題目來源</small></span><b aria-hidden="true">→</b><span>練習卡<br><small>學生作答</small></span><b aria-hidden="true">→</b><span>GAS<br><small>接收資料</small></span><b aria-hidden="true">→</b><span>成績單<br><small>新增一列</small></span>

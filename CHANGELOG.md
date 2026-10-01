@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Moved the Lesson 04 GAS score-recording walkthrough directly below the hero and added a high-contrast "follow the original slides" button plus a clearly named navigation link, so learners see the six steps before the other lesson materials.
+
 - Added a beginner GAS score-recording handout directly to Lesson 04. It follows the supplied 35-slide walkthrough from a verified word list and separate score sheet through `doPost`, Web App deployment, a single-HTML fill-in card, Google Sites embedding, and checking the actual new Sheet row. It uses sanitized text rather than source screenshots with personal account details, distinguishes this route from the existing `google.script.run` lesson, and corrects the screenshot's unsupported `TextOutput.setHeader()` call.
 
 - Added a standalone teacher-friendly prompt expert at `/class/prompt-expert/`, reusing the existing classroom text relay. Teachers can review a prompt, edit and copy the revision, and review it again. The image studio opens the expert with the original text and selected purpose; revisions return only after confirmation, without generating an image. Preserved existing image and Vibe generation flows.
