@@ -31,12 +31,29 @@
     '請提供可複製的完整 HTML，並指出我只需替換哪個網址。'
   ].join('\n');
 
+  const slidePath = '/class/images/lesson-04-gas-steps/';
+  const slideFigure = (page, variant = 1) => {
+    const label = `原簡報第 ${page} 頁${page === 24 ? `（畫面 ${variant}）` : ''}`;
+    const path = `${slidePath}slide-${String(page).padStart(2, '0')}-${variant}.png`;
+    return `<figure><a href="${path}" target="_blank" rel="noopener" aria-label="放大查看${label}"><img src="${path}" alt="${label}的操作截圖" loading="lazy" decoding="async"></a><figcaption>${label} · 點圖放大</figcaption></figure>`;
+  };
+  const slideGallery = (start, end, featured) => {
+    const slides = [];
+    for (let page = start; page <= end; page++) {
+      slides.push([page, 1]);
+      if (page === 24) slides.push([page, 2]);
+    }
+    const others = slides.filter(([page, variant]) => page !== featured || variant !== 1);
+    return `<div class="gas-slide-gallery"><h4>對照原簡報截圖</h4>${slideFigure(featured)}<details><summary>查看這一步的其他 ${others.length} 張截圖</summary><div class="gas-slide-grid">${others.map(([page, variant]) => slideFigure(page, variant)).join('')}</div></details></div>`;
+  };
+
   hero.insertAdjacentHTML('afterend', `
     <section class="gas-handout" id="gas-score-handout" aria-labelledby="gas-handout-title">
       <div class="gas-handout-head">
         <p class="gas-eyebrow">原 PPT 操作講義 · 先從這裡開始</p>
         <h2 id="gas-handout-title">照簡報做：GAS 成績紀錄 6 步驟</h2>
         <p>先記住一句話：<strong>字表放題目，成績單收結果，GAS 是中間的收件員。</strong>這份講義照原簡報的順序，用假資料走完一次。</p>
+        <div class="gas-ppt-entry"><strong>原本 35 頁簡報的截圖步驟已附上</strong><p>下面每一步都能直接看原 PPT 的操作截圖；想完整翻閱或上課播放，可下載保留原頁面與截圖的公開版。公開版只遮蔽真實電子郵件和部署網址，實作時請填自己的資料。</p><a href="/class/ppt/lesson-04-gas-score-steps.pptx" download>下載原簡報公開版（35 頁） ↗</a></div>
         <div class="gas-route" role="img" aria-label="字表提供題目，學生在練習卡作答，GAS 接收後把結果寫入成績單">
           <span>字表<br><small>題目來源</small></span><b aria-hidden="true">→</b><span>練習卡<br><small>學生作答</small></span><b aria-hidden="true">→</b><span>GAS<br><small>接收資料</small></span><b aria-hidden="true">→</b><span>成績單<br><small>新增一列</small></span>
         </div>
@@ -49,6 +66,7 @@
           <p><b>在哪裡點：</b>在 Google 試算表打開已核對的字表，再建立一份新試算表，命名「成績單」。</p>
           <p><b>輸入什麼：</b>成績單第一列依序填 A「時間」、B「姓名」、C「分數」、D「錯題紀錄」。先用「測試者 A」等假名字，族語題目與答案由老師確認。</p>
           <p class="gas-result"><b>完成會看到：</b>第一列有四個欄名；第二列還是空白。</p>
+          ${slideGallery(3, 7, 4)}
         </div></li>
 
         <li class="gas-step"><div class="gas-step-number">02</div><div>
@@ -59,6 +77,7 @@
           <pre class="gas-code"><code id="gas-code"></code></pre>
           <p class="gas-caution">原 PPT 截圖的 <code>TextOutput.setHeader()</code> 無法使用，不能照圖原封不動貼上。上面改成 Apps Script 支援的回傳寫法。此範例只供假資料練習，沒有登入與防重複送出；正式收學生資料前，需由老師檢查權限與資料保護。</p>
           <p class="gas-result"><b>完成會看到：</b>Apps Script 顯示已儲存，程式第一行是 <code>function doPost(e)</code>。</p>
+          ${slideGallery(8, 9, 9)}
         </div></li>
 
         <li class="gas-step"><div class="gas-step-number">03</div><div>
@@ -67,6 +86,7 @@
           <p><b>選什麼：</b>「執行身分」選自己。原簡報測試時「誰可以存取」選所有人；這代表知道網址的人可送資料。課堂只用假資料，正式使用前由老師依學校規定決定存取範圍。</p>
           <p><b>接著做：</b>按「部署」。第一次授權先核對帳號、專案與要求的權限，不確定就請老師一起看。完成後在「網頁應用程式」區塊按「複製」。</p>
           <p class="gas-result"><b>完成會看到：</b>一個通常以 <code>/exec</code> 結尾的網址。要用的是這個網址，不是部署作業 ID。</p>
+          ${slideGallery(10, 20, 12)}
         </div></li>
 
         <li class="gas-step"><div class="gas-step-number">04</div><div>
@@ -76,6 +96,7 @@
           <pre class="gas-prompt"><code id="gas-prompt"></code></pre>
           <p><b>要拿什麼：</b>切到「程式碼」取得完整 HTML。Gemini Canvas 的「公開分享連結」不是 HTML 原始碼，不能貼到下一步的「嵌入程式碼」。</p>
           <p class="gas-result"><b>完成會看到：</b>預覽裡有姓名欄、填空題、答案欄與送出按鈕。</p>
+          ${slideGallery(21, 24, 22)}
         </div></li>
 
         <li class="gas-step"><div class="gas-step-number">05</div><div>
@@ -83,6 +104,7 @@
           <p><b>在哪裡點：</b>在 Google 協作平台建立「空白網站」，右側選「內嵌」→「嵌入程式碼」。貼上完整 HTML，按「下一個」；預覽正常才按「插入」。</p>
           <p><b>接著做：</b>拉大嵌入區塊，讓整張卡片看得見，再按右上「發布」，設定網址並打開發布後的網站。</p>
           <p class="gas-result"><b>完成會看到：</b>正式網站上能輸入姓名和答案，也看得到送出按鈕。</p>
+          ${slideGallery(25, 33, 29)}
         </div></li>
 
         <li class="gas-step"><div class="gas-step-number">06</div><div>
@@ -90,6 +112,7 @@
           <p><b>在哪裡做：</b>打開發布後的練習頁，輸入「測試者 A」並作答，按「送出」。接著回到「成績單」。</p>
           <p><b>檢查什麼：</b>最下方是否新增一列，且時間、姓名、分數、錯題紀錄都在正確欄位。若頁面只顯示「已送出」，但試算表沒新增，還不算完成；跨網域傳送時網頁也可能無法讀取 GAS 回覆。</p>
           <p class="gas-result"><b>完成會看到：</b>成績單新增一列「測試者 A」的紀錄。原 PPT 最後沒有拍到這個結果，請用自己的測試表確認。</p>
+          ${slideGallery(34, 35, 34)}
         </div></li>
       </ol>
 

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added the supplied 35-slide GAS score-recording PowerPoint to Lesson 04 and placed its actual operation screenshots beside the corresponding six handout steps. Each step shows one screenshot immediately and lets learners expand the rest; the complete PPT is downloadable at the top of the handout.
+
 - Moved the Lesson 04 GAS score-recording walkthrough directly below the hero and added a high-contrast "follow the original slides" button plus a clearly named navigation link, so learners see the six steps before the other lesson materials.
 
 - Added a beginner GAS score-recording handout directly to Lesson 04. It follows the supplied 35-slide walkthrough from a verified word list and separate score sheet through `doPost`, Web App deployment, a single-HTML fill-in card, Google Sites embedding, and checking the actual new Sheet row. It uses sanitized text rather than source screenshots with personal account details, distinguishes this route from the existing `google.script.run` lesson, and corrects the screenshot's unsupported `TextOutput.setHeader()` call.

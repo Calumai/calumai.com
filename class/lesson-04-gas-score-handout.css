@@ -6,6 +6,10 @@
 .gas-eyebrow{margin:0 0 8px;color:#147d7e;font-size:13px;font-weight:900;letter-spacing:.08em}
 .gas-handout h2{margin:0 0 12px;font-size:clamp(27px,3.6vw,42px);line-height:1.18;letter-spacing:-.04em}
 .gas-handout-head>p:not(.gas-eyebrow){margin:0 0 16px;line-height:1.7}
+.gas-ppt-entry{margin:18px 0 24px;border:2px solid #102238;border-radius:13px;background:#ffe36b;padding:19px 22px;box-shadow:5px 5px 0 #102238}
+.gas-ppt-entry strong{display:block;font-size:22px}
+.gas-ppt-entry p{margin:7px 0 13px;line-height:1.65}
+.gas-ppt-entry a{display:inline-block;border-radius:8px;background:#102238;padding:10px 15px;color:#fff;font-weight:900;text-decoration:none}
 .gas-route{display:flex;align-items:stretch;gap:11px;margin:24px 0;padding:17px;border:1px solid #cee2e1;border-radius:14px;background:#ecf6f3}
 .gas-route span{display:grid;flex:1;place-content:center;min-width:0;border:2px solid #102238;border-radius:10px;background:#fff;padding:11px;text-align:center;font-size:17px;font-weight:900;line-height:1.35}
 .gas-route small{color:#526774;font-size:12px;font-weight:700}
@@ -20,6 +24,16 @@
 .gas-step p b{color:#102238}
 .gas-step .gas-result{margin-top:17px;border-radius:9px;background:#eaf6ef;padding:10px 13px;color:#164c38}
 .gas-step .gas-caution{border-left:4px solid #d79524;background:#fff8e9;padding:10px 13px;font-size:14px}
+.gas-slide-gallery{margin-top:24px;border-top:1px solid #d7e3e0;padding-top:19px}
+.gas-slide-gallery h4{margin:0 0 13px;font-size:17px}
+.gas-slide-gallery figure{margin:0;min-width:0}
+.gas-slide-gallery figure a{display:block;max-width:760px;border:1px solid #c7d7d6;border-radius:9px;overflow:hidden;background:#edf1f2}
+.gas-slide-gallery img{display:block;width:100%;height:auto}
+.gas-slide-gallery figcaption{margin-top:6px;color:#526774;font-size:13px}
+.gas-slide-gallery details{margin-top:15px}
+.gas-slide-gallery summary{width:max-content;max-width:100%;cursor:pointer;color:#0b686a;font-weight:900}
+.gas-slide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:17px}
+.gas-slide-grid figure a{max-width:none}
 .gas-handout code{font-family:Consolas,"Courier New",monospace;font-size:.93em;overflow-wrap:anywhere}
 .gas-code-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;border-radius:10px 10px 0 0;background:#17283a;padding:11px 14px;color:#fff}
 .gas-copy{border:0;border-radius:7px;background:#e3a62f;padding:8px 13px;color:#102238;font:inherit;font-size:13px;font-weight:900;cursor:pointer}
@@ -33,5 +47,5 @@
 .gas-help li,.gas-help p{margin:8px 0;color:#344b56;line-height:1.7}
 .gas-help .gas-sources{font-size:13px}
 .gas-help a{color:#0b686a;font-weight:800}
-@media(max-width:780px){.lesson-hero .back-row .gas-hero-link{width:100%;text-align:center}.gas-handout{padding:21px}.gas-step{grid-template-columns:1fr;gap:10px;padding:18px}.gas-step h3 small{display:block;margin:5px 0 0}.gas-route{flex-direction:column;gap:5px;padding:11px}.gas-route span{font-size:14px}.gas-route>b{align-self:center;transform:rotate(90deg);line-height:1}.gas-footer-grid{grid-template-columns:1fr}}
+@media(max-width:780px){.lesson-hero .back-row .gas-hero-link{width:100%;text-align:center}.gas-handout{padding:21px}.gas-step{grid-template-columns:1fr;gap:10px;padding:18px}.gas-step h3 small{display:block;margin:5px 0 0}.gas-route{flex-direction:column;gap:5px;padding:11px}.gas-route span{font-size:14px}.gas-route>b{align-self:center;transform:rotate(90deg);line-height:1}.gas-footer-grid,.gas-slide-grid{grid-template-columns:1fr}}
 @media print{.gas-handout{border:0;padding:0;background:#fff}.gas-copy{display:none}.gas-step,.gas-help{break-inside:avoid}.gas-code,.gas-prompt{max-height:none;overflow:visible;color:#102238;background:#f2f5f6}}
