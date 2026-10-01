@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f4eb">
+  <meta name="description" content="拍下作業，看看題目怎麼想。">
+  <title>作業小幫手</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到主要內容</a>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">✦</span><span>作業小幫手</span></div>
+    <span class="top-note">慢慢想，你做得到</span>
+  </header>
+  <main id="main" class="shell">
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">拍一張・想一步</p>
+      <h1 id="page-title">卡住了？<br><span>我們一起看作業。</span></h1>
+      <p>拍下題目，我會先幫你看清楚，再給你一個可以自己試試看的提示。</p>
+    </section>
+
+    <section class="workspace" aria-label="上傳作業">
+      <div class="step-heading"><span class="step-number">1</span><div><h2>放上你的作業照片</h2><p>字要清楚，整題都拍進去喔。</p></div></div>
+      <div id="dropzone" class="upload-zone">
+        <div id="empty-preview" class="empty-preview">
+          <div class="photo-icon" aria-hidden="true">▧</div>
+          <strong>把作業照片放這裡</strong>
+          <span>也可以按下面的大按鈕</span>
+        </div>
+        <img id="preview" class="preview" alt="你選的作業照片" hidden>
+      </div>
+      <div class="upload-actions">
+        <button id="choose-button" class="button button-light" type="button"><span aria-hidden="true">＋</span> 選擇照片</button>
+        <button id="camera-button" class="button button-light" type="button"><span aria-hidden="true">◎</span> 拍一張</button>
+      </div>
+      <input id="file-input" class="visually-hidden" type="file" accept="image/png,image/jpeg,image/webp">
+      <input id="camera-input" class="visually-hidden" type="file" accept="image/*" capture="environment">
+      <p id="file-info" class="file-info" aria-live="polite">可以使用 JPG、PNG 或 WebP。照片只會在按下「開始看看」後送出。</p>
+      <p class="file-info">請先遮住姓名、學號等個人資料。每天可分析 2 張照片。</p>
+
+      <div class="divider"></div>
+      <div class="step-heading"><span class="step-number">2</span><div><h2>告訴我是哪一科</h2><p>不確定也沒關係，可以跳過。</p></div></div>
+      <div class="subjects" role="group" aria-label="選擇科目">
+        <button type="button" class="subject active" data-subject="不確定" aria-pressed="true">不確定</button>
+        <button type="button" class="subject" data-subject="國語" aria-pressed="false">國語</button>
+        <button type="button" class="subject" data-subject="數學" aria-pressed="false">數學</button>
+        <button type="button" class="subject" data-subject="英文" aria-pressed="false">英文</button>
+        <button type="button" class="subject" data-subject="自然" aria-pressed="false">自然</button>
+        <button type="button" class="subject" data-subject="社會" aria-pressed="false">社會</button>
+      </div>
+      <button id="analyze-button" class="button button-primary" type="button" disabled>開始看看 <span aria-hidden="true">→</span></button>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section id="result" class="result" aria-labelledby="result-title" hidden>
+      <div class="result-head"><span class="result-spark" aria-hidden="true">✦</span><div><p class="eyebrow">一起來想想</p><h2 id="result-title">先從這裡開始</h2></div></div>
+      <div class="result-grid">
+        <article><span class="result-label">我看到了</span><p id="seen"></p></article>
+        <article><span class="result-label">第一步</span><p id="first-step"></p></article>
+        <article><span class="result-label">小提示</span><p id="hint"></p></article>
+        <article><span class="result-label">自己檢查</span><p id="check"></p></article>
+      </div>
+      <p class="result-foot">AI 可能看錯字或題目。看不清楚或覺得怪怪的，請老師或家長一起確認。</p>
+      <button id="again-button" type="button" class="button button-light again">換一張照片</button>
+    </section>
+  </main>
+  <footer>先想一想，再動手寫下自己的答案。</footer>
+</body>
+</html>
+
