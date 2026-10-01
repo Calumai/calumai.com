@@ -26,7 +26,7 @@ againButton.addEventListener("click", () => {
   emptyPreview.hidden = false;
   result.hidden = true;
   analyzeButton.disabled = true;
-  fileInfo.textContent = "可以使用 JPG、PNG 或 WebP。照片只會在按下「開始看看」後送出。";
+  fileInfo.textContent = "可以使用 JPG、PNG 或 WebP。照片只會在按下「查看答案」後送出。";
   status.textContent = "";
   chooseButton.focus();
 });
