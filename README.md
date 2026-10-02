@@ -17,6 +17,7 @@ CALUMAI 是一個以原生 HTML、CSS 與 JavaScript 製作的族語教學作品
 - `/class/taipei-ai/2026-0904-picture-book/practice/`：課堂限定 AI 圖片工作室，依序選用途、寫短描述、取得 AI 建議、調整修正版並生成一張可下載圖片
 - `/class/taipei-ai/2026-0911-gamified-learning/`：北市府 9/11 遊戲化教學上堂，先理解 Vibe Coding 的規劃、製作與試玩循環，再用記憶、理解、應用三層能力做出第一個族語互動關卡
 - `/class/taipei-ai/2026-0918-gamified-learning/`：北市府 9/18 遊戲化教學下堂，延續第一版進行除錯與真人試玩，加入分析、評鑑或創造關卡，再用 Google Apps Script 發布成正式網址，最後放進 Google 協作平台整理與分享
+- `/class/taipei-ai/2026-1002-gemini-assistant/`：北市府 10/2 Gemini Spark × 族語老師的教學日常，含 11 章分步操作、44 段提示詞、12 張真實截圖、完整 Markdown 與離線素材包。附本次實際 Spark 任務、抓錯修改案例及兩份 Word 成品；一般 Gemini 可完成備課包，Spark 任務、技能及排程依帳號條件練習。
 
 ## 本機預覽
 

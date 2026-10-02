@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- 2026-10-02 發布第四堂「Gemini Spark × 族語老師的教學日常」：使用者明確要求上架，以 GitHub Pages 既有 `master` 流程發布第四堂與系列入口。公開內容包含完整講義、12 張真實截圖、兩份本次 Spark 產出的虛構班級 Word 檔與離線 ZIP；不提交內部交接檔、桌面驗證圖片或私人 Google 文件網址。發布前確認底版與正式分支一致，保留其他工作目錄中的未提交內容。正式頁面與下載驗收結果另記於本機交接。
+
+- 2026-10-02 補充第四堂 Spark 實作：取得本次操作與啟動任務的明確授權後，真的執行虛構班級備課任務，開啟並下載 Spark 新建立的 Google 文件。核對通知發現擅加「上次發放」，再送精準修改要求，另建並下載修正版；通知已修正，但部分活動也被重寫，此差異如實作為核對教學。新增 3 張實際局部操作／新成品截圖、兩份真實 Word 成品與完整執行／修改提示詞，與既有官方參考圖分開標示，首頁可直接進入實作案例。未寄信、未公開原始文件、未建立排程、未新增帳號連結或改權限、未部署。
+  - 驗證：12 張截圖、兩份 DOCX、完整講義 ZIP、章節時間、44 段提示詞與頁內錨點檢查通過。Word 內容已實際比對：修正版不含「上次發放」，包含「請攜帶紙卡」，流程仍為 40 分鐘，族語與答案仍留白。局部 Spark 任務進度擷取逾時，未納入失敗或含既有資料的圖片；沒有繞過自動審查拒絕的全視窗擷取。下列前次草稿紀錄「未建立真實任務」描述的是取得本次授權以前的狀態。
+  - 新區塊瀏覽器驗證：實作導覽跳轉、三張實拍載入、提示詞與精準修改要求完整複製、圖片放大及關閉均可用。保留桌面完成畫面，無整頁水平溢出；未重新宣稱手機實測。離線 ZIP 確認兩份 DOCX 均存在，文件 XML 未含私人信箱或原始 Google 文件網址。
+
+- 2026-10-02：新增臺北市第四堂「Gemini Spark × 族語老師的教學日常」本機草稿，延用課表正式標題與 19:00–22:00 時段。以詞表、分程度活動、長輩共學、學習單、課務通知、公開資源與課後整理串起備課包、一次性任務、固定技能和每週排程。含 11 章、44 段可複製提示詞、五欄提示詞組合器、分類搜尋、截圖放大、12 項成果確認、10 題排錯與完整 Markdown／離線包；官方功能與帳號條件核對於當日。圖片為 Google 公開示範或官方說明頁實際截圖，沒有使用生成圖冒充介面；未存取私人 Gemini 對話，也未建立真實帳號任務或排程。本次僅修改獨立乾淨工作目錄，不改原本未提交內容、不推送或正式發布。
+  - 驗證：JavaScript 語法、170 分鐘章節加 10 分鐘休息、章節與操作欄位、44 組 HTML／Markdown 提示詞、所有頁內錨點、9 張圖片檔與離線 ZIP 均通過。Chrome 實際測過第四堂入口、分類／搜尋／無結果／深連結、完整提示詞複製、五欄組合器、成果勾選、圖片放大與 Esc 關閉；桌面與實際 390 CSS px 版面無整頁水平溢出，沒有瀏覽器錯誤。修正平滑捲動造成操作定位不穩與長目錄超出螢幕的問題。手機截圖在 viewport 覆寫時擷取逾時，已還原正常視窗並保留桌面證據；未宣稱已完成私人帳號的 Spark 實測。
+
 - Added the supplied 35-slide GAS score-recording PowerPoint to Lesson 04 and placed its actual operation screenshots beside the corresponding six handout steps. Each step shows one screenshot immediately and lets learners expand the rest; the complete PPT is downloadable at the top of the handout.
 
 - Moved the Lesson 04 GAS score-recording walkthrough directly below the hero and added a high-contrast "follow the original slides" button plus a clearly named navigation link, so learners see the six steps before the other lesson materials.
