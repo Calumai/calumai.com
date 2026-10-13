@@ -1,4 +1,5 @@
-/** Calumai 族語老師 LINE 教學機器人：20 種操作示例，單一試算表。*/
+/** Calumai 族語老師 LINE 教學機器人：20 種操作示例，單一試算表。 */
+const SPREADSHEET_ID = '1VeCTJt7iBaZwcKfsJnHgUlpwySFUVvosYJn_KUmVJ3o';
 const TABS = {
   words:['id','中文','族語','例句','音檔URL','單元'],
   lessons:['課程','日期','地點','教材URL','名額'],
@@ -14,23 +15,23 @@ const TABS = {
   reminders:['提醒ID','使用者ID','內容','預定時間','狀態']
 };
 function prop_(key){return PropertiesService.getScriptProperties().getProperty(key)||'';}
-/** 第一次使用或換試算表：在 input 貼自己的網址或 ID，然後執行 setSpreadsheetId。 */
-function setSpreadsheetId(){
-  const input='把你的 Google 試算表網址或 ID 貼在這裡';
-  const match=input.match(/\/spreadsheets\/d\/([A-Za-z0-9_-]+)/);
-  const id=(match?match[1]:input).trim();
-  if(!/^[A-Za-z0-9_-]{20,}$/.test(id))throw new Error('請先把 input 換成有效的試算表網址或 ID');
-  const ss=SpreadsheetApp.openById(id);
-  PropertiesService.getScriptProperties().setProperty('SPREADSHEET_ID',id);
-  Logger.log('已連接試算表：'+ss.getName()+' '+ss.getUrl());
-}
-function book_(){const id=prop_('SPREADSHEET_ID');if(!id)throw new Error('請先執行 setSpreadsheetId 設定試算表 ID');return SpreadsheetApp.openById(id);}
+function book_(){return SpreadsheetApp.openById(SPREADSHEET_ID);}
 function tab_(name){const s=book_().getSheetByName(name);if(!s)throw new Error('缺少工作表 '+name+'，請先執行 setup');return s;}
 function rows_(name){const v=tab_(name).getDataRange().getValues();return v.slice(1).filter(r=>r.some(x=>x!==''));}
 function findRow_(name,predicate){const data=tab_(name).getDataRange().getValues();for(let i=1;i<data.length;i++){if(predicate(data[i]))return i+1;}return -1;}
 function append_(name,data){const lock=LockService.getScriptLock();lock.waitLock(10000);try{tab_(name).appendRow(data);}finally{lock.releaseLock();}}
 function fmtDate_(v){return v instanceof Date?Utilities.formatDate(v,Session.getScriptTimeZone(),'yyyy/MM/dd HH:mm'):String(v||'');}
 function setup(){const ss=book_();Object.keys(TABS).forEach(n=>{let sh=ss.getSheetByName(n);if(!sh)sh=ss.insertSheet(n);if(sh.getLastRow()===0){sh.appendRow(TABS[n]);sh.setFrozenRows(1);sh.getRange(1,1,1,TABS[n].length).setFontWeight('bold').setBackground('#DFF4E8');}});seed_();Logger.log('初始化成功 '+ss.getUrl());}
+function checkSetup(){
+  const ss=book_();
+  const missing=Object.keys(TABS).filter(name=>!ss.getSheetByName(name));
+  if(missing.length)throw new Error('缺少工作表：'+missing.join('、')+'；請先執行 setup');
+  const token=prop_('LINE_ACCESS_TOKEN');
+  if(!token)throw new Error('缺少指令碼屬性 LINE_ACCESS_TOKEN');
+  const response=UrlFetchApp.fetch('https://api.line.me/v2/bot/info',{headers:{Authorization:'Bearer '+token},muteHttpExceptions:true});
+  if(response.getResponseCode()!==200)throw new Error('LINE Token 檢查失敗 HTTP '+response.getResponseCode());
+  Logger.log('設定成功：'+ss.getName());
+}
 function seed_(){if(!rows_('words').length){[['W001','你好','（請填入教師審核的族語）','','','招呼'],['W002','謝謝','（請填入教師審核的族語）','','','招呼']].forEach(r=>append_('words',r));}
  if(!rows_('questions').length){append_('questions',['Q001','示範題：以下哪個選項是 A？','A','B','C','A','此題僅供測試，請改成經老師審核的族語題目','操作練習']);}
  if(!rows_('lessons').length){append_('lessons',['示範課','2026/11/01 13:00','線上','https://example.com/請更換','20']);}
@@ -38,27 +39,23 @@ function seed_(){if(!rows_('words').length){[['W001','你好','（請填入教�
 
 /** LINE 入口：僅作課堂演示。GAS 無法取得 X-Line-Signature 標頭，不能驗證來源。 */
 function doPost(e) {
-  try {
-    if (!e || !e.postData || !e.postData.contents) return response_('EMPTY');
-    const payload = JSON.parse(e.postData.contents);
-    if (!Array.isArray(payload.events)) return response_('INVALID');
-    payload.events.forEach(event => {
-      if (event.type !== 'message' || !event.message || event.message.type !== 'text') return;
-      if (!event.replyToken || !event.source || !event.source.userId) return;
-      const uid = event.source.userId;
-      let answer;
-      try { answer = command_(String(event.message.text || '').trim(), uid); }
-      catch (err) { console.error('command error', err); answer = '系統暫時無法處理，請稍後重試。'; }
-      reply_(event.replyToken, answer);
-    });
-    return response_('OK');
-  } catch (error) {
-    console.error('webhook error', error);
-    return response_('ERROR');
+  if (!e || !e.postData || !e.postData.contents) return response_('EMPTY');
+  const payload = JSON.parse(e.postData.contents);
+  if (!Array.isArray(payload.events)) return response_('INVALID');
+  console.log('收到事件數：'+payload.events.length);
+  for (const event of payload.events) {
+    if (event.type !== 'message' || !event.message || event.message.type !== 'text' || !event.replyToken) continue;
+    if (!event.source || !event.source.userId) {
+      reply_(event.replyToken,'請在一對一聊天室使用這個教學機器人。');
+      continue;
+    }
+    const answer = command_(String(event.message.text || '').trim(), event.source.userId);
+    reply_(event.replyToken, answer);
   }
+  return response_('OK');
 }
 function doGet() { return response_('Calumai LINE GAS 教學版已部署'); }
-function response_(txt) { return ContentService.createTextOutput(txt); }
+function response_(txt) { return HtmlService.createHtmlOutput(txt); }
 function reply_(replyToken, content) { return sendLine_('reply', {replyToken, messages:[{type:'text',text:String(content).slice(0,4900)}]}); }
 function push_(userId, content) { return sendLine_('push', {to:userId,messages:[{type:'text',text:String(content).slice(0,4900)}]}); }
 function sendLine_(endpoint, body) {
@@ -75,21 +72,22 @@ function sendLine_(endpoint, body) {
 }
 
 function choose_(list){return list[Math.floor(Math.random()*list.length)];}
-function command_(s,uid){const w=rows_('words'),q=rows_('questions'),le=rows_('lessons'),today=new Date();
+function command_(s,uid){if(s==='測試')return '✅ 機器人已連線！';const words=()=>rows_('words'),questions=()=>rows_('questions'),lessons=()=>rows_('lessons'),today=new Date();
  // 01 單字查詢
- if(s.startsWith('查單字 ')){const x=s.slice(4).trim();if(!x)return '請輸入要查的單字';const hits=w.filter(r=>String(r[1]).includes(x)||String(r[2]).includes(x));return hits.length?hits.slice(0,5).map(r=>`${r[1]} → ${r[2]}\n例句：${r[3]||'待補'}\n音檔：${r[4]||'待補'}`).join('\n\n'):'查無資料';}
+ if(s.startsWith('查單字 ')){const x=s.slice(4).trim();if(!x)return '請輸入要查的單字';const hits=words().filter(r=>String(r[1]).includes(x)||String(r[2]).includes(x));return hits.length?hits.slice(0,5).map(r=>`${r[1]} → ${r[2]}\n例句：${r[3]||'待補'}\n音檔：${r[4]||'待補'}`).join('\n\n'):'查無資料';}
  // 02 每日一句
- if(s==='每日一句'){const x=choose_(w);return x?`${x[1]}：${x[2]}\n${x[3]||''}`:'請先新增單字';}
+ if(s==='每日一句'){const list=words();if(!list.length)return '請先新增單字';const date=Utilities.formatDate(today,Session.getScriptTimeZone(),'yyyyMMdd');const x=list[Number(date)%list.length];return `${x[1]}：${x[2]}\n${x[3]||''}`;}
  // 03 選擇題 & 06 錯題複習 & 08 排行榜 & 11 考前複習
- if(s==='測驗'||s==='錯題複習'||s.startsWith('考前複習')){let pool=q;if(s==='錯題複習'){const wrong=new Set(rows_('records').filter(r=>r[1]===uid&&r[2]==='答題'&&r[4]==='錯誤').map(r=>r[3]));pool=q.filter(r=>wrong.has(r[0]));}else if(s.startsWith('考前複習 ')){const topic=s.slice(5).trim();pool=q.filter(r=>String(r[7]).includes(topic));}
+ if(s==='考前複習')return '格式：考前複習 招呼';
+ if(s==='測驗'||s==='錯題複習'||s.startsWith('考前複習 ')){let pool=questions();if(s==='錯題複習'){const wrong=new Set(rows_('records').filter(r=>r[1]===uid&&r[2]==='答題'&&r[4]==='錯誤').map(r=>r[3]));pool=pool.filter(r=>wrong.has(r[0]));}else if(s.startsWith('考前複習 ')){const topic=s.slice(5).trim();pool=pool.filter(r=>String(r[7]).includes(topic));}
   if(!pool.length)return '目前沒有符合的題目。';const item=choose_(pool);const sessions=tab_('sessions');const pos=findRow_('sessions',r=>r[0]===uid);if(pos>=0)sessions.deleteRow(pos);append_('sessions',[uid,item[0],new Date()]);return `${item[1]}\nA. ${item[2]}\nB. ${item[3]}\nC. ${item[4]}\n請輸入：答 A／答 B／答 C`;}
- if(/^答\s*[ABCabc]$/.test(s)){const ans=s.match(/[ABCabc]/)[0].toUpperCase(),session=rows_('sessions').find(r=>r[0]===uid);if(!session)return '先輸入「測驗」取得題目。';const item=q.find(r=>String(r[0])===String(session[1]));if(!item)return '題目已不存在';const correct=ans===String(item[5]).toUpperCase();append_('records',[new Date(),uid,'答題',item[0],correct?'正確':'錯誤',ans]);const sh=tab_('sessions');const ix=findRow_('sessions',r=>r[0]===uid);if(ix>=0)sh.deleteRow(ix);return `${correct?'答對了！':'再加油！'}\n正解：${item[5]}\n${item[6]||''}`;}
+ if(/^答\s*[ABCabc]$/.test(s)){const ans=s.match(/[ABCabc]/)[0].toUpperCase(),session=rows_('sessions').find(r=>r[0]===uid);if(!session)return '先輸入「測驗」取得題目。';const item=questions().find(r=>String(r[0])===String(session[1]));if(!item)return '題目已不存在';const correct=ans===String(item[5]).toUpperCase();append_('records',[new Date(),uid,'答題',item[0],correct?'正確':'錯誤',ans]);const sh=tab_('sessions');const ix=findRow_('sessions',r=>r[0]===uid);if(ix>=0)sh.deleteRow(ix);return `${correct?'答對了！':'再加油！'}\n正解：${item[5]}\n${item[6]||''}`;}
  if(s==='排行榜'){const scores={};rows_('records').filter(r=>r[2]==='答題'&&r[4]==='正確').forEach(r=>scores[r[1]]=(scores[r[1]]||0)+1);return '排行榜（匿名代碼）\n'+(Object.entries(scores).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([id,score],i)=>`${i+1}. ${id.slice(-5)}：${score}題`).join('\n')||'暫無紀錄');}
  // 04 教材 & 05 課程
- if(s.startsWith('教材 ')){const x=s.slice(3).trim();const hit=le.filter(r=>String(r[0]).includes(x));return hit.length?hit.map(r=>`${r[0]}：${r[3]}`).join('\n'):'無符合教材';}
- if(s==='課程'){return le.map(r=>`${r[0]}｜${fmtDate_(r[1])}｜${r[2]}`).join('\n')||'尚無課程';}
+ if(s.startsWith('教材 ')){const x=s.slice(3).trim();const hit=lessons().filter(r=>String(r[0]).includes(x));return hit.length?hit.map(r=>`${r[0]}：${r[3]}`).join('\n'):'無符合教材';}
+ if(s==='課程'){return lessons().map(r=>`${r[0]}｜${fmtDate_(r[1])}｜${r[2]}`).join('\n')||'尚無課程';}
  // 07 每日挑戰：當日固定選題（若題庫變動，題目可能改變）
- if(s==='每日挑戰'){if(!q.length)return '尚未建立題庫';const date=Utilities.formatDate(today,Session.getScriptTimeZone(),'yyyyMMdd');const idx=Number(date)%q.length;const item=q[idx];return `今日挑戰：${item[1]}\nA.${item[2]} B.${item[3]} C.${item[4]}\n輸入「測驗」可進入正式計分模式。`;}
+ if(s==='每日挑戰'){const q=questions();if(!q.length)return '尚未建立題庫';const date=Utilities.formatDate(today,Session.getScriptTimeZone(),'yyyyMMdd');const idx=Number(date)%q.length;const item=q[idx];return `今日挑戰（預覽，不計分）：${item[1]}\nA.${item[2]} B.${item[3]} C.${item[4]}\n輸入「測驗」可進入正式計分模式。`;}
  // 09 作業
  if(s.startsWith('交作業 ')){const x=s.slice(4).trim();if(!x)return '格式：交作業 課程|內容';const parts=x.split('|');if(parts.length<2)return '格式：交作業 課程|內容';append_('assignments',[today,uid,parts[0].trim(),parts.slice(1).join('|').trim()]);return '作業內容已登記';}
  // 10 簽到/請假
@@ -99,11 +97,11 @@ function command_(s,uid){const w=rows_('words'),q=rows_('questions'),le=rows_('l
  // 13 教材領取 同教材查詢
  if(s.startsWith('領教材 '))return command_('教材 '+s.slice(4),uid);
  // 14 備課任務
- if(s.startsWith('新增任務 ')){const id='T'+Utilities.formatDate(today,Session.getScriptTimeZone(),'yyyyMMddHHmmss');append_('tasks',[id,uid,s.slice(5).trim(),'','未完成']);return `已新增 ${id}`;}
+ if(s.startsWith('新增任務 ')){const id='T'+Utilities.formatDate(today,Session.getScriptTimeZone(),'yyyyMMddHHmmss')+'-'+Utilities.getUuid().slice(0,6);append_('tasks',[id,uid,s.slice(5).trim(),'','未完成']);return `已新增 ${id}`;}
  if(s==='我的任務'){const list=rows_('tasks').filter(r=>r[1]===uid);return list.map(r=>`${r[0]} ${r[2]}（${r[4]}）`).join('\n')||'尚無任務';}
  if(s.startsWith('完成 ')){const id=s.slice(3).trim();const idx=findRow_('tasks',r=>r[0]===id&&r[1]===uid);if(idx<0)return '找不到你的這項任務';tab_('tasks').getRange(idx,5).setValue('完成');return `${id} 已完成`;}
  // 15 課程報名
- if(s.startsWith('報名 ')){const course=s.slice(3).trim();const lesson=le.find(r=>r[0]===course);if(!lesson)return '找不到該課程';const old=rows_('registrations').some(r=>r[1]===uid&&r[2]===course&&r[3]==='報名');if(old)return '你已報名這門課';const cap=Number(lesson[4]);const count=rows_('registrations').filter(r=>r[2]===course&&r[3]==='報名').length;const state=Number.isFinite(cap)&&cap>0&&count>=cap?'候補':'報名';append_('registrations',[today,uid,course,state]);return `${state}成功：${course}`;}
+ if(s.startsWith('報名 ')){const course=s.slice(3).trim();const lesson=lessons().find(r=>r[0]===course);if(!lesson)return '找不到該課程';const lock=LockService.getScriptLock();lock.waitLock(10000);try{const registrations=rows_('registrations');const old=registrations.some(r=>r[1]===uid&&r[2]===course&&['報名','候補'].includes(r[3]));if(old)return '你已報名或候補這門課';const cap=Number(lesson[4]);const count=registrations.filter(r=>r[2]===course&&r[3]==='報名').length;const state=Number.isFinite(cap)&&cap>0&&count>=cap?'候補':'報名';tab_('registrations').appendRow([today,uid,course,state]);return `${state}成功：${course}`;}finally{lock.releaseLock();}}
  // 16 錯題複習: 命令在前段 / 17 闖關計分
  if(s==='我的積分'){const correct=rows_('records').filter(r=>r[1]===uid&&r[2]==='答題'&&r[4]==='正確').length;return `你目前有 ${correct*10} 分（每題10分）`;}
  // 18 個人提醒登記；需手動安裝定時觸發器

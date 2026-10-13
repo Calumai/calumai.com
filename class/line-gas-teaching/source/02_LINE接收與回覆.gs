@@ -20,7 +20,7 @@ function doPost(e) {
   }
 }
 function doGet() { return response_('Calumai LINE GAS 教學版已部署'); }
-function response_(txt) { return ContentService.createTextOutput(txt); }
+function response_(txt) { return HtmlService.createHtmlOutput(txt); }
 function reply_(replyToken, content) { return sendLine_('reply', {replyToken, messages:[{type:'text',text:String(content).slice(0,4900)}]}); }
 function push_(userId, content) { return sendLine_('push', {to:userId,messages:[{type:'text',text:String(content).slice(0,4900)}]}); }
 function sendLine_(endpoint, body) {

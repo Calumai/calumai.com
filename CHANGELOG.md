@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- 2026-10-13 依使用者貼上的單檔程式更新 `/class/line-gas-teaching/Code.gs` 與頁內可複製的完整原始碼；貼上文字有 8 處插值或日期程式毀損，先依可執行原稿修復，再發布。講義同步改為從 `SPREADSHEET_ID` 設定試算表，依序執行 `setup`、`checkSetup`；修正四檔版的 LINE Webhook 回應轉址問題並重建 ZIP。公開檔案含使用者提供的試算表 ID，頁面明確提醒學員換成自己的 ID，且仍不含 LINE 權杖。驗證：單檔主要指令與 LINE 回覆模擬、頁內原始碼與下載檔一致、四檔 ZIP 與原始碼一致、語法檢查。
+
 - 2026-10-13 更新 `/class/line-gas-teaching/` 的試算表 ID 教學：頁首與安裝步驟明示要在 `setSpreadsheetId()` 的 `input` 貼自己的網址或 ID，執行成功後才執行 `setup()`。新增可單獨下載的完整 `Code.gs`，同步四檔版程式碼、頁內複製區與 ZIP；提醒兩種版本擇一，不將教師的實際試算表 ID 放進公開檔案。
 
 - 2026-10-13 新增 `/class/line-gas-teaching/` 族語老師 LINE 機器人 GAS 實作講義，從 class 總覽與第 8 堂提供入口。保留使用者提供的單頁 HTML，並從頁內四段原始碼產生相符的 GAS ZIP，修復原頁未附下載檔的連結。檢查 134 份 HTML、本頁桌機與 390px 手機版、四份 GAS 語法與 ZIP 內容；此範例仍標示僅供假資料課堂測試，不可當成已驗證的正式學生系統。
