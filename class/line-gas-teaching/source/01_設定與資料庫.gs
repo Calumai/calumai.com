@@ -14,7 +14,17 @@ const TABS = {
   reminders:['提醒ID','使用者ID','內容','預定時間','狀態']
 };
 function prop_(key){return PropertiesService.getScriptProperties().getProperty(key)||'';}
-function book_(){const id=prop_('SPREADSHEET_ID');if(!id)throw new Error('請先設定 SPREADSHEET_ID');return SpreadsheetApp.openById(id);}
+/** 第一次使用或換試算表：在 input 貼自己的網址或 ID，然後執行 setSpreadsheetId。 */
+function setSpreadsheetId(){
+  const input='把你的 Google 試算表網址或 ID 貼在這裡';
+  const match=input.match(/\/spreadsheets\/d\/([A-Za-z0-9_-]+)/);
+  const id=(match?match[1]:input).trim();
+  if(!/^[A-Za-z0-9_-]{20,}$/.test(id))throw new Error('請先把 input 換成有效的試算表網址或 ID');
+  const ss=SpreadsheetApp.openById(id);
+  PropertiesService.getScriptProperties().setProperty('SPREADSHEET_ID',id);
+  Logger.log('已連接試算表：'+ss.getName()+' '+ss.getUrl());
+}
+function book_(){const id=prop_('SPREADSHEET_ID');if(!id)throw new Error('請先執行 setSpreadsheetId 設定試算表 ID');return SpreadsheetApp.openById(id);}
 function tab_(name){const s=book_().getSheetByName(name);if(!s)throw new Error('缺少工作表 '+name+'，請先執行 setup');return s;}
 function rows_(name){const v=tab_(name).getDataRange().getValues();return v.slice(1).filter(r=>r.some(x=>x!==''));}
 function findRow_(name,predicate){const data=tab_(name).getDataRange().getValues();for(let i=1;i<data.length;i++){if(predicate(data[i]))return i+1;}return -1;}
