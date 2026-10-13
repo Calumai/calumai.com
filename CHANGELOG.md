@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- 2026-10-13 修正 `/class/line-gas-teaching/#source` 的完整程式碼閱讀區：全域行內 `code` 淺底樣式誤套在深色 `<pre>` 的整份程式，造成白字配淺底；改讓程式碼繼承深色區塊的背景與字色，並補上選取文字時的對比。同步修正本區「下載四檔 ZIP」按鈕的白字白底顯示。
+
 - 2026-10-13 將 `/class/line-gas-teaching/` 單檔版安裝說明拆為 10 個可逐步操作的步驟：明示在 Apps Script 函式選單依序執行 `setup`、`checkSetup`、`testLocally`，每步附執行紀錄或試算表驗收結果；補足權杖設定、Webhook Verify、重新部署與每日一句例句欄位提醒，並把 `setup` 步驟標亮。四檔版設定另收在進階說明，避免學員混用。
 
 - 2026-10-13 依使用者貼上的單檔程式更新 `/class/line-gas-teaching/Code.gs` 與頁內可複製的完整原始碼；貼上文字有 8 處插值或日期程式毀損，先依可執行原稿修復，再發布。講義同步改為從 `SPREADSHEET_ID` 設定試算表，依序執行 `setup`、`checkSetup`；修正四檔版的 LINE Webhook 回應轉址問題並重建 ZIP。公開檔案含使用者提供的試算表 ID，頁面明確提醒學員換成自己的 ID，且仍不含 LINE 權杖。驗證：單檔主要指令與 LINE 回覆模擬、頁內原始碼與下載檔一致、四檔 ZIP 與原始碼一致、語法檢查。
