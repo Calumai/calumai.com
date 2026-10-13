@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- 2026-10-13 將 `/class/line-gas-teaching/` 單檔版安裝說明拆為 10 個可逐步操作的步驟：明示在 Apps Script 函式選單依序執行 `setup`、`checkSetup`、`testLocally`，每步附執行紀錄或試算表驗收結果；補足權杖設定、Webhook Verify、重新部署與每日一句例句欄位提醒，並把 `setup` 步驟標亮。四檔版設定另收在進階說明，避免學員混用。
+
 - 2026-10-13 依使用者貼上的單檔程式更新 `/class/line-gas-teaching/Code.gs` 與頁內可複製的完整原始碼；貼上文字有 8 處插值或日期程式毀損，先依可執行原稿修復，再發布。講義同步改為從 `SPREADSHEET_ID` 設定試算表，依序執行 `setup`、`checkSetup`；修正四檔版的 LINE Webhook 回應轉址問題並重建 ZIP。公開檔案含使用者提供的試算表 ID，頁面明確提醒學員換成自己的 ID，且仍不含 LINE 權杖。驗證：單檔主要指令與 LINE 回覆模擬、頁內原始碼與下載檔一致、四檔 ZIP 與原始碼一致、語法檢查。
 
 - 2026-10-13 更新 `/class/line-gas-teaching/` 的試算表 ID 教學：頁首與安裝步驟明示要在 `setSpreadsheetId()` 的 `input` 貼自己的網址或 ID，執行成功後才執行 `setup()`。新增可單獨下載的完整 `Code.gs`，同步四檔版程式碼、頁內複製區與 ZIP；提醒兩種版本擇一，不將教師的實際試算表 ID 放進公開檔案。
