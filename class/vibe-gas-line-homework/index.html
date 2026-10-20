@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Vibe Coding × GAS × LINE 跨堂整合作業：五個教學主題選一個，完成三題互動網頁、試算表紀錄與 LINE 查詢。">
+  <link rel="canonical" href="https://calumai.com/class/vibe-gas-line-homework/">
+  <link rel="icon" href="/assets/calumai-logo-mark.png">
+  <title>跨堂整合作業｜Vibe Coding × GAS × LINE｜CALUMAI</title>
+  <style>
+    :root{color-scheme:light;--ink:#182823;--muted:#4f6259;--deep:#123e35;--teal:#176d5b;--lime:#def0a1;--gold:#f8d979;--paper:#fff;--bg:#f3f5ef;--line:#d5e0d4}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif}
+    a{color:#115d4d;text-underline-offset:3px}:focus-visible{outline:3px solid #ce8427;outline-offset:3px}
+    code{font:inherit;font-family:Consolas,ui-monospace,monospace;font-size:.93em;background:#e9f1e9;border-radius:4px;padding:.08em .27em;overflow-wrap:anywhere}
+    .skip{position:absolute;top:-100px;left:12px;background:#fff;padding:8px 12px;z-index:4}.skip:focus{top:12px}
+    .mast{background:var(--deep);color:#fff;border-bottom:9px solid var(--lime)}.mast-inner,.wrap{max-width:1130px;margin:auto;padding-left:24px;padding-right:24px}
+    .mast-inner{padding-top:20px;padding-bottom:61px}.crumb{font-size:14px;color:#daebe1}.crumb a{color:inherit}.hero{display:grid;grid-template-columns:minmax(0,1fr) 326px;gap:35px;align-items:end;padding-top:51px}
+    .eyebrow{margin:0 0 12px;font-size:13px;letter-spacing:.15em;font-weight:900;color:var(--lime)}h1{font-size:clamp(37px,5.5vw,68px);line-height:1.16;letter-spacing:-.05em;margin:0 0 20px;max-width:730px}h1 em{font-style:normal;color:var(--lime)}
+    .lead{font-size:19px;line-height:1.7;color:#e3efe6;max-width:740px;margin:0}.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:27px}.button{display:inline-flex;align-items:center;justify-content:center;min-height:45px;padding:9px 17px;border:2px solid transparent;border-radius:9px;font-weight:850;text-decoration:none;line-height:1.4}.button.primary{background:var(--gold);color:#4b3706}.button.ghost{color:#fff;border-color:#a3c9b8}.button:hover{filter:brightness(1.07)}
+    .route{background:#fff;border:3px solid #182823;border-radius:17px;padding:20px;color:var(--ink);box-shadow:8px 8px 0 #071f1a}.route strong{display:block;font-size:13px;letter-spacing:.09em;color:#416053;margin-bottom:11px}.route ol{list-style:none;margin:0;padding:0}.route li{border-top:1px solid #dce7dd;padding:9px 0;font-weight:800}.route li:first-child{border-top:0}.route small{display:block;color:var(--muted);font-size:13px;font-weight:500}.route b{display:inline-block;width:27px;height:27px;margin-right:7px;text-align:center;line-height:27px;background:var(--lime);border-radius:50%;font-size:13px}
+    .section-nav{background:#fff;border-bottom:1px solid var(--line)}.section-nav .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;padding-top:13px;padding-bottom:13px}.section-nav a{font-size:14px;font-weight:750;text-decoration:none}.section-nav a:hover{text-decoration:underline}
+    main{padding-top:31px;padding-bottom:72px}.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:clamp(21px,3vw,37px);margin-bottom:20px;scroll-margin-top:18px;box-shadow:0 6px 20px #16392a0a}
+    h2{font-size:clamp(26px,3.3vw,36px);line-height:1.28;letter-spacing:-.035em;margin:0 0 12px}h3{font-size:19px;line-height:1.35;margin:0 0 8px}p{margin:9px 0}ul,ol{padding-left:1.45em}li{margin:7px 0}.muted{color:var(--muted)}
+    .kicker{display:block;margin-bottom:9px;color:var(--teal);font-size:13px;letter-spacing:.12em;font-weight:900}.bridge{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-top:20px}.bridge div{padding:15px;border:1px solid #c9dfcf;background:#eef6ee;border-radius:12px}.bridge b{display:block;color:#124e3c}.bridge span{color:var(--muted);font-size:14px}
+    .topics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:23px}.topic{position:relative;min-height:160px;border:2px solid var(--line);border-radius:13px;padding:20px;background:#fff}.topic:first-child{background:#fffbea;border-color:#e8cf73}.topic:last-child{grid-column:1/-1;background:#eff7ec}.topic-number{display:inline-block;background:var(--deep);color:#fff;border-radius:6px;padding:3px 8px;font-size:12px;font-weight:900;letter-spacing:.06em;margin-bottom:12px}.topic h3{font-size:21px;margin-bottom:8px}.topic p{margin:0;color:var(--muted);font-size:15px}.note{border-left:5px solid #b97c20;background:#fff8e3;border-radius:9px;padding:13px 16px;margin-top:19px}.note p{margin:3px 0 0}
+    .requirements{counter-reset:req;list-style:none;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:22px 0 0}.requirements li{counter-increment:req;margin:0;border:1px solid var(--line);background:#f8faf7;border-radius:12px;padding:18px 18px 18px 55px;position:relative}.requirements li:before{content:counter(req,decimal-leading-zero);position:absolute;top:19px;left:17px;color:#0c5b47;font-size:16px;font-weight:900}.requirements strong{display:block}.requirements span{display:block;color:var(--muted);font-size:14px;margin-top:3px}
+    .data-flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:22px 0}.data-flow span{padding:7px 10px;border:1px solid #b8d5c4;border-radius:8px;background:#e7f2e9;font-size:14px;font-weight:800}.data-flow i{font-style:normal;color:#237653}.steps{list-style:none;padding:0;counter-reset:step;margin:22px 0 0}.steps li{counter-increment:step;display:grid;grid-template-columns:44px 1fr;gap:12px;border-top:1px solid var(--line);padding:17px 0;margin:0}.steps li:before{content:counter(step);display:grid;place-items:center;background:var(--deep);color:#fff;width:37px;height:37px;border-radius:50%;font-weight:900}.steps li:last-child{border-bottom:1px solid var(--line)}.steps p{color:var(--muted);margin:3px 0}
+    details{border:1px solid var(--line);border-radius:10px;margin:11px 0;background:#fbfcfa}summary{cursor:pointer;padding:12px 15px;font-weight:800}details p{margin:0;padding:0 15px 15px;color:var(--muted)}.prompt{background:#102c27;color:#f0f8ed;border-radius:12px;padding:19px;margin-top:18px}.prompt h3{color:var(--lime)}.prompt textarea{display:block;width:100%;height:225px;resize:vertical;border:1px solid #547a69;border-radius:8px;padding:13px;background:#1b3b34;color:#fff;font:14px/1.65 system-ui,-apple-system,"Noto Sans TC",sans-serif}.prompt button{margin-top:11px;border:0;border-radius:7px;background:var(--lime);padding:9px 14px;color:#16362a;font:inherit;font-weight:850;cursor:pointer}.prompt [role=status]{margin-left:10px;font-size:14px;color:#c9e9cc}
+    .submit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0}.submit-grid div{border:1px solid var(--line);border-radius:10px;padding:14px;background:#f9fbf8}.submit-grid b{display:block;color:#155842}.submit-grid span{display:block;color:var(--muted);font-size:14px}.score{width:100%;border-collapse:collapse;margin-top:17px}.score th,.score td{text-align:left;padding:10px;border-bottom:1px solid var(--line)}.score th{background:#eaf4e8}.score td:last-child,.score th:last-child{text-align:right}.footer{background:#153d33;color:#e2ede5;padding:24px}.footer .wrap{display:flex;justify-content:space-between;gap:15px}.footer a{color:#fff}
+    @media(max-width:830px){.hero{grid-template-columns:1fr}.route{max-width:580px}.mast-inner{padding-bottom:46px}}
+    @media(max-width:610px){.mast-inner,.wrap{padding-left:16px;padding-right:16px}.hero{padding-top:35px}.lead{font-size:17px}.topics,.bridge,.requirements,.submit-grid{grid-template-columns:1fr}.topic:last-child{grid-column:auto}.hero-actions{display:grid}.button{width:100%}.footer .wrap{flex-direction:column}.prompt [role=status]{display:block;margin:7px 0 0}}
+    @media print{.mast{color:#000;background:#fff;border:0}.mast-inner{padding-bottom:12px}.crumb,.crumb a,.lead,.eyebrow,h1 em{color:#000}.route{box-shadow:none}.hero-actions,.section-nav,.prompt button,.footer{display:none}.panel{box-shadow:none;break-inside:avoid}.prompt{background:#fff;color:#000}.prompt h3{color:#000}.prompt textarea{background:#fff;color:#000}}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">跳到作業內容</a>
+  <header class="mast"><div class="mast-inner">
+    <div class="crumb"><a href="/class/">課程總覽</a> ／ <a href="/class/lesson-08.html">第 8 堂</a> ／ 跨堂整合作業</div>
+    <div class="hero"><div>
+      <p class="eyebrow">CROSS-LESSON MISSION / 02 + 03 + 08</p>
+      <h1>選一個主題，<br><em>串起三個工具。</em></h1>
+      <p class="lead">用 Vibe Coding 做一頁可作答的教學網頁，讓 GAS 讀寫 Google 試算表，再讓現有 LINE Bot 帶學生進入作品、查詢成果。LINE 是入口與查詢工具，主要互動在你做的網頁。</p>
+      <div class="hero-actions"><a class="button primary" href="#topics">先選主題</a><a class="button ghost" href="#requirements">看完成標準</a><a class="button ghost" href="#submit">看繳交內容</a></div>
+    </div><aside class="route" aria-label="作業的資料流程"><strong>完成後，應該走得通這一圈</strong><ol>
+      <li><b>1</b>LINE：傳「今日挑戰」<small>拿到你做的網頁網址</small></li>
+      <li><b>2</b>網頁：做三題並送出<small>看到回饋與分數</small></li>
+      <li><b>3</b>GAS：寫入試算表<small>留下時間、主題、分數與錯題</small></li>
+      <li><b>4</b>LINE：傳「挑戰成果」<small>讀到更新後的總次數與平均分</small></li>
+    </ol></aside></div>
+  </div></header>
+  <nav class="section-nav" aria-label="本頁目錄"><div class="wrap"><a href="#topics">選主題</a><a href="#requirements">完成標準</a><a href="#steps">製作順序</a><a href="#hints">卡住時提示</a><a href="#submit">繳交與評分</a></div></nav>
+  <main class="wrap" id="main">
+    <section class="panel" aria-labelledby="purpose-title"><span class="kicker">這次要練什麼</span><h2 id="purpose-title">把前面做過的作品接成一條資料流</h2>
+      <p>第 <a href="/class/lesson-02.html">2 堂</a>做過互動測驗，第 <a href="/class/lesson-03.html">3 堂</a>讓 GAS 寫入試算表，第 <a href="/class/lesson-08.html">8 堂</a>讓 LINE 讀取 Google 服務。這次用<strong>現有的 LINE Bot 與同一份試算表</strong>整合，不用新開第二個 Bot，也不用在 LINE 對話裡逐題作答。</p>
+      <div class="bridge"><div><b>Vibe Coding</b><span>設計學生真的能操作的手機網頁。</span></div><div><b>GAS ＋試算表</b><span>讀取題目、保存作答、計算統計。</span></div><div><b>LINE Bot</b><span>給作品入口，讀取更新後的整體成果。</span></div></div>
+    </section>
+
+    <section class="panel" id="topics" aria-labelledby="topics-title"><span class="kicker">五選一</span><h2 id="topics-title">挑一個你想拿來上課的主題</h2><p class="muted">五個選項都做成三題／三關的小作品，難度與繳交標準相同。可換成自己教的學科；先把學習目標寫成一句話。</p>
+      <div class="topics">
+        <article class="topic"><span class="topic-number">OPTION 01</span><h3>單詞快問快答</h3><p>給一個生活詞語，讓學生從三個選項挑正確意思或用法。可用族語、國語或外語；族語拼寫由老師核對。</p></article>
+        <article class="topic"><span class="topic-number">OPTION 02</span><h3>每日一句配對</h3><p>用三句短句，讓學生選出對應的翻譯或使用情境；答錯時說明理由。</p></article>
+        <article class="topic"><span class="topic-number">OPTION 03</span><h3>故事讀後測</h3><p>選一段有使用權的短文，設計三題理解題。重點是從文本找證據，而不是猜答案。</p></article>
+        <article class="topic"><span class="topic-number">OPTION 04</span><h3>課前暖身挑戰</h3><p>針對下一堂課的重點設計三題預習題；最後用分數讓學生知道哪裡還要複習。</p></article>
+        <article class="topic"><span class="topic-number">OPTION 05</span><h3>生活情境判斷</h3><p>給校園、家庭或社區情境，讓學生選較合適的做法或回應，再看解說。</p></article>
+      </div>
+      <div class="note"><strong>教材內容由人確認。</strong><p>AI 可以協助整理題型與修改網頁，但不能憑空替你確定族語、在地文化或專業事實。只用自己可使用、已核對的教材。</p></div>
+    </section>
+
+    <section class="panel" id="requirements" aria-labelledby="requirements-title"><span class="kicker">每個主題都要做到</span><h2 id="requirements-title">四項共同完成標準</h2>
+      <ol class="requirements">
+        <li><strong>一頁可玩的網頁</strong><span>至少三題／三關，手機可操作；有答對、答錯回饋及最後分數。設計由 Vibe Coding 協助，但你要親自測試與修正。</span></li>
+        <li><strong>一份試算表，GAS 真正讀寫</strong><span>題目從試算表讀取；送出後把時間、主題、分數、錯題寫進同一份試算表的「網頁作答」分頁。不要只在網頁假裝送出。</span></li>
+        <li><strong>沿用現有 LINE Bot</strong><span>傳「今日挑戰」得到作品網址；傳「挑戰成果」讀取試算表裡的累計作答次數與平均分數。統計必須隨新作答變動，不可寫死。</span></li>
+        <li><strong>完成一次真實連動測試</strong><span>從 LINE 點進網頁，至少測一次答對與答錯；送出後確認試算表多一筆，再從 LINE 查到更新後的統計。</span></li>
+      </ol>
+      <div class="data-flow" aria-label="資料流程"><span>LINE 入口</span><i>→</i><span>互動網頁</span><i>→</i><span>GAS</span><i>→</i><span>同一份試算表</span><i>→</i><span>LINE 查詢</span></div>
+      <p class="muted">不收真實學生姓名、班級或聯絡方式。這裡的分數只用來驗證連動，不是正式成績；公開網頁的測試送分可以被重複操作。</p>
+    </section>
+
+    <section class="panel" id="steps" aria-labelledby="steps-title"><span class="kicker">給初學者的路線</span><h2 id="steps-title">照這個順序做，比較容易找到問題</h2>
+      <ol class="steps">
+        <li><div><h3>選主題，準備三題</h3><p>寫下一句學習目標，檢查題目、答案與答錯解說。先把三題放進同一份試算表；若沿用<a href="/class/line-gas-starter/">入門版</a>，可使用現有「題庫」分頁。</p></div></li>
+        <li><div><h3>先完成可獨立作答的網頁</h3><p>請 AI 幫你做手機版三題頁。先測選項、回饋和分數，不急著接 LINE。</p></div></li>
+        <li><div><h3>接上 GAS 與試算表</h3><p>讓網頁從試算表取題、送出後新增一列到「網頁作答」。先在表格親眼看到一筆紀錄，再進下一步。</p></div></li>
+        <li><div><h3>最後接原本的 LINE Bot</h3><p>新增兩個指令，更新<strong>原本</strong>的網頁應用程式部署版本。用 LINE 走完「拿網址 → 作答 → 查更新後統計」整圈。</p></div></li>
+      </ol>
+    </section>
+
+    <section class="panel" id="hints" aria-labelledby="hints-title"><span class="kicker">提示，不是標準答案</span><h2 id="hints-title">卡住時先看這裡</h2>
+      <details><summary>同一個 GAS 專案，LINE 和網頁會不會打架？</summary><p>原本的 <code>doPost</code> 接 LINE Webhook，請保留它。可調整原本的 <code>doGet</code>，讓開啟 <code>/exec</code> 時顯示 HTML 頁面；網頁可用 <code>google.script.run</code> 呼叫 GAS 函式讀題和記錄。專案裡不要再做第二個同名 <code>doPost</code> 或 <code>doGet</code>。</p></details>
+      <details><summary>網頁看起來有分數，試算表卻沒有資料？</summary><p>先確認你看到的是 GAS 真正新增的「網頁作答」列，而不是只有網頁上的成功文字；再看 Apps Script 左側「執行項目」的錯誤。題目分頁的欄名與 GAS 使用的欄位也要一致。</p></details>
+      <details><summary>LINE 還是回舊內容？</summary><p>修改 GAS 後只按儲存不夠。到「部署 → 管理部署作業」編輯<strong>原本</strong>的網頁應用程式，選新版本並部署；Webhook 繼續用原本的 <code>/exec</code> 網址。</p></details>
+      <details><summary>不知道要怎麼請 AI 協助？</summary><p>先給 AI 看現有程式結構和工作表欄名，請它列出「最少要改哪些地方」與每一步怎麼測；確認方向後再分段產生程式。不要讓它直接覆蓋已經能運作的 LINE 功能。</p></details>
+      <div class="prompt"><h3>可以複製給 AI 的起始提示詞</h3><label for="ai-prompt">把方括號換成你的主題，並提供現有程式給 AI 檢查</label>
+        <textarea id="ai-prompt" readonly>我已經有可運作的 LINE＋GAS 專案和一份 Google 試算表。我要做「［填入你選的主題］」三題手機測驗。
+
+請先閱讀我現有的 doPost、doGet、command_ 和工作表欄位，保留原本的 LINE 指令與資料，不要重寫整個專案。
+
+測驗題目由試算表讀取；網頁顯示答對／答錯回饋及分數；送出時 GAS 寫入時間、主題、分數、錯題。LINE 新增「今日挑戰」回網頁網址、「挑戰成果」回全班累計作答次數與平均分數。
+
+請先列出要修改的檔案、函式、工作表欄位和逐步測試方式，再一次只給我一小段修改。不要加入外部 AI API；LINE 權杖只保留在指令碼屬性。</textarea>
+        <button id="copy-prompt" type="button">複製提示詞</button><span id="copy-status" role="status" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <section class="panel" id="submit" aria-labelledby="submit-title"><span class="kicker">繳交作品</span><h2 id="submit-title">讓老師看得出「三個工具真的接上了」</h2>
+      <div class="submit-grid">
+        <div><b>① 作品網址</b><span>交可開啟的測驗網址到班級指定管道；不要把試算表開放所有人編輯。</span></div>
+        <div><b>② 試算表截圖</b><span>題庫三題，以及「網頁作答」至少一筆測試紀錄。</span></div>
+        <div><b>③ LINE 測試截圖</b><span>「今日挑戰」拿到網址，以及作答後「挑戰成果」數字更新。</span></div>
+        <div><b>④ 一次 AI 修正紀錄</b><span>貼一段你給 AI 的提示詞，說明一個你發現並修好的問題。</span></div>
+      </div>
+      <div class="note"><strong>交件前遮住這些資料：</strong><p>LINE access token、Channel secret、老師通行碼、完整使用者 ID 與真實學生資料。只用自己或老師提供的測試帳號和測試內容。</p></div>
+      <h3>評分參考</h3><table class="score"><thead><tr><th scope="col">項目</th><th scope="col">比重</th></tr></thead><tbody><tr><td>網頁互動、內容與回饋</td><td>30%</td></tr><tr><td>GAS 讀題、寫入與資料正確性</td><td>25%</td></tr><tr><td>LINE 指令與前後資料連動</td><td>25%</td></tr><tr><td>測試證據與 AI 修正說明</td><td>20%</td></tr></tbody></table>
+    </section>
+  </main>
+  <footer class="footer"><div class="wrap"><span>CALUMAI / AI 工具實戰進階班</span><a href="/class/">回課程總覽</a></div></footer>
+  <script>
+    (() => {
+      const button = document.getElementById('copy-prompt');
+      const prompt = document.getElementById('ai-prompt');
+      const status = document.getElementById('copy-status');
+      button.addEventListener('click', async () => {
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(prompt.value);
+          } else {
+            prompt.focus();
+            prompt.select();
+            if (!document.execCommand('copy')) throw new Error('copy failed');
+          }
+          status.textContent = '已複製，記得把主題換成自己的內容。';
+        } catch (_) {
+          status.textContent = '瀏覽器沒有允許複製；請在文字框內全選後自行複製。';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

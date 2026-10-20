@@ -12,6 +12,7 @@ CALUMAI 是一個以原生 HTML、CSS 與 JavaScript 製作的族語教學作品
 - `/tools/prompt-builder/`：族語教學提示詞工具，含教材貼上、提示詞產生與使用情境說明
 - `/lab/`：詞卡、字幕、例句、錄音與課務行政的小工具流程
 - `/class/`：課程總覽，分開呈現 12 堂進階班與其他獨立研習課程
+- `/class/vibe-gas-line-homework/`：第 2、3、8 堂跨堂整合作業；五種教學主題選一個，以 Vibe Coding 網頁、GAS 試算表讀寫及現有 LINE Bot 串成完整資料流
 - `/class/taipei-ai/`：北市府 AI 教學應用四堂系列課程總覽與開放進度
 - `/class/taipei-ai/2026-0904-picture-book/`：北市府 9/4「自己的繪本自己生！」課程首頁，含提示詞暖身、NotebookLM 教材提示詞、簡報／海報換風格與進階 YAML 範例
 - `/class/taipei-ai/2026-0904-picture-book/practice/`：課堂限定 AI 圖片工作室，依序選用途、寫短描述、取得 AI 建議、調整修正版並生成一張可下載圖片
