@@ -26,13 +26,13 @@
     <div class="crumbs"><a href="/class/">課程總覽</a> ／ <a href="/class/line-gas-starter/">學生版 LINE × GAS</a> ／ 立即發送通知</div>
     <p class="eyebrow">已經建好機器人的老師，從這裡加功能</p>
     <h1>在試算表選一列，<br>確認後立即發送 LINE 通知</h1>
-    <p>只新增一個 <code>ImmediateSend.gs</code> 檔案；原本的學生版 <code>Code.gs</code>、老師版 <code>Code.gs</code> 和 Webhook 都不用取代。</p>
+    <p>只新增一個 <code>ImmediateSend.gs</code> 檔案；原本的 <code>Code.gs</code> 和 Webhook 都不用取代。老師與學生共用同一個 LINE BOT。</p>
     <div class="actions"><a class="button" href="#steps">跟著步驟做</a><a class="button alt" href="ImmediateSend.gs" download="ImmediateSend.gs">下載獨立 .gs 程式</a></div>
   </div></header>
   <main>
     <section class="card" id="first"><h2>先確認放對地方</h2>
-      <p class="lead">這個新增檔案要放在<strong>從原 Google 試算表「擴充功能 → Apps Script」開啟的學生版專案</strong>。那個專案已保存學生 LINE 的 <code>LINE_ACCESS_TOKEN</code>，也有「學生」「通知」「發送紀錄」分頁。</p>
-      <div class="callout"><strong>不要貼進老師專用 LINE 助理專案。</strong><p>老師助理用另一個 LINE 權杖，只負責開填寫表單；真正向學生推播的是原學生版專案。試算表只開放可信任的老師編輯。</p></div>
+      <p class="lead">這個新增檔案要放在<strong>從原 Google 試算表「擴充功能 → Apps Script」開啟的機器人專案</strong>。同一個專案保存唯一的 <code>LINE_ACCESS_TOKEN</code>，也有「學生」「通知」「發送紀錄」分頁。</p>
+      <div class="callout"><strong>試算表只開放可信任的老師編輯。</strong><p>這個按鈕由試算表編輯者手動執行；若另加<a href="/class/line-gas-teacher/">教師表單模組</a>，也能透過同一個 LINE BOT 傳給老師表單連結。</p></div>
     </section>
     <section class="card" id="steps"><h2>新增檔案，再從試算表點發送</h2>
       <ol class="steps">

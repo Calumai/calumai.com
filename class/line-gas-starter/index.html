@@ -143,7 +143,7 @@
           <div class="feature"><b>📖 單詞表</b><p>老師在「單詞表」填經審核的詞；學生傳「單詞表」看前五筆，或傳「查單詞 太陽」查特定一筆。</p></div>
           <div class="feature"><b>☀️ 每日一句</b><p>老師在「每日一句」填當天的族語句子與中文翻譯；學生傳「每日一句」就能閱讀。</p></div>
         </div>
-        <div class="callout"><strong>這裡的「行事曆」是試算表課表。</strong><p>本範例不會同步 Google Calendar，學生也不能從 LINE 新增活動。老師想從 LINE 新增課表、單詞、每日一句與通知，可接著做<a href="/class/line-gas-teacher/">老師專用課務助理</a>；它使用另一個 LINE 官方帳號，表單資料仍寫回同一份試算表。想學真正的 Google 行事曆串接，可看<a href="/class/lesson-08.html#calendar">第 8 堂行事曆進階版</a>；<a href="/class/line-gas-teaching/">20 功能延伸版</a>則是另一份程式。</p></div>
+        <div class="callout"><strong>這裡的「行事曆」是試算表課表。</strong><p>本範例不會同步 Google Calendar，學生也不能從 LINE 新增活動。老師想用<strong>同一個 LINE 官方帳號</strong>新增課表、單詞、每日一句與通知，可接著做<a href="/class/line-gas-teacher/">老師課務功能</a>：只新增一個教師 .gs，原本的 Code.gs 不必改；老師從 LINE 訊息點受限表單，資料仍寫回同一份試算表。想學真正的 Google 行事曆串接，可看<a href="/class/lesson-08.html#calendar">第 8 堂行事曆進階版</a>；<a href="/class/line-gas-teaching/">20 功能延伸版</a>則是另一份程式。</p></div>
         <div class="flow" aria-label="資料流程"><span>老師編輯 Google 試算表</span><i>→</i><span>Apps Script 讀取與排程</span><i>→</i><span>學生在 LINE 查詢或訂閱</span></div>
       </section>
 
@@ -169,7 +169,7 @@
 
       <section class="card" id="instant-send">
         <h2>已經完成設定，想從試算表立即發送？</h2>
-        <p>另加一個 <code>ImmediateSend.gs</code>，就能在「通知」分頁選取一列，從<strong>「LINE 通知 → 立即發送選取的通知」</strong>點按並確認。這個檔案加在<strong>原本與學生試算表連動的 Apps Script 專案</strong>；你現有的 <code>Code.gs</code> 不用改，老師助理的 <code>Code.gs</code> 也不用改。</p>
+        <p>另加一個 <code>ImmediateSend.gs</code>，就能在「通知」分頁選取一列，從<strong>「LINE 通知 → 立即發送選取的通知」</strong>點按並確認。這個檔案加在<strong>原本與學生試算表連動的 Apps Script 專案</strong>；你現有的 <code>Code.gs</code> 不用改。若還需要老師在 LINE 點選表單新增資料，則另外加入<a href="/class/line-gas-teacher/">獨立的 TeacherForms.gs</a>。</p>
         <div class="source-bar"><a class="button" href="immediate-send.html">看新增檔案與完整步驟</a><a class="button" href="ImmediateSend.gs" download="ImmediateSend.gs">直接下載 ImmediateSend.gs</a></div>
       </section>
 

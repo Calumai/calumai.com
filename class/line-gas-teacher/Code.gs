@@ -281,7 +281,13 @@ function configureTeacherForm_(form, spec, ss, email) {
   form.setPublishingSummary(false);
   form.setConfirmationMessage('表單已收到。請到試算表的「老師表單紀錄」確認是否寫入成功。');
   form.addPublishedReader(email);
-  const destination = form.getDestinationId();
+  let destination = null;
+  try {
+    destination = form.getDestinationId();
+  } catch (error) {
+    // 新表單可能以例外表示「尚未設定」，只處理已確認的無目標訊息。
+    if (String(error && error.message || error).trim() !== '這個表單目前沒有回覆目標。') throw error;
+  }
   if (destination && destination !== ss.getId()) throw new Error(spec.title + ' 已連到另一份試算表，請停止操作。');
   if (!destination) form.setDestination(FormApp.DestinationType.SPREADSHEET, ss.getId());
   spec.fields.forEach(field => ensureTeacherQuestion_(form, field));

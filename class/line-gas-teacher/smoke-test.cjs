@@ -25,6 +25,8 @@ const triggers = [];
 const fetches = [];
 const logs = [];
 let effectiveEmail = 'teacher@example.com';
+let destinationFailureFormId = null;
+const destinationWriteError = new Error('Google 服務暫時無法設定回覆目標。');
 
 class MockRange {
   constructor(sheet, row, col, countRow, countCol) {
@@ -90,6 +92,7 @@ class MockForm {
     this.readers = new Set();
     this.collectEmail = false;
     this.destination = null;
+    this.destinationWrites = 0;
   }
   getId() { return this.id; }
   getEditUrl() { return `https://docs.google.com/forms/d/${this.id}/edit`; }
@@ -101,8 +104,17 @@ class MockForm {
   getPublishedReaders() { return [...this.readers].map(email => ({getEmail: () => email})); }
   getEditors() { return []; }
   addPublishedReader(email) { this.readers.add(email); return this; }
-  getDestinationId() { return this.destination; }
-  setDestination(_kind, id) { this.destination = id; return this; }
+  getDestinationId() {
+    if (this.destinationReadError) throw this.destinationReadError;
+    if (!this.destination) throw new Error('這個表單目前沒有回覆目標。');
+    return this.destination;
+  }
+  setDestination(_kind, id) {
+    this.destinationWrites++;
+    if (this.id === destinationFailureFormId) throw destinationWriteError;
+    this.destination = id;
+    return this;
+  }
   setDescription() { return this; }
   setCollectEmail(value) { this.collectEmail = value; return this; }
   setAllowResponseEdits() { return this; }
@@ -200,8 +212,22 @@ effectiveEmail = 'wrong-account@example.com';
 expectThrow(() => app.setupTeacher(), /必須和目前執行 Apps Script 的 Google 帳號相同/);
 assert.equal(forms.size, 0, '老師 Email 不符時不得建立表單');
 effectiveEmail = 'teacher@example.com';
+destinationFailureFormId = 'FORM_2';
+expectThrow(() => app.setupTeacher(), error => error === destinationWriteError);
+assert.equal(forms.size, 2, '中途失敗後應保留已建立的表單');
+assert.equal(triggers.length, 1, '尚未完成設定的表單不得建立觸發器');
+const unfinishedForm = forms.get('FORM_2');
+assert.equal(propData.get('TEACHER_FORM_WORD'), unfinishedForm.getId(), '未完成表單的 ID 必須保留，供重跑沿用');
+assert.equal(unfinishedForm.destination, null);
+assert.equal(forms.get('FORM_1').destination, spreadsheet.getId(), '新表單的無目標錯誤應能自動補上目的地');
+destinationFailureFormId = null;
 app.setupTeacher();
+assert.equal(forms.get('FORM_2'), unfinishedForm, '重跑必須沿用先前未完成的表單');
+assert.equal(unfinishedForm.destination, spreadsheet.getId(), '重跑應補上先前未完成的回覆目的地');
+const destinationWritesAfterRecovery = [...forms.values()].map(form => form.destinationWrites);
 app.setupTeacher();
+assert.deepEqual([...forms.values()].map(form => form.destinationWrites), destinationWritesAfterRecovery,
+  '已設定正確目的地時，重跑不應再次設定目的地');
 assert.equal(forms.size, 4, '重跑 setup 不應建立第二批表單');
 assert.equal(triggers.length, 4, '重跑 setup 不應建立重複觸發器');
 for (const form of forms.values()) {
@@ -216,6 +242,19 @@ assert.equal(spreadsheet.sheets.size, 8, '7 個既有分頁加老師處理紀錄
 expectThrow(() => app.enableTeacherLinks(), /尚未發布/);
 
 const [classForm, wordForm, dailyForm, noticeForm] = [...forms.values()];
+for (const message of ['沒有權限讀取回覆目標。', 'Google 服務暫時無法使用。',
+  '讀取失敗：這個表單目前沒有回覆目標。']) {
+  const readError = new Error(message);
+  classForm.destinationReadError = readError;
+  const writesBeforeError = classForm.destinationWrites;
+  expectThrow(() => app.setupTeacher(), error => error === readError);
+  assert.equal(classForm.destinationWrites, writesBeforeError, '其他讀取錯誤不能被當成未設定目的地');
+}
+delete classForm.destinationReadError;
+classForm.destination = 'another-spreadsheet-id';
+expectThrow(() => app.setupTeacher(), /已連到另一份試算表/);
+assert.equal(classForm.destination, 'another-spreadsheet-id', '不得覆蓋已有的其他試算表目的地');
+classForm.destination = spreadsheet.getId();
 for (const form of forms.values()) { form.published = true; form.accepting = true; }
 effectiveEmail = 'operator@example.com';
 classForm.readers.clear();
@@ -348,4 +387,4 @@ assert.ok(fetches.some(call => call.url.endsWith('/message/reply')));
 assert.deepEqual(['行事曆', '單詞表', '每日一句', '通知'].map(name => sheet(name).rows.length), before,
   'LINE webhook 絕不可直接寫課務資料');
 
-console.log('老師版模擬測試通過：安全啟用、重複 setup、身分拒絕、四種寫入、重複提交與 LINE 唯讀入口。');
+console.log('老師版模擬測試通過：新表單無回覆目標、中途失敗重跑、其他錯誤重拋、安全啟用、重複 setup、身分拒絕、四種寫入、重複提交與 LINE 唯讀入口。');
