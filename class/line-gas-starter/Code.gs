@@ -188,8 +188,14 @@ function sendDueNotifications() {
 }
 
 function command_(text, uid) {
+  if (text === '我的ID') return '你的 LINE 使用者 ID：' + uid;
+  // 教師模組為可選的第二個 .gs；只貼學生版 Code.gs 時仍可獨立運作。
+  if (typeof teacherLineCommand_ === 'function') {
+    const teacherAnswer = teacherLineCommand_(text, uid);
+    if (teacherAnswer !== null) return teacherAnswer;
+  }
   if (text === '說明' || text === 'help' || text === '') {
-    return '可用指令：\n訂閱／取消訂閱：接收或停止課程通知\n行事曆：查看最近 5 堂課\n單詞表：查看前 5 筆單詞\n查單詞 蘋果：查詢單詞（也可輸入族語或單詞ID）\n每日一句：查看老師為今天設定的句子\n測驗：隨機抽 1 題\n答 A、答 B、答 C：回答目前題目';
+    return '可用指令：\n訂閱／取消訂閱：接收或停止課程通知\n行事曆：查看最近 5 堂課\n單詞表：查看前 5 筆單詞\n查單詞 蘋果：查詢單詞（也可輸入族語或單詞ID）\n每日一句：查看老師為今天設定的句子\n測驗：隨機抽 1 題\n答 A、答 B、答 C：回答目前題目\n我的ID：查看自己的 LINE 使用者 ID';
   }
   if (text === '訂閱') return setSubscription_(uid, true);
   if (text === '取消訂閱') return setSubscription_(uid, false);

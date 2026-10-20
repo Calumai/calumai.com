@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="老師與學生共用同一個 LINE BOT。只新增 TeacherForms.gs，不改原本 Code.gs；老師從 LINE 訊息點受限表單，資料寫入原試算表。">
-  <title>同一個 LINE BOT 的老師課務功能｜CALUMAI</title>
+  <meta name="description" content="老師與學生共用同一個 LINE BOT。老師在 LINE 對話中逐步輸入課程、單詞、每日一句與通知，確認後寫入原 Google 試算表。">
+  <title>老師直接在 LINE 新增教材｜CALUMAI</title>
   <link rel="canonical" href="https://calumai.com/class/line-gas-teacher/">
   <link rel="icon" href="/assets/calumai-logo-mark.png">
   <style>
@@ -28,9 +28,10 @@
     .steps{list-style:none;counter-reset:step;padding:0;margin:20px 0 0}.steps>li{counter-increment:step;position:relative;border:1px solid var(--line);border-radius:11px;background:#fff;margin:0 0 13px;padding:16px 17px 16px 62px;scroll-margin-top:18px}.steps>li:before{content:counter(step,decimal-leading-zero);position:absolute;top:17px;left:16px;min-width:32px;border-radius:7px;background:var(--green);color:#fff;text-align:center;font-size:13px;line-height:32px;font-weight:800}.steps>li.focus{border:2px solid #b87910;background:#fffcf0}.steps>li.focus:before{background:#9a620c}.steps>li p{margin:5px 0 9px}.result{background:#edf6ef;border-radius:8px;padding:8px 11px;color:#215337;font-size:14px;margin-top:10px!important}
     .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:610px;font-size:14px}th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}th{background:#e8f2ea}tr:last-child td{border-bottom:0}
     .command-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.command-list div{background:#f7faf7;border:1px solid var(--line);border-radius:9px;padding:10px 12px}.command-list b{display:block}
+    .chat{max-width:580px;margin:20px auto;padding:18px;background:#e9efe9;border-radius:17px;border:1px solid var(--line)}.chat p{max-width:85%;margin:9px 0;padding:9px 12px;border-radius:13px;background:white;line-height:1.55}.chat .teacher{margin-left:auto;background:#d4f4c8}.chat small{display:block;color:var(--muted);margin-bottom:10px;font-weight:700}
     .source-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0}.source-bar .button{background:var(--green);color:#fff}.source-bar button{border:0}.source-bar button:disabled{opacity:.55;cursor:not-allowed}.source-status{font-size:14px;color:var(--muted)}
     .source-details{border:1px solid var(--line);border-radius:11px;overflow:hidden}.source-details summary{background:#eaf2ea;padding:11px 14px;font-weight:800;cursor:pointer}pre{margin:0;padding:18px;background:var(--code);color:#f1fff4;overflow:auto;white-space:pre;max-height:520px;font:13px/1.6 Consolas,ui-monospace,monospace;tab-size:2}
-    .faq details{border-bottom:1px solid var(--line);padding:11px 0}.faq summary{font-weight:750;cursor:pointer}.footer{text-align:center;color:#65766b;font-size:13px;padding:0 20px 34px}
+    .hook{margin:11px 0;border-radius:10px}.faq details{border-bottom:1px solid var(--line);padding:11px 0}.faq summary{font-weight:750;cursor:pointer}.footer{text-align:center;color:#65766b;font-size:13px;padding:0 20px 34px}
     @media(max-width:830px){.layout{display:block;padding:16px 15px 52px}.nav{position:static;display:flex;flex-wrap:wrap;gap:3px 13px;margin-bottom:16px}.nav strong{width:100%}.hero{grid-template-columns:1fr;padding-top:28px}.hero-side{max-width:430px}.top-inner{padding:15px 18px 35px}}
     @media(max-width:600px){.feature-grid,.command-list{grid-template-columns:1fr}.button{width:100%}.actions{display:grid}.steps>li{padding-left:57px}.steps>li:before{left:13px}.card{padding:20px 16px}}
     @media print{body{background:#fff}.top{background:#fff;color:#000}.top .hero p,.eyebrow,.crumbs{color:#000}.hero-side,.nav,.actions,.source-bar,.source-details,.footer{display:none}.layout{display:block;padding:0}.top-inner{padding:0}.hero{display:block}.card{border:0!important;border-bottom:1px solid #aaa!important;break-inside:avoid}.steps>li{break-inside:avoid}}
@@ -38,77 +39,82 @@
 </head>
 <body>
   <header class="top" id="top"><div class="top-inner">
-    <div class="crumbs"><a href="/class/">課程總覽</a> ／ <a href="/class/lesson-08.html">第 8 堂</a> ／ 同一個 BOT 的老師課務功能</div>
+    <div class="crumbs"><a href="/class/">課程總覽</a> ／ <a href="/class/lesson-08.html">第 8 堂</a> ／ 老師在 LINE 新增資料</div>
     <div class="hero"><div>
       <p class="eyebrow">給已完成 LINE × GAS 入門版的老師</p>
-      <h1>同一個 LINE BOT，<br>老師新增、學生查詢</h1>
-      <p>原本的 <code>Code.gs</code> 不必改。另加一個 <code>TeacherForms.gs</code>，同一個 LINE BOT 就能把四份老師專用表單傳給你；老師在 LINE 點連結填寫，學生照常查詢與測驗。資料仍在原本那份試算表。</p>
-      <div class="actions"><a class="button primary" href="#steps">照步驟加上老師功能</a><a class="button light" href="TeacherForms.gs" download="TeacherForms.gs">下載 TeacherForms.gs</a><a class="button outline" href="#source">查看程式碼</a><a class="button outline" href="#immediate-send">從試算表立即發送</a></div>
-    </div><aside class="hero-side"><strong>1 個 BOT · 1 個專案</strong><span>沿用現有 LINE 官方帳號、原 Apps Script 與試算表。只有一個 Channel access token、一個 Webhook URL。</span></aside></div>
+      <h1>直接在 LINE 說，<br>資料就進試算表</h1>
+      <p>老師在同一個 LINE BOT 傳「新增行事曆／新增課表」「新增單詞」「新增每日一句」「新增題目」或「新增通知」。機器人先問通行碼，再逐題詢問資料；最後核對並點「確認新增」，資料就進原本那一份 Google 試算表。</p>
+      <div class="actions"><a class="button primary" href="#steps">照步驟安裝</a><a class="button light" href="TeacherLine.gs" download="TeacherLine.gs">下載 TeacherLine.gs</a><a class="button outline" href="#commands">看 LINE 對話示例</a><a class="button outline" href="#source">複製完整程式</a></div>
+    </div><aside class="hero-side"><strong>LINE 裡完成</strong><span>不用開四份 Google 表單，不用切到試算表輸入。沿用原 BOT、原 Apps Script 專案、原試算表與原 Webhook 網址。</span></aside></div>
   </div></header>
   <div class="layout">
-    <nav class="nav" aria-label="本頁目錄"><strong>本頁目錄</strong><a href="#overview">先看運作方式</a><a href="#steps">安裝步驟</a><a href="#commands">老師在 LINE 怎麼用</a><a href="#sheet">表單送出後</a><a href="#immediate-send">立即發送通知</a><a href="#safety">權限與限制</a><a href="#faq">常見問題</a><a href="#source">TeacherForms.gs</a></nav>
+    <nav class="nav" aria-label="本頁目錄"><strong>本頁目錄</strong><a href="#overview">它怎麼運作</a><a href="#steps">安裝步驟</a><a href="#commands">LINE 指令示例</a><a href="#sheet">資料去哪裡</a><a href="#immediate-send">立即發送通知</a><a href="#safety">權限與限制</a><a href="#faq">卡住時</a><a href="#source">TeacherLine.gs</a></nav>
     <main>
-      <section class="card" id="overview"><h2>先看運作方式</h2>
-        <div class="flow" aria-label="資料流程"><span>同一個 LINE BOT 傳老師表單選單</span><i>→</i><span>老師點受限表單</span><i>→</i><span>登入填寫</span><i>→</i><span>寫進原試算表</span><i>→</i><span>學生照常查詢</span></div>
+      <section class="card" id="overview"><h2>一個 BOT，老師新增、學生查詢</h2>
+        <div class="flow" aria-label="資料流程"><span>老師在 LINE 傳新增指令</span><i>→</i><span>輸入通行碼</span><i>→</i><span>逐題填資料</span><i>→</i><span>核對並點確認新增</span><i>→</i><span>原試算表新增資料</span></div>
         <div class="feature-grid">
-          <div class="feature"><b>📅 新增課程</b><p>填名稱、時間、地點與可選的提醒時間，寫入「行事曆」。</p></div>
-          <div class="feature"><b>📚 新增單詞</b><p>填中文、族語、例句與可選的 HTTPS 音檔網址，寫入「單詞表」。</p></div>
-          <div class="feature"><b>💬 新增每日一句</b><p>選日期、填句子與翻譯；同一天再次提交會更新當天內容。</p></div>
-          <div class="feature"><b>🔔 新增通知</b><p>填發送時間與內容，勾選「確認發送給已訂閱學生」後排入「通知」；學生機器人的定時程式負責送出。</p></div>
+          <div class="feature"><b>📅 新增行事曆／課表</b><p>在對話中填課程名稱、日期時間、地點等，寫入試算表「行事曆」。「新增課程」也可使用。</p></div>
+          <div class="feature"><b>📚 新增單詞</b><p>填中文、族語、例句與可選音檔，寫入「單詞表」。</p></div>
+          <div class="feature"><b>💬 新增每日一句</b><p>填日期、族語句子、中文翻譯，寫入「每日一句」。</p></div>
+          <div class="feature"><b>📝 新增題目</b><p>填題目、A/B/C 選項、正解和可選解說，寫入「題庫」。「新增測驗題」也可使用。</p></div>
+          <div class="feature"><b>🔔 新增通知</b><p>填發送時間和內容，寫入「通知」；到時間後依原本的定時觸發器發送。</p></div>
         </div>
-        <div class="callout"><strong>原本的 Code.gs 一行都不用動。</strong><p>新增檔案建立表單，並用既有 LINE 權杖把表單選單送到老師自己的聊天室；原本的 Webhook 和學生指令照舊。由於舊 <code>doPost</code> 沒有呼叫教師模組，<strong>直接傳「新增課程」不會收到表單</strong>；請點機器人送來的選單連結。這個流程不需要付費 AI API。</p></div>
+        <div class="callout"><strong>原本 <code>Code.gs</code> 要做一小處接線。</strong><p>舊版「只加一個 .gs、不改 <code>Code.gs</code>」無法讓原本的 Webhook 辨識老師的新指令。這次新增 <code>TeacherLine.gs</code>，在原本的 <code>command_</code> 開頭接上老師指令；不用重做 BOT，也不會多一個 <code>doPost</code>。</p></div>
       </section>
-      <section class="card" id="steps"><h2>在原機器人加上老師功能</h2><p>先完成<a href="/class/line-gas-starter/">LINE × GAS 入門版</a>的 <code>setup</code>。以下都在<strong>原本與那份試算表連動的 Apps Script 專案</strong>操作；不必新增 LINE 官方帳號、Apps Script 專案或第二個 Webhook。</p>
-        <div class="callout green"><strong>先核對兩個時區。</strong><p>在原 Google 試算表點「檔案 → 設定」，確認時區是「(GMT+08:00) 台北」；原 Apps Script 的「專案設定」也要選 <code>Asia/Taipei</code>。</p></div>
+      <section class="card" id="steps"><h2>從原本的學生機器人加上老師功能</h2><p>先完成<a href="/class/line-gas-starter/">LINE × GAS 入門版</a>：原試算表已有七個分頁，<code>setup</code> 跑過，學生傳「說明」會有回覆。下面都在<strong>同一份試算表連動的 Apps Script 專案</strong>操作。</p>
         <ol class="steps">
-          <li><h3>回到原本那份試算表與專案</h3><p>開啟學生機器人使用的 Google 試算表，點「擴充功能 → Apps Script」。左側應看到既有的 <code>Code.gs</code>；它已存好同一個 LINE BOT 的 <code>LINE_ACCESS_TOKEN</code>。不要新增另一個權杖。</p><p class="result"><strong>完成後會看到：</strong>原本七張分頁與機器人程式都在。</p></li>
-          <li class="focus"><h3>只新增 <code>TeacherForms.gs</code></h3><p>在 Apps Script 左側「檔案」旁點 <strong>＋ → 指令碼</strong>，名稱輸入 <code>TeacherForms</code>。把<a href="#source">本頁完整教師模組</a>貼到新檔並按 <code>Ctrl+S</code>。<strong>不要開啟、覆蓋或修改原本的 <code>Code.gs</code></strong>。</p><p class="result"><strong>完成後會看到：</strong>左側同時有原本的 <code>Code.gs</code> 與新的 <code>TeacherForms.gs</code>，專案仍只有原本一個 <code>doPost</code>。</p></li>
-          <li id="setup"><h3>執行 <code>setupTeacher</code> 建立四份表單</h3><p>在同一專案的函式選單選 <code>setupTeacher</code>，按「▶ 執行」並完成 Google 授權。程式會沿用原 <code>SPREADSHEET_ID</code>，以目前執行者的 Google 帳號作為老師，建立四份<strong>尚未發布</strong>的表單和送出觸發器；重跑不應清空既有七張分頁。</p><p class="result"><strong>完成後會看到：</strong>執行紀錄列出四份表單的編輯連結，原試算表新增「老師表單紀錄」與表單回覆分頁。</p></li>
-          <li class="focus" id="forms-access"><h3>逐份確認只有老師能填，再發布</h3><p>開啟四個編輯連結，確認每份表單「一般存取權」為<strong>受限制</strong>，回覆者只加入老師自己的 Google 帳號；「收集電子郵件地址」選<strong>已驗證</strong>，不要開「每人只能回覆一次」或公開回覆摘要。確認後才發布，並用未授權的另一個 Google 帳號試開填寫連結，應無法填答。</p><p class="result"><strong>完成後會看到：</strong>老師可填，其他帳號即使拿到表單網址也沒有填答權限。</p></li>
-          <li id="line-id"><h3>從「學生」分頁找到自己的 LINE ID</h3><p>老師用自己的 LINE 帳號，在<strong>原本同一個機器人</strong>傳 <code>訂閱</code>。回原試算表的「學生」分頁，依剛剛的加入或更新時間辨認自己那列，複製 A 欄以 <code>U</code> 開頭的完整 ID。到 Apps Script 左側「專案設定 → 指令碼屬性」新增 <code>TEACHER_LINE_USER_ID</code>，值貼這個 ID 並儲存；原本的 <code>LINE_ACCESS_TOKEN</code> 不必改。若同時有多人操作，先比對時間，無法確定是哪列就不要猜。老師若不想接收學生通知，取得 ID 後可傳 <code>取消訂閱</code>；A 欄 ID 仍會保留。</p><p class="result"><strong>完成後會看到：</strong>原指令碼屬性多了老師 ID；學生資料表不必新增欄位。</p></li>
-          <li id="enable"><h3>啟用教師表單並檢查</h3><p>回同一專案依序執行 <code>enableTeacherLinks</code>、<code>checkTeacherSetup</code>。後者會檢查原本的 LINE 權杖、老師 ID、時區、試算表與表單。教師表單存取權和 Email 的介面選項仍須以前一步的人工核對為準。</p><p class="result"><strong>完成後會看到：</strong>執行紀錄顯示教師表單可用。</p></li>
-          <li id="menu"><h3>執行 <code>sendTeacherMenu</code>，把選單傳到自己的 LINE</h3><p>在 Apps Script 上方的函式選單選 <code>sendTeacherMenu</code>，按「▶ 執行」。它會使用<strong>原本那一個 LINE BOT</strong>，把四份表單的填寫連結傳給老師 ID；LINE 端可以把這則訊息釘選或收藏。下次需要重新取得連結，再執行一次此函式即可。</p><p class="result"><strong>完成後會看到：</strong>老師和學生都仍在同一個 BOT 聊天；只有老師自己的 LINE 收到教師表單選單。</p></li>
-          <li id="test"><h3>從 LINE 點表單，測試老師與學生</h3><p>老師從剛收到的選單點「新增課程」，用自己的 Google 帳號填一筆未來課程。回原試算表確認「行事曆」增加一列；學生在<strong>同一個 BOT</strong> 傳 <code>行事曆</code>，應能看到新課程。再用未授權的另一個 Google 帳號試開表單連結，應無法填寫。</p><p class="result"><strong>完成後會看到：</strong>老師從同一個 LINE BOT 的訊息進入表單，學生原有指令照常使用。</p></li>
+          <li class="focus"><h3>新增 <code>TeacherLine.gs</code></h3><p>從原試算表點「擴充功能 → Apps Script」。編輯器左側「檔案」旁點 <strong>＋ → 指令碼</strong>，名稱輸入 <code>TeacherLine</code>。點<a href="#source">本頁「複製完整 TeacherLine.gs」</a>，貼進新檔，按 <code>Ctrl+S</code> 儲存。原有的 <code>Code.gs</code> 請保留。</p><p class="result"><strong>完成後會看到：</strong>檔案清單同時有 <code>Code.gs</code> 與 <code>TeacherLine.gs</code>。</p></li>
+          <li class="focus" id="hook"><h3>在原 <code>Code.gs</code> 接上老師指令</h3><p>開啟 <code>Code.gs</code>，搜尋 <code>function command_(text, uid) {</code>。在這個大括號<strong>下一行、原本第一個 if 前面</strong>貼入下面這一小段；其餘學生指令原樣保留。如果你的程式已經有這段，就不用重複貼：</p>
+            <pre class="hook">  if (text === '我的ID') return '你的 LINE 使用者 ID：' + uid;
+  if (typeof teacherLineCommand_ === 'function') {
+    const teacherAnswer = teacherLineCommand_(text, uid);
+    if (teacherAnswer !== null) return teacherAnswer;
+  }</pre>
+            <p>只貼框內這幾行，<strong>不要另外增加第二個 <code>command_</code> 或 <code>doPost</code></strong>。按 <code>Ctrl+S</code>。本網站入門版的新 <code>Code.gs</code> 已含這段接線；先前複製到自己 GAS 的舊版仍要手動補上。</p><p class="result"><strong>完成後會看到：</strong>專案儲存成功，原本的 <code>doPost</code> 仍只有一個。</p></li>
+          <li id="deploy"><h3>更新原本的網頁應用程式部署</h3><p>程式改了之後，到 Apps Script 右上角點「部署 → 管理部署作業」，在<strong>原本的網頁應用程式</strong>旁點鉛筆，版本選「新版本」，按「部署」。如出現授權畫面，照畫面完成。<strong>這是更新原部署，不是新增第二個部署</strong>；LINE Developers 的 Webhook URL 保持原本的 <code>/exec</code> 網址。</p><p class="result"><strong>完成後會看到：</strong>原部署顯示新版本，Webhook URL 不必重貼。</p></li>
+          <li id="line-id"><h3>在 LINE 取得自己的 ID</h3><p>用老師自己的 LINE，向<strong>同一個 BOT</strong> 傳 <code>我的ID</code>。機器人會回你自己的 <code>U...</code> ID。複製完整一串；這個 ID 是 LINE 的使用者 ID，與 Google 試算表 ID 不同。</p><p class="result"><strong>完成後會看到：</strong>BOT 回覆老師自己的 LINE ID。</p></li>
+          <li id="passcode"><h3>設定老師 ID 與通行碼</h3><p>回 Apps Script 左側「專案設定」齒輪，在「指令碼屬性」新增兩筆：<code>TEACHER_LINE_USER_ID</code> 貼剛剛取得的完整 ID；<code>TEACHER_PASSCODE</code> 設定老師自己記得的通行碼，至少 8 個字元。<strong><code>1234</code> 只是示意，不要真的使用</strong>。按儲存。原有的 <code>LINE_ACCESS_TOKEN</code> 和 <code>SPREADSHEET_ID</code> 保留。</p><p class="result"><strong>完成後會看到：</strong>指令碼屬性多了老師 ID 和通行碼兩筆。</p></li>
+          <li id="test"><h3>用老師 LINE 實測一筆</h3><p>在同一個 BOT 傳 <code>新增單詞</code>。機器人先問通行碼，輸入剛剛設定的值；正確後跟著問題逐一填資料。最後核對摘要，點 LINE 裡的「確認新增」；回原試算表「單詞表」確認多了一列。學生再傳 <code>查單詞 關鍵字</code>，確認能讀到新資料。輸入過程想停，可傳 <code>取消</code>。</p><p class="result"><strong>完成後會看到：</strong>老師在 LINE 輸入資料並確認，原試算表新增一列，學生原本指令正常。</p></li>
         </ol>
-        <div class="callout"><strong>如果先前照舊版建了另一個老師專案：</strong><p>這頁的新檔要加在<strong>學生機器人原本的專案</strong>。若舊專案卡在「這個表單目前沒有回覆目標」，那份尚未發布的草稿表單可先不動；不要把舊老師程式整份貼進原專案，也不要為它新增第二個 Webhook。若舊表單已有人填答或舊觸發器已運作，請先確認資料與觸發器狀況，再搬移或停用，避免重複寫入。</p></div>
       </section>
-      <section class="card" id="commands"><h2>老師在同一個 LINE BOT 怎麼用？</h2><div class="command-list">
-        <div><b>先按一次 <code>sendTeacherMenu</code></b>在 Apps Script 執行，讓原本的機器人私訊表單選單。</div><div><b>📅 新增課程</b>點選單裡的課表連結。</div>
-        <div><b>📚 新增單詞</b>點選單裡的單詞連結。</div><div><b>💬 新增每日一句</b>點選單裡的句子連結。</div>
-        <div><b>🔔 新增通知</b>點選單裡的通知連結；到時間才會推播。</div><div><b>再取一次選單</b>回 Apps Script 再執行一次 <code>sendTeacherMenu</code>。</div>
-      </div><p>原本的學生指令照舊。這個「只加一個檔案」版本<strong>不支援老師直接傳「新增課程」取得回覆</strong>；若要這種文字指令，原本的 Webhook 程式必須另加指令分流。表單送出後以<strong>原試算表實際新增或更新的資料</strong>為準。</p></section>
-      <section class="card" id="sheet"><h2>表單送出後，去哪裡看？</h2><div class="table-wrap"><table><thead><tr><th>填寫表單</th><th>原試算表的正式資料分頁</th><th>學生端看到什麼</th></tr></thead><tbody>
-        <tr><td>新增課程</td><td>行事曆</td><td>學生傳「行事曆」看到最近的未來課程；有提醒時間時由學生端定時程式處理。</td></tr>
-        <tr><td>新增單詞</td><td>單詞表</td><td>學生傳「單詞表」或「查單詞 關鍵字」。</td></tr>
-        <tr><td>新增每日一句</td><td>每日一句</td><td>日期等於台灣今天時，學生傳「每日一句」可看到。</td></tr>
-        <tr><td>新增通知</td><td>通知</td><td>到發送時間後，學生端的 <code>sendDueNotifications</code> 觸發器向已訂閱帳號推播。</td></tr>
-      </tbody></table></div><div class="callout green"><strong>表單原始回覆也會在同一份試算表。</strong><p>那些新增的「表單回應」分頁是備份；同一個機器人讀的是正式的「行事曆」「單詞表」「每日一句」「通知」分頁。通知不會在老師按下送出表單的瞬間立即發送，仍以既有定時觸發器為準。</p></div></section>
-      <section class="card" id="immediate-send"><h2>要現在發給學生？另加一個 .gs 檔就好</h2>
-        <p>老師在 LINE 送出「新增通知」表單後，資料會先進原試算表的「通知」分頁，按原排程時間送出。若要<strong>立刻發送</strong>，可以在原試算表加一個獨立的 <code>ImmediateSend.gs</code>，選取那筆通知後點「LINE 通知 → 立即發送選取的通知」，核對內容和待發送人數再確認。</p>
-        <div class="callout green"><strong>仍使用同一個 Apps Script 專案。</strong><p><code>ImmediateSend.gs</code> 也加在原試算表的 Apps Script，沿用同一個 LINE BOT 的權杖。點發送時會把通知的「發送時間」改成現在，每次最多嘗試 20 位；再次點擊時，程式會跳過「發送紀錄」中已有成功紀錄的對象。</p></div>
-        <div class="source-bar"><a class="button" href="/class/line-gas-starter/immediate-send.html">看完整操作與可複製程式</a><a class="button" href="/class/line-gas-starter/ImmediateSend.gs" download="ImmediateSend.gs">下載獨立 ImmediateSend.gs</a></div>
+      <section class="card" id="commands"><h2>老師在 LINE 裡怎麼說？</h2>
+        <div class="command-list">
+          <div><b><code>我的ID</code></b>取得自己的 LINE ID，供第一次設定。</div><div><b><code>老師指令</code></b>查看老師可用指令。</div>
+          <div><b><code>新增行事曆</code>／<code>新增課表</code></b>都寫入「行事曆」分頁；「新增課程」也可用。</div>
+          <div><b><code>新增單詞</code></b>依提示輸入中文、族語等資料。</div><div><b><code>新增每日一句</code></b>依提示輸入句子與翻譯。</div>
+          <div><b><code>新增題目</code></b>依提示輸入題目、A/B/C 選項與正解；「新增測驗題」也可用。</div>
+          <div><b><code>新增通知</code></b>輸入未來發送時間和通知內容。</div><div><b><code>取消</code></b>放棄這次尚未確認的填寫。</div>
+        </div>
+        <div class="chat" aria-label="LINE 對話示意"><small>示意：實際問題會依你選的功能改變</small><p class="teacher">新增課表</p><p>請輸入老師通行碼。</p><p class="teacher">（輸入自己設定的通行碼）</p><p>通過後，請輸入課程名稱。</p><p class="teacher">族語入門課</p><p>……照提示填完後，機器人會主動送來摘要和「確認新增」按鈕。</p><p class="teacher">確認新增 ✓</p><p>新增成功，請到原試算表「行事曆」查看。</p></div>
+        <p>機器人會先核對老師 LINE ID 和通行碼。<strong>最後確認前不會寫入正式分頁</strong>；請核對拼寫、日期與通知內容。填寫中傳 <code>取消</code> 可放棄；對話約 10 分鐘過期，要重新開始。這是固定流程的課務助理，沒有串接付費 AI API，也不會自動生成族語內容。</p>
       </section>
+      <section class="card" id="sheet"><h2>確認後會寫到哪裡？</h2><div class="table-wrap"><table><thead><tr><th>老師傳的指令</th><th>原試算表分頁</th><th>學生如何使用</th></tr></thead><tbody>
+        <tr><td>新增行事曆／新增課表／新增課程</td><td>行事曆</td><td>傳「行事曆」看近期課程。</td></tr>
+        <tr><td>新增單詞</td><td>單詞表</td><td>傳「單詞表」或「查單詞 關鍵字」。</td></tr>
+        <tr><td>新增每日一句</td><td>每日一句</td><td>傳「每日一句」看當天句子。</td></tr>
+        <tr><td>新增題目／新增測驗題</td><td>題庫</td><td>傳「測驗」隨機出題。</td></tr>
+        <tr><td>新增通知</td><td>通知</td><td>到預定時間後，向已訂閱學生發送。</td></tr>
+      </tbody></table></div><div class="callout green"><strong>仍只有原本一份 Google 試算表。</strong><p>老師確認後寫入正式資料分頁，不會另開表單回應分頁。「新增每日一句」遇到相同日期會更新當天那一列。這裡的「行事曆」是試算表課表，不會建立 Google Calendar 活動。通知依原本的 <code>sendDueNotifications</code> 定時觸發器處理；第一次使用通知功能要先確認原專案已執行 <code>installTrigger</code>。</p></div></section>
+      <section class="card" id="immediate-send"><h2>想立刻發通知？</h2><p>LINE 的「新增通知」是建立<strong>預定時間</strong>的通知，到時間再發。若要當下就發，可用獨立的 <code>ImmediateSend.gs</code>：在原試算表選取通知資料列，點「LINE 通知 → 立即發送選取的通知」，核對內容與待發人數後確認。</p><div class="source-bar"><a class="button" href="/class/line-gas-starter/immediate-send.html">看立即發送教學</a><a class="button" href="/class/line-gas-starter/ImmediateSend.gs" download="ImmediateSend.gs">下載 ImmediateSend.gs</a></div></section>
       <section class="card" id="safety"><h2>權限與限制</h2><ul>
-        <li>四份 Google 表單必須只開放老師帳號回覆；<strong>表單網址不是密碼</strong>，所以不能設成「知道連結的人都能回覆」。</li>
-        <li>老師和學生在同一個 LINE BOT。程式只把選單私訊到 <code>TEACHER_LINE_USER_ID</code>；LINE 訊息可能被轉傳，<strong>真正的寫入限制是 Google 表單的受限帳號與已驗證 Email</strong>。</li>
-        <li>四份表單的原始回覆也會存進同一份試算表，其中可能有老師的電子郵件；試算表本身請維持老師管理，不要開放學生瀏覽或編輯。</li>
-        <li>「行事曆」是試算表課表，不會同步 Google Calendar。要改課程時間或取消課程，先到原試算表修改；這版表單只處理新增，當日句子例外可覆寫同一天資料。</li>
-        <li>同一專案只保存一份 <code>LINE_ACCESS_TOKEN</code>。教師 LINE ID 也只放在指令碼屬性；不要把權杖、學生名單或實際表單連結貼進公開教材。</li>
-        <li>請先用測試帳號與假資料驗收。這份程式沒有生成式 AI 對話，也不會憑空產生族語內容；族語拼寫與翻譯仍由老師確認。</li>
+        <li><code>TEACHER_LINE_USER_ID</code> 請填老師自己的完整 LINE 使用者 ID，<code>TEACHER_PASSCODE</code> 至少 8 字元；設定值放在指令碼屬性，不寫進公開程式。請使用專用通行碼，因為你輸入的內容仍會留在 LINE 聊天紀錄。</li>
+        <li>Apps Script 網頁應用程式讀不到 LINE 的 <code>X-Line-Signature</code> 標頭，不能驗證 Webhook 真的來自 LINE。老師 ID、通行碼與回到老師 LINE 的確認步驟能降低誤寫或冒用，仍不等於完整的來源驗證；請勿拿來處理敏感資料。</li>
+        <li>試算表請維持只有老師能編輯；不要把 <code>LINE_ACCESS_TOKEN</code>、學生名單或其他私人資料貼到公開教材。</li>
+        <li>單詞與每日一句的族語內容要由老師自行審核。先用測試資料走完一次，再輸入正式教材。</li>
       </ul></section>
       <section class="card faq" id="faq"><h2>卡住時先看這裡</h2>
-        <details><summary>老師的 LINE 沒收到表單選單？</summary><p>確認老師 LINE 帳號已加原機器人好友；在原試算表「學生」分頁核對自己的 ID，並確認 <code>TEACHER_LINE_USER_ID</code> 完整無空格。重新執行 <code>checkTeacherSetup</code>、<code>sendTeacherMenu</code>，查看 Apps Script「執行項目」有沒有 LINE API 錯誤。新增教師檔不需要重新部署原 Webhook。</p></details>
-        <details><summary>LINE 有表單連結，但表單說無法存取？</summary><p>確認目前登入的是被加入「回覆者」的老師 Google 帳號，並確認該表單已發布。若你同時登入多個 Google 帳號，可先切到正確帳號。</p></details>
-        <details><summary>表單送出了，LINE 查不到新課程？</summary><p>先看原試算表「行事曆」有沒有新列，時間是否在未來、啟用是否為「是」。若只在原始表單回應分頁找到資料，請看同一 Apps Script 的「執行項目」中 <code>teacherFormSubmit</code> 是否報錯。</p></details>
-        <details><summary>新增通知後沒有推播？</summary><p>確認同一專案已執行 <code>installTrigger</code>、目標學生傳過「訂閱」、通知時間已到且在有效範圍內；查看原試算表「發送紀錄」與 Apps Script「執行項目」。</p></details>
-        <details><summary>傳「新增課程」後，機器人沒有給表單？</summary><p>這是只新增一個檔案、完全不改原 <code>Code.gs</code> 的限制。請點 <code>sendTeacherMenu</code> 傳到 LINE 的選單連結；原本的 <code>doPost</code> 不會自動辨識新檔裡的教師指令。</p></details>
-        <details><summary>執行 setupTeacher 出現「這個表單目前沒有回覆目標」？</summary><p>舊版程式太早呼叫 <code>getDestinationId()</code>，新表單尚未連接試算表就會拋錯。如果你目前跑的是舊老師專案的 <code>程式碼.gs</code>，網站更新不會自動更改該專案。請回到學生機器人的原試算表，新增本頁修正版 <code>TeacherForms.gs</code> 後才執行它的 <code>setupTeacher</code>；如果原專案已經有這份新檔，儲存新版後重跑即可，會沿用前次建立的表單。</p></details>
+        <details><summary>傳「新增單詞」沒有反應？</summary><p>先確認學生原有的「說明」是否有回覆。若有，檢查 <code>Code.gs</code> 的 <code>command_</code> 開頭是否已加上本頁的接線程式，再到「部署 → 管理部署作業」確認<strong>原部署已選新版本</strong>。只按 <code>Ctrl+S</code> 不會更新已發布的 <code>/exec</code> 版本。</p></details>
+        <details><summary>機器人說我不是老師？</summary><p>確認是用老師自己的 LINE 帳號傳訊，並在 Apps Script「專案設定 → 指令碼屬性」核對 <code>TEACHER_LINE_USER_ID</code>。要貼完整的 <code>U...</code>，不能貼 Google 試算表 ID 或 LINE 顯示名稱。</p></details>
+        <details><summary>通行碼忘記了或一直被拒絕？</summary><p>到 Apps Script「專案設定 → 指令碼屬性」查看或更新 <code>TEACHER_PASSCODE</code>，至少 8 字元。不要把通行碼貼給學生；連續錯誤 5 次會暫停約 10 分鐘。</p></details>
+        <details><summary>連續新增第二筆，沒有立刻收到確認按鈕？</summary><p>為避免重複推送，確認卡之間至少間隔 30 秒。請等一下，再在同一個 LINE 對話傳 <code>送出</code>；收到摘要後核對並按「確認新增」。</p></details>
+        <details><summary>按確認後，試算表沒有新增？</summary><p>檢查 Apps Script 左側「執行項目」中的最新 <code>doPost</code>。確認你開的是<strong>原本那份試算表</strong>、<code>setup</code> 已完成，並核對該分頁第一列欄名沒有被改掉。</p></details>
+        <details><summary>新增通知後學生沒收到？</summary><p>這不是立即發送。確認發送時間已到、原專案執行過 <code>installTrigger</code>、學生傳過「訂閱」；再看原試算表「發送紀錄」與 Apps Script「執行項目」。</p></details>
+        <details><summary>之前建過四份老師表單，現在還要用嗎？</summary><p>這套 LINE 對話版不需要 <code>setupTeacher</code>、四份 Google 表單，也不需要逐份發布。若舊表單已有實際回覆或觸發器，先確認那些資料與觸發器的用途，再決定是否停用；不要直接刪除既有資料。</p></details>
       </section>
-      <section class="card" id="source"><h2>獨立的 TeacherForms.gs</h2><p>下面顯示的程式碼與下載檔是同一份。把它貼進<strong>原試算表的 Apps Script 新增檔案</strong>；原本的 <code>Code.gs</code> 一行都不用改，也不會多出第二個 <code>doPost</code>。</p>
-        <p id="local-preview-note" class="callout" hidden>你現在用本機 <code>file://</code> 預覽。瀏覽器可能不允許讀取旁邊的程式檔；請用「下載 TeacherForms.gs」或在正式網站查看。</p>
-        <div class="source-bar"><a class="button" href="TeacherForms.gs" download="TeacherForms.gs">下載 TeacherForms.gs</a><button class="button" id="copy-code" type="button" disabled>複製完整 TeacherForms.gs</button><span class="source-status" id="source-status" role="status" aria-live="polite">正在載入程式碼…</span></div>
-        <details class="source-details"><summary>展開完整程式碼</summary><pre id="source-code">正在載入 TeacherForms.gs…</pre></details>
+      <section class="card" id="source"><h2>複製完整 TeacherLine.gs</h2><p>下載檔與下方展開的程式碼是同一份。把它貼進<strong>原試算表 Apps Script 專案新增的 <code>TeacherLine.gs</code></strong>，再照上面的步驟，於原 <code>Code.gs</code> 加上接線程式。</p>
+        <p id="local-preview-note" class="callout" hidden>你現在用本機 <code>file://</code> 預覽。瀏覽器可能不允許讀取旁邊的程式檔；請用「下載 TeacherLine.gs」或在正式網站查看。</p>
+        <div class="source-bar"><a class="button" href="TeacherLine.gs" download="TeacherLine.gs">下載 TeacherLine.gs</a><button class="button" id="copy-code" type="button" disabled>複製完整 TeacherLine.gs</button><span class="source-status" id="source-status" role="status" aria-live="polite">正在載入程式碼…</span></div>
+        <details class="source-details"><summary>展開完整程式碼</summary><pre id="source-code">正在載入 TeacherLine.gs…</pre></details>
       </section>
     </main>
   </div>
@@ -120,7 +126,7 @@
       const copyButton = document.getElementById('copy-code');
       let codeText = '';
       if (location.protocol === 'file:') document.getElementById('local-preview-note').hidden = false;
-      fetch('TeacherForms.gs', {cache:'no-store'}).then(response => {
+      fetch('TeacherLine.gs', {cache:'no-store'}).then(response => {
         if (!response.ok) throw new Error('HTTP ' + response.status);
         return response.text();
       }).then(value => {
@@ -130,14 +136,14 @@
         copyButton.disabled = false;
         status.textContent = '程式碼已載入，可以直接複製。';
       }).catch(() => {
-        source.textContent = '此處暫時無法顯示程式。請下載 TeacherForms.gs，再用記事本開啟並全選複製。';
+        source.textContent = '此處暫時無法顯示程式。請下載 TeacherLine.gs，再用記事本開啟並全選複製。';
         status.textContent = '無法載入頁內程式碼；可改用下載連結。';
       });
       copyButton.addEventListener('click', async () => {
         if (!codeText) return;
         try {
           await navigator.clipboard.writeText(codeText);
-          status.textContent = '已複製整份 TeacherForms.gs。';
+          status.textContent = '已複製整份 TeacherLine.gs。';
         } catch (_) {
           const area = document.createElement('textarea');
           area.value = codeText;
@@ -147,7 +153,7 @@
           area.select();
           const copied = document.execCommand('copy');
           area.remove();
-          status.textContent = copied ? '已複製整份 TeacherForms.gs。' : '瀏覽器未允許複製；請改下載檔案。';
+          status.textContent = copied ? '已複製整份 TeacherLine.gs。' : '瀏覽器未允許複製；請改下載檔案。';
         }
       });
     })();
