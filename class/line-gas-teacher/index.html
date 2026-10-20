@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="老師專用 LINE 課務助理：從 LINE 開啟只有老師能填的 Google 表單，在同一份試算表新增課表、單詞、每日一句與通知。">
+  <title>老師專用 LINE 課務助理｜CALUMAI</title>
+  <link rel="canonical" href="https://calumai.com/class/line-gas-teacher/">
+  <link rel="icon" href="/assets/calumai-logo-mark.png">
+  <style>
+    :root{color-scheme:light;--ink:#20302b;--muted:#50655c;--paper:#fff;--bg:#f4f7f4;--deep:#143e33;--green:#1b6750;--line:#d7e3da;--yellow:#f8df85;--code:#10231c}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.8 system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif}
+    a{color:#116347;text-underline-offset:3px}a:hover{text-decoration-thickness:2px}
+    :focus-visible{outline:3px solid #b77a12;outline-offset:3px}
+    code{font:inherit;font-family:Consolas,ui-monospace,monospace;font-size:.91em;background:#e9f2ec;color:#144936;border-radius:4px;padding:.08em .28em;overflow-wrap:anywhere}
+    .top{background:var(--deep);color:#fff}.top-inner{max-width:1120px;margin:auto;padding:18px 24px 45px}.crumbs{font-size:14px;color:#d7eadf}.crumbs a{color:inherit}
+    .hero{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:28px;align-items:end;padding-top:42px}.eyebrow{font-size:13px;font-weight:800;letter-spacing:.12em;color:#bfe2ca;margin:0 0 10px}
+    h1{font-size:clamp(31px,4.4vw,55px);line-height:1.23;letter-spacing:-.035em;margin:0 0 14px}.hero p{max-width:700px;color:#e6f1e9;font-size:18px;margin:0}
+    .hero-side{border:2px solid #a0c9af;border-radius:15px;padding:17px;background:#ffffff13}.hero-side strong{display:block;color:var(--yellow);font-size:23px;line-height:1.4;margin-bottom:7px}.hero-side span{display:block;font-size:14px;line-height:1.65;color:#e6f1e9}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:25px}.button{display:inline-flex;align-items:center;justify-content:center;border:2px solid transparent;border-radius:9px;padding:10px 16px;text-decoration:none;font:inherit;font-weight:800;line-height:1.4;cursor:pointer}.button.primary{background:var(--yellow);color:#503c07}.button.light{background:#fff;color:var(--deep)}.button.outline{border-color:#a0c9af;color:#fff}
+    .layout{max-width:1120px;margin:auto;padding:24px 24px 66px;display:grid;grid-template-columns:205px minmax(0,1fr);gap:24px}.nav{position:sticky;top:18px;align-self:start;border:1px solid var(--line);border-radius:14px;background:#fff;padding:16px}.nav strong{display:block;margin-bottom:7px}.nav a{display:block;font-size:14px;text-decoration:none;color:#245643;padding:4px 0}.nav a:hover{text-decoration:underline}
+    main{min-width:0}.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px clamp(18px,3vw,34px);margin-bottom:17px;scroll-margin-top:20px}
+    h2{font-size:clamp(23px,2.7vw,29px);line-height:1.35;margin:0 0 14px;letter-spacing:-.02em}h3{font-size:19px;line-height:1.4;margin:0 0 6px}p{margin:10px 0}ul{padding-left:1.4em}li{margin:5px 0}
+    .flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:19px 0}.flow span{border:1px solid #c5ddcd;border-radius:8px;background:#eaf5ed;padding:5px 9px;font-weight:700;font-size:14px}.flow i{font-style:normal;color:#347050}
+    .feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:18px 0}.feature{background:#edf5ef;border:1px solid #cce1d2;border-radius:11px;padding:15px}.feature b{display:block;font-size:18px}.feature p{margin:4px 0 0;font-size:14px;line-height:1.65}
+    .callout{border-left:5px solid #b47710;background:#fff7df;border-radius:8px;padding:13px 16px;margin:17px 0}.callout.green{border-color:#277552;background:#eaf5ed}.callout p{margin:4px 0 0}
+    .steps{list-style:none;counter-reset:step;padding:0;margin:20px 0 0}.steps>li{counter-increment:step;position:relative;border:1px solid var(--line);border-radius:11px;background:#fff;margin:0 0 13px;padding:16px 17px 16px 62px;scroll-margin-top:18px}.steps>li:before{content:counter(step,decimal-leading-zero);position:absolute;top:17px;left:16px;min-width:32px;border-radius:7px;background:var(--green);color:#fff;text-align:center;font-size:13px;line-height:32px;font-weight:800}.steps>li.focus{border:2px solid #b87910;background:#fffcf0}.steps>li.focus:before{background:#9a620c}.steps>li p{margin:5px 0 9px}.result{background:#edf6ef;border-radius:8px;padding:8px 11px;color:#215337;font-size:14px;margin-top:10px!important}
+    .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:610px;font-size:14px}th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}th{background:#e8f2ea}tr:last-child td{border-bottom:0}
+    .command-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.command-list div{background:#f7faf7;border:1px solid var(--line);border-radius:9px;padding:10px 12px}.command-list b{display:block}
+    .source-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0}.source-bar .button{background:var(--green);color:#fff}.source-bar button{border:0}.source-bar button:disabled{opacity:.55;cursor:not-allowed}.source-status{font-size:14px;color:var(--muted)}
+    .source-details{border:1px solid var(--line);border-radius:11px;overflow:hidden}.source-details summary{background:#eaf2ea;padding:11px 14px;font-weight:800;cursor:pointer}pre{margin:0;padding:18px;background:var(--code);color:#f1fff4;overflow:auto;white-space:pre;max-height:520px;font:13px/1.6 Consolas,ui-monospace,monospace;tab-size:2}
+    .faq details{border-bottom:1px solid var(--line);padding:11px 0}.faq summary{font-weight:750;cursor:pointer}.footer{text-align:center;color:#65766b;font-size:13px;padding:0 20px 34px}
+    @media(max-width:830px){.layout{display:block;padding:16px 15px 52px}.nav{position:static;display:flex;flex-wrap:wrap;gap:3px 13px;margin-bottom:16px}.nav strong{width:100%}.hero{grid-template-columns:1fr;padding-top:28px}.hero-side{max-width:430px}.top-inner{padding:15px 18px 35px}}
+    @media(max-width:600px){.feature-grid,.command-list{grid-template-columns:1fr}.button{width:100%}.actions{display:grid}.steps>li{padding-left:57px}.steps>li:before{left:13px}.card{padding:20px 16px}}
+    @media print{body{background:#fff}.top{background:#fff;color:#000}.top .hero p,.eyebrow,.crumbs{color:#000}.hero-side,.nav,.actions,.source-bar,.source-details,.footer{display:none}.layout{display:block;padding:0}.top-inner{padding:0}.hero{display:block}.card{border:0!important;border-bottom:1px solid #aaa!important;break-inside:avoid}.steps>li{break-inside:avoid}}
+  </style>
+</head>
+<body>
+  <header class="top" id="top"><div class="top-inner">
+    <div class="crumbs"><a href="/class/">課程總覽</a> ／ <a href="/class/lesson-08.html">第 8 堂</a> ／ 老師專用課務助理</div>
+    <div class="hero"><div>
+      <p class="eyebrow">給已完成學生 LINE 機器人的老師</p>
+      <h1>從 LINE 打開表單，<br>把課務加進同一份試算表</h1>
+      <p>這是老師自己用的固定指令助理。傳「新增課程」「新增單詞」「新增每日一句」或「新增通知」，開啟只有老師 Google 帳號能填的表單；送出後，學生原本的 LINE 機器人就能讀到新資料。</p>
+      <div class="actions"><a class="button primary" href="#steps">照步驟安裝</a><a class="button light" href="Code.gs" download="Code.gs">下載完整 Code.gs</a><a class="button outline" href="#source">查看程式碼</a></div>
+    </div><aside class="hero-side"><strong>同一份試算表</strong><span>學生機器人與老師助理是兩個獨立 LINE 官方帳號、兩個 Apps Script 專案，但共同使用你原本那份試算表。</span></aside></div>
+  </div></header>
+  <div class="layout">
+    <nav class="nav" aria-label="本頁目錄"><strong>本頁目錄</strong><a href="#overview">先看運作方式</a><a href="#steps">安裝步驟</a><a href="#commands">老師能說什麼</a><a href="#sheet">表單送出後</a><a href="#safety">權限與限制</a><a href="#faq">常見問題</a><a href="#source">完整 Code.gs</a></nav>
+    <main>
+      <section class="card" id="overview"><h2>先看運作方式</h2>
+        <div class="flow" aria-label="資料流程"><span>老師在 LINE 傳指令</span><i>→</i><span>助理回傳專用表單</span><i>→</i><span>老師登入填寫</span><i>→</i><span>寫進原試算表</span><i>→</i><span>學生機器人讀取</span></div>
+        <div class="feature-grid">
+          <div class="feature"><b>📅 新增課程</b><p>填名稱、時間、地點與可選的提醒時間，寫入「行事曆」。</p></div>
+          <div class="feature"><b>📚 新增單詞</b><p>填中文、族語、例句與可選的 HTTPS 音檔網址，寫入「單詞表」。</p></div>
+          <div class="feature"><b>💬 新增每日一句</b><p>選日期、填句子與翻譯；同一天再次提交會更新當天內容。</p></div>
+          <div class="feature"><b>🔔 新增通知</b><p>填發送時間與內容，勾選「確認發送給已訂閱學生」後排入「通知」；學生機器人的定時程式負責送出。</p></div>
+        </div>
+        <div class="callout"><strong>這一版不是自由聊天的生成式 AI。</strong><p>它只辨識固定指令並開表單，不會自動生成教材，也不需要付費 AI API。表單權限由 Google 帳號控制；公開的 LINE Webhook 不直接新增資料或群發訊息。</p></div>
+      </section>
+      <section class="card" id="steps"><h2>從頭安裝</h2><p>先完成<a href="/class/line-gas-starter/">學生 LINE 入門版</a>的 <code>setup</code>。確認同一份試算表已有「行事曆」「單詞表」「每日一句」「通知」等七張分頁，再做下列步驟。</p>
+        <div class="callout green"><strong>先核對兩個時區。</strong><p>在原 Google 試算表點「檔案 → 設定」，確認時區是「(GMT+08:00) 台北」；老師 Apps Script 的「專案設定」也要選 <code>Asia/Taipei</code>，再執行 <code>setupTeacher</code>。</p></div>
+        <ol class="steps">
+          <li><h3>準備老師專用 LINE 官方帳號</h3><p>另建一個只給老師自己加入好友的 LINE 官方帳號與 Messaging API channel。學生原本的官方帳號照常使用；老師這個助理需要自己的 Channel access token。先不要把 token 貼到網頁或程式裡。</p><p class="result"><strong>完成後會看到：</strong>你有學生用、老師用兩個不同的官方帳號；資料仍使用原本同一份 Google 試算表。</p></li>
+          <li class="focus"><h3>建立新的 Apps Script 專案，貼完整 <code>Code.gs</code></h3><p>在瀏覽器開啟 <a href="https://script.google.com/home/projects/create">Apps Script 新專案</a>，把預設 <code>Code.gs</code> 全選刪除，貼上本頁下載或複製的完整程式。這是老師助理的<strong>新專案</strong>，不要覆蓋學生機器人的程式。</p><p class="result"><strong>完成後會看到：</strong>新專案內只有一份老師助理的 <code>Code.gs</code>；學生原有專案還在。</p></li>
+          <li id="sheet-id"><h3>只設定一次原試算表網址和老師帳號</h3><p>開啟原本的 Google 試算表，從瀏覽器網址列複製完整網址。回到老師助理 <code>Code.gs</code> 最上方，只修改 <code>TEACHER_SHEET_INPUT</code>（貼原試算表完整網址或 ID）與 <code>TEACHER_EMAIL_INPUT</code>（填你實際登入的 Google 帳號電子郵件），按 <code>Ctrl+S</code> 儲存。不要另建一份學生資料表。</p><p class="result"><strong>完成後會看到：</strong>程式指向學生機器人正在使用的同一份試算表，並知道哪個 Google 帳號能填教師表單。</p></li>
+          <li id="setup"><h3>執行 <code>setupTeacher</code> 建立四份表單</h3><p>先在 Apps Script 左側齒輪「專案設定」確認時區為 <code>Asia/Taipei</code>。接著在上方「函式」選單選 <code>setupTeacher</code>，按「▶ 執行」，依畫面完成 Google 授權。程式會檢查原試算表欄位、建立四份<strong>尚未發布</strong>的 Google 表單，連接回原試算表，並安裝表單送出時的處理觸發器。再次執行不應重複建立表單或觸發器。</p><p class="result"><strong>完成後會看到：</strong>執行紀錄顯示四份表單的編輯連結；原試算表會多出表單的原始回覆分頁和老師處理紀錄分頁，原本七張教學分頁不會清空。</p></li>
+          <li class="focus" id="forms-access"><h3>逐份確認「只有老師可以回覆」，再發布</h3><p>打開執行紀錄中的每一個表單編輯連結，點右上「分享」或「發布 → 管理」：<strong>一般存取權保持「受限制」</strong>，回覆者只加入你自己的 Google 帳號。確認「收集電子郵件地址」使用<strong>已驗證</strong>，沒有開「每人只能回覆一次」，也沒有開放回覆結果摘要。四份都確認後，才按「發布」。可用未獲授權的另一個 Google 帳號試開填寫連結，應顯示沒有權限。</p><p class="result"><strong>完成後會看到：</strong>老師登入自己的 Google 帳號能填；其他帳號即使拿到連結也無法填。若你無法確認這點，先不要啟用 LINE 入口。</p></li>
+          <li id="enable"><h3>執行 <code>enableTeacherLinks</code></h3><p>回到 Apps Script，從函式選單選 <code>enableTeacherLinks</code>，按「▶ 執行」。它會檢查四份表單已發布、仍開放填寫，且連回原試算表，再讓 LINE 助理開始回傳表單連結。程式<strong>無法確認</strong>電子郵件是否採「已驗證」模式，所以不能省略上一個步驟的權限目視檢查與另一帳號測試。</p><p class="result"><strong>完成後會看到：</strong>執行紀錄顯示老師助理表單入口已啟用。</p></li>
+          <li id="token"><h3>設定老師 LINE 權杖，執行 <code>checkTeacherSetup</code></h3><p>Apps Script 左側點齒輪「專案設定」→「指令碼屬性」→「新增指令碼屬性」。名稱填 <code>LINE_ACCESS_TOKEN</code>，值貼<strong>老師專用</strong> LINE channel 的 Channel access token，儲存。不要拿學生官方帳號的權杖，也不要把 token 寫進 <code>Code.gs</code>。接著執行 <code>checkTeacherSetup</code> 確認設定。</p><p class="result"><strong>完成後會看到：</strong>指令碼屬性清單有 <code>LINE_ACCESS_TOKEN</code>、檢查執行完成，程式碼仍不含權杖。</p></li>
+          <li id="deploy"><h3>部署老師助理，連到老師 LINE channel</h3><p>在 Apps Script 右上點「部署」→「新增部署作業」→ 類型選「網頁應用程式」；執行身分選「我」，存取權選「所有人」，按「部署」並複製結尾是 <code>/exec</code> 的網址。到老師 channel 的 LINE Developers「Messaging API」貼進 Webhook URL，開啟「Use webhook」，再按 Verify。這個公開端點只會回覆表單連結，寫入由受限的 Google 表單處理。</p><p class="result"><strong>完成後應看到：</strong>老師官方帳號的 Webhook Verify 顯示成功；請以你自己的 LINE channel 實測。若未成功，先核對 <code>/exec</code> 網址、部署存取權和 Apps Script「執行項目」；學生官方帳號原本的 Webhook URL 不變。</p></li>
+          <li id="test"><h3>自己傳訊息、填一筆測試資料</h3><p>用老師自己的 LINE 加入老師官方帳號，傳「說明」再傳「新增課程」。點回覆的表單連結，用被授權的 Google 帳號填一筆未來課程並送出。回原試算表，確認「行事曆」分頁增加一筆；再到學生 LINE 官方帳號傳「行事曆」確認看得到。單詞與每日一句也可用同樣方式試一次。</p><p class="result"><strong>完成後會看到：</strong>老師 LINE 有填寫入口、表單有回覆、原試算表有新列、學生 LINE 能查到。</p></li>
+        </ol>
+      </section>
+      <section class="card" id="commands"><h2>老師在 LINE 傳什麼？</h2><div class="command-list">
+        <div><b><code>說明</code></b>看四個填寫入口。</div><div><b><code>新增課程</code></b>開啟課表表單。</div>
+        <div><b><code>新增單詞</code></b>開啟單詞表單。</div><div><b><code>新增每日一句</code></b>開啟當日句子表單。</div>
+        <div><b><code>新增通知</code></b>開啟發送給訂閱學生的通知表單。</div>
+      </div><p>LINE 訊息只負責帶你到表單。填完後以<strong>原試算表實際新增或更新的資料</strong>為準；LINE 不會在表單送出後再發一則確認訊息。</p></section>
+      <section class="card" id="sheet"><h2>表單送出後，去哪裡看？</h2><div class="table-wrap"><table><thead><tr><th>填寫表單</th><th>原試算表的正式資料分頁</th><th>學生端看到什麼</th></tr></thead><tbody>
+        <tr><td>新增課程</td><td>行事曆</td><td>學生傳「行事曆」看到最近的未來課程；有提醒時間時由學生端定時程式處理。</td></tr>
+        <tr><td>新增單詞</td><td>單詞表</td><td>學生傳「單詞表」或「查單詞 關鍵字」。</td></tr>
+        <tr><td>新增每日一句</td><td>每日一句</td><td>日期等於台灣今天時，學生傳「每日一句」可看到。</td></tr>
+        <tr><td>新增通知</td><td>通知</td><td>到發送時間後，學生端的 <code>sendDueNotifications</code> 觸發器向已訂閱帳號推播。</td></tr>
+      </tbody></table></div><div class="callout green"><strong>表單原始回覆也會在同一份試算表。</strong><p>那些新增的「表單回應」分頁是備份；學生機器人讀的是表格中的「行事曆」「單詞表」「每日一句」「通知」。通知不會在老師按下送出表單的瞬間立即發送，仍以學生端定時觸發器為準。</p></div></section>
+      <section class="card" id="safety"><h2>權限與限制</h2><ul>
+        <li>四份 Google 表單必須只開放老師帳號回覆；<strong>表單網址不是密碼</strong>，所以不能設成「知道連結的人都能回覆」。</li>
+        <li>若其他人加入老師 LINE 官方帳號，也可能在一對一聊天取得表單連結；請勿把這個帳號公開給學生。這份 GAS Webhook 只回覆連結，不接收新增資料指令；<strong>真正的填寫限制是 Google 表單的受限帳號與已驗證 Email</strong>。</li>
+        <li>四份表單的原始回覆也會存進同一份試算表，其中可能有老師的電子郵件；試算表本身請維持老師管理，不要開放學生瀏覽或編輯。</li>
+        <li>「行事曆」是試算表課表，不會同步 Google Calendar。要改課程時間或取消課程，先到原試算表修改；這版表單只處理新增，當日句子例外可覆寫同一天資料。</li>
+        <li>老師助理和學生機器人各用一個 Channel access token；兩個權杖都只存放在各自的 Apps Script「指令碼屬性」。修改過的 <code>Code.gs</code> 含你的試算表 ID 與 Google 帳號，請勿上傳到公開儲存庫。</li>
+        <li>請先用測試帳號與假資料驗收。這份程式沒有生成式 AI 對話，也不會憑空產生族語內容；族語拼寫與翻譯仍由老師確認。</li>
+      </ul></section>
+      <section class="card faq" id="faq"><h2>卡住時先看這裡</h2>
+        <details><summary>LINE 有回連結，但表單說無法存取？</summary><p>確認目前登入的是被加入「回覆者」的老師 Google 帳號，並確認該表單已發布。若你同時登入多個 Google 帳號，可先切到正確帳號。</p></details>
+        <details><summary>表單送出了，學生 LINE 沒看到新課程？</summary><p>先看原試算表「行事曆」有沒有新列，時間是否在未來、啟用是否為「是」。若只在原始表單回應分頁找到資料，請查看老師 Apps Script 左側「執行項目」中表單觸發器是否報錯。</p></details>
+        <details><summary>新增通知後沒有推播？</summary><p>確認學生端專案已執行 <code>installTrigger</code>、目標學生傳過「訂閱」、通知時間已到且在有效範圍內；查看原試算表「發送紀錄」與學生端 Apps Script「執行項目」。</p></details>
+        <details><summary>改了老師助理 Code.gs，LINE 還是舊回覆？</summary><p>儲存後到「部署」→「管理部署作業」→「編輯」→ 選「新增版本」並部署。只儲存程式不會更新既有的 <code>/exec</code> 版本。</p></details>
+      </section>
+      <section class="card" id="source"><h2>完整 Code.gs</h2><p>下面顯示的程式碼與下載檔是同一份。先下載或複製，再貼進<strong>老師助理的新 Apps Script 專案</strong>。</p>
+        <p id="local-preview-note" class="callout" hidden>你現在用本機 <code>file://</code> 預覽。瀏覽器可能不允許讀取旁邊的程式檔；請用「下載完整 Code.gs」或在正式網站查看。</p>
+        <div class="source-bar"><a class="button" href="Code.gs" download="Code.gs">下載完整 Code.gs</a><button class="button" id="copy-code" type="button" disabled>複製完整 Code.gs</button><span class="source-status" id="source-status" role="status" aria-live="polite">正在載入程式碼…</span></div>
+        <details class="source-details"><summary>展開完整程式碼</summary><pre id="source-code">正在載入 Code.gs…</pre></details>
+      </section>
+    </main>
+  </div>
+  <footer class="footer"><a href="#top">回到頁首</a> · <a href="/class/line-gas-starter/">學生 LINE 入門版</a> · <a href="/class/lesson-08.html">第 8 堂</a></footer>
+  <script>
+    (() => {
+      const source = document.getElementById('source-code');
+      const status = document.getElementById('source-status');
+      const copyButton = document.getElementById('copy-code');
+      let codeText = '';
+      if (location.protocol === 'file:') document.getElementById('local-preview-note').hidden = false;
+      fetch('Code.gs', {cache:'no-store'}).then(response => {
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.text();
+      }).then(value => {
+        if (!value.trim()) throw new Error('程式碼檔案是空的');
+        codeText = value;
+        source.textContent = value;
+        copyButton.disabled = false;
+        status.textContent = '程式碼已載入，可以直接複製。';
+      }).catch(() => {
+        source.textContent = '此處暫時無法顯示程式。請下載 Code.gs，再用記事本開啟並全選複製。';
+        status.textContent = '無法載入頁內程式碼；可改用下載連結。';
+      });
+      copyButton.addEventListener('click', async () => {
+        if (!codeText) return;
+        try {
+          await navigator.clipboard.writeText(codeText);
+          status.textContent = '已複製整份 Code.gs。';
+        } catch (_) {
+          const area = document.createElement('textarea');
+          area.value = codeText;
+          area.style.position = 'fixed';
+          area.style.left = '-9999px';
+          document.body.appendChild(area);
+          area.select();
+          const copied = document.execCommand('copy');
+          area.remove();
+          status.textContent = copied ? '已複製整份 Code.gs。' : '瀏覽器未允許複製；請改下載檔案。';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

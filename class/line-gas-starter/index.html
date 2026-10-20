@@ -71,6 +71,14 @@
     tr:last-child td{border-bottom:0}
     .inline-example{background:#f7faf6;border:1px solid var(--line);border-radius:10px;padding:14px;margin:13px 0}
     .inline-example p{margin:3px 0}
+    .sheet-example{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:10px 0}
+    .sheet-example summary{padding:12px 15px;background:#eaf2ea;font-weight:750;cursor:pointer}
+    .sheet-example .example-inner{padding:12px 15px 15px}
+    .sheet-example .example-inner p{font-size:14px;margin:0 0 10px}
+    .sheet-example pre{max-height:180px}
+    .example-copy{border:0;background:var(--green);color:#fff;border-radius:8px;padding:7px 12px;margin-bottom:10px;cursor:pointer;font:inherit;font-weight:750}
+    .example-copy:hover{background:var(--green-deep)}
+    .example-status{font-size:14px;color:var(--muted);margin-left:10px}
     .command-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
     .command-list div{border:1px solid var(--line);background:#f7faf7;border-radius:9px;padding:10px 12px}
     .command-list b{display:block}
@@ -117,6 +125,7 @@
       <a href="#what">成品會做什麼</a>
       <a href="#steps">照做的步驟</a>
       <a href="#sheets">七張分頁怎麼填</a>
+      <a href="#sheet-examples">七張分頁範本</a>
       <a href="#commands">學生要傳什麼</a>
       <a href="#troubleshoot">遇到問題</a>
       <a href="#source">完整 Code.gs</a>
@@ -133,7 +142,7 @@
           <div class="feature"><b>📖 單詞表</b><p>老師在「單詞表」填經審核的詞；學生傳「單詞表」看前五筆，或傳「查單詞 太陽」查特定一筆。</p></div>
           <div class="feature"><b>☀️ 每日一句</b><p>老師在「每日一句」填當天的族語句子與中文翻譯；學生傳「每日一句」就能閱讀。</p></div>
         </div>
-        <div class="callout"><strong>這裡的「行事曆」是試算表課表。</strong><p>本範例不會同步 Google Calendar，學生也不能從 LINE 新增活動。想學真正的 Google 行事曆串接，可看<a href="/class/lesson-08.html#calendar">第 8 堂行事曆進階版</a>；<a href="/class/line-gas-teaching/">20 功能延伸版</a>則是另一份程式，三種版本請分開練習。同一個 LINE channel 只能設定一個 Webhook URL；已有機器人時，請另開測試用官方帳號，或確認要用新網址取代舊機器人。</p></div>
+        <div class="callout"><strong>這裡的「行事曆」是試算表課表。</strong><p>本範例不會同步 Google Calendar，學生也不能從 LINE 新增活動。老師想從 LINE 新增課表、單詞、每日一句與通知，可接著做<a href="/class/line-gas-teacher/">老師專用課務助理</a>；它使用另一個 LINE 官方帳號，表單資料仍寫回同一份試算表。想學真正的 Google 行事曆串接，可看<a href="/class/lesson-08.html#calendar">第 8 堂行事曆進階版</a>；<a href="/class/line-gas-teaching/">20 功能延伸版</a>則是另一份程式。</p></div>
         <div class="flow" aria-label="資料流程"><span>老師編輯 Google 試算表</span><i>→</i><span>Apps Script 讀取與排程</span><i>→</i><span>學生在 LINE 查詢或訂閱</span></div>
       </section>
 
@@ -169,6 +178,25 @@
           <tr><td><strong>發送紀錄</strong></td><td>來源ID、LINE使用者ID、發送時間、結果</td><td>程式自動寫；「成功」只表示 LINE API 接受請求，仍要看測試帳號是否真的收到。</td></tr>
         </tbody></table></div>
         <p class="callout"><strong>填表時最容易漏的兩件事：</strong>「啟用」要填完整的「是」；課程與通知時間要是真正的日期時間儲存格，「每日一句」日期要是真正的日期儲存格。課程提醒時間應早於課程開始時間，並使用台灣時區。沒有當天啟用的句子時，LINE 會提示老師尚未提供今天的內容。</p>
+        <p><a href="#sheet-examples">看每張分頁的可複製範例與七分頁 Excel 範本 ↓</a></p>
+      </section>
+
+      <section class="card" id="sheet-examples">
+        <h2>七張分頁範本：複製到自己的表</h2>
+        <p>先在自己的試算表執行 <code>setup</code>，再選下方分頁複製<strong>資料列</strong>，貼到相同名稱分頁<strong>最下方的第一個空白列</strong>；空白分頁通常是第 2 列，已有三題的「題庫」通常從第 5 列開始。不要蓋掉欄名或既有資料，也不要用整本範本取代現有試算表。<strong>所有示範列先設「啟用＝否」</strong>，改成實際資料、核對後才改「是」。</p>
+        <div class="source-bar"><a class="button" href="sheet-examples.xlsx" download="LINE-GAS-七分頁範本.xlsx">下載七分頁 Excel 範本</a></div>
+        <p>範本中「學生」「發送紀錄」只有欄名，因為這兩頁由程式寫入，<strong>不要手填假 LINE 使用者 ID 或假發送結果</strong>。「題庫」在 <code>setup</code> 後已有 Q001～Q003；下面從 Q004 開始，不要重貼相同題號。</p>
+        <p class="callout">貼上後先檢查各筆 ID 沒有和舊資料重複。從網頁複製的日期若被試算表當成文字，請在日期欄重新選擇實際日期與時間；只改外觀格式不一定能把文字變成可運算的日期。</p>
+        <details class="sheet-example"><summary>行事曆｜課程時間與提醒</summary><div class="example-inner"><p>欄位順序：活動ID、課程名稱、開始時間、地點、備註、提醒時間、啟用。日期只是示範；貼上後請選時間欄，點「格式 → 數字 → 日期時間」，並換成實際未來時間。</p><button class="example-copy" type="button" data-copy-example="example-calendar">複製兩筆資料列</button><span class="example-status" role="status" aria-live="polite"></span><pre id="example-calendar">C101	範例：課程 A（請修改）	2030/05/08 14:00	範例地點（請修改）	確認課程資訊後再啟用	2030/05/08 13:30	否
+C102	範例：課程 B（請修改）	2030/05/15 14:00	範例地點（請修改）	確認課程資訊後再啟用	2030/05/15 13:30	否</pre></div></details>
+        <details class="sheet-example"><summary>單詞表｜族語拼寫由老師填</summary><div class="example-inner"><p>欄位順序：單詞ID、中文、族語、例句、例句翻譯、音檔網址、啟用。族語與例句故意留空；請填經老師確認的內容後再啟用。音檔網址可留空。</p><button class="example-copy" type="button" data-copy-example="example-words">複製兩筆資料列</button><span class="example-status" role="status" aria-live="polite"></span><pre id="example-words">W101	蘋果					否
+W102	太陽					否</pre></div></details>
+        <details class="sheet-example"><summary>每日一句｜今天的句子才會顯示</summary><div class="example-inner"><p>欄位順序：日期、族語句子、中文翻譯、音檔網址、啟用。族語句子留空待老師填；貼上後把日期換成實際日期，選日期欄點「格式 → 數字 → 日期」。</p><button class="example-copy" type="button" data-copy-example="example-daily">複製兩筆資料列</button><span class="example-status" role="status" aria-live="polite"></span><pre id="example-daily">2030/05/08		今天一起學習。		否
+2030/05/09		我們明天見。		否</pre></div></details>
+        <details class="sheet-example"><summary>題庫｜三選一練習題</summary><div class="example-inner"><p>欄位順序：題號、題目、選項A、選項B、選項C、正解、解說、啟用。正解只填 A、B 或 C；這裡是中性操作題，族語題請由老師自行審核。</p><button class="example-copy" type="button" data-copy-example="example-quiz">複製兩筆資料列</button><span class="example-status" role="status" aria-live="polite"></span><pre id="example-quiz">Q004	一週有幾天？	5	7	9	B	一週有 7 天。	否
+Q005	紅綠燈的紅燈表示什麼？	可以走	請停下	加快速度	B	紅燈表示停止。	否</pre></div></details>
+        <details class="sheet-example"><summary>通知｜先停用，確認後才發</summary><div class="example-inner"><p>欄位順序：通知ID、發送時間、內容、啟用。日期只是示範；貼上後請改實際時間並設為「日期時間」。啟用後，學生版定時程式可能向已訂閱帳號推送。</p><button class="example-copy" type="button" data-copy-example="example-notices">複製兩筆資料列</button><span class="example-status" role="status" aria-live="polite"></span><pre id="example-notices">N101	2030/05/07 09:00	【示範通知】明天有課，請確認時間與地點後修改本句。	否
+N102	2030/05/14 09:00	【示範通知】明天請攜帶上課教材，確認後再啟用。	否</pre></div></details>
       </section>
 
       <section class="card" id="commands">
@@ -269,6 +297,27 @@
           area.remove();
           status.textContent = copied ? '已複製整份 Code.gs，回 Apps Script 貼上即可。' : '瀏覽器未允許複製；請下載檔案後用記事本全選複製。';
         }
+      });
+
+      document.querySelectorAll('.example-copy').forEach(button => {
+        button.addEventListener('click', async () => {
+          const value = document.getElementById(button.dataset.copyExample).textContent.replace(/\r\n/g, '\n');
+          const message = button.nextElementSibling;
+          try {
+            await navigator.clipboard.writeText(value);
+            message.textContent = '已複製，請貼到對應分頁的空白列。';
+          } catch (_) {
+            const area = document.createElement('textarea');
+            area.value = value;
+            area.style.position = 'fixed';
+            area.style.left = '-9999px';
+            document.body.appendChild(area);
+            area.select();
+            const copied = document.execCommand('copy');
+            area.remove();
+            message.textContent = copied ? '已複製，請貼到對應分頁的空白列。' : '瀏覽器未允許複製；請改下載範本檔案。';
+          }
+        });
       });
     })();
   </script>
