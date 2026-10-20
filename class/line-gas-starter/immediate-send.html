@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="在既有 LINE × GAS 學生版專案加一個獨立 .gs 檔，從 Google 試算表選取通知並確認後立即發送。">
+  <title>試算表一鍵發送 LINE 通知｜CALUMAI</title>
+  <link rel="canonical" href="https://calumai.com/class/line-gas-starter/immediate-send.html">
+  <link rel="icon" href="/assets/calumai-logo-mark.png">
+  <style>
+    :root{color-scheme:light;--ink:#20302b;--muted:#4f655b;--green:#176149;--line:#d6e2d9;--paper:#fff;--bg:#f4f7f4;--yellow:#f8df85}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.8 system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif}
+    a{color:#116347;text-underline-offset:3px}:focus-visible{outline:3px solid #a9690e;outline-offset:3px}code{font:.93em Consolas,ui-monospace,monospace;background:#e9f2ec;color:#154c36;padding:.08em .3em;border-radius:4px;overflow-wrap:anywhere}
+    .hero{background:#143e33;color:#fff}.hero-inner{max-width:1040px;margin:auto;padding:20px 24px 54px}.crumbs{font-size:14px;color:#d8e9df}.crumbs a{color:inherit}.eyebrow{font-size:13px;letter-spacing:.12em;color:#c0e0c9;font-weight:800;margin:34px 0 8px}
+    h1{font-size:clamp(30px,4.7vw,50px);line-height:1.25;letter-spacing:-.03em;margin:0 0 13px}.hero p{max-width:720px;margin:0;color:#e5f2e9;font-size:18px}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+    .button{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:9px;background:var(--yellow);color:#4b3b10;padding:11px 16px;text-decoration:none;font:inherit;font-weight:800;cursor:pointer}.button.alt{background:#fff;color:#174b38}.button:disabled{opacity:.55;cursor:not-allowed}
+    main{max-width:1040px;margin:auto;padding:24px 24px 64px}.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px clamp(18px,3vw,34px);margin-bottom:17px;scroll-margin-top:20px}h2{font-size:clamp(23px,3vw,29px);line-height:1.35;margin:0 0 12px}h3{font-size:18px;line-height:1.45;margin:0 0 6px}p{margin:9px 0}.lead{font-size:18px}.callout{border-left:5px solid #b77910;background:#fff7df;border-radius:8px;padding:12px 16px;margin:16px 0}.callout.green{border-color:#237852;background:#eaf5ed}
+    .steps{list-style:none;counter-reset:step;padding:0;margin:18px 0 0}.steps li{counter-increment:step;position:relative;border:1px solid var(--line);border-radius:11px;margin:0 0 12px;padding:15px 18px 15px 62px}.steps li:before{content:counter(step,decimal-leading-zero);position:absolute;left:15px;top:16px;background:var(--green);color:#fff;border-radius:7px;min-width:31px;text-align:center;font-size:13px;line-height:31px;font-weight:800}.steps li p{margin:5px 0}.result{background:#eef6ef;border-radius:8px;color:#24543b;padding:7px 10px;font-size:14px}
+    .source-bar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:14px 0}.source-bar .button{background:var(--green);color:#fff}.status{font-size:14px;color:var(--muted)}details{border:1px solid var(--line);border-radius:10px;overflow:hidden}summary{background:#eaf2ea;padding:10px 14px;font-weight:800;cursor:pointer}pre{margin:0;background:#10231c;color:#f1fff4;max-height:550px;overflow:auto;padding:17px;font:13px/1.55 Consolas,ui-monospace,monospace;tab-size:2}pre::selection{background:#d8f1a3;color:#10231c}.footer{text-align:center;font-size:13px;color:#63776d;padding:0 20px 30px}
+    @media(max-width:620px){.hero-inner{padding:16px 18px 37px}.eyebrow{margin-top:27px}main{padding:16px 14px 48px}.card{padding:21px 16px}.actions{display:grid}.button{width:100%}.steps li{padding-left:56px}.steps li:before{left:12px}}
+    @media print{.hero{background:#fff;color:#000}.hero p,.crumbs,.eyebrow{color:#000}.actions,.source-bar,details,.footer{display:none}main{padding:0}.card{border:0;border-bottom:1px solid #aaa;break-inside:avoid}.steps li{break-inside:avoid}}
+  </style>
+</head>
+<body>
+  <header class="hero"><div class="hero-inner">
+    <div class="crumbs"><a href="/class/">課程總覽</a> ／ <a href="/class/line-gas-starter/">學生版 LINE × GAS</a> ／ 立即發送通知</div>
+    <p class="eyebrow">已經建好機器人的老師，從這裡加功能</p>
+    <h1>在試算表選一列，<br>確認後立即發送 LINE 通知</h1>
+    <p>只新增一個 <code>ImmediateSend.gs</code> 檔案；原本的學生版 <code>Code.gs</code>、老師版 <code>Code.gs</code> 和 Webhook 都不用取代。</p>
+    <div class="actions"><a class="button" href="#steps">跟著步驟做</a><a class="button alt" href="ImmediateSend.gs" download="ImmediateSend.gs">下載獨立 .gs 程式</a></div>
+  </div></header>
+  <main>
+    <section class="card" id="first"><h2>先確認放對地方</h2>
+      <p class="lead">這個新增檔案要放在<strong>從原 Google 試算表「擴充功能 → Apps Script」開啟的學生版專案</strong>。那個專案已保存學生 LINE 的 <code>LINE_ACCESS_TOKEN</code>，也有「學生」「通知」「發送紀錄」分頁。</p>
+      <div class="callout"><strong>不要貼進老師專用 LINE 助理專案。</strong><p>老師助理用另一個 LINE 權杖，只負責開填寫表單；真正向學生推播的是原學生版專案。試算表只開放可信任的老師編輯。</p></div>
+    </section>
+    <section class="card" id="steps"><h2>新增檔案，再從試算表點發送</h2>
+      <ol class="steps">
+        <li><h3>從原試算表打開學生版 Apps Script</h3><p>進入目前學生機器人正在使用的 Google 試算表，點上方「擴充功能 → Apps Script」。先確認左側能看到你原本的 <code>Code.gs</code>。</p><p class="result"><strong>完成後會看到：</strong>原本程式還在，不需要刪除或修改。</p></li>
+        <li><h3>新增一個指令碼檔案</h3><p>在 Apps Script 左側「檔案」旁按 <strong>＋</strong>，選「指令碼」，名稱輸入 <code>ImmediateSend</code>。打開新檔，貼上<a href="#source">本頁下方的完整程式</a>，或下載 <a href="ImmediateSend.gs" download="ImmediateSend.gs">ImmediateSend.gs</a> 後用記事本全選複製，按 <code>Ctrl+S</code> 儲存。</p><p class="result"><strong>完成後會看到：</strong>左側同時有原本的 <code>Code.gs</code> 和新增的 <code>ImmediateSend.gs</code>。</p></li>
+        <li><h3>重新整理試算表，找新選單</h3><p>回到原 Google 試算表按 <code>F5</code> 重新整理。上方選單會出現<strong>「LINE 通知」</strong>。如果首次點選功能出現 Google 授權畫面，使用自己管理試算表的帳號完成授權，再重新點一次。</p><p class="result"><strong>完成後會看到：</strong>「LINE 通知 → 立即發送選取的通知」。這個試算表工具直接執行目前的 Apps Script 專案，不必重新部署 Webhook 版本。</p></li>
+        <li><h3>在「通知」分頁準備並選取一列</h3><p>到「通知」分頁，填好 <code>A：通知ID</code>、<code>C：內容</code>、<code>D：啟用＝是</code>（或勾選核取方塊），再點這一列任一個儲存格。<code>B：發送時間</code>可以先留白或填未來時間；按下立即發送時，程式會把 B 欄改成<strong>現在</strong>。若之前已執行過 <code>installTrigger</code>，原排程會在此後 24 小時內接續嘗試；沒安裝時可再次手動點選。</p><p class="result"><strong>完成後會看到：</strong>只有這一列被選取；請先用自己的 LINE 測試帳號傳「訂閱」。</p></li>
+        <li><h3>確認內容與人數，再發送</h3><p>點「LINE 通知 → 立即發送選取的通知」。確認視窗會顯示通知 ID、內容及尚待發送的人數；核對無誤才按「是」。程式只處理這一列，不會順便送出其他到期課程提醒。</p><p class="result"><strong>完成後會看到：</strong>結果視窗列出本次嘗試、LINE API 接受、失敗與尚待發送人數；「發送紀錄」分頁新增或更新逐位學生的結果。</p></li>
+      </ol>
+      <div class="callout green"><strong>有成功紀錄的對象，重按時會跳過。</strong><p>每次最多嘗試 20 位；人數更多或有失敗時，可以再按一次。原排程也使用同一組通知 ID 去重。若要發布一則全新的內容，請使用新的通知 ID。LINE API 接受不等於保證學生已讀或實際送達。</p></div>
+    </section>
+    <section class="card" id="button"><h2>想要試算表上看得見的按鈕？</h2>
+      <p>在電腦版 Google 試算表點「插入 → 繪圖」，畫一個寫著「立即發送」的按鈕並儲存。點選這張繪圖右上角的「⋮ → 指派指令碼」，只輸入 <code>sendSelectedNoticeNow</code>，<strong>不要加括號</strong>。以後先選通知資料列，再點按鈕，同樣會先跳確認視窗。</p>
+      <p>Google 的繪圖按鈕只會在電腦瀏覽器點擊時執行；手機版請改用電腦操作。選單已可完成同樣的事，不必一定製作繪圖按鈕。</p>
+    </section>
+    <section class="card" id="source"><h2>獨立的 ImmediateSend.gs</h2>
+      <p>這是<strong>新增檔案</strong>，不會取代你原有的 <code>Code.gs</code>。下方顯示的內容與下載檔是同一份。</p>
+      <p class="callout" id="local-note" hidden>目前從電腦上的 <code>file://</code> 預覽，瀏覽器可能阻止讀取旁邊的程式檔；可先下載檔案，再用記事本開啟並全選複製。</p>
+      <div class="source-bar"><a class="button" href="ImmediateSend.gs" download="ImmediateSend.gs">下載 ImmediateSend.gs</a><button class="button" id="copy-code" type="button" disabled>複製完整程式</button><span class="status" id="source-status" role="status" aria-live="polite">正在載入程式…</span></div>
+      <details open><summary>展開／收合程式碼</summary><pre id="source-code" tabindex="0">正在載入程式…</pre></details>
+    </section>
+  </main>
+  <footer class="footer"><a href="/class/line-gas-teacher/">老師課務助理</a> · <a href="/class/line-gas-starter/">學生版完整講義</a></footer>
+  <script>
+    (() => {
+      const source = document.getElementById('source-code');
+      const status = document.getElementById('source-status');
+      const button = document.getElementById('copy-code');
+      let value = '';
+      if (location.protocol === 'file:') document.getElementById('local-note').hidden = false;
+      fetch('ImmediateSend.gs', {cache:'no-store'}).then(response => {
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.text();
+      }).then(text => {
+        if (!text.trim()) throw new Error('程式檔是空的');
+        value = text; source.textContent = text; status.textContent = '程式已載入'; button.disabled = false;
+      }).catch(() => {
+        source.textContent = '程式暫時無法顯示，請使用上方下載按鈕。';
+        status.textContent = '請先下載檔案，再用記事本開啟複製';
+      });
+      button.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(value); status.textContent = '已複製，請貼到新建立的 ImmediateSend.gs'; }
+        catch { status.textContent = '瀏覽器未允許複製，請下載檔案後全選複製'; }
+      });
+    })();
+  </script>
+</body>
+</html>

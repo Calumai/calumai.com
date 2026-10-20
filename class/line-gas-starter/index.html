@@ -124,6 +124,7 @@
       <strong>這頁怎麼看</strong>
       <a href="#what">成品會做什麼</a>
       <a href="#steps">照做的步驟</a>
+      <a href="immediate-send.html">試算表立即發送</a>
       <a href="#sheets">七張分頁怎麼填</a>
       <a href="#sheet-examples">七張分頁範本</a>
       <a href="#commands">學生要傳什麼</a>
@@ -164,6 +165,12 @@
         </ol>
         <div class="callout green"><strong>以後改了 Code.gs，要重新部署版本。</strong><p>按 <code>Ctrl+S</code> 儲存後，到「部署」→「管理部署作業」→鉛筆「編輯」→選「新增版本」→「部署」。只按儲存，不會讓既有 <code>/exec</code> 自動換成新版程式。</p></div>
         <div class="callout"><strong>已經裝過舊版入門程式？</strong><p>從本頁重新取得完整 <code>Code.gs</code>，在原本的 Apps Script <code>Code.gs</code> 全選取代並儲存；再執行一次 <code>setup</code>，讓原本同一份試算表增加「單詞表」「每日一句」，既有五張分頁資料不會被清空。接著依上方方式到「管理部署作業」選「新增版本」部署，原本的 Webhook 網址可繼續使用。新增或改動表格內容則不用再部署。</p></div>
+      </section>
+
+      <section class="card" id="instant-send">
+        <h2>已經完成設定，想從試算表立即發送？</h2>
+        <p>另加一個 <code>ImmediateSend.gs</code>，就能在「通知」分頁選取一列，從<strong>「LINE 通知 → 立即發送選取的通知」</strong>點按並確認。這個檔案加在<strong>原本與學生試算表連動的 Apps Script 專案</strong>；你現有的 <code>Code.gs</code> 不用改，老師助理的 <code>Code.gs</code> 也不用改。</p>
+        <div class="source-bar"><a class="button" href="immediate-send.html">看新增檔案與完整步驟</a><a class="button" href="ImmediateSend.gs" download="ImmediateSend.gs">直接下載 ImmediateSend.gs</a></div>
       </section>
 
       <section class="card" id="sheets">

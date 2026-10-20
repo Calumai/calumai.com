@@ -43,11 +43,11 @@
       <p class="eyebrow">給已完成學生 LINE 機器人的老師</p>
       <h1>從 LINE 打開表單，<br>把課務加進同一份試算表</h1>
       <p>這是老師自己用的固定指令助理。傳「新增課程」「新增單詞」「新增每日一句」或「新增通知」，開啟只有老師 Google 帳號能填的表單；送出後，學生原本的 LINE 機器人就能讀到新資料。</p>
-      <div class="actions"><a class="button primary" href="#steps">照步驟安裝</a><a class="button light" href="Code.gs" download="Code.gs">下載完整 Code.gs</a><a class="button outline" href="#source">查看程式碼</a></div>
+      <div class="actions"><a class="button primary" href="#steps">照步驟安裝</a><a class="button light" href="Code.gs" download="Code.gs">下載完整 Code.gs</a><a class="button outline" href="#source">查看程式碼</a><a class="button outline" href="#immediate-send">從試算表立即發送</a></div>
     </div><aside class="hero-side"><strong>同一份試算表</strong><span>學生機器人與老師助理是兩個獨立 LINE 官方帳號、兩個 Apps Script 專案，但共同使用你原本那份試算表。</span></aside></div>
   </div></header>
   <div class="layout">
-    <nav class="nav" aria-label="本頁目錄"><strong>本頁目錄</strong><a href="#overview">先看運作方式</a><a href="#steps">安裝步驟</a><a href="#commands">老師能說什麼</a><a href="#sheet">表單送出後</a><a href="#safety">權限與限制</a><a href="#faq">常見問題</a><a href="#source">完整 Code.gs</a></nav>
+    <nav class="nav" aria-label="本頁目錄"><strong>本頁目錄</strong><a href="#overview">先看運作方式</a><a href="#steps">安裝步驟</a><a href="#commands">老師能說什麼</a><a href="#sheet">表單送出後</a><a href="#immediate-send">立即發送通知</a><a href="#safety">權限與限制</a><a href="#faq">常見問題</a><a href="#source">完整 Code.gs</a></nav>
     <main>
       <section class="card" id="overview"><h2>先看運作方式</h2>
         <div class="flow" aria-label="資料流程"><span>老師在 LINE 傳指令</span><i>→</i><span>助理回傳專用表單</span><i>→</i><span>老師登入填寫</span><i>→</i><span>寫進原試算表</span><i>→</i><span>學生機器人讀取</span></div>
@@ -84,6 +84,11 @@
         <tr><td>新增每日一句</td><td>每日一句</td><td>日期等於台灣今天時，學生傳「每日一句」可看到。</td></tr>
         <tr><td>新增通知</td><td>通知</td><td>到發送時間後，學生端的 <code>sendDueNotifications</code> 觸發器向已訂閱帳號推播。</td></tr>
       </tbody></table></div><div class="callout green"><strong>表單原始回覆也會在同一份試算表。</strong><p>那些新增的「表單回應」分頁是備份；學生機器人讀的是表格中的「行事曆」「單詞表」「每日一句」「通知」。通知不會在老師按下送出表單的瞬間立即發送，仍以學生端定時觸發器為準。</p></div></section>
+      <section class="card" id="immediate-send"><h2>要現在發給學生？另加一個 .gs 檔就好</h2>
+        <p>老師在 LINE 送出「新增通知」表單後，資料會先進原試算表的「通知」分頁，按原排程時間送出。若要<strong>立刻發送</strong>，可以在原試算表加一個獨立的 <code>ImmediateSend.gs</code>，選取那筆通知後點「LINE 通知 → 立即發送選取的通知」，核對內容和待發送人數再確認。</p>
+        <div class="callout green"><strong>原本兩份 Code.gs 都保持不動。</strong><p>新增檔案要貼進<strong>學生版與試算表連動的 Apps Script 專案</strong>，因為那個專案持有學生 LINE 的權杖；不要貼到本頁的老師專用助理專案。點發送時會把通知的「發送時間」改成現在，每次最多嘗試 20 位；再次點擊時，程式會跳過「發送紀錄」中已有成功紀錄的對象。</p></div>
+        <div class="source-bar"><a class="button" href="/class/line-gas-starter/immediate-send.html">看完整操作與可複製程式</a><a class="button" href="/class/line-gas-starter/ImmediateSend.gs" download="ImmediateSend.gs">下載獨立 ImmediateSend.gs</a></div>
+      </section>
       <section class="card" id="safety"><h2>權限與限制</h2><ul>
         <li>四份 Google 表單必須只開放老師帳號回覆；<strong>表單網址不是密碼</strong>，所以不能設成「知道連結的人都能回覆」。</li>
         <li>若其他人加入老師 LINE 官方帳號，也可能在一對一聊天取得表單連結；請勿把這個帳號公開給學生。這份 GAS Webhook 只回覆連結，不接收新增資料指令；<strong>真正的填寫限制是 Google 表單的受限帳號與已驗證 Email</strong>。</li>
