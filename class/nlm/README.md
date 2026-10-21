@@ -4,6 +4,8 @@
 
 20 個 NotebookLM 產生的課堂活動，以靜態網頁播放投影片圖片。首頁有提示詞工作坊，提供 20 則原始提示詞，以及更改遊戲形式的指令產生器。沒有帳號、後端、外部 AI API 或使用者資料蒐集。
 
+首頁另有兩份延伸講義：`materials/notebooklm-beginner-guide.pptx`（NotebookLM 入門教學，27 張）及 `materials/google-drive-large-print-guide.pdf`（Google 雲端硬碟基礎教學大字版，25 頁）。第二份提供的是 PDF，不是 PPTX。
+
 ## 內容狀態
 
 - 這是教師審閱草稿，族語、答案、頁碼、圖像及教材公開使用範圍尚未完成逐頁核對。
@@ -19,5 +21,6 @@
 - `lessons.js`：20 個活動的名稱與已知問題。
 - `20個遊戲化簡報提示詞.md`：提示詞源稿。修改後執行 `python build_prompts.py` 更新 `prompts.js`。
 - `assets/`：可公開預覽的投影片圖片與縮圖。這些圖來自原始 NotebookLM 輸出，文字不能在 HTML 內直接修改。
+- `materials/`：兩份延伸講義的原檔，與首頁下載／閱讀連結相對應。
 
 若修正了原始簡報，須重新擷取對應圖片、再次核對，再移除 `app.js` 中該頁的 `reviewHolds` 設定。不能只取消遮蔽。
