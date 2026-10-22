@@ -3,60 +3,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>南勢阿美語｜遊戲化投影片與資訊圖表</title>
-  <meta name="description" content="兩組依 112 年情境族語教材製作的課堂搶答投影片與資訊圖表。">
-  <link rel="stylesheet" href="style.css?v=20261022-layout">
-  <script src="content.js" defer></script>
-  <script src="app.js" defer></script>
+  <title>南勢阿美語｜NotebookLM 遊戲式資訊圖表</title>
+  <meta name="description" content="NotebookLM 生成的兩張南勢阿美語遊戲式資訊圖表，可看大圖、下載圖片並複製提示詞。">
+  <link rel="stylesheet" href="style.css?v=20261022-notebooklm">
 </head>
 <body>
   <a class="skip" href="#main">跳到內容</a>
-  <header class="masthead">
-    <a class="back" href="../">← 返回 NotebookLM 教學網頁</a>
-    <span class="tag">南勢阿美語 · 課堂遊戲</span>
-  </header>
+  <header class="site-header"><a href="../">← 返回 NotebookLM 教學網頁</a><span>NOTEBOOKLM · INFOGRAPHICS</span></header>
   <main id="main">
-    <section class="intro" id="overview">
-      <div class="intro-text">
-        <p class="eyebrow">2 組遊戲化投影片 × 2 張資訊圖表</p>
-        <h1>看題目，<br><em>一起猜。</em></h1>
-        <p>選一份教材開始搶答。每題先讓學生說答案，再按「揭曉」核對；老師也能下載 PowerPoint 和圖片帶進教室。</p>
-      </div>
-      <div class="intro-graphic" aria-hidden="true"><span>01</span><span>02</span><span class="intro-arrow">→</span></div>
+    <section class="hero">
+      <p class="eyebrow">兩份教材 · 兩張圖片</p>
+      <h1>把族語教材<br>變成<span>能猜的圖片。</span></h1>
+      <p>這兩張是實際在 NotebookLM「資訊圖表」功能生成的靜態圖片。投影時先遮住中文，讓學生猜族語意思，再一起核對。</p>
+      <nav aria-label="圖片導覽"><a href="#classroom">01 教室闖關地圖 ↓</a><a href="#identity">02 人物線索偵探 ↓</a></nav>
     </section>
-    <section class="library" aria-labelledby="library-title">
-      <div class="section-heading"><p class="eyebrow">CHOOSE A LESSON</p><h2 id="library-title">兩份教材，兩種入口</h2></div>
-      <div class="cards">
-        <article class="card">
-          <span class="card-number">01 / CLASSROOM</span><h3>上課用語</h3><p>遲到、星期、身體不舒服與課堂請求。</p>
-          <div class="actions"><a class="button primary" href="?lesson=classroom#play">開始搶答 ↗</a><a class="button" href="classroom-game.pptx" download>下載 PPTX ↓</a></div>
-          <a class="graphic-link" href="classroom-infographic.svg" target="_blank" rel="noopener"><img src="classroom-infographic.svg" alt="上課用語六個關鍵詞資訊圖表"><span>查看大圖 ↗</span></a><a class="png-link" href="classroom-infographic.png" download>下載 PNG ↓</a>
-        </article>
-        <article class="card">
-          <span class="card-number">02 / MEET & GREET</span><h3>姓名與問候</h3><p>自我介紹、名字、家人與年齡。</p>
-          <div class="actions"><a class="button primary" href="?lesson=identity#play">開始搶答 ↗</a><a class="button" href="identity-game.pptx" download>下載 PPTX ↓</a></div>
-          <a class="graphic-link" href="identity-infographic.svg" target="_blank" rel="noopener"><img src="identity-infographic.svg" alt="姓名與問候六個線索資訊圖表"><span>查看大圖 ↗</span></a><a class="png-link" href="identity-infographic.png" download>下載 PNG ↓</a>
-        </article>
-      </div>
-      <p class="source-note">圖表另提供 <a href="classroom-infographic.svg" download>上課用語 SVG</a>、<a href="identity-infographic.svg" download>姓名與問候 SVG</a>，方便放大或修改。圖片是靜態題卡；下方網頁搶答可點選與計分。</p>
+    <section class="artwork" id="classroom" aria-labelledby="classroom-title">
+      <div class="artwork-header"><div><p class="eyebrow">01 / 上課用語</p><h2 id="classroom-title">教室闖關地圖</h2><p>進教室、問星期、身體不舒服、課堂請求、找同學，沿著五個關卡練習。</p></div><a class="download" href="classroom-notebooklm.png" download>下載圖片 PNG ↓</a></div>
+      <a class="image-link" href="classroom-notebooklm.png" target="_blank" rel="noopener" aria-label="開啟教室闖關地圖大圖"><img src="classroom-notebooklm.png" alt="NotebookLM 生成的南勢阿美語教室闖關地圖，五關依序顯示族語句子與中文對照" loading="eager" width="2752" height="1536"></a>
+      <details class="prompt"><summary>展開這張圖片的 NotebookLM 提示詞</summary><div><p>在 NotebookLM 選取「上課用語」來源，到「工作室」點「資訊圖表」，設定繁體中文、橫向、手繪筆記、精簡，再貼上：</p><textarea readonly aria-label="教室闖關地圖提示詞">請只根據目前選取的「上課用語」來源，生成一張可投影的靜態遊戲式資訊圖表圖片，標題「教室闖關地圖｜南勢阿美語」。橫向、繁體中文、大字、高對比；以 5 個連續關卡呈現：進教室、問星期、身體不舒服、課堂請求、找同學。每關只放 1 個來源中確有的南勢阿美語原詞或完整原句、對應中文意思，以及 PDF 頁碼。加入「先猜意思，再看答案」的視覺節奏和關卡編號，讓老師可用手遮住中文帶學生口答。文字不要擠在一起。族語拼寫逐字照來源，不自造句、音標或文化知識；不要用原住民族圖騰、傳統服飾或真人照片作裝飾。若某關找不到可靠原句，改用來源中的單詞，不要猜。這是資訊圖表圖片，不要畫成可點擊的遊戲介面。</textarea><button type="button" class="copy">複製提示詞</button></div></details>
     </section>
-    <section id="play" class="play" hidden aria-labelledby="play-title">
-      <div class="play-top"><div><p class="eyebrow" id="lesson-label"></p><h2 id="play-title"></h2></div><a class="button" href="./#overview">返回選教材</a></div>
-      <div class="game-shell">
-        <div class="stage" id="stage" tabindex="-1">
-          <div class="stage-top"><span id="progress"></span><span id="type-label"></span></div>
-          <div class="question-scene" id="scene"></div>
-          <h3 id="question"></h3>
-          <p class="question-hint">這句南勢阿美語在教材中的意思是？</p>
-          <div class="choices" id="choices"></div>
-          <div class="answer" id="answer" hidden role="status" aria-live="polite"></div>
-          <div class="stage-footer"><span id="source-page"></span><span id="score"></span></div>
-        </div>
-        <aside class="controls"><h3>老師操作區</h3><p>先讓學生口答或舉牌，再點選答案。答對會加一分；揭曉後再進下一題。</p><div class="control-row"><button type="button" id="reveal">揭曉答案</button><button type="button" id="next">下一題 →</button></div><div class="control-row secondary"><button type="button" id="restart">重新開始</button><button type="button" id="fullscreen">全螢幕投影</button></div><p class="keyboard">鍵盤 1／2／3 選答案，Enter 揭曉，→ 下一題；Esc 離開全螢幕。</p><p class="attribution" id="attribution"></p></aside>
-      </div>
+    <section class="artwork" id="identity" aria-labelledby="identity-title">
+      <div class="artwork-header"><div><p class="eyebrow">02 / 姓名與問候</p><h2 id="identity-title">人物線索偵探</h2><p>看五張線索卡，猜自我介紹、名字、族別、家人與年齡的問句。</p></div><a class="download" href="identity-notebooklm.png" download>下載圖片 PNG ↓</a></div>
+      <a class="image-link" href="identity-notebooklm.png" target="_blank" rel="noopener" aria-label="開啟人物線索偵探大圖"><img src="identity-notebooklm.png" alt="NotebookLM 生成的南勢阿美語人物線索偵探，五張線索卡含族語句子、中文對照與來源頁碼" loading="lazy" width="2752" height="1536"></a>
+      <details class="prompt"><summary>展開這張圖片的 NotebookLM 提示詞</summary><div><p>只選取「姓名與問候」來源，使用同樣的資訊圖表設定，再貼上：</p><textarea readonly aria-label="人物線索偵探提示詞">請只根據目前選取的「姓名與問候」來源，生成一張可投影的靜態遊戲式資訊圖表圖片，標題「人物線索偵探｜南勢阿美語」。橫向、繁體中文、大字、高對比。設計 5 張依序揭露的線索卡：請自我介紹、問名字、問是哪一族的小孩、問家人、問年齡。每卡僅放 1 個來源中確有的南勢阿美語原句或詞語、教材對應中文意思及 PDF 頁碼；學生可以先遮住中文猜意思。用線索編號和簡單路徑讓畫面像推理解謎圖，但這是一張靜態圖片，不要畫成可點擊的遊戲介面。族語拼寫逐字照來源，不補寫教材沒有的問候句，不把不同對話的人物資料拼成同一個人。不要用長相、服飾或圖騰暗示族群身分，也不要加真人照片。若來源不足就減少卡片，不要猜。</textarea><button type="button" class="copy">複製提示詞</button></div></details>
     </section>
-    <section class="how"><p class="eyebrow">使用說明</p><h2>上課前核對一次</h2><p>題目只選用兩份 PDF 中能直接查到的詞句，答案旁標示 PDF 印刷頁碼。教材頁面標示「族語 E 樂園設計製作／財團法人原住民族語言研究發展基金會 © 版權所有」。本站提供原創題卡與少量引文，沒有上傳整份來源 PDF；正式授課前仍請族語教師核對發音、拼寫與教學情境。</p></section>
+    <section class="notes"><h2>怎麼做成自己的版本？</h2><ol><li>把教材放入 NotebookLM。這次因本機 PDF 上傳受瀏覽器設定限制，我們將 PDF 文字按頁貼成兩個來源。</li><li>只勾選要用的那份來源，點「工作室 → 資訊圖表」，貼上對應提示詞。</li><li>圖片完成後，逐句對照原 PDF，再下載 PNG。想換形式，可以改提示詞中的「五個關卡」或「五張線索卡」，例如改成賓果格、尋寶路線或配對卡。</li></ol><p class="source">文字來源：〈112 年情境族語—上課用語〉、〈112 年情境族語—姓名與問候〉南勢阿美語教材，族語 E 樂園設計製作／財團法人原住民族語言研究發展基金會 © 版權所有。圖片由 NotebookLM 生成，教材原 PDF 的圖片與排版未作為本次生成來源；使用前請核對族語與譯文。</p></section>
   </main>
-  <footer>南勢阿美語遊戲題卡 · 可編輯源稿保留於本專案</footer>
+  <footer>南勢阿美語 × NotebookLM · 2026</footer>
+  <script>document.querySelectorAll('.copy').forEach(button=>button.addEventListener('click',async()=>{const text=button.previousElementSibling.value;try{await navigator.clipboard.writeText(text);button.textContent='已複製 ✓'}catch{button.previousElementSibling.select();button.textContent='請按 Ctrl+C 複製'}setTimeout(()=>button.textContent='複製提示詞',2500)}));</script>
 </body>
 </html>
