@@ -6,6 +6,8 @@
 
 首頁另有兩份延伸講義：`materials/notebooklm-beginner-guide.pptx`（NotebookLM 入門教學，27 張）及 `materials/google-drive-large-print-guide.pdf`（Google 雲端硬碟基礎教學大字版，25 頁）。第二份提供的是 PDF，不是 PPTX。
 
+`amis/` 是新增的南勢阿美語教材專區，與太魯閣語 20 個活動分開。依兩份《112 年情境族語》PDF 選用少量原文，製作兩組各 8 題的網頁搶答、各 19 張可下載 PowerPoint，以及兩張 1600 × 1000 的 SVG／PNG 詞語資訊圖表。原始 PDF 未上傳網站；`amis/content.js`、`amis/build.js` 與 HTML/CSS/JS 都保留為可修改源稿。
+
 ## 內容狀態
 
 - 這是教師審閱草稿，族語、答案、頁碼、圖像及教材公開使用範圍尚未完成逐頁核對。

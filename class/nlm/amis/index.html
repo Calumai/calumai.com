@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>南勢阿美語｜遊戲化投影片與資訊圖表</title>
+  <meta name="description" content="兩組依 112 年情境族語教材製作的課堂搶答投影片與資訊圖表。">
+  <link rel="stylesheet" href="style.css">
+  <script src="content.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到內容</a>
+  <header class="masthead">
+    <a class="back" href="../">← 返回 NotebookLM 教學網頁</a>
+    <span class="tag">南勢阿美語 · 課堂遊戲</span>
+  </header>
+  <main id="main">
+    <section class="intro" id="overview">
+      <div class="intro-text">
+        <p class="eyebrow">2 組遊戲化投影片 × 2 張資訊圖表</p>
+        <h1>看題目，<br><em>一起猜。</em></h1>
+        <p>選一份教材開始搶答。每題先讓學生說答案，再按「揭曉」核對；老師也能下載 PowerPoint 和圖片帶進教室。</p>
+      </div>
+      <div class="intro-graphic" aria-hidden="true"><span>01</span><span>02</span><span class="intro-arrow">→</span></div>
+    </section>
+    <section class="library" aria-labelledby="library-title">
+      <div class="section-heading"><p class="eyebrow">CHOOSE A LESSON</p><h2 id="library-title">兩份教材，兩種入口</h2></div>
+      <div class="cards">
+        <article class="card">
+          <span class="card-number">01 / CLASSROOM</span><h3>上課用語</h3><p>遲到、星期、身體不舒服與課堂請求。</p>
+          <div class="actions"><a class="button primary" href="?lesson=classroom#play">開始搶答 ↗</a><a class="button" href="classroom-game.pptx" download>下載 PPTX ↓</a></div>
+          <a class="graphic-link" href="classroom-infographic.svg" target="_blank" rel="noopener"><img src="classroom-infographic.svg" alt="上課用語六個關鍵詞資訊圖表"><span>查看大圖 ↗</span></a><a class="png-link" href="classroom-infographic.png" download>下載 PNG ↓</a>
+        </article>
+        <article class="card">
+          <span class="card-number">02 / MEET & GREET</span><h3>姓名與問候</h3><p>自我介紹、名字、家人與年齡。</p>
+          <div class="actions"><a class="button primary" href="?lesson=identity#play">開始搶答 ↗</a><a class="button" href="identity-game.pptx" download>下載 PPTX ↓</a></div>
+          <a class="graphic-link" href="identity-infographic.svg" target="_blank" rel="noopener"><img src="identity-infographic.svg" alt="姓名與問候六個線索資訊圖表"><span>查看大圖 ↗</span></a><a class="png-link" href="identity-infographic.png" download>下載 PNG ↓</a>
+        </article>
+      </div>
+      <p class="source-note">圖表另提供 <a href="classroom-infographic.svg" download>上課用語 SVG</a>、<a href="identity-infographic.svg" download>姓名與問候 SVG</a>，方便放大或修改。圖片是靜態題卡；下方網頁搶答可點選與計分。</p>
+    </section>
+    <section id="play" class="play" hidden aria-labelledby="play-title">
+      <div class="play-top"><div><p class="eyebrow" id="lesson-label"></p><h2 id="play-title"></h2></div><a class="button" href="./#overview">返回選教材</a></div>
+      <div class="game-shell">
+        <div class="stage" id="stage" tabindex="-1">
+          <div class="stage-top"><span id="progress"></span><span id="type-label"></span></div>
+          <div class="question-scene" id="scene"></div>
+          <h3 id="question"></h3>
+          <p class="question-hint">這句南勢阿美語在教材中的意思是？</p>
+          <div class="choices" id="choices"></div>
+          <div class="answer" id="answer" hidden role="status" aria-live="polite"></div>
+          <div class="stage-footer"><span id="source-page"></span><span id="score"></span></div>
+        </div>
+        <aside class="controls"><h3>老師操作區</h3><p>先讓學生口答或舉牌，再點選答案。答對會加一分；揭曉後再進下一題。</p><div class="control-row"><button type="button" id="reveal">揭曉答案</button><button type="button" id="next">下一題 →</button></div><div class="control-row secondary"><button type="button" id="restart">重新開始</button><button type="button" id="fullscreen">全螢幕投影</button></div><p class="keyboard">鍵盤 1／2／3 選答案，Enter 揭曉，→ 下一題；Esc 離開全螢幕。</p><p class="attribution" id="attribution"></p></aside>
+      </div>
+    </section>
+    <section class="how"><p class="eyebrow">使用說明</p><h2>上課前核對一次</h2><p>題目只選用兩份 PDF 中能直接查到的詞句，答案旁標示 PDF 印刷頁碼。教材頁面標示「族語 E 樂園設計製作／財團法人原住民族語言研究發展基金會 © 版權所有」。本站提供原創題卡與少量引文，沒有上傳整份來源 PDF；正式授課前仍請族語教師核對發音、拼寫與教學情境。</p></section>
+  </main>
+  <footer>南勢阿美語遊戲題卡 · 可編輯源稿保留於本專案</footer>
+</body>
+</html>
