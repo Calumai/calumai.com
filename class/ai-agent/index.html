@@ -1,30 +1,31 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="族語教師 AI Agent 課程：下載學生懶人包，從備課、繪本、互動練習與教材檢查開始實作。">
-  <title>AI Agent｜族語教師教材實作｜CALUMAI CLASS</title>
-  <link rel="canonical" href="https://calumai.com/class/ai-agent/">
-  <style>
-    :root{font-family:system-ui,"Microsoft JhengHei",sans-serif;color:#18302d;background:#f5f3ec}*{box-sizing:border-box}body{margin:0}a{color:inherit}.shell{max-width:1080px;margin:auto;padding-inline:24px}.top{background:#123f3b;color:#fff}.top .shell{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-block:18px}.brand{text-decoration:none;font-weight:900;letter-spacing:.08em}.back{text-underline-offset:4px}.hero{background:#123f3b;color:#fff;padding-block:64px 78px}.eyebrow{font-size:.8rem;font-weight:800;letter-spacing:.16em;color:#add9cb}.hero h1{font-size:clamp(2.4rem,5vw,4.5rem);line-height:1.1;margin:18px 0}.hero p{max-width:680px;font-size:1.15rem;line-height:1.8;color:#dfebe5}.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}.button{display:inline-block;padding:13px 20px;border-radius:8px;background:#edaa6c;color:#17372f;text-decoration:none;font-weight:800}.button.secondary{background:transparent;color:#fff;border:1px solid #94bcaf}.button:hover,.button:focus{filter:brightness(1.08)}main{padding-block:38px 70px}.lead{background:#fff;border-left:5px solid #cf8353;border-radius:8px;padding:22px 26px;line-height:1.8}h2{font-size:1.7rem;margin:46px 0 18px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{background:#fff;border:1px solid #d7e3dc;border-radius:14px;padding:24px}.card small{color:#a45f37;font-weight:800;letter-spacing:.12em}.card h3{margin:12px 0 8px;font-size:1.3rem}.card p{color:#465b53;line-height:1.7;margin:0}.steps{line-height:1.9;padding-left:1.5em}.steps li{padding-left:.2em;margin:.35em 0}.note{background:#e7efe8;border-radius:12px;padding:22px 25px;line-height:1.8}.note p{margin:0}footer{border-top:1px solid #d3ded7;padding-block:24px 40px;color:#596963;font-size:.92rem}a:focus-visible{outline:3px solid #d27d36;outline-offset:3px}@media(max-width:650px){.grid{grid-template-columns:1fr}.hero{padding-block:45px 58px}.top .shell{align-items:flex-start}}
-  </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="AI Agent 入門指南：給族語教師的三小時觀念課，認識 Agent 的運作、任務交代、安全與教學應用。">
+<title>AI Agent 入門指南｜CALUMAI CLASS</title>
+<link rel="canonical" href="https://calumai.com/class/ai-agent/">
+<style>
+:root{font-family:system-ui,"Microsoft JhengHei",sans-serif;color:#18302d;background:#f5f3ec}*{box-sizing:border-box}body{margin:0}a{color:inherit}.shell{max-width:1080px;margin:auto;padding-inline:24px}.top,.hero{background:#123f3b;color:#fff}.top .shell{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-block:18px}.brand{text-decoration:none;font-weight:900;letter-spacing:.08em}.hero{padding-block:60px 72px}.eyebrow{font-size:.8rem;font-weight:800;letter-spacing:.16em;color:#add9cb}.hero h1{font-size:clamp(2.4rem,5vw,4.5rem);line-height:1.12;margin:18px 0}.hero p{max-width:760px;font-size:1.12rem;line-height:1.8;color:#dfebe5}.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}.button{display:inline-block;padding:13px 20px;border-radius:8px;background:#edaa6c;color:#17372f;text-decoration:none;font-weight:800}.button.secondary{background:transparent;color:#fff;border:1px solid #94bcaf}main{padding-block:38px 70px}.lead{background:#fff;border-left:5px solid #cf8353;border-radius:8px;padding:22px 26px;line-height:1.8}.lead p{margin:0}.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.meta span{background:#e7efe8;border-radius:50px;padding:5px 12px;font-size:.9rem}h2{font-size:1.7rem;margin:46px 0 18px}h3{margin:10px 0 8px;font-size:1.2rem}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{background:#fff;border:1px solid #d7e3dc;border-radius:14px;padding:23px}.card small{color:#a45f37;font-weight:800}.card p{color:#465b53;line-height:1.7;margin:0}.steps{line-height:1.9;padding-left:1.5em}.steps li{padding-left:.2em;margin:.35em 0}.note{background:#e7efe8;border-radius:12px;padding:22px 25px;line-height:1.8}.note h2{margin:0 0 10px}.note p{margin:0 0 10px}.five{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.five div{background:#fff;border:1px solid #d7e3dc;border-radius:10px;padding:14px}.five strong{display:block;margin-bottom:5px}.five span{font-size:.9rem;color:#465b53;line-height:1.5}footer{border-top:1px solid #d3ded7;padding-block:24px 40px;color:#596963;font-size:.92rem}a:focus-visible{outline:3px solid #d27d36;outline-offset:3px}@media(max-width:760px){.five{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:650px){.grid{grid-template-columns:1fr}.hero{padding-block:45px 58px}.top .shell{align-items:flex-start}}
+</style>
 </head>
 <body>
-  <header class="top"><div class="shell"><a class="brand" href="/class/">CALUMAI / CLASS</a><a class="back" href="/class/">返回課程總覽</a></div></header>
-  <section class="hero"><div class="shell"><div class="eyebrow">族語教師數位教材課程 / AI AGENT</div><h1>讓 AI Agent 幫你動手做，<br>教材仍由你把關。</h1><p>從已有的詞句、題庫和教學目標出發，請 AI 整理、製作、檢查，再由族語教師核對語言與文化內容。下載學生懶人包，就能在自己的練習專案開始。</p><div class="actions"><a class="button" href="/class/ai-agent/族語老師課程_學生懶人包.zip" download>下載學生懶人包 ZIP</a><a class="button secondary" href="#how-to">看安裝步驟</a></div></div></section>
-  <main class="shell">
-    <div class="lead"><strong>本章要完成什麼？</strong>選一個真實的教學小任務，交給 Agent 處理一部分，最後說清楚它做了什麼、你核對了什麼，以及哪些地方還不能直接拿去教學。</div>
-    <h2>四個可選任務</h2>
-    <div class="grid">
-      <article class="card"><small>01 / 備課</small><h3>整理教學流程</h3><p>用已確認的詞句、教學對象與目標，做出課堂流程與待確認清單。</p></article>
-      <article class="card"><small>02 / 繪本</small><h3>規劃繪本分鏡</h3><p>把故事做成 4–6 頁分鏡，族語原文保留，缺少的句子標示待補。</p></article>
-      <article class="card"><small>03 / 互動</small><h3>製作練習網頁</h3><p>把已核對的題庫做成可在本機打開的互動練習，再試作答與手機畫面。</p></article>
-      <article class="card"><small>04 / 檢查</small><h3>找出教材缺漏</h3><p>檢查詞卡、題庫、音檔或網站的空白、重複、缺檔及壞連結。</p></article>
-    </div>
-    <section id="how-to"><h2>Windows 11：下載後怎麼做</h2><ol class="steps"><li>點上方「下載學生懶人包 ZIP」。在「下載」資料夾對 ZIP 按右鍵，選「全部解壓縮」。</li><li>進入解壓後的資料夾，雙擊 <strong>START-HERE.html</strong>；畫面會顯示四項任務與起手式。</li><li>若要在 AI 編碼助理中使用，開啟自己建立的練習專案，照包內 <strong>README.md</strong> 選裝需要的技能。請勿直接修改老師提供的原稿。</li><li>用示範或已獲授權的素材試跑，親自核對族語、答案、音檔與操作結果。</li></ol></section>
-    <section class="note"><h2>上課前先記住</h2><p>AI 可以整理資料、製作頁面並指出明確缺漏；族語的拼寫、腔調、語意、發音、文化脈絡與公開授權，仍需由相應教師及權利關係人確認。練習素材不要包含學生個資、帳密或未授權內容。這份素材包不會自動登入服務、安裝付費工具或發布作品。</p></section>
-  </main>
-  <footer class="shell">CALUMAI / 族語教師 AI 教材實作</footer>
+<header class="top"><div class="shell"><a class="brand" href="/class/">CALUMAI / CLASS</a><a href="/class/">返回課程總覽</a></div></header>
+<section class="hero"><div class="shell"><div class="eyebrow">族語教師課程 / AI AGENT</div><h1>AI Agent 入門指南</h1><p>從「會聊天」到「會做事」的 AI 助理。先認識 Agent 怎麼運作，再練習交代任務、看懂權限與檢查成果；族語教學的內容判斷，由老師掌握。</p><div class="actions"><a class="button" href="/class/ai-agent/族語老師課程_學生懶人包.zip" download>下載課堂練習包 ZIP</a><a class="button secondary" href="#outline">查看六個單元</a></div></div></section>
+<main class="shell">
+<div class="lead"><p><strong>這堂課學什麼？</strong>依 2026 年 10 月 27 日版《AI Agent 入門指南》講義整理，約 3 小時，適合沒有程式經驗的老師。課程以觀念、任務寫法與安全判斷為主；需要動手時，講義以 OpenCode 桌面版示範，安裝細節另見配套的 OpenCode 講義。沒有安裝軟體，也能完成紙筆與記事本練習。</p><div class="meta"><span>約 3 小時，含休息</span><span>Windows 10／11</span><span>零程式基礎可參加</span></div></div>
+<section id="outline"><h2>六個單元</h2><div class="grid">
+<article class="card"><small>01 · 25 分鐘</small><h3>什麼是 AI Agent？</h3><p>比較聊天 AI 與會使用工具的 Agent，認識模型、工具、工作迴圈、上下文／記憶與權限五個零件。</p></article>
+<article class="card"><small>02 · 30 分鐘</small><h3>八個核心觀念</h3><p>用老師熟悉的例子理解工具呼叫、規劃與執行、MCP、Skills，以及「人在迴路中」的把關方式。</p></article>
+<article class="card"><small>03 · 20 分鐘</small><h3>認識常見 Agent 類型</h3><p>分辨寫程式、瀏覽器操作、研究、流程自動化及個人助理五類；產品名稱與功能可能變動，使用前請查官方資訊。</p></article>
+<article class="card"><small>04 · 25 分鐘</small><h3>怎麼交代任務</h3><p>把模糊要求寫成「目標、背景、限制、完成標準、檢查點」五格任務單，先讓 Agent 提出計畫。</p></article>
+<article class="card"><small>05 · 20 分鐘</small><h3>安全與隱私</h3><p>用權限紅綠燈判斷哪些能做、哪些要先問、哪些留給老師；練習檢查事實、適切性與實際動作。</p></article>
+<article class="card"><small>06 · 30 分鐘</small><h3>教師應用情境</h3><p>從講義的十個情境選一個試做，例如教案草稿、分層學習單、教學小工具、研究摘要或重複工作技能。</p></article>
+</div></section>
+<section><h2>交代任務時，先寫五格</h2><div class="five"><div><strong>目標</strong><span>要做什麼，給誰用？</span></div><div><strong>背景</strong><span>學生程度、現有素材與範本。</span></div><div><strong>限制</strong><span>哪些資料與動作不能碰？</span></div><div><strong>完成標準</strong><span>做成什麼樣，如何驗收？</span></div><div><strong>檢查點</strong><span>哪一步先停下來給老師看？</span></div></div></section>
+<section id="how-to"><h2>課堂練習包怎麼用</h2><ol class="steps"><li>點上方下載 ZIP，在 Windows 檔案總管對 ZIP 按右鍵，選「全部解壓縮」。</li><li>進入解壓後的資料夾，雙擊 <strong>START-HERE.html</strong>；先閱讀課程地圖，再開啟 <strong>課堂練習.md</strong> 做六個練習。</li><li>若要延伸做族語教材，可從四項選用技能挑一項。它們是延伸練習，並非完成本課的必要安裝項目；安裝方式見包內 <strong>README.md</strong>。</li><li>只用假資料或有權使用的素材試跑，最後親自檢查族語、事實、檔案與操作結果。</li></ol></section>
+<section class="note"><h2>老師保留最後把關</h2><p>學生姓名、成績、聯絡方式、照片與其他可辨識個資不要提供給 AI。寄送訊息、刪檔、付款、登入校務系統等動作由老師親自處理；練習只使用假資料或已獲授權素材。</p><p>族語詞句、拼寫、腔調、發音、文化脈絡與公開使用權，仍需由相應的族語教師及權利關係人核對。Agent 說「完成」後，要再看事實、適切性與它實際做了什麼。</p></section>
+</main>
+<footer class="shell">CALUMAI / AI Agent 入門指南 · 依 2026-10-27 版授課講義整理</footer>
 </body>
 </html>
