@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- 2026-11-02 更新 `/ai-helper/handouts/` EP018–EP022：以新講義包替換舊版精簡文字，加入逐步操作截圖，並提供 PDF 與完整講義包下載。檢查五份 PDF 頁面與 ZIP 內容一致、58 張講義圖片路徑完整；course-publisher 的 30 項測試通過。
+
 - 2026-10-28 整合 `/class/` 與 `/class/index.html`：課程首頁加入 Vibe Coding 入口；Worker 將 `/class`、`/class/` 的 GET/HEAD 導向 GitHub Pages 同一份首頁，保留課堂資料 POST 接收和 `/class/vibe-coding/` 原路由。
 
 - 2026-10-27 依授課講義《AI Agent 入門指南》修正 `/class/ai-agent/` 為六單元、約三小時的課程介紹，更新總覽文案與學生練習包；四項族語教材技能改列選用延伸，另加入六個課堂練習與 OpenCode 專案技能安裝說明。
