@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- 2026-11-03 在 `/class/ai-agent/` 新增兩堂備課教材入口：Antigravity 與 OpenCode 各提供簡報、講義 PDF、練習素材包，OpenCode 另有提示詞小抄。公開版移除講義、簡報與練習檔中的「三師爸」署名及相關頁尾／講者備註，保留參考影片網址；不公開教師答案卷、舊預覽圖與第三方詞表 PDF，改附原民會官方來源連結。原始下載資料夾未改動。
+
 - 2026-11-02 更新 `/ai-helper/handouts/` EP018–EP022：以新講義包替換舊版精簡文字，加入逐步操作截圖，並提供 PDF 與完整講義包下載。檢查五份 PDF 頁面與 ZIP 內容一致、58 張講義圖片路徑完整；course-publisher 的 30 項測試通過。
 
 - 2026-10-28 整合 `/class/` 與 `/class/index.html`：課程首頁加入 Vibe Coding 入口；Worker 將 `/class`、`/class/` 的 GET/HEAD 導向 GitHub Pages 同一份首頁，保留課堂資料 POST 接收和 `/class/vibe-coding/` 原路由。
