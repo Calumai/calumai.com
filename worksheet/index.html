@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>族語三級學習單產生器 · CalumAI Studio</title>
+<style>
+:root{--forest:#2f5d3a;--leaf:#5b8c4a;--moss:#a3b86c;--earth:#8a5a3b;--clay:#c97b4a;--sand:#f5ecd9;--paper:#fffaf0;--ink:#2b2a24;--muted:#756d5e;--line:#ded3bb;--r:22px}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+html{background:#e8e3c8}
+body{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;background:linear-gradient(160deg,#f5ecd9 0%,#e8e3c8 60%,#d9e3c4 100%) fixed;color:var(--ink);line-height:1.5}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;border:0;border-radius:13px;min-height:44px;padding:0 16px;font-weight:700;transition:transform .1s,filter .15s;white-space:nowrap}
+button:hover{filter:brightness(1.06)}button:active{transform:scale(.97)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid rgba(91,140,74,.35);outline-offset:2px}
+header{background:var(--forest);color:#fff;padding:15px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:0 4px 16px rgba(37,58,30,.16)}
+.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:45px;height:45px;border-radius:15px;background:var(--sand);display:grid;place-items:center;font-size:25px}
+h1{font-size:1.42rem;letter-spacing:.055em;margin:0}.brand small{display:block;color:#dce8ce;font-size:.77rem;letter-spacing:.13em;margin-top:1px}
+nav{display:flex;gap:8px;flex-wrap:wrap}.tab{background:rgba(255,255,255,.14);color:#fff}.tab.on{background:var(--sand);color:var(--forest)}
+main{width:100%;max-width:1660px;margin:0 auto;padding:22px}
+.panel{background:var(--paper);border-radius:var(--r);box-shadow:0 6px 24px rgba(60,50,20,.12);padding:24px;border:1px solid rgba(138,90,59,.08)}
+.hidden{display:none!important}.eyebrow{color:var(--clay);font-size:.78rem;letter-spacing:.17em;font-weight:800;margin:0 0 3px}
+.titleline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}h2{margin:0;color:var(--forest);font-size:1.55rem}h3{margin:0;color:var(--forest)}
+.hint{color:var(--muted);margin:7px 0 16px;font-size:.94rem}.pill{display:inline-flex;align-items:center;gap:6px;border-radius:99px;background:#e8efdc;color:var(--forest);font-weight:800;padding:6px 12px;font-size:.88rem}
+.editor-note{display:flex;gap:9px;align-items:flex-start;background:#f2eddf;border-left:4px solid var(--moss);border-radius:10px;padding:10px 13px;color:var(--earth);font-size:.9rem;margin-bottom:16px}
+.colhead,.row{display:grid;grid-template-columns:38px minmax(0,1fr) minmax(0,1fr) 46px;gap:9px;align-items:center}.colhead{font-weight:800;color:var(--earth);font-size:.9rem;margin-bottom:6px}.colhead span:first-child{text-align:center}
+.rows{display:flex;flex-direction:column;gap:8px}.row .n{text-align:center;color:var(--muted);font-weight:700}.row input{width:100%;min-width:0;min-height:45px;padding:8px 12px;border:2px solid #e4dac4;border-radius:11px;background:#fff;color:var(--ink)}
+.row input:focus{border-color:var(--leaf);outline:none}.del{padding:0;background:#f3e5d9;color:var(--earth);font-size:1.15rem}.btns{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.pri{background:var(--forest);color:#fff}.sec{background:var(--moss);color:var(--ink)}.warm{background:var(--clay);color:#fff}.ghost{background:#eee5d2;color:var(--earth)}.big{min-height:50px;padding:0 22px}
+details{margin-top:16px;border-top:1px dashed var(--line);padding-top:8px}summary{cursor:pointer;font-weight:800;color:var(--earth);min-height:40px;line-height:40px}textarea{width:100%;min-height:120px;padding:12px;border:2px dashed var(--moss);border-radius:13px;background:#fff;resize:vertical}
+.countset{display:flex;align-items:center;gap:8px;color:var(--earth);font-weight:700;margin-left:auto}select{border:2px solid var(--line);border-radius:10px;background:#fff;padding:7px 10px;color:var(--ink)}
+/* worksheet controls */
+.generator-intro{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:15px}.generator-intro .hint{margin-bottom:0;max-width:700px}.viewbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(255,250,240,.78);padding:10px;border-radius:17px;margin-bottom:16px;box-shadow:0 3px 12px rgba(60,50,20,.07)}
+.viewbar .tab{color:var(--earth);background:transparent}.viewbar .tab.on{background:var(--forest);color:#fff}.viewbar .spacer{flex:1}.print-all{background:var(--clay);color:#fff}
+.worksheets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.sheet{background:#fffdf8;border:1px solid #e3d7bf;border-radius:19px;box-shadow:0 5px 18px rgba(60,50,20,.1);padding:21px;min-width:0;overflow:hidden;position:relative}
+.sheet::before{content:"";display:block;position:absolute;left:0;right:0;top:0;height:6px;background:var(--level,var(--moss))}.sheet[data-level="easy"]{--level:#8ba865}.sheet[data-level="mid"]{--level:#d29a52}.sheet[data-level="hard"]{--level:#b96c4b}
+.sheet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;border-bottom:2px solid var(--level);padding:5px 0 12px;margin-bottom:12px}.sheet-head h3{font-size:1.3rem;line-height:1.3}.level-tag{display:inline-block;color:var(--earth);font-weight:800;font-size:.76rem;letter-spacing:.1em;margin-bottom:2px}.sheet-no{font-size:1.65rem;opacity:.26;font-weight:900;color:var(--earth)}
+.identity{display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:.86rem;margin-bottom:11px}.identity span{display:inline-block;border-bottom:1px solid #777;min-width:74px;height:20px;vertical-align:bottom}.instruction{font-size:.87rem;color:var(--muted);margin:0 0 13px;line-height:1.55}.sheet-actions{display:flex;gap:6px;margin-bottom:14px}.sheet-actions button{min-height:36px;font-size:.78rem;padding:0 10px;border-radius:9px}.sheet-actions .answer.on{background:var(--clay);color:#fff}
+.match-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}.match-col{display:flex;flex-direction:column;gap:8px}.match-item{height:39px;border:1px solid #ddd2ba;border-radius:9px;display:flex;align-items:center;gap:8px;padding:0 10px;font-size:.93rem;background:#fff}.match-item .idx{font-weight:900;color:var(--clay);width:19px;flex:none}.match-item.right .idx{color:var(--leaf)}.match-item .word{overflow-wrap:anywhere}.match-middle{text-align:center;color:#a2947c;font-size:.75rem;margin:7px 0 0}
+.answer-key{display:none;background:#edf2e4;border:1px dashed var(--leaf);border-radius:10px;padding:9px 11px;margin-top:13px;color:var(--forest);font-size:.8rem;line-height:1.65}.sheet.show-answer .answer-key{display:block}.answer-key strong{display:block;margin-bottom:2px}.answer-key .pairs{overflow-wrap:anywhere}
+.questions{display:flex;flex-direction:column;gap:10px}.q{display:grid;grid-template-columns:25px minmax(52px,.72fr) minmax(0,1.25fr);align-items:center;gap:7px;min-height:38px;border-bottom:1px solid #e8dfce;padding-bottom:7px}.q .num{font-weight:800;color:var(--clay);font-size:.84rem}.q .zh{font-size:.91rem}.cloze{font-family:ui-monospace,"Noto Sans Mono",monospace;letter-spacing:.055em;font-size:.91rem;font-weight:700;white-space:nowrap}.cloze .missing{display:inline-block;min-width:.85em;text-align:center;border-bottom:1px solid #756d5e;color:transparent}.show-answer .cloze .missing{color:var(--clay);border-bottom-color:var(--clay)}
+.write-line{border-bottom:1px solid #9c9486;min-width:0;height:26px;align-self:end;margin-bottom:4px;color:var(--clay);font-weight:800;padding:0 4px;overflow-wrap:anywhere;font-size:.85rem}.write-line:empty::after{content:"";display:block}.sheet-foot{text-align:center;color:#a19583;font-size:.68rem;letter-spacing:.06em;margin-top:15px}.empty{padding:40px;text-align:center;color:var(--muted);background:var(--paper);border-radius:18px}
+.toast{position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:var(--forest);color:#fff;padding:11px 20px;border-radius:30px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20;box-shadow:0 5px 20px #0002}.toast.show{opacity:1}footer{text-align:center;color:var(--muted);padding:15px;font-size:.8rem}
+body[data-view="easy"] .sheet:not([data-level="easy"]),body[data-view="mid"] .sheet:not([data-level="mid"]),body[data-view="hard"] .sheet:not([data-level="hard"]){display:none}
+body:not([data-view="overview"]) .worksheets{grid-template-columns:minmax(0,820px);justify-content:center}body:not([data-view="overview"]) .sheet{padding:30px 36px}body:not([data-view="overview"]) .sheet-head h3{font-size:1.6rem}body:not([data-view="overview"]) .match-item{height:46px;font-size:1.04rem}body:not([data-view="overview"]) .q{min-height:45px;font-size:1.05rem}body:not([data-view="overview"]) .q .zh,body:not([data-view="overview"]) .cloze{font-size:1.05rem}
+@media(max-width:1100px){.worksheets{grid-template-columns:1fr}.sheet{padding:26px}.generator-intro{align-items:flex-start;flex-direction:column}.viewbar .spacer{display:none}}
+@media(max-width:600px){header{padding:12px 14px}h1{font-size:1.15rem}.brand-mark{width:39px;height:39px}.brand small{font-size:.65rem}nav button{min-height:40px;padding:0 12px;font-size:.9rem}main{padding:11px}.panel{padding:15px}.colhead,.row{grid-template-columns:25px minmax(0,1fr) minmax(0,1fr) 40px;gap:6px}.countset{margin-left:0}.viewbar button{padding:0 10px;font-size:.85rem}.identity{gap:8px}.sheet{padding:19px 15px}.match-grid{gap:12px}.q{grid-template-columns:22px 55px minmax(0,1fr)}.cloze{font-size:.82rem;letter-spacing:0}}
+@page{size:A4 portrait;margin:12mm}
+@media print{
+ html,body{background:#fff!important}header,main>.panel,#editor,.generator-intro,.viewbar,footer,.toast,.sheet-actions{display:none!important}main{padding:0;margin:0;max-width:none}.worksheets{display:block!important}.sheet{display:block!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;overflow:visible!important;break-after:page;page-break-after:always;min-height:0}.sheet:last-child{break-after:auto;page-break-after:auto}.sheet::before{height:4px}.sheet-head{padding-top:7px;margin-bottom:15px}.sheet-head h3{font-size:22pt!important}.identity{font-size:11pt;margin-bottom:14px}.instruction{font-size:10pt}.match-item{height:44px!important;font-size:12pt!important;break-inside:avoid}.match-col{gap:10px}.q{min-height:45px!important;font-size:11pt!important;break-inside:avoid}.q .zh,.cloze{font-size:12pt!important}.answer-key{font-size:10pt}.sheet-foot{margin-top:20px}body.print-one .sheet{display:none!important}body.print-one .sheet.print-target{display:block!important;break-after:auto;page-break-after:auto}
+}
+</style>
+</head>
+<body data-view="overview">
+<header>
+ <div class="brand"><div class="brand-mark">🌿</div><div><h1>族語三級學習單產生器</h1><small>CALUMAI STUDIO · 一份詞彙，三種練習</small></div></div>
+ <nav aria-label="主要功能"><button class="tab" id="tabEdit">✏️ 編輯詞彙</button><button class="tab on" id="tabMake">📄 學習單</button></nav>
+</header>
+<main>
+ <section id="editor" class="panel hidden">
+  <div class="titleline"><div><p class="eyebrow">步驟 1 · 準備詞彙</p><h2>今天想練哪些詞？</h2></div><span class="pill" id="wordCount">0 組詞彙</span></div>
+  <p class="hint">左欄填中文、右欄填族語，內容會自動儲存在這台裝置，並與「族語詞卡抽卡器」共用詞彙。</p>
+  <div class="editor-note"><span>💡</span><span>每張學習單使用 6–9 個詞彙。內建示例為太魯閣語；不同方言或教材的拼字，請由老師再次核對。</span></div>
+  <div class="colhead"><span>#</span><span>中文</span><span>族語</span><span></span></div>
+  <div class="rows" id="rows"></div>
+  <div class="btns">
+   <button class="sec" id="addRow">＋ 新增一列</button>
+   <button class="pri big" id="generate">✨ 一次產生三種難度</button>
+   <button class="ghost" id="loadSample">載入太魯閣語示例</button>
+   <label class="countset">每張題數 <select id="questionCount" aria-label="每張題數"><option>6</option><option>7</option><option>8</option><option selected>9</option></select></label>
+  </div>
+  <details><summary>📋 批次貼上（每行一組：中文,族語）</summary><textarea id="bulk" placeholder="爸爸,tama&#10;媽媽,bubu"></textarea><div class="btns"><button class="sec" id="bulkAppend">加到清單後面</button><button class="warm" id="bulkReplace">取代整份清單</button><button class="ghost" id="bulkExport">匯出目前清單</button></div></details>
+ </section>
+ <section id="maker" class="hidden">
+  <div class="generator-intro"><div><p class="eyebrow">步驟 2 · 列印練習</p><h2>三種難度，一次備齊</h2><p class="hint" id="summary">從連連看、補字到完整拼寫，讓不同程度的學生都能練習同一份詞彙。</p></div><button class="ghost" id="backEdit">← 修改詞彙</button></div>
+  <div class="viewbar" aria-label="學習單檢視">
+   <button class="tab on" data-view="overview">▦ 三級總覽</button><button class="tab" data-view="easy">★ 入門</button><button class="tab" data-view="mid">★★ 進階</button><button class="tab" data-view="hard">★★★ 挑戰</button><span class="spacer"></span><button class="print-all" id="printAll">🖨 列印全部（每級一頁）</button>
+  </div>
+  <div class="worksheets" id="worksheets"></div>
+ </section>
+</main>
+<footer>CalumAI Studio · 離線可用，詞彙只儲存在你的瀏覽器</footer>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const $=id=>document.getElementById(id);
+const KEY='zuyuCards.v1';
+const SAMPLE=[['爸爸','tama'],['媽媽','bubu'],['狗','huling'],['豬','babuy'],['山','dgiyaq'],['水','qsiya'],['太陽','hidaw'],['謝謝','mhuway'],['再見','swayay']].map(([zh,zy])=>({zh,zy}));
+const LEVELS={easy:{stars:'★',name:'入門',instruction:'連連看：把左邊的中文和右邊的族語用線連起來。'},mid:{stars:'★★',name:'進階',instruction:'看中文，把族語單字缺少的字母填進橫線。'},hard:{stars:'★★★',name:'挑戰',instruction:'看中文，在橫線上寫出完整的族語單字。'}};
+function readWords(){try{const data=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(data)&&data.every(o=>o&&typeof o.zh==='string'))return data.map(o=>({zh:o.zh,zy:typeof o.zy==='string'?o.zy:''}))}catch(e){}return null}
+let words=readWords()||SAMPLE.map(o=>({...o}));
+let sheets=[],answers={easy:false,mid:false,hard:false},made=false;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(words))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function valid(){return words.map(w=>({zh:w.zh.trim(),zy:w.zy.trim()})).filter(w=>w.zh&&w.zy)}
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').classList.remove('show'),2200)}
+function updateCount(){$('wordCount').textContent=valid().length+' 組有效詞彙';const max=Math.min(9,valid().length);if(max>=6&&+$('questionCount').value>max)$('questionCount').value=String(max)}
+function renderRows(){
+ $('rows').innerHTML=words.map((w,i)=>`<div class="row"><span class="n">${i+1}</span><input data-i="${i}" data-k="zh" value="${esc(w.zh)}" aria-label="第 ${i+1} 組中文" placeholder="中文"><input data-i="${i}" data-k="zy" value="${esc(w.zy)}" aria-label="第 ${i+1} 組族語" placeholder="族語"><button class="del" data-del="${i}" aria-label="刪除第 ${i+1} 組">✕</button></div>`).join('');updateCount();
+}
+$('rows').addEventListener('input',e=>{const t=e.target;if(t.dataset.k){words[+t.dataset.i][t.dataset.k]=t.value;save();updateCount()}});
+$('rows').addEventListener('click',e=>{if(e.target.dataset.del!==undefined){words.splice(+e.target.dataset.del,1);save();renderRows()}});
+$('addRow').onclick=()=>{words.push({zh:'',zy:''});save();renderRows();const a=$('rows').querySelectorAll('input');a[a.length-2].focus()};
+$('loadSample').onclick=()=>{if(confirm('要用太魯閣語示例取代目前清單嗎？')){words=SAMPLE.map(o=>({...o}));save();renderRows();$('questionCount').value='9';toast('已載入 9 組太魯閣語示例')}};
+function parse(t){return t.split(/\r?\n/).map(l=>l.trim()).filter(Boolean).map(l=>{const p=l.split(/\s*[,，\t]\s*/);return{zh:p[0]||'',zy:p.slice(1).join(', ')}}).filter(o=>o.zh)}
+$('bulkAppend').onclick=()=>{const p=parse($('bulk').value);words=words.concat(p);save();renderRows();toast(`已加入 ${p.length} 組`)};
+$('bulkReplace').onclick=()=>{const p=parse($('bulk').value);if(!p.length)return toast('框內沒有可加入的詞彙');words=p;save();renderRows();toast(`已取代為 ${p.length} 組`)};
+$('bulkExport').onclick=()=>{$('bulk').value=words.map(w=>w.zh+','+w.zy).join('\n')};
+function shuffled(a){const b=a.map(o=>({...o}));for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function chooseWords(){const v=valid(),n=Math.min(9,+$('questionCount').value,v.length);return shuffled(v).slice(0,n)}
+function cloze(word,seed){return Array.from(word).map((c,i)=>{if(!/[A-Za-z]/.test(c))return esc(c);const last=Array.from(word).length-1;const hide=i!==0&&i!==last&&((i+seed)%2===1);return hide?`<span class="missing" data-letter="${esc(c)}">${esc(c)}</span>`:esc(c)}).join('')}
+function sheetTop(level,i){const l=LEVELS[level];return `<div class="sheet-head"><div><span class="level-tag">${l.stars} 第 ${i+1} 級</span><h3>${l.stars} ${l.name}學習單</h3></div><span class="sheet-no">0${i+1}</span></div><div class="identity"><div>姓名：<span></span></div><div>日期：<span></span></div></div><p class="instruction">${l.instruction}</p><div class="sheet-actions"><button class="ghost answer" data-answer="${level}">✓ 顯示解答</button><button class="ghost print-one-btn" data-print="${level}">🖨 列印這張</button></div>`}
+function makeEasy(list){const right=shuffled(list);const letters='ABCDEFGHI';const pairs=list.map((w,i)=>{const j=right.findIndex(r=>r.zh===w.zh&&r.zy===w.zy);return `${i+1}－${letters[j]}`}).join('　');return `<div class="match-grid"><div class="match-col">${list.map((w,i)=>`<div class="match-item"><span class="idx">${i+1}</span><span class="word">${esc(w.zh)}</span></div>`).join('')}</div><div class="match-col">${right.map((w,i)=>`<div class="match-item right"><span class="idx">${letters[i]}</span><span class="word">${esc(w.zy)}</span></div>`).join('')}</div></div><p class="match-middle">中文 ↔ 族語</p><div class="answer-key"><strong>解答｜連線對照</strong><span class="pairs">${pairs}</span></div>`}
+function makeMid(list){return `<div class="questions">${list.map((w,i)=>`<div class="q"><span class="num">${i+1}.</span><span class="zh">${esc(w.zh)}</span><span class="cloze">${cloze(w.zy,i)}</span></div>`).join('')}</div><div class="answer-key"><strong>解答｜完整單字</strong>${list.map((w,i)=>`${i+1}. ${esc(w.zy)}`).join('　')}</div>`}
+function makeHard(list){return `<div class="questions">${list.map((w,i)=>`<div class="q"><span class="num">${i+1}.</span><span class="zh">${esc(w.zh)}</span><span class="write-line"><span class="hard-answer">${esc(w.zy)}</span></span></div>`).join('')}</div><div class="answer-key"><strong>解答｜請核對完整拼字與大小寫</strong>老師可對照上方族語答案，也可回到詞彙清單確認。</div>`}
+function generate(){
+ const n=valid().length;if(n<6){toast('請先完成至少 6 組「中文＋族語」詞彙');return}
+ const list=chooseWords();sheets=[{level:'easy',list},{level:'mid',list:shuffled(list)},{level:'hard',list:shuffled(list)}];answers={easy:false,mid:false,hard:false};renderSheets();made=true;showTab('make');setView('overview');$('summary').textContent=`本次使用 ${list.length} 個詞彙：從連連看、補字到完整拼寫，一份詞彙就能差異化練習。`;window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderSheets(){
+ $('worksheets').innerHTML=sheets.map((s,i)=>`<article class="sheet ${answers[s.level]?'show-answer':''}" data-level="${s.level}">${sheetTop(s.level,i)}${s.level==='easy'?makeEasy(s.list):s.level==='mid'?makeMid(s.list):makeHard(s.list)}<div class="sheet-foot">CalumAI Studio · 族語三級學習單</div></article>`).join('');updateHardAnswers();
+}
+function updateHardAnswers(){document.querySelectorAll('.hard-answer').forEach(e=>e.style.visibility='hidden')}
+$('worksheets').addEventListener('click',e=>{
+ const a=e.target.dataset.answer;if(a){answers[a]=!answers[a];const sheet=document.querySelector(`.sheet[data-level="${a}"]`);sheet.classList.toggle('show-answer',answers[a]);e.target.classList.toggle('on',answers[a]);e.target.textContent=answers[a]?'✓ 隱藏解答':'✓ 顯示解答';if(a==='hard')sheet.querySelectorAll('.hard-answer').forEach(el=>el.style.visibility=answers[a]?'visible':'hidden')}
+ const p=e.target.dataset.print;if(p)printSheet(p);
+});
+function setView(v){document.body.dataset.view=v;document.querySelectorAll('.viewbar .tab').forEach(b=>b.classList.toggle('on',b.dataset.view===v))}
+document.querySelectorAll('.viewbar .tab').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+function showTab(t){$('editor').classList.toggle('hidden',t!=='edit');$('maker').classList.toggle('hidden',t!=='make');$('tabEdit').classList.toggle('on',t==='edit');$('tabMake').classList.toggle('on',t==='make')}
+$('tabEdit').onclick=()=>showTab('edit');$('backEdit').onclick=()=>showTab('edit');$('tabMake').onclick=()=>{if(!made)generate();else showTab('make')};$('generate').onclick=generate;
+function clearPrint(){document.body.classList.remove('print-one');document.querySelectorAll('.print-target').forEach(e=>e.classList.remove('print-target'))}
+function printSheet(level){clearPrint();document.body.classList.add('print-one');document.querySelector(`.sheet[data-level="${level}"]`).classList.add('print-target');window.print();setTimeout(clearPrint,500)}
+$('printAll').onclick=()=>{clearPrint();window.print()};window.addEventListener('afterprint',clearPrint);
+renderRows();save();
+if(valid().length>=6)generate();else showTab('edit');
+</script>
+</body>
+</html>
